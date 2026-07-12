@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>논문 한국어 전문 번역</title>
+<style>
+  /* ===== 페이지 설정 ===== */
+  @page { size: A4; margin: 15mm; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    color: #111;
+    font-size: 9.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ===== 표지 ===== */
+  .cover {
+    position: relative;
+    min-height: 250mm;          /* 표지를 한 페이지로 채운다 */
+    padding-left: 14mm;
+    page-break-after: always;
+  }
+  .cover .bar {                 /* 좌측 검은 세로 바 */
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: #111;
+  }
+  .cover .spacer { height: 78mm; }   /* 제목을 페이지 중앙쯤으로 */
+  .cover h1 {
+    font-size: 30pt;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #111;   /* 제목 하단 굵은 밑줄 */
+    max-width: 150mm;
+  }
+  .cover .subtitle {
+    font-size: 14pt;
+    font-weight: 700;
+    margin: 10px 0 22px 0;
+  }
+  .cover .meta { font-size: 10.5pt; line-height: 1.9; }
+  .cover .meta b { font-weight: 700; }
+  .cover .note {
+    margin-top: 20px;
+    font-size: 9pt;
+    color: #666;
+    max-width: 150mm;
+  }
+
+  /* ===== 본문 2단 컨테이너 ===== */
+  .body {
+    column-count: 2;
+    column-gap: 7mm;
+    column-fill: auto;
+    text-align: justify;
+  }
+  .body p { margin: 0 0 7px 0; }
+
+  /* 문서 제목행(H1)과 큰 섹션 제목(H2)은 단 전체 폭 */
+  h1.doc-title {
+    column-span: all;
+    font-size: 17pt;
+    font-weight: 800;
+    margin: 0 0 4px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #111;
+    line-height: 1.2;
+  }
+  h2.section {
+    column-span: all;
+    font-size: 15pt;
+    font-weight: 800;
+    margin: 14px 0 8px 0;
+    padding: 6px 0;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+  }
+  /* 소제목은 단 내부 */
+  h3 { font-size: 11pt; font-weight: 700; margin: 10px 0 4px 0; }
+  h4 { font-size: 9.5pt; font-weight: 700; margin: 8px 0 3px 0; }
+  h2.section, h3, h4 { break-after: avoid; }
+
+  /* ===== 서지 + 번역 메모 (첫 2단 블록) ===== */
+  ul.biblist { margin: 0 0 8px 0; padding-left: 16px; }
+  ul.biblist li { margin-bottom: 3px; }
+  .memo-title { font-weight: 800; font-size: 12pt; margin: 0 0 6px 0; }
+  ul.memo { margin: 0; padding-left: 16px; }
+  ul.memo li { margin-bottom: 5px; }
+
+  /* ===== 코드블록 / 수식 ===== */
+  pre {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 7px 9px;
+    margin: 7px 0;
+    white-space: pre-wrap;      /* 줄바꿈 허용 */
+    word-break: break-word;
+    break-inside: avoid;
+  }
+  code {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 8.8pt;
+    background: #f0f0f0;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  /* ===== 표 ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin: 6px 0;
+    break-inside: avoid;
+  }
+  table.wide { column-span: all; }   /* 넓은 표는 단 전체 폭 */
+  th, td {
+    border: 0.6pt solid #111;
+    padding: 3px 5px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  th { background: #e8e8e8; font-weight: 700; }
+  td.l, th.l { text-align: left; }
+
+  /* ===== 그림 ===== */
+  figure {
+    margin: 8px 0;
+    text-align: center;
+    break-inside: avoid;
+  }
+  figure.fig-wide { column-span: all; }
+  figure img { max-width: 100%; height: auto; }
+  figcaption {
+    font-size: 8.5pt;
+    color: #444;
+    margin-top: 4px;
+    text-align: center;
+  }
+  figcaption b { color: #111; font-weight: 700; }
+
+  /* 긴 캡션 번역용 전체 폭 블록 */
+  .caption-block { column-span: all; margin: 6px 0 10px 0; }
+  .caption-block .cap-head { font-weight: 700; margin-bottom: 3px; }
+
+  /* ===== 참고문헌 ===== */
+  .refs-note { font-size: 9pt; color: #555; margin-bottom: 6px; }
+  ol.refs { margin: 0; padding-left: 18px; font-size: 8.8pt; line-height: 1.4; }
+  ol.refs li { margin-bottom: 4px; }
+
+  .strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ================= 표지 ================= -->
+<!-- 아래 표지 값을 원문 메타데이터로 교체하라. -->
+<section class="cover">
+  <div class="bar"></div>
+  <div class="spacer"></div>
+  <h1>Original English Paper Title Goes Here</h1>
+  <div class="subtitle">한국어 전문 번역</div>
+  <div class="meta">
+    <div><b>저자</b>: First Author, Second Author — Affiliation</div>
+    <div><b>학회</b>: VENUE YEAR &nbsp;|&nbsp; <b>arXiv</b>: 0000.00000v1</div>
+    <div><b>원문</b>: https://arxiv.org/abs/0000.00000</div>
+    <div><b>번역 생성일</b>: YYYY-MM-DD</div>
+  </div>
+  <div class="note">
+    논문과 유사한 2단 PDF 레이아웃으로 구성했으며, 원문 피겨/표/캡션을 가능한 한 유지했습니다.
+  </div>
+</section>
+
+<!-- ================= 본문 (2단) ================= -->
+<div class="body">
+
+  <!-- 문서 제목행: 전체 폭 -->
+  <h1 class="doc-title">Original Paper Title — 한국어 전체 번역</h1>
+
+  <!-- 서지 목록 (좌측 단에 자연스럽게 흐른다) -->
+  <ul class="biblist">
+    <li><b>원문 제목</b>: Original Paper Title</li>
+    <li>저자: First Author, Second Author — Affiliation</li>
+    <li>학회: VENUE YEAR</li>
+    <li>arXiv: https://arxiv.org/abs/0000.00000</li>
+    <li>PDF: https://arxiv.org/pdf/0000.00000</li>
+    <li>코드/데이터: https://github.com/...</li>
+    <li>번역 기준: arXiv vN 원문 및 PDF 확인</li>
+  </ul>
+
+  <!-- 번역 메모: 핵심 용어 결정 5~7개 -->
+  <div class="memo-title">번역 메모</div>
+  <ul class="memo">
+    <li><b>핵심 용어 A</b>는 문맥에 따라 "한글역/원어"로 옮겼다.</li>
+    <li><b>term(약어 X)</b>는 "한글 병기(term)"로 표기하고 약어는 유지했다.</li>
+    <li>모델명·벤치마크명·데이터셋명·지표명은 원문 표기를 유지했다.</li>
+    <li>수식은 monospace 코드블록으로 ASCII/유니코드 근사 표기했다.</li>
+    <li>본문 인라인 인용 번호는 제거하고 문장을 다듬었다.</li>
+    <li>참고문헌은 원문 제목을 유지한 요약 목록으로 정리했다.</li>
+  </ul>
+
+  <!-- ===== 초록 (H2 전체 폭) ===== -->
+  <h2 class="section">초록</h2>
+  <p>여기에 초록 전문을 완역해 넣는다. 학술 관용구는 자연스러운 문어체 평서형으로 옮기고,
+     전문용어는 영문 원형에 한글 조사를 붙인다. 예: 본 논문은 …를 제안한다.</p>
+  <p>초록이 길면 문단을 나누어 2단에 자연스럽게 흐르게 한다.</p>
+
+  <!-- ===== 티저 그림 (Figure 1): 전체 폭 + 캡션 전문 번역 ===== -->
+  <figure class="fig-wide">
+    <img src="figures/fig-p01-01.png" alt="티저 그림">
+    <figcaption><b>그림 1.</b> 티저 그림 한 줄 요약.</figcaption>
+  </figure>
+  <div class="caption-block">
+    <div class="cap-head">그림 1. 캡션 전문 번역</div>
+    <p>티저 그림(Figure 1)의 긴 캡션은 여기에 전문을 완역한다. 티저 그림은 항상 이 방식을 쓴다.</p>
+  </div>
+
+  <!-- ===== 번호 섹션 (H2 전체 폭) ===== -->
+  <h2 class="section">1. 서론</h2>
+  <p>섹션 번호와 계층(1., 2., 2.1 …)을 원본대로 보존한다. 모든 본문 문단을 완역하며
+     요약·생략하지 않는다.</p>
+
+  <h3>1.1 소제목 (단 내부)</h3>
+  <p>H3/H4 소제목은 단을 가로지르지 않고 단 내부에 둔다.</p>
+
+  <!-- ===== 인라인 수식 & 디스플레이 수식 ===== -->
+  <p>인라인 수식·기호도 monospace로 표기한다. 예: 집합 <code>o_j^w ∈ O</code>,
+     이진 변수 <code>v_ij ∈ {0,1}</code>. 본문에서 참조하는 수식은 "식 (1)"로 유지한다.</p>
+  <pre>K* = min_{S ⊆ F^w} |S|
+q_ij = α · q_ij^pos + (1 - α) · q_ij^size          (1)</pre>
+
+  <!-- ===== 표 (얇은 검은 테두리, 회색 헤더, 최고 성능 bold) ===== -->
+  <h2 class="section">표 1. 벤치마크 성능 비교</h2>
+  <table class="wide">
+    <thead>
+      <tr>
+        <th class="l">Method</th>
+        <th>Top-1</th>
+        <th>Top-5</th>
+        <th>Top-10</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="l">CLIP ViT-L/14</td><td>19.59</td><td>41.12</td><td>52.51</td></tr>
+      <tr><td class="l">Baseline w/ Sentence</td><td>18.07</td><td>39.53</td><td>51.18</td></tr>
+      <tr><td class="l"><span class="strong">Ours</span></td>
+          <td><span class="strong">25.11</span></td>
+          <td><span class="strong">50.10</span></td>
+          <td><span class="strong">62.96</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 일반 그림 (단 내부, 짧은 캡션) ===== -->
+  <figure>
+    <img src="figures/fig-p04-01.png" alt="시스템 개요">
+    <figcaption><b>그림 2.</b> 시스템 개요.</figcaption>
+  </figure>
+
+  <!-- ===== 참고문헌 요약 (H2 전체 폭) ===== -->
+  <h2 class="section">참고문헌 요약</h2>
+  <p class="refs-note">아래는 원문 참고문헌 N개의 핵심 목록이다.
+     원문과의 대조를 위해 citation key와 제목은 주로 원문을 유지했다.</p>
+  <ol class="refs">
+    <li>First Author et al. (2024), Original Paper Title Kept in English.</li>
+    <li>Second Author et al. (2023), Another Referenced Work Title.</li>
+  </ol>
+
+  <!-- 여기서부터 실제 내용으로 교체 -->
+
+</div>
+</body>
+</html>
