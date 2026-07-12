@@ -134,6 +134,10 @@
   }
   th { background: #e8e8e8; font-weight: 700; }
   td.l, th.l { text-align: left; }
+  /* 열이 많은 표의 셀 넘침/본문 겹침 방지: 셀 안에서 강제 줄바꿈 */
+  th, td { overflow-wrap: anywhere; word-break: break-word; }
+  /* 6열 이상이거나 셀 텍스트가 긴 표는 반드시 class="wide"로 단 전체 폭을 써라.
+     좁은 단에 욱여넣으면 셀이 겹치거나 세로 1토큰 덤프로 붕괴한다. */
 
   /* ===== 그림 ===== */
   figure {
@@ -142,7 +146,9 @@
     break-inside: avoid;
   }
   figure.fig-wide { column-span: all; }
-  figure img { max-width: 100%; height: auto; }
+  /* max-height: 세로로 매우 긴 그림(다패널)이 페이지 경계에서 잘려
+     빈 공간+캡션 유실을 만드는 것을 방지한다 */
+  figure img { max-width: 100%; height: auto; max-height: 230mm; object-fit: contain; }
   figcaption {
     font-size: 8.5pt;
     color: #444;
@@ -161,12 +167,17 @@
   ol.refs li { margin-bottom: 4px; }
 
   .strong { font-weight: 700; }
+  /* 원본 표의 밑줄 강조(예: 2위 성능)를 재현할 때 사용 */
+  .ul { text-decoration: underline; }
 </style>
 </head>
 <body>
 
 <!-- ================= 표지 ================= -->
-<!-- 아래 표지 값을 원문 메타데이터로 교체하라. -->
+<!-- 아래 표지 값을 원문 메타데이터로 교체하라.
+     주의: '번역 생성일'은 반드시 이 한 줄만 존재해야 한다. 재실행/수정 시
+     날짜 줄을 추가하지 말고 기존 값을 교체하라 (날짜 중복 사례 있었음).
+     내부 검증 메모·출처 확인 기록 등 번역 과정 부산물은 산출물에 넣지 않는다. -->
 <section class="cover">
   <div class="bar"></div>
   <div class="spacer"></div>
