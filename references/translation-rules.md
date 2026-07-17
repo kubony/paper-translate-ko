@@ -43,6 +43,23 @@ DAAAM(arXiv 2512.00565) 참조 번역본을 원본과 대조하여 도출한 규
   문어체 평서형("~한다", "~이다")으로 통일. 경어체 금지.
 - 강조(bold/italic)는 원문 위치를 따라 유지한다.
 
+## 3.1. AI/Robotics 용어집 우선 규칙
+
+AI/robotics/VLA/VLN/physical AI 문서에서는 `references/vla-robotics-translation-glossary.md`를 먼저 읽고, 그 용어집을 일반 기계번역보다 우선 적용한다. 특히 다음 표기를 기본으로 한다.
+
+- `frontier model` → **프론티어 모델**. 절대 "개척 모델"로 번역하지 않는다.
+- `Physical AI` → **피지컬 AI**.
+- `Vision-Language-Action`, `VLA` → 첫 등장: **Vision-Language-Action(VLA, 비전-언어-액션)**, 이후 **VLA**.
+- `foundation model` → **파운데이션 모델**. 문맥상 필요한 경우 "foundation model식"처럼 혼합 표기한다.
+- `robot foundation model` → **로봇 파운데이션 모델**.
+- `generalist policy` → **generalist policy** 또는 **범용 로봇 policy**. "범형"은 출처가 그렇게 쓰는 경우가 아니면 피한다.
+- `embodiment` → **embodiment** 또는 **로봇 몸체/몸체 형태**. "실체"로 번역하지 않는다.
+- `embodied reasoning` → **embodied reasoning(체화 추론)** 또는 **embodied reasoning**.
+- `direct control`, `code control`, `programmatic control`, `high-level control`, `low-level control` → 각각 **direct control**, **code control**, **programmatic control**, **high-level control**, **low-level control**을 유지하고 필요하면 괄호 안에 직역 설명을 붙인다.
+- `policy`, `pretrained policy`, `gait policy`, `controller` → **policy**, **pretrained policy**, **gait policy**, **controller**를 유지한다.
+- `action`, `action chunking`, `flow matching`, `diffusion policy`, `diffusion transformer` → **action**, **action chunking**, **flow matching**, **diffusion policy**, **diffusion transformer**를 유지한다.
+- `open-world generalization`, `cross-embodiment`, `motion transfer`, `test-time compute`, `latent reasoning` → **open-world generalization**, **cross-embodiment**, **motion transfer**, **test-time compute**, **latent reasoning**을 유지하거나 첫 등장에 한국어 설명을 병기한다.
+
 ## 4. 수식
 
 - 디스플레이 수식은 **monospace 코드블록**으로 ASCII/유니코드 근사 표기한다.
