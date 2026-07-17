@@ -60,7 +60,7 @@ AI/robotics/VLA/VLN/physical AI 논문과 기술 블로그는 추가로
 ### 1. 입력 확보
 
 - **arXiv ID/URL**이면: `python3 scripts/fetch_arxiv.py <arxiv_id> <작업폴더>` 로
-  PDF와 `metadata.json`(제목·저자·소속·초록·comment·발표정보)을 받는다.
+  `original.pdf`와 `metadata.json`(제목·저자·소속·초록·comment·발표정보)을 받는다.
   버전 접미사나 abs/pdf URL을 그대로 넣어도 id가 정규화된다.
 - **로컬 PDF**면 그 파일을 `original.pdf`로 쓴다. 서지 정보는 아래 2단계에서 본문으로 파악한다.
 
@@ -133,9 +133,9 @@ manifest가 없으면 검증은 휴리스틱으로만 돌고 경고를 낸다.
 
 ### 5. HTML 작성
 
-`assets/template.html`을 작업 폴더로 복사해 `translation.html`로 쓰고 내용만 교체한다.
-템플릿에는 각 컴포넌트(표지·번역 메모·초록·H2 섹션·코드블록 수식·그림+캡션·표·참고문헌)의
-사용 예시와 `<!-- 여기서부터 실제 내용으로 교체 -->` 안내 주석이 들어 있다.
+`assets/template.html`을 작업 폴더로 복사해 `translation.html`로 쓰고 placeholder를 실제 값으로 교체한다.
+구성요소 예시는 `assets/example.html`에 있다. `template.html`의 skeleton 값을 남기면
+7단계 validator가 placeholder 잔존으로 FAIL 처리한다.
 
 - 표지 값(제목/저자/학회/arXiv/생성일)을 채운다. 생성일은 오늘 날짜.
 - 이미지 경로는 **상대경로**(`figures/fig-p01-01.png`)로 쓴다.

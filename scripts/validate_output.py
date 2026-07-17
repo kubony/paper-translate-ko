@@ -41,6 +41,19 @@ import fitz  # pymupdf
 
 # ---- 계약 임계값 ---------------------------------------------------------
 FORBIDDEN_STRINGS = ["원문 p.", "레이아웃 보존"]  # 페이지 통 캡처/덤프의 흔적
+PLACEHOLDER_PATTERNS = [
+    "Original English Paper Title",
+    "Original Paper Title",
+    "First Author",
+    "Second Author",
+    "VENUE YEAR",
+    "0000.00000",
+    "YYYY-MM-DD",
+    "여기에 초록",
+    "여기서부터 실제 내용으로 교체",
+    "fig-p01-01.png",
+    "fig-p04-01.png",
+]
 HABNIDA_LIMIT = 15          # "습니다" 출현이 이보다 많으면 경어체 위반 신호
 RATIO_FAIL_LOW = 0.5        # 최종/원본 페이지 비율이 이 미만이면 FAIL(누락 의심)
 RATIO_FAIL_HIGH = 2.0       # 이 초과면 FAIL(통 캡처로 페이지 폭증 의심)
@@ -260,6 +273,16 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
     else:
         rep.ok("HTML: 금지 문자열 없음.")
 
+    # 2b) 템플릿 예시/placeholder 잔존 금지
+    placeholders = [s for s in PLACEHOLDER_PATTERNS if s in raw]
+    if placeholders:
+        rep.fail(
+            f"HTML에 템플릿 placeholder/예시 문자열 {placeholders[:8]} 발견. "
+            f"assets/template.html의 skeleton 값을 실제 논문 메타데이터와 본문으로 교체하라."
+        )
+    else:
+        rep.ok("HTML: 템플릿 placeholder 잔존 없음.")
+
     # 3) <img> src 존재/비어있지 않음
     srcs = re.findall(r"<img[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", raw, re.IGNORECASE)
     n_img = len(srcs)
@@ -279,8 +302,9 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
     if not missing and not empty and rel_srcs:
         rep.ok(f"HTML img {len(rel_srcs)}개: 상대경로 파일 모두 존재하고 비어있지 않다.")
 
-    # 4) 표 재구성
+    # 4) 표/수식 재구성
     n_table = len(re.findall(r"<table[\s>]", raw, re.IGNORECASE))
+    n_equation = len(re.findall(r"<pre(?:\s|>)", raw, re.IGNORECASE))
 
     if manifest is not None:
         n_fig_m = len(manifest.get("figures", []))
@@ -299,6 +323,17 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
                 f"표 누락/미재구성: HTML <table> {n_table}개 < manifest tables {n_tab_m}개. "
                 f"표는 이미지가 아니라 HTML <table>로 재구성하라."
             )
+        n_eq_m = manifest.get("display_equations")
+        if isinstance(n_eq_m, int):
+            if n_equation >= n_eq_m:
+                rep.ok(f"수식 개수: HTML <pre> {n_equation}개 ≥ manifest display_equations {n_eq_m}개.")
+            else:
+                rep.fail(
+                    f"수식 누락: HTML <pre> {n_equation}개 < manifest display_equations {n_eq_m}개. "
+                    f"디스플레이 수식은 monospace <pre> 블록으로 재구성하라."
+                )
+        else:
+            rep.warn("manifest.display_equations가 정수가 아니다 — 수식 개수 검사를 생략한다.")
     else:
         rep.warn("manifest.json 없음 — 2단계에서 작성 권장. 개수 기반 검사 대신 휴리스틱만 수행한다.")
         if n_img == 0:

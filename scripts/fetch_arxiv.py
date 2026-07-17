@@ -47,8 +47,14 @@ def _get(url: str, binary: bool = False):
 
 
 def download_pdf(arxiv_id: str, outdir: str) -> str:
+    """Download the source PDF using the repository's workdir contract.
+
+    Downstream scripts and validate_output.py expect the source paper at
+    <workdir>/original.pdf.  Keep that filename stable so a fresh arXiv
+    workdir can be validated without a manual rename step.
+    """
     url = f"https://arxiv.org/pdf/{arxiv_id}"
-    pdf_path = os.path.join(outdir, f"{arxiv_id}.pdf")
+    pdf_path = os.path.join(outdir, "original.pdf")
     print(f"[fetch] PDF 다운로드: {url}")
     data = _get(url, binary=True)
     if not data[:5] == b"%PDF-":

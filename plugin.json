@@ -1,6 +1,6 @@
 {
   "name": "paper-translate-ko",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "arXiv/학술 논문 PDF를 원본 레이아웃(2단 학술 스타일, 피겨/표/수식 보존)을 유지한 한국어 완역 PDF로 변환하는 Claude Code 스킬",
   "type": "skill",
   "author": {

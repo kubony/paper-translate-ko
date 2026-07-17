@@ -8,12 +8,43 @@
 """
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 import time
 
-CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+CHROME_CANDIDATES = [
+    "google-chrome",
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+]
+
+
+def find_chrome() -> str | None:
+    """Return a Chrome/Chromium executable path.
+
+    Users can override auto-detection with CHROME_BIN.  Otherwise try common
+    Linux command names and the macOS app bundle path.
+    """
+    env = os.environ.get("CHROME_BIN")
+    if env:
+        return env if os.path.exists(env) or shutil.which(env) else None
+    for cand in CHROME_CANDIDATES:
+        if os.path.isabs(cand):
+            if os.path.exists(cand):
+                return cand
+        else:
+            found = shutil.which(cand)
+            if found:
+                return found
+    return None
 
 
 def _count_pages(pdf_bytes: bytes) -> int:
@@ -34,8 +65,10 @@ def render(html_path: str, pdf_path: str) -> int:
     if not os.path.exists(html_abs):
         print(f"[render] 입력 HTML 없음: {html_abs}")
         return 1
-    if not os.path.exists(CHROME):
-        print(f"[render] Chrome 실행 파일 없음: {CHROME}")
+    chrome = find_chrome()
+    if not chrome:
+        print("[render] Chrome/Chromium 실행 파일을 찾지 못했다.")
+        print("[render] CHROME_BIN=/path/to/chrome 로 지정하거나 google-chrome/chromium을 설치하라.")
         return 1
 
     os.makedirs(os.path.dirname(pdf_abs) or ".", exist_ok=True)
@@ -65,7 +98,7 @@ def render(html_path: str, pdf_path: str) -> int:
 
     for attempt, flags in enumerate((base, fallback), start=1):
         user_data = tempfile.mkdtemp(prefix="chrome-render-")
-        cmd = [CHROME, *flags, f"--user-data-dir={user_data}",
+        cmd = [chrome, *flags, f"--user-data-dir={user_data}",
                f"--print-to-pdf={pdf_abs}", file_url]
         print(f"[render] 시도 {attempt}: {' '.join(flags[:2])} ...")
         if os.path.exists(pdf_abs):
