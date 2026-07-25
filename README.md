@@ -101,6 +101,7 @@ uv run --quiet --with pymupdf python3 scripts/validate_output.py \
 - 표를 HTML `<table>`로 재구성하지 않음
 - LaTeX 잔재(`\\frac`, `\\mathbb`, `$$` 등)
 - screen-reader/LaTeXML 수식 변환 잔재(`아래 첨자`, `superscript`, `textsubscript` 등)
+- 고신뢰 기계번역 잔재(`건강하게 감소`, `예측할 수 있다고 예상할 수`, `제작대를 제작` 등)
 - 본문 인라인 인용 번호 `[12]` 잔존 의심
 - 경어체/기계번역투 과다
 - template placeholder 문자열 잔존
