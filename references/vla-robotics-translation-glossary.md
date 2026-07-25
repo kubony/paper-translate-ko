@@ -44,6 +44,14 @@ Use this reference whenever translating AI robotics, VLA, VLN, embodied AI, robo
 - `behavioral cloning (BC)` → 첫 등장에 **행동 복제(Behavioral Cloning, BC)** 또는 **behavioral cloning(BC)**; 이후 **BC**.
 - `inverse dynamics model (IDM)` → 첫 등장에 **역동역학 모델(Inverse Dynamics Model, IDM)**; 이후 **IDM**.
 - `action space` → **행동 공간**. `full`, `human`, `unmodified` 같은 수식 의미를 빠뜨리지 않는다.
+- `out-of-distribution` → **학습 분포 밖(out-of-distribution)**, not “배포되지 않음”.
+- `visual domain shift` → **시각적 domain shift / 시각적 도메인 차이**, not “시각적 영역의 영향력 있는 변화”.
+- `different distribution of play` → **플레이 양상이 다름 / 플레이 행동 분포가 다름**.
+- `nontrivial performance` → **무시할 수 없는 성능**, not “적지 않은 성능”.
+- `craft a crafting table` → **제작대를 만들다**, not “제작대를 제작하다”.
+- `go past this in the technology tree` → **기술 트리의 다음 단계로 나아가다**.
+- `narrower datasets` → **범위가 더 좁은 데이터셋**, not “더 좁은 데이터셋”.
+- defined data labels `clean` / `unclean` → **clean / unclean**; preserve the opposition and never assign the same translated label to both categories.
 - `inventory` in game/UI contexts → **인벤토리**, not “재고”; `drag-and-drop inventory management` → **드래그 앤 드롭 방식의 인벤토리 관리**.
 - academic `work` / `published work` → **연구** / **발표된 연구**, not “작업” / “출판된 작업”.
 - `Sec. N`, `Section N` → **N절**. 문장 분리 전에 약어와 번호를 하나의 참조 단위로 보호한다.

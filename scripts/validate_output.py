@@ -86,6 +86,21 @@ PDF_STRONG_REMNANT_LABELS = {
     "formulae-sequence", "leavevmode", "textsubscript", "textrm", "similar-to",
 }
 FORMULA_CONTEXT_SIGNAL = re.compile(r"[=_|{}\\^∑∏±×÷≤≥∈⊆]|[A-Za-z]\s*\([^)]*\)")
+MACHINE_TRANSLATION_RESIDUE = (
+    ("건강하게 감소", re.compile(r"건강하게\s*감소")),
+    ("시각적 영역의 영향력 있는 변화", re.compile(r"시각적\s*영역[\s\S]{0,24}영향력\s*있는\s*변화")),
+    ("예측할 수 있다고 예상할 수", re.compile(r"예측할\s*수\s*있다고\s*예상할\s*수")),
+    ("제작대를 제작", re.compile(r"제작대(?:를)?\s*제작")),
+    ("기술 트리에서는 이를 지나칠 수 없", re.compile(r"기술\s*트리에서는?\s*이를?\s*지나칠\s*수\s*없")),
+    ("두 개의 더 좁은 데이터 세트", re.compile(r"두\s*개(?:의)?\s*더\s*좁은\s*데이터\s*세트")),
+    (
+        "상반된 데이터 분류에 동일한 이름 반복",
+        re.compile(
+            r"데이터(?:를)?\s*[\"“](?P<label>[^\"”]{1,20})[\"”](?:이라고)?\s*부르"
+            r"[\s\S]{0,100}다른\s*모든\s*데이터(?:는|를)?\s*[\"“](?P=label)[\"”]"
+        ),
+    ),
+)
 # 인라인 인용 잔존: [12], [3, 4] — 단 '∈ [0,1]' 같은 수식 구간은 오탐이므로 WARN만.
 INLINE_CITE = re.compile(r"\[\d{1,3}(?:,\s*\d{1,3})*\]")
 CITE_OK_CONTEXT = re.compile(r"[∈±\[\(=,]\s*$")
@@ -237,6 +252,11 @@ def _formula_remnant_hits(formula_text):
     return [label for label, pattern in FORMULA_SPEECH_REMNANTS if pattern.search(formula_text)]
 
 
+def _machine_translation_residue_hits(text):
+    """의미 왜곡 가능성이 높고 대체 표현이 명확한 직역 잔재를 반환한다."""
+    return [label for label, pattern in MACHINE_TRANSLATION_RESIDUE if pattern.search(text)]
+
+
 def _pdf_formula_remnant_hits(formula_text):
     """PDF에서는 전용 변환 토큰 또는 한 줄 안에서 반복된 낭독 표지만 실패로 본다."""
     hits = []
@@ -344,6 +364,15 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
         )
     else:
         rep.ok("최종 PDF 텍스트: 금지 문자열 없음.")
+
+    translation_hits = _machine_translation_residue_hits(txt)
+    if translation_hits:
+        rep.fail(
+            f"최종 PDF에 고신뢰 기계번역 잔재 {translation_hits} 발견. 원문의 논리 구조와 "
+            f"전문 용어를 대조해 자연스러운 학술 한국어로 다시 작성하라."
+        )
+    else:
+        rep.ok("최종 PDF: 고신뢰 기계번역 잔재 없음.")
 
     formula_hits = _pdf_formula_remnant_hits(_pdf_formula_text(txt))
     if formula_hits:
@@ -453,6 +482,16 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
         )
     else:
         rep.ok("HTML: 표시 텍스트에 LaTeX 잔재 없음.")
+
+    # 2e) 반복적으로 관찰된 고신뢰 기계번역 직역 잔재 금지
+    translation_hits = _machine_translation_residue_hits(visible_text)
+    if translation_hits:
+        rep.fail(
+            f"HTML에 고신뢰 기계번역 잔재 {translation_hits} 발견. 'out-of-distribution'의 "
+            f"배포 의미 오역, 중복 양태, 부자연스러운 영어 어순을 원문과 대조해 교정하라."
+        )
+    else:
+        rep.ok("HTML: 고신뢰 기계번역 잔재 없음.")
 
     # 3) <img> src 존재/비어있지 않음
     srcs = re.findall(r"<img[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", raw, re.IGNORECASE)

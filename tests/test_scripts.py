@@ -105,6 +105,39 @@ class ValidatorTests(unittest.TestCase):
         )
         self.assertFalse(rep.failed)
 
+    def test_high_confidence_machine_translation_residue_is_failure(self):
+        phrases = (
+            "손실은 훈련을 통해 건강하게 감소한다",
+            "시각적 영역의 영향력 있는 변화가 있다",
+            "시각적 영역의\n영향력 있는 변화가 있다",
+            "평가 성능 저하를 예측할 수 있다고 예상할 수 있었다",
+            "제작대를 제작할 수 있었다",
+            "기술 트리에서는 이를 지나칠 수 없었다",
+            "두 개의 더 좁은 데이터 세트로 fine-tuning한다",
+            '데이터를 "깨끗함"이라고 부르고, 다른 모든 데이터는 "깨끗함"이라고 부른다',
+            '데이터를 "clean"이라고 부르고,\n다른 모든 데이터는 "clean"이라고 부른다',
+        )
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                rep = self.run_check_html(
+                    f"<html><body><h1>실제 제목</h1><p>{phrase}</p></body></html>",
+                    {"figures": [], "tables": [], "display_equations": 0},
+                )
+                self.assertTrue(rep.failed)
+                self.assertTrue(
+                    any("기계번역 잔재" in msg for level, msg in rep.items if level == "FAIL")
+                )
+
+    def test_natural_academic_equivalents_are_not_flagged(self):
+        rep = self.run_check_html(
+            """<html><body><h1>실제 제목</h1>
+            <p>loss는 안정적으로 감소한다. 데이터가 학습 분포 밖에 놓였을 수 있다.
+            제작대를 만들었지만 기술 트리의 다음 단계로 나아가지는 못했다.
+            범위가 더 좁은 두 데이터셋으로 fine-tuning한다.</p></body></html>""",
+            {"figures": [], "tables": [], "display_equations": 0},
+        )
+        self.assertFalse(rep.failed)
+
     def assert_formula_remnant_fails(self, formula):
         rep = self.run_check_html(
             f"<html><body><h1>실제 제목</h1><pre>{formula}</pre></body></html>",
