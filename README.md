@@ -2,7 +2,7 @@
 
 > arXiv/학술 논문 PDF를 원본 정보 구조에 맞춰 **한국어 완역 PDF**로 재구성하는 Claude Code/Hermes skill.
 
-원본 논문의 섹션 구조를 보존하고, 표지 + 번역 메모, 2단 학술 레이아웃, 원본에서 추출한 피겨 재삽입, HTML로 재구성한 표, monospace 근사 수식, 한국어/영문 혼합 전문용어 표기, 참고문헌 요약을 생성합니다.
+원본 논문의 섹션 구조를 보존하고, 표지 + 번역 메모, 2단 학술 레이아웃, 원본에서 추출한 피겨 재삽입, HTML로 재구성한 표, monospace 근사 수식과 평문 해설, 한국어/영문 혼합 전문용어 표기, 참고문헌 요약을 생성합니다.
 
 ## Installation
 
@@ -100,6 +100,7 @@ uv run --quiet --with pymupdf python3 scripts/validate_output.py \
 - manifest 대비 그림/표/디스플레이 수식 누락
 - 표를 HTML `<table>`로 재구성하지 않음
 - LaTeX 잔재(`\\frac`, `\\mathbb`, `$$` 등)
+- screen-reader/LaTeXML 수식 변환 잔재(`아래 첨자`, `superscript`, `textsubscript` 등)
 - 본문 인라인 인용 번호 `[12]` 잔존 의심
 - 경어체/기계번역투 과다
 - template placeholder 문자열 잔존

@@ -35,6 +35,7 @@ import json
 import os
 import re
 import sys
+from html.parser import HTMLParser
 
 import fitz  # pymupdf
 
@@ -65,11 +66,26 @@ SPARSE_TEXT_LEN = 300       # 페이지 추출 텍스트가 이보다 짧으면 
 
 # LaTeX 잔재: 수식을 ASCII/유니코드로 변환하지 않고 원문 문법을 노출한 흔적.
 # (실사례: `$$ \textrm{GASI}=\mathbb{E}...\tag{3} $$` 가 산출물에 그대로 인쇄됨)
-LATEX_REMNANT = re.compile(
-    r"\\(?:tag|textrm|text|mathbb|mathbf|mathcal|mathrm|operatorname|left|right|"
-    r"frac|displaystyle|sum|prod|sim|cdot|times|pm|quad|qquad|alpha|beta|gamma|"
-    r"lambda|sigma|begin|end|Bigl|Bigr|big|Big)\b|\$\$"
+LATEX_REMNANT = re.compile(r"\\[A-Za-z]+|\$\$")
+# PDF/LaTeXML 접근성 트리나 machine translation에서 수식이 중복 낭독된 흔적.
+# 예: `p_IDM(...) 아래 첨자 ... p_{textrm{textsubscript{IDM}}}(...)`.
+# 정상 수식은 ASCII/유니코드 한 벌만 남겨야 한다.
+FORMULA_SPEECH_REMNANTS = (
+    ("아래 첨자", re.compile(r"아래\s+첨자")),
+    ("하위 첨자", re.compile(r"하위\s+첨자")),
+    ("위 첨자", re.compile(r"위\s+첨자")),
+    ("formulae-sequence", re.compile(r"\bformulae(?:\s+|-)sequence\b", re.IGNORECASE)),
+    ("leavevmode", re.compile(r"\bleavevmode\b", re.IGNORECASE)),
+    ("textsubscript", re.compile(r"\btextsubscript\b", re.IGNORECASE)),
+    ("textrm", re.compile(r"\btextrm\b", re.IGNORECASE)),
+    ("similar-to", re.compile(r"\bsimilar(?:\s+|-)to\b", re.IGNORECASE)),
+    ("superscript", re.compile(r"\bsuperscript\b", re.IGNORECASE)),
+    ("subscript", re.compile(r"\bsubscript\b", re.IGNORECASE)),
 )
+PDF_STRONG_REMNANT_LABELS = {
+    "formulae-sequence", "leavevmode", "textsubscript", "textrm", "similar-to",
+}
+FORMULA_CONTEXT_SIGNAL = re.compile(r"[=_|{}\\^∑∏±×÷≤≥∈⊆]|[A-Za-z]\s*\([^)]*\)")
 # 인라인 인용 잔존: [12], [3, 4] — 단 '∈ [0,1]' 같은 수식 구간은 오탐이므로 WARN만.
 INLINE_CITE = re.compile(r"\[\d{1,3}(?:,\s*\d{1,3})*\]")
 CITE_OK_CONTEXT = re.compile(r"[∈±\[\(=,]\s*$")
@@ -131,6 +147,130 @@ def _pdf_text(path):
 def _count_table_refs(text):
     """원문 텍스트에서 'Table N' 참조 수(표가 존재한다는 신호)."""
     return len(re.findall(r"\bTable\s+\d+", text))
+
+
+class _VisibleHTMLText(HTMLParser):
+    """HTML에서 실제 표시되는 텍스트와 수식 문맥의 텍스트만 수집한다."""
+
+    _ignored_tags = {"head", "script", "style", "template", "noscript"}
+    _formula_tags = {"pre", "math"}
+    _block_tags = {
+        "address", "article", "aside", "blockquote", "body", "caption", "dd", "div",
+        "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2",
+        "h3", "h4", "h5", "h6", "header", "hr", "html", "legend", "li", "main", "nav",
+        "ol", "p", "pre", "section", "table", "tbody", "td", "tfoot", "th", "thead",
+        "tr", "ul",
+    }
+    _void_tags = {
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
+        "param", "source", "track", "wbr",
+    }
+    _formula_markers = re.compile(r"(?:^|[-_])(formula|equation|math|latex)(?:$|[-_])", re.I)
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self._stack = []
+        self.visible = []
+        self.formula = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = {key: value or "" for key, value in attrs}
+        classes = attrs.get("class", "").split()
+        style = re.sub(r"\s+", "", attrs.get("style", "").lower())
+        ignored = (
+            tag in self._ignored_tags
+            or "hidden" in attrs
+            or "display:none" in style
+            or "visibility:hidden" in style
+        )
+        formula = (
+            tag in self._formula_tags
+            or attrs.get("role", "").lower() == "math"
+            or any(self._formula_markers.search(value) for value in classes)
+        )
+        parent_ignored = any(in_ignored for _, in_ignored, _ in self._stack)
+        parent_formula = any(in_formula for _, _, in_formula in self._stack)
+        if not parent_ignored and (tag == "br" or tag in self._block_tags):
+            self.visible.append("\n")
+            if parent_formula:
+                self.formula.append("\n")
+        if formula and not parent_formula and not parent_ignored and not ignored:
+            self.formula.append("\n")
+        if tag in self._void_tags:
+            return
+        self._stack.append((tag, ignored, formula))
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag not in self._void_tags:
+            self.handle_endtag(tag)
+
+    def handle_endtag(self, tag):
+        for index in range(len(self._stack) - 1, -1, -1):
+            if self._stack[index][0] == tag:
+                if tag in self._block_tags and not any(
+                    ignored for _, ignored, _ in self._stack
+                ):
+                    self.visible.append("\n")
+                    if any(formula for _, _, formula in self._stack):
+                        self.formula.append("\n")
+                del self._stack[index:]
+                break
+
+    def handle_data(self, data):
+        if any(ignored for _, ignored, _ in self._stack):
+            return
+        self.visible.append(data)
+        if any(formula for _, _, formula in self._stack):
+            self.formula.append(data)
+
+
+def _visible_html_text(raw):
+    parser = _VisibleHTMLText()
+    parser.feed(raw)
+    parser.close()
+    return "".join(parser.visible), "".join(parser.formula)
+
+
+def _formula_remnant_hits(formula_text):
+    """이미 수식 문맥으로 한정된 텍스트에서 접근성/LaTeXML 잔재를 반환한다."""
+    return [label for label, pattern in FORMULA_SPEECH_REMNANTS if pattern.search(formula_text)]
+
+
+def _pdf_formula_remnant_hits(formula_text):
+    """PDF에서는 전용 변환 토큰 또는 한 줄 안에서 반복된 낭독 표지만 실패로 본다."""
+    hits = []
+    lines = formula_text.splitlines() or [formula_text]
+    for label, pattern in FORMULA_SPEECH_REMNANTS:
+        if label in PDF_STRONG_REMNANT_LABELS:
+            found = pattern.search(formula_text) is not None
+        else:
+            found = any(len(pattern.findall(line)) >= 2 for line in lines)
+        if found:
+            hits.append(label)
+    return hits
+
+
+def _pdf_formula_text(text):
+    """PDF에서는 수식 신호 행과 줄바꿈으로 감긴 이웃 행을 함께 고른다."""
+    lines = text.splitlines()
+    selected = set()
+    for index, line in enumerate(lines):
+        if not FORMULA_CONTEXT_SIGNAL.search(line):
+            continue
+        selected.add(index)
+        for neighbor in (index - 1, index + 1):
+            if not (0 <= neighbor < len(lines)):
+                continue
+            wrapped = lines[neighbor].strip()
+            if (
+                wrapped
+                and _pdf_formula_remnant_hits(wrapped)
+                and len(wrapped) <= 80
+                and not re.search(r"[.!?。]\s*$", wrapped)
+            ):
+                selected.add(neighbor)
+    return "\n".join(lines[index] for index in sorted(selected))
 
 
 # ---- 최종 PDF 검사 (모드 A/B 공통) --------------------------------------
@@ -205,6 +345,16 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
     else:
         rep.ok("최종 PDF 텍스트: 금지 문자열 없음.")
 
+    formula_hits = _pdf_formula_remnant_hits(_pdf_formula_text(txt))
+    if formula_hits:
+        rep.fail(
+            f"최종 PDF에 수식 변환 잔재 {formula_hits} 발견. screen-reader/LaTeXML이 "
+            f"중복 생성한 '아래 첨자', 'superscript', 'textsubscript' 등의 문자열을 "
+            f"제거하고, 수식은 monospace ASCII/유니코드 한 벌로만 다시 작성하라."
+        )
+    else:
+        rep.ok("최종 PDF: screen-reader/LaTeXML 수식 변환 잔재 없음.")
+
     # LaTeX 잔재 + 인라인 인용 잔존 (페이지 단위)
     d = fitz.open(final_pdf)
     latex_pages, cite_pages = [], []
@@ -253,6 +403,7 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
 def check_html(rep, html_path, workdir, orig_pdf, manifest):
     with open(html_path, encoding="utf-8") as f:
         raw = f.read()
+    visible_text, formula_text = _visible_html_text(raw)
 
     # 1) 페이지 캡처 참조 금지
     if "pages/page-" in raw:
@@ -282,6 +433,26 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
         )
     else:
         rep.ok("HTML: 템플릿 placeholder 잔존 없음.")
+
+    # 2c) screen-reader/LaTeXML 수식 중복 낭독 잔재 금지
+    formula_hits = _formula_remnant_hits(formula_text)
+    if formula_hits:
+        rep.fail(
+            f"HTML에 수식 변환 잔재 {formula_hits} 발견. 수식의 접근성 텍스트·LaTeX·"
+            f"시각 표기가 한 문장에 중복 삽입된 상태다. 잔재를 제거하고 monospace "
+            f"ASCII/유니코드 수식 한 벌과 평문 해설만 남겨라."
+        )
+    else:
+        rep.ok("HTML: screen-reader/LaTeXML 수식 변환 잔재 없음.")
+
+    # 2d) 최종 HTML의 실제 표시 텍스트에 원시 LaTeX 문법 금지
+    if LATEX_REMNANT.search(visible_text):
+        rep.fail(
+            "HTML에 LaTeX 잔재 노출 발견. 백슬래시 명령(\\textrm, \\mathbb, "
+            "\\tag, \\frac 등)이나 '$$'를 monospace ASCII/유니코드 수식으로 변환하라."
+        )
+    else:
+        rep.ok("HTML: 표시 텍스트에 LaTeX 잔재 없음.")
 
     # 3) <img> src 존재/비어있지 않음
     srcs = re.findall(r"<img[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", raw, re.IGNORECASE)
