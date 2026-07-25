@@ -116,6 +116,24 @@
     padding: 0 2px;
     border-radius: 2px;
   }
+  /* 복잡한 수식/모델 관계를 평문으로 풀어 쓰는 설명 상자 */
+  .explain-card {
+    background: #f2f6fa;
+    border-left: 3px solid #315f86;
+    padding: 7px 9px;
+    margin: 7px 0 9px;
+    text-align: left;
+    break-inside: avoid;
+  }
+  .explain-card .card-title { color: #244b6b; font-weight: 800; }
+  .explain-card .flow {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ccd7e1;
+    padding: 4px;
+    margin: 5px 0;
+  }
 
   /* ===== 표 ===== */
   table {
@@ -251,6 +269,12 @@
      이진 변수 <code>v_ij ∈ {0,1}</code>. 본문에서 참조하는 수식은 "식 (1)"로 유지한다.</p>
   <pre>K* = min_{S ⊆ F^w} |S|
 q_ij = α · q_ij^pos + (1 - α) · q_ij^size          (1)</pre>
+  <div class="explain-card">
+    <div class="card-title">수식 읽는 법</div>
+    <code>K*</code>는 조건을 만족하는 최소 feature 집합의 크기다. 아래첨자와 조건부 입력이
+    많은 수식에서는 각 기호, 입력, 출력의 의미를 이처럼 평문으로 설명한다.
+    <div class="flow">입력 관찰 → 모델 예측 → 학습 target</div>
+  </div>
 
   <!-- ===== 표 (얇은 검은 테두리, 회색 헤더, 최고 성능 bold) ===== -->
   <h2 class="section">표 1. 벤치마크 성능 비교</h2>

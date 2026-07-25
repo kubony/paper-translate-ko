@@ -116,6 +116,10 @@ manifest가 없으면 검증은 휴리스틱으로만 돌고 경고를 낸다.
 - **LaTeX 문법 노출**: `$$ \textrm{GASI}=\mathbb{E}...\tag{3} $$`가 그대로 인쇄됨.
   수식은 반드시 `GASI = E_{g~G}[ E_{r1,r2~R}[ JSD(p_{g,r1} ‖ p_{g,r2}) ] ]`처럼
   ASCII/유니코드로 손수 변환한다. 최종 HTML에 백슬래시나 `$$`가 남으면 실패다.
+- **screen-reader/LaTeXML 수식 중복**: `p_IDM(...)` 뒤에 “아래 첨자”,
+  `superscript`, `textsubscript`, `leavevmode` 같은 낭독·변환 문자열과 동일 수식의
+  LaTeX 표현이 연달아 붙는 사례가 있다. 중복 문자열을 모두 제거하고 수식 한 벌만
+  남긴다. 복잡한 수식에는 `.explain-card`로 각 기호와 조건부 입력의 의미를 설명한다.
 - **코드 토큰 기계 오역**: "CoT"→"간이 침대", "Let G"→"허락하다 G", 표 헤더 "SI"→"(시)".
   약어·기호·표 헤더는 번역 대상이 아니다 — 산문만 번역한다.
 - **미번역 잔존**: 원문 영어 문단이 통째로 남음. 완역이 원칙이다.
@@ -159,7 +163,8 @@ uv run --quiet --with pymupdf python3 scripts/validate_output.py <작업폴더> 
 
 exit 0(PASS)이어야 완료다. FAIL이면 리포트의 교정 안내대로 `translation.html`을
 고치고 6→7단계를 **반복**한다. (검사 항목: 페이지 통 캡처, 페이지 비율, 금지 문자열
-`원문 p.`/`레이아웃 보존`, 그림·표 개수(manifest 기준), 경어체 신호.)
+`원문 p.`/`레이아웃 보존`, 그림·표·수식 개수(manifest 기준), LaTeX 및
+screen-reader/LaTeXML 수식 변환 잔재, 경어체 신호.)
 
 그다음 생성된 PDF를 `Read`로 **처음부터 끝까지** 보고 사람 눈으로 점검한다:
 

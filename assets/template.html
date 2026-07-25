@@ -116,6 +116,24 @@
     padding: 0 2px;
     border-radius: 2px;
   }
+  /* 복잡한 수식/모델 관계를 평문으로 풀어 쓰는 설명 상자 */
+  .explain-card {
+    background: #f2f6fa;
+    border-left: 3px solid #315f86;
+    padding: 7px 9px;
+    margin: 7px 0 9px;
+    text-align: left;
+    break-inside: avoid;
+  }
+  .explain-card .card-title { color: #244b6b; font-weight: 800; }
+  .explain-card .flow {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ccd7e1;
+    padding: 4px;
+    margin: 5px 0;
+  }
 
   /* ===== 표 ===== */
   table {
@@ -229,6 +247,10 @@
 
   <!-- 수식 예시: manifest.display_equations 개수 이상으로 <pre>를 둔다.
   <pre>{{ASCII/유니코드 근사 수식}}          (1)</pre>
+  <div class="explain-card">
+    <div class="card-title">수식 읽는 법</div>
+    {{각 기호와 조건부 막대 오른쪽 입력의 의미를 평문으로 설명}}
+  </div>
   -->
 
   <!-- 표 예시: 표는 이미지가 아니라 HTML table로 재구성한다.
