@@ -525,6 +525,31 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertIn("https://www.youtube.com/embed/a2HZyURUE_o", hits)
         self.assertFalse(any("@SundayRobotics" in u for u in hits))
 
+    def test_extract_titles_from_rsc_payload_and_video_attrs(self):
+        html = (
+            '{"url":"https://cdn.example.com/cut_zucchini.mp4","title":"Cutting a zucchini"},'
+            '{"title":"Folding jeans","url":"/media/foldjeans.mp4"}'
+            '<video src="/media/coffee.mp4" aria-label="Making coffee"></video>'
+        )
+        titles = self.fwa.extract_titles(html, "https://site.example/pi07")
+        self.assertEqual(titles["https://cdn.example.com/cut_zucchini.mp4"], "Cutting a zucchini")
+        self.assertEqual(titles["https://site.example/media/foldjeans.mp4"], "Folding jeans")
+        self.assertEqual(titles["https://site.example/media/coffee.mp4"], "Making coffee")
+
+    def test_assets_md_prefers_original_title_over_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "assets"
+            out.mkdir()
+            entries = [{
+                "kind": "video", "url": "https://x.example/clip.mp4",
+                "local": "assets/videos/clip.mp4", "bytes": 1024,
+                "title": "Cutting a zucchini", "context": "노이즈 섞인 DOM 텍스트",
+            }]
+            md_path = self.fwa.write_assets_md(out, [{"url": "https://x.example/post"}], entries)
+            md = md_path.read_text(encoding="utf-8")
+        self.assertIn("Cutting a zucchini", md)
+        self.assertNotIn("노이즈 섞인 DOM 텍스트", md)
+
     def test_slugify_is_filesystem_safe_and_unique_per_url(self):
         a = self.fwa.slugify("https://cdn.example.com/a b/데모 영상.mp4")
         b = self.fwa.slugify("https://cdn.example.com/other/데모 영상.mp4")
