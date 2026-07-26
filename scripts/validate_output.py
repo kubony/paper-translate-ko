@@ -575,6 +575,86 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
         rep.ok(f"문체: '습니다' {n_hab}회(≤ {HABNIDA_LIMIT}) — 경어체 신호 없음.")
 
 
+# ---- 폴더명·미디어 자산 검사 (모드 A) ------------------------------------
+# 제목 slug 없이 식별자만 있는 폴더명: 2410.01273, 2410.01273v2, cs-0501001 등
+ID_ONLY_DIRNAME = re.compile(r"^[a-z.\-]{0,8}\d{4}\.?\d{3,6}(?:v\d+)?$", re.I)
+
+
+def check_folder_name(rep, workdir):
+    """작업 폴더명에 논문 제목 slug가 들어 있는지 검사한다(출력 계약 7)."""
+    name = os.path.basename(os.path.abspath(workdir.rstrip("/")))
+    if ID_ONLY_DIRNAME.match(name):
+        rep.fail(
+            f"작업 폴더명 '{name}'에 논문 제목이 없다. 폴더명만 보고 어떤 논문인지 알 수 있어야 한다 — "
+            f"`<식별자>_<Title-Slug>` 형식으로 바꿔라(예: '{name}_Paper-Title-Slug')."
+        )
+    else:
+        rep.ok(f"폴더명: '{name}' — 식별자 외 제목 slug 포함.")
+
+
+def check_media_assets(rep, workdir, html_path):
+    """assets/videos.json이 있으면 자산 보관 상태와 본문 링크 여부를 검사한다.
+
+    웹 출처 번역의 영상은 논문의 그림에 해당한다(출력 계약 6). 수집해 놓고
+    번역문에서 참조하지 않으면 계약 위반이다. 자산은 로컬 파일(`local`)이거나
+    GCS 등 원격 미러(`remote_url`)일 수 있고, 둘 중 하나로 링크되면 통과다.
+    """
+    manifest_path = os.path.join(workdir, "assets", "videos.json")
+    if not os.path.exists(manifest_path):
+        return
+    try:
+        with open(manifest_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:  # noqa: BLE001 - 형식 불문 파싱 실패는 경고로 처리
+        rep.warn(f"assets/videos.json 파싱 실패({e}) — 미디어 자산 검사를 생략한다.")
+        return
+
+    assets = data.get("assets", [])
+    stored = [a for a in assets if a.get("local") or a.get("remote_url")]
+    if not stored:
+        rep.warn(
+            f"assets/videos.json에 보관된 자산이 없다(후보 {len(assets)}개). "
+            f"fetch_web_assets.py로 영상을 실제로 내려받았는지 확인하라."
+        )
+        return
+
+    raw = ""
+    if os.path.exists(html_path):
+        with open(html_path, encoding="utf-8") as f:
+            raw = f.read()
+
+    missing, unlinked = [], []
+    for asset in stored:
+        local = asset.get("local")
+        if local:
+            path = os.path.join(workdir, local)
+            if not os.path.exists(path) or os.path.getsize(path) == 0:
+                missing.append(local)
+        refs = [r for r in (local, asset.get("remote_url"), asset.get("remote")) if r]
+        if raw and not any(ref in raw for ref in refs):
+            unlinked.append(local or asset.get("remote_url"))
+
+    if missing:
+        rep.fail(
+            f"videos.json이 가리키는 자산 파일 {len(missing)}개가 없거나 0바이트다: {missing[:6]}. "
+            f"fetch_web_assets.py를 다시 실행해 자산을 확보하라."
+        )
+    else:
+        total_mb = sum(a.get("bytes", 0) for a in stored) / 1024 / 1024
+        remote = sum(1 for a in stored if a.get("remote_url"))
+        rep.ok(f"미디어 자산: {len(stored)}개 보관({total_mb:.1f}MB), 파일/원격 미러 확인"
+               + (f" — 원격 미러 {remote}개." if remote else "."))
+
+    if raw and unlinked:
+        rep.fail(
+            f"보관한 영상 {len(unlinked)}개가 translation.html 어디에도 링크되어 있지 않다: "
+            f"{unlinked[:6]}. 본문 해당 위치에 .video-card로 넣거나 말미 '영상 자산' 부록 "
+            f"표에 모아라(출력 계약 6). 원격 미러만 있는 자산은 remote_url을 링크하라."
+        )
+    elif raw:
+        rep.ok(f"미디어 자산: 보관한 {len(stored)}개 모두 본문/부록에서 링크됨.")
+
+
 # ---- 최종 PDF 자동 탐색 (모드 A) -----------------------------------------
 def _find_final_pdf(workdir):
     patterns = ["*_ko_translation_layout.pdf", "*_paper_translate_ko.pdf"]
@@ -606,8 +686,13 @@ def mode_workdir(workdir, final_arg):
     print(f"# 출력 계약 검증 (모드 A) — 작업폴더: {workdir}\n")
 
     # 필수 입력 존재
+    web_source = os.path.exists(os.path.join(workdir, "assets", "videos.json"))
     if not os.path.exists(orig_pdf):
-        rep.fail(f"original.pdf 없음: {orig_pdf}")
+        if web_source:
+            # 웹 아티클/웹사이트 번역은 원본 PDF가 존재하지 않는다.
+            rep.warn(f"original.pdf 없음(웹 출처로 판단): {orig_pdf} — PDF 대비 검사는 생략된다.")
+        else:
+            rep.fail(f"original.pdf 없음: {orig_pdf}")
     if not os.path.exists(html_path):
         rep.fail(f"translation.html 없음: {html_path}")
     if not os.path.isdir(figures_dir):
@@ -626,11 +711,17 @@ def mode_workdir(workdir, final_arg):
         except Exception as e:
             rep.warn(f"manifest.json 파싱 실패({e}) — 휴리스틱 검사로 진행.")
 
+    # 폴더명 계약
+    check_folder_name(rep, workdir)
+
     # HTML 검사
     if os.path.exists(html_path) and os.path.exists(orig_pdf):
         check_html(rep, html_path, workdir, orig_pdf, manifest)
     elif os.path.exists(html_path):
         rep.warn("original.pdf가 없어 표 휴리스틱을 생략한다.")
+
+    # 미디어 자산 계약 (웹 출처)
+    check_media_assets(rep, workdir, html_path)
 
     # 최종 PDF 결정
     final_pdf = None
