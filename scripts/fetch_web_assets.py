@@ -354,6 +354,20 @@ def download_stream(url: str, dest_stem: Path, timeout: int = 900) -> Path | Non
     return hits[0] if hits else None
 
 
+def stream_title(url: str, timeout: int = 120) -> str:
+    """YouTube/Vimeo 영상의 원문 제목을 얻는다. 캡션 근거가 된다."""
+    if not shutil.which("yt-dlp"):
+        return ""
+    cmd = ["yt-dlp", "--quiet", "--no-warnings", "--skip-download", "--print", "title", url]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    if proc.returncode != 0:
+        return ""
+    return proc.stdout.decode("utf-8", errors="replace").strip().splitlines()[0] if proc.stdout.strip() else ""
+
+
 def probe(path: Path) -> dict:
     """ffprobe로 길이·해상도를 얻는다. 없으면 빈 dict."""
     if not shutil.which("ffprobe"):
@@ -532,6 +546,10 @@ def collect(
                             print(f"  [skip] 스트림 다운로드 실패 — {url}")
                             continue
                         dest = got
+                        if not entry.get("title"):
+                            found_title = stream_title(url)
+                            if found_title:
+                                entry["title"] = found_title
                     else:
                         ext = Path(urllib.parse.urlsplit(url).path).suffix or (
                             ".mp4" if kind == "video" else ".bin"
