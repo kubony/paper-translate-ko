@@ -15,12 +15,13 @@
       "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
       "context": "llow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals allow-storage-access-by-user-activation\" frameborder=\"0\" aria-label=\"YouTube Video, CMU Vision-Language-Autonomy Challenge Opening Video\" src=\"",
       "bytes": 4742050,
-      "local": "assets/videos/DmPtxXcwUDU-4b31be.mp4",
       "sha256": "a6bc21e5927efc68942f1a91f61b2a34cea1550e04d61fe3c268f16841335121",
       "duration_s": 66.8,
       "width": 640,
       "height": 360,
-      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-4b31be.jpg"
+      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-4b31be.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/videos/DmPtxXcwUDU-4b31be.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/videos/DmPtxXcwUDU-4b31be.mp4"
     },
     {
       "kind": "video",
@@ -28,12 +29,13 @@
       "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
       "context": "llow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals allow-storage-access-by-user-activation\" frameborder=\"0\" aria-label=\"YouTube Video, CMU Vision-Language-Autonomy Challenge Opening Video\" src=\"",
       "bytes": 4742050,
-      "local": "assets/videos/DmPtxXcwUDU-2ce43c.mp4",
       "sha256": "a6bc21e5927efc68942f1a91f61b2a34cea1550e04d61fe3c268f16841335121",
       "duration_s": 66.8,
       "width": 640,
       "height": 360,
-      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-2ce43c.jpg"
+      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-2ce43c.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/videos/DmPtxXcwUDU-2ce43c.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/videos/DmPtxXcwUDU-2ce43c.mp4"
     },
     {
       "kind": "image",
@@ -41,8 +43,9 @@
       "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
       "context": ".IFuOkc:before{background-color: rgba(33,33,33,1); opacity: 0; display: block;}.O13XJf{height: 340px; padding-bottom: 60px; padding-top: 60px;}.O13XJf .IFuOkc{background-color: rgba(34,110,147,1); background-image: url(",
       "bytes": 297036,
-      "local": "assets/images/simple-header-blended-small-bbb002.png",
-      "sha256": "630cc964d03e283699d55d2c1e10aeb9738bad380bde7ca321822e2db51c1317"
+      "sha256": "630cc964d03e283699d55d2c1e10aeb9738bad380bde7ca321822e2db51c1317",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/images/simple-header-blended-small-bbb002.png",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2026-07-22_CMU_Vision-Language-Navigation-Challenge-2026/images/simple-header-blended-small-bbb002.png"
     }
   ]
 }

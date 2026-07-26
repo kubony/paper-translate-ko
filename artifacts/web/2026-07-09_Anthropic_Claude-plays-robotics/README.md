@@ -19,7 +19,7 @@
 
 ## 원문 미디어 자산
 
-원문 페이지의 영상·애니메이션 3개를 보관했다 — 저장소 3개(`assets/videos/`).
+원문 페이지의 영상·애니메이션 3개를 보관했다 — GCS 미러 3개(`videos.json`의 `remote_url`).
 원문이 내려가도 번역본의 근거를 추적할 수 있게 하기 위함이다.
 
 - 목록·원본 URL: [`assets/ASSETS.md`](assets/ASSETS.md)

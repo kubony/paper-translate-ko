@@ -25,7 +25,7 @@
 
 ## 웹사이트 아카이브 (1편)
 
-- [Physical Intelligence (π) — Research, Blog & Public Website Archive](sites/2026-07-26_pi.website_Physical-Intelligence-Site-Archive/) — 55쪽 · website-archive, VLA, robotics
+- [Physical Intelligence (π) — Research, Blog & Public Website Archive](sites/2026-07-26_pi.website_Physical-Intelligence-Site-Archive/) — 95쪽, 영상 321개 · website-archive, VLA, robotics
 
 ## 자산 보관 정책
 

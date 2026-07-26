@@ -9,7 +9,7 @@
 | 발표처 | mimic robotics Blog (2026-07-16) |
 | 원문 링크 | [원문](https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach) |
 | 번역 생성일 | 2026-07-18 |
-| 산출물 | `mimic_dexterity_ko_translation_layout.pdf` (14쪽, 4.9MB) |
+| 산출물 | `mimic_dexterity_ko_translation_layout.pdf` (14쪽, 4.8MB) |
 | 분류 | blog, dexterous-manipulation, hardware |
 | 원문 미디어 자산 | 13개 (35.3MB) — `assets/ASSETS.md` |
 
@@ -19,7 +19,7 @@
 
 ## 원문 미디어 자산
 
-원문 페이지의 영상·애니메이션 13개를 보관했다 — 저장소 13개(`assets/videos/`).
+원문 페이지의 영상·애니메이션 13개를 보관했다 — GCS 미러 13개(`videos.json`의 `remote_url`).
 원문이 내려가도 번역본의 근거를 추적할 수 있게 하기 위함이다.
 
 - 목록·원본 URL: [`assets/ASSETS.md`](assets/ASSETS.md)
