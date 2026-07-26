@@ -179,6 +179,21 @@
   .caption-block { column-span: all; margin: 6px 0 10px 0; }
   .caption-block .cap-head { font-weight: 700; margin-bottom: 3px; }
 
+  /* ===== 영상 자산 (웹 출처 번역) =====
+     PDF에서는 재생되지 않으므로 썸네일 + 클릭 가능한 링크로 대신한다.
+     레포 사본과 원본 URL을 모두 남겨야 원문이 내려가도 추적할 수 있다. */
+  figure.video-card { margin: 8px 0; text-align: center; break-inside: avoid; }
+  figure.video-card img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+  .video-links { display: block; font-size: 8pt; margin-top: 2px; }
+  .video-links a { color: #1a4d8f; text-decoration: none; }
+  .video-badge {
+    display: inline-block; font-size: 7.5pt; font-weight: 700; color: #fff;
+    background: #1a4d8f; border-radius: 3px; padding: 0 4px; margin-right: 4px;
+  }
+  /* 말미 영상 부록 표 */
+  table.video-index { column-span: all; font-size: 8pt; }
+  table.video-index td { word-break: break-all; }
+
   /* ===== 참고문헌 ===== */
   .refs-note { font-size: 9pt; color: #555; margin-bottom: 6px; }
   ol.refs { margin: 0; padding-left: 18px; font-size: 8.8pt; line-height: 1.4; }
@@ -258,6 +273,32 @@
   <table class="wide">
     <thead><tr><th class="l">Method</th><th>Metric</th></tr></thead>
     <tbody><tr><td class="l">{{방법}}</td><td>{{값}}</td></tr></tbody>
+  </table>
+  -->
+
+  <!-- 영상 예시(웹 출처 필수): assets/videos.json의 local·url을 그대로 쓴다.
+  <figure class="video-card">
+    <a href="assets/videos/{{영상파일}}.mp4">
+      <img src="assets/videos/thumbs/{{영상파일}}.jpg" alt="{{영상 설명}}">
+    </a>
+    <figcaption>
+      <b>영상 1.</b> {{한국어 캡션}}
+      <span class="video-links">
+        <span class="video-badge">VIDEO</span>
+        <a href="assets/videos/{{영상파일}}.mp4">레포 사본</a> ·
+        <a href="{{원본 URL}}">원본</a>
+      </span>
+    </figcaption>
+  </figure>
+  -->
+
+  <!-- 본문에 배치하지 못한 영상은 말미 부록 표로 모은다.
+  <h2 class="section">부록. 영상 자산</h2>
+  <table class="video-index">
+    <thead><tr><th class="l">#</th><th class="l">내용</th><th class="l">레포 사본</th><th class="l">원본</th></tr></thead>
+    <tbody><tr><td>1</td><td class="l">{{한국어 설명}}</td>
+      <td class="l"><a href="assets/videos/{{영상파일}}.mp4">assets/videos/{{영상파일}}.mp4</a></td>
+      <td class="l"><a href="{{원본 URL}}">{{원본 URL}}</a></td></tr></tbody>
   </table>
   -->
 

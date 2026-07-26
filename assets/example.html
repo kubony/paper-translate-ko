@@ -179,6 +179,19 @@
   .caption-block { column-span: all; margin: 6px 0 10px 0; }
   .caption-block .cap-head { font-weight: 700; margin-bottom: 3px; }
 
+  /* ===== 영상 자산 (웹 출처 번역) =====
+     PDF에서는 재생되지 않으므로 썸네일 + 클릭 가능한 링크로 대신한다. */
+  figure.video-card { margin: 8px 0; text-align: center; break-inside: avoid; }
+  figure.video-card img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+  .video-links { display: block; font-size: 8pt; margin-top: 2px; }
+  .video-links a { color: #1a4d8f; text-decoration: none; }
+  .video-badge {
+    display: inline-block; font-size: 7.5pt; font-weight: 700; color: #fff;
+    background: #1a4d8f; border-radius: 3px; padding: 0 4px; margin-right: 4px;
+  }
+  table.video-index { column-span: all; font-size: 8pt; }
+  table.video-index td { word-break: break-all; }
+
   /* ===== 참고문헌 ===== */
   .refs-note { font-size: 9pt; color: #555; margin-bottom: 6px; }
   ol.refs { margin: 0; padding-left: 18px; font-size: 8.8pt; line-height: 1.4; }
@@ -302,6 +315,33 @@ q_ij = α · q_ij^pos + (1 - α) · q_ij^size          (1)</pre>
     <img src="figures/fig-p04-01.png" alt="시스템 개요">
     <figcaption><b>그림 2.</b> 시스템 개요.</figcaption>
   </figure>
+
+  <!-- ===== 영상 카드 (웹 출처 번역에서 영상은 그림과 동급) =====
+       videos.json의 local/url을 그대로 쓴다. 썸네일은 fetch_web_assets.py가 만든다. -->
+  <figure class="video-card">
+    <a href="assets/videos/cut_zucchini_compressed-ab12cd.mp4">
+      <img src="assets/videos/thumbs/cut_zucchini_compressed-ab12cd.jpg" alt="애호박 절단 데모">
+    </a>
+    <figcaption>
+      <b>영상 1.</b> 애호박 절단 — 칼이 걸리면 손잡이를 다시 잡고 절단을 이어간다.
+      <span class="video-links">
+        <span class="video-badge">VIDEO</span>
+        <a href="assets/videos/cut_zucchini_compressed-ab12cd.mp4">레포 사본</a> ·
+        <a href="https://website.pi-asset.com/pi07/cut_zucchini_compressed.mp4">원본</a>
+      </span>
+    </figcaption>
+  </figure>
+
+  <!-- ===== 영상 부록: 본문에 배치하지 못한 나머지 자산을 모은다 ===== -->
+  <h2 class="section">부록. 영상 자산</h2>
+  <table class="video-index">
+    <thead><tr><th class="l">#</th><th class="l">내용</th><th class="l">레포 사본</th><th class="l">원본</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td class="l">애호박 절단</td>
+        <td class="l"><a href="assets/videos/cut_zucchini_compressed-ab12cd.mp4">assets/videos/cut_zucchini_compressed-ab12cd.mp4</a></td>
+        <td class="l"><a href="https://website.pi-asset.com/pi07/cut_zucchini_compressed.mp4">pi-asset.com/pi07/cut_zucchini_compressed.mp4</a></td></tr>
+    </tbody>
+  </table>
 
   <!-- ===== 참고문헌 요약 (H2 전체 폭) ===== -->
   <h2 class="section">참고문헌 요약</h2>

@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import tempfile
 import unittest
@@ -409,6 +410,152 @@ class ValidatorTests(unittest.TestCase):
             rep = self.validator.Report()
             self.validator.check_final_pdf(rep, str(final), str(orig))
         self.assertFalse(rep.failed)
+
+
+class FolderNameAndMediaAssetTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.validator = load_script("validate_output")
+
+    def test_id_only_folder_name_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            work = Path(td) / "2410.01273"
+            work.mkdir()
+            rep = self.validator.Report()
+            self.validator.check_folder_name(rep, str(work))
+        self.assertTrue(rep.failed)
+
+    def test_folder_name_with_title_slug_passes(self):
+        with tempfile.TemporaryDirectory() as td:
+            work = Path(td) / "2410.01273_CANVAS-Commonsense-Aware-Navigation"
+            work.mkdir()
+            rep = self.validator.Report()
+            self.validator.check_folder_name(rep, str(work))
+        self.assertFalse(rep.failed)
+
+    def _media_workdir(self, td, html_body, local="assets/videos/demo.mp4", write_file=True):
+        work = Path(td) / "2026-07-17_Sunday_ACT-2-Preview"
+        (work / "assets" / "videos").mkdir(parents=True)
+        if write_file:
+            (work / local).write_bytes(b"\x00fake mp4 bytes")
+        (work / "assets" / "videos.json").write_text(
+            json.dumps({
+                "fetched_on": "2026-07-17",
+                "pages": [{"url": "https://example.com/blog"}],
+                "assets": [{
+                    "kind": "video",
+                    "url": "https://example.com/demo.mp4",
+                    "local": local,
+                    "bytes": 14,
+                }],
+            }, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        html_path = work / "translation.html"
+        html_path.write_text(html_body, encoding="utf-8")
+        return work, html_path
+
+    def test_unlinked_stored_video_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            work, html_path = self._media_workdir(td, "<html><body><p>본문만 있다.</p></body></html>")
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(html_path))
+        self.assertTrue(rep.failed)
+        self.assertTrue(any("링크되어 있지 않다" in msg for level, msg in rep.items if level == "FAIL"))
+
+    def test_linked_stored_video_passes(self):
+        with tempfile.TemporaryDirectory() as td:
+            work, html_path = self._media_workdir(
+                td,
+                '<html><body><a href="assets/videos/demo.mp4">레포 사본</a></body></html>',
+            )
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(html_path))
+        self.assertFalse(rep.failed)
+
+    def test_missing_asset_file_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            work, html_path = self._media_workdir(
+                td,
+                '<html><body><a href="assets/videos/demo.mp4">레포 사본</a></body></html>',
+                write_file=False,
+            )
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(html_path))
+        self.assertTrue(rep.failed)
+
+    def test_no_manifest_means_no_media_check(self):
+        with tempfile.TemporaryDirectory() as td:
+            work = Path(td) / "2410.01273_Some-Title"
+            work.mkdir()
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(work / "translation.html"))
+        self.assertEqual(rep.items, [])
+
+
+class FetchWebAssetsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.fwa = load_script("fetch_web_assets")
+
+    def test_extract_media_urls_handles_srcset_and_relative_paths(self):
+        html = (
+            '<video src="/media/demo.mp4" poster="/media/demo.jpg"></video>'
+            '<img srcset="https://cdn.example.com/a-720x270.gif?w=450&amp;q=90 450w, '
+            'https://cdn.example.com/a-720x270.gif?w=900&amp;q=90 900w">'
+        )
+        urls = self.fwa.extract_media_urls(html, "https://site.example/blog/post", self.fwa.MOTION_EXTS)
+        self.assertIn("https://site.example/media/demo.mp4", urls)
+        self.assertTrue(any(u.startswith("https://cdn.example.com/a-720x270.gif") for u in urls))
+        self.assertFalse(any(u.endswith(".jpg") for u in urls))
+
+    def test_extract_media_urls_unescapes_json_encoded_slashes(self):
+        html = r'{"video":"https:\/\/cdn.example.com\/clip.mp4"}'
+        urls = self.fwa.extract_media_urls(html, "https://site.example/", self.fwa.VIDEO_EXTS)
+        self.assertEqual(urls, ["https://cdn.example.com/clip.mp4"])
+
+    def test_extract_stream_pages_skips_channel_links(self):
+        html = (
+            '<a href="https://www.youtube.com/@SundayRobotics">channel</a>'
+            '<a href="https://youtu.be/d7I1wj0Gkik">demo</a>'
+            '<iframe src="https://www.youtube.com/embed/a2HZyURUE_o"></iframe>'
+        )
+        hits = self.fwa.extract_stream_pages(html)
+        self.assertIn("https://youtu.be/d7I1wj0Gkik", hits)
+        self.assertIn("https://www.youtube.com/embed/a2HZyURUE_o", hits)
+        self.assertFalse(any("@SundayRobotics" in u for u in hits))
+
+    def test_slugify_is_filesystem_safe_and_unique_per_url(self):
+        a = self.fwa.slugify("https://cdn.example.com/a b/데모 영상.mp4")
+        b = self.fwa.slugify("https://cdn.example.com/other/데모 영상.mp4")
+        self.assertNotIn(" ", a)
+        self.assertNotEqual(a, b)
+        self.assertTrue(a.startswith("데모-영상-"))
+
+    def test_context_for_returns_preceding_visible_text(self):
+        html = "<p>애호박을 절단하는 데모다.</p><video src='https://x.example/clip.mp4'></video>"
+        context = self.fwa.context_for(html, "https://x.example/clip.mp4")
+        self.assertIn("애호박", context)
+
+    def test_write_manifest_and_assets_md(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "assets"
+            out.mkdir()
+            entries = [{
+                "kind": "video",
+                "url": "https://x.example/clip.mp4",
+                "local": "assets/videos/clip.mp4",
+                "bytes": 2 * 1024 * 1024,
+                "duration_s": 12.0,
+                "context": "애호박 절단 데모",
+            }]
+            manifest = self.fwa.write_manifest(out, [{"url": "https://x.example/post"}], entries)
+            assets_md = self.fwa.write_assets_md(out, [{"url": "https://x.example/post"}], entries)
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            md = assets_md.read_text(encoding="utf-8")
+        self.assertEqual(data["assets"][0]["local"], "assets/videos/clip.mp4")
+        self.assertIn("https://x.example/clip.mp4", md)
+        self.assertIn("애호박 절단 데모", md)
 
 
 if __name__ == "__main__":
