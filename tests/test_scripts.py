@@ -557,6 +557,11 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertEqual(titles["https://site.example/media/foldjeans.mp4"], "Folding jeans")
         self.assertEqual(titles["https://site.example/media/coffee.mp4"], "Making coffee")
 
+    def test_titles_decode_escaped_markup(self):
+        html = r'{"url":"https://cdn.example.com/a.mp4","title":"\u003cP0/ \u003e ALOHA folding a towel"}'
+        titles = self.fwa.extract_titles(html, "https://site.example/blog")
+        self.assertEqual(titles["https://cdn.example.com/a.mp4"], "ALOHA folding a towel")
+
     def test_extract_titles_accepts_description_key(self):
         html = '{"url":"https://cdn.example.com/a.gif","description":"Rendering of an AI model"}'
         titles = self.fwa.extract_titles(html, "https://site.example/post")

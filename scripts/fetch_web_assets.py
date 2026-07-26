@@ -185,6 +185,20 @@ def extract_stream_pages(html: str) -> list[str]:
     return hits
 
 
+def decode_js_text(value: str) -> str:
+    r"""JSON/JS 문자열 이스케이프(\uXXXX, \n, \t)를 사람이 읽는 문자로 되돌린다.
+
+    RSC payload에서 뽑은 제목에는 `\u003cP0/ \u003e ALOHA folding a towel`처럼
+    이스케이프된 마크업이 섞인다. 디코드한 뒤 남는 태그는 제거한다.
+    """
+    try:
+        value = json.loads(f'"{value}"')
+    except json.JSONDecodeError:
+        value = value.replace("\\n", " ").replace("\\t", " ")
+    value = re.sub(r"<[^>]*>", "", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
 def extract_titles(html: str, base_url: str) -> dict[str, str]:
     """영상 URL에 붙은 원문 제목을 뽑는다.
 
@@ -216,7 +230,7 @@ def extract_titles(html: str, base_url: str) -> dict[str, str]:
             found.append((src.group(1), label.group(1)))
 
     for url, title in found:
-        title = title.strip()
+        title = decode_js_text(title)
         if not title:
             continue
         absolute = urllib.parse.urljoin(base_url, url.strip())
