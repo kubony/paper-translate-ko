@@ -473,6 +473,27 @@ class FolderNameAndMediaAssetTests(unittest.TestCase):
             self.validator.check_media_assets(rep, str(work), str(html_path))
         self.assertFalse(rep.failed)
 
+    def test_remote_mirrored_asset_linked_by_url_passes(self):
+        with tempfile.TemporaryDirectory() as td:
+            work = Path(td) / "2026-07-26_site_Archive"
+            (work / "assets").mkdir(parents=True)
+            (work / "assets" / "videos.json").write_text(json.dumps({
+                "assets": [{
+                    "kind": "video",
+                    "url": "https://example.com/demo.mp4",
+                    "remote": "gs://bucket/prefix/videos/demo.mp4",
+                    "remote_url": "https://storage.cloud.google.com/bucket/prefix/videos/demo.mp4",
+                    "bytes": 900_000_000,
+                }],
+            }), encoding="utf-8")
+            html_path = work / "translation.html"
+            html_path.write_text(
+                '<a href="https://storage.cloud.google.com/bucket/prefix/videos/demo.mp4">영상</a>',
+                encoding="utf-8")
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(html_path))
+        self.assertFalse(rep.failed)
+
     def test_missing_asset_file_fails(self):
         with tempfile.TemporaryDirectory() as td:
             work, html_path = self._media_workdir(

@@ -596,7 +596,8 @@ def check_media_assets(rep, workdir, html_path):
     """assets/videos.json이 있으면 자산 보관 상태와 본문 링크 여부를 검사한다.
 
     웹 출처 번역의 영상은 논문의 그림에 해당한다(출력 계약 6). 수집해 놓고
-    번역문에서 참조하지 않으면 계약 위반이다.
+    번역문에서 참조하지 않으면 계약 위반이다. 자산은 로컬 파일(`local`)이거나
+    GCS 등 원격 미러(`remote_url`)일 수 있고, 둘 중 하나로 링크되면 통과다.
     """
     manifest_path = os.path.join(workdir, "assets", "videos.json")
     if not os.path.exists(manifest_path):
@@ -609,7 +610,7 @@ def check_media_assets(rep, workdir, html_path):
         return
 
     assets = data.get("assets", [])
-    stored = [a for a in assets if a.get("local")]
+    stored = [a for a in assets if a.get("local") or a.get("remote_url")]
     if not stored:
         rep.warn(
             f"assets/videos.json에 보관된 자산이 없다(후보 {len(assets)}개). "
@@ -624,12 +625,14 @@ def check_media_assets(rep, workdir, html_path):
 
     missing, unlinked = [], []
     for asset in stored:
-        local = asset["local"]
-        path = os.path.join(workdir, local)
-        if not os.path.exists(path) or os.path.getsize(path) == 0:
-            missing.append(local)
-        if raw and local not in raw:
-            unlinked.append(local)
+        local = asset.get("local")
+        if local:
+            path = os.path.join(workdir, local)
+            if not os.path.exists(path) or os.path.getsize(path) == 0:
+                missing.append(local)
+        refs = [r for r in (local, asset.get("remote_url"), asset.get("remote")) if r]
+        if raw and not any(ref in raw for ref in refs):
+            unlinked.append(local or asset.get("remote_url"))
 
     if missing:
         rep.fail(
@@ -638,13 +641,15 @@ def check_media_assets(rep, workdir, html_path):
         )
     else:
         total_mb = sum(a.get("bytes", 0) for a in stored) / 1024 / 1024
-        rep.ok(f"미디어 자산: {len(stored)}개 보관({total_mb:.1f}MB), 파일 존재 확인.")
+        remote = sum(1 for a in stored if a.get("remote_url"))
+        rep.ok(f"미디어 자산: {len(stored)}개 보관({total_mb:.1f}MB), 파일/원격 미러 확인"
+               + (f" — 원격 미러 {remote}개." if remote else "."))
 
     if raw and unlinked:
         rep.fail(
             f"보관한 영상 {len(unlinked)}개가 translation.html 어디에도 링크되어 있지 않다: "
             f"{unlinked[:6]}. 본문 해당 위치에 .video-card로 넣거나 말미 '영상 자산' 부록 "
-            f"표에 모아라(출력 계약 6)."
+            f"표에 모아라(출력 계약 6). 원격 미러만 있는 자산은 remote_url을 링크하라."
         )
     elif raw:
         rep.ok(f"미디어 자산: 보관한 {len(stored)}개 모두 본문/부록에서 링크됨.")
