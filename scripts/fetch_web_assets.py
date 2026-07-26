@@ -140,6 +140,19 @@ def extract_media_urls(html: str, base_url: str, exts: tuple[str, ...]) -> list[
     return found
 
 
+def _stream_id(url: str) -> str:
+    """YouTube/Vimeo URL에서 영상 id를 뽑는다(중복 제거용)."""
+    parts = urllib.parse.urlsplit(url)
+    host = parts.netloc.lower()
+    if host.endswith("youtu.be"):
+        return parts.path.strip("/")
+    if host.endswith("youtube.com"):
+        if parts.path.startswith("/embed/"):
+            return parts.path.split("/embed/", 1)[1].strip("/")
+        return urllib.parse.parse_qs(parts.query).get("v", [""])[0]
+    return parts.path.strip("/")
+
+
 def extract_stream_pages(html: str) -> list[str]:
     """YouTube/Vimeo 단일 영상 URL을 뽑는다(yt-dlp로 내려받는 대상).
 
@@ -148,6 +161,7 @@ def extract_stream_pages(html: str) -> list[str]:
     """
     hits: list[str] = []
     seen: set[str] = set()
+    seen_ids: set[str] = set()
     non_video = ("/@", "/channel/", "/c/", "/user/", "/results")
     for raw in re.findall(r"""(?i)["'(](https?://[^"'\s)]+)["')]""", html):
         url = raw.replace("\\/", "/").rstrip("\\,.")
@@ -161,7 +175,12 @@ def extract_stream_pages(html: str) -> list[str]:
             continue
         if url in seen:
             continue
+        video_id = _stream_id(url)
+        if video_id and video_id in seen_ids:
+            continue  # 같은 영상의 다른 URL 형태 — 한 번만 받는다
         seen.add(url)
+        if video_id:
+            seen_ids.add(video_id)
         hits.append(url)
     return hits
 
@@ -175,13 +194,14 @@ def extract_titles(html: str, base_url: str) -> dict[str, str]:
     """
     text = _html.unescape(html.replace("\\/", "/").replace('\\"', '"'))
     titles: dict[str, str] = {}
+    # 캡션이 담기는 키는 사이트마다 다르다(title / description / caption / alt).
+    caption_keys = "title|description|caption|alt|label"
+    url_keys = "url|src|asset|video|videoUrl|source"
     pairs = [
-        r'"url"\s*:\s*"([^"]+?)"\s*,\s*"title"\s*:\s*"([^"]*?)"',
-        r'"src"\s*:\s*"([^"]+?)"\s*,\s*"title"\s*:\s*"([^"]*?)"',
+        rf'"(?:{url_keys})"\s*:\s*"([^"]+?)"\s*,\s*"(?:{caption_keys})"\s*:\s*"([^"]*?)"',
     ]
     reversed_pairs = [
-        r'"title"\s*:\s*"([^"]*?)"\s*,\s*"url"\s*:\s*"([^"]+?)"',
-        r'"title"\s*:\s*"([^"]*?)"\s*,\s*"src"\s*:\s*"([^"]+?)"',
+        rf'"(?:{caption_keys})"\s*:\s*"([^"]*?)"\s*,\s*"(?:{url_keys})"\s*:\s*"([^"]+?)"',
     ]
     found: list[tuple[str, str]] = []
     for pat in pairs:
