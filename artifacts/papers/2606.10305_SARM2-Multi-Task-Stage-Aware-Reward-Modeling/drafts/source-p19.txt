@@ -1,0 +1,65 @@
+primitives within a group exhibit similar progress signatures and can plausibly share the same gate’s
+routing distribution. Table 4 lists the resulting groups, their member primitives, and a short descrip-
+tion of the motion pattern each group captures.
+
+Table 4: Action-primitive grouping for the multi-gate MoE decoder. The K+1=22 primitives
+are clustered into M +1=8 semantic groups by shared visual/motion characteristics; each group
+maps to one gate of the MMoE decoder while the expert pool is shared. Other is a catch-all for
+undefined or task-specific actions.
+
+ Group Name                 Action Primitives                                   Description
+ Acquire                  scoop, pull, pick/grab               Lift or move a target object up from its initial
+                                                                     support surface into robot control.
+ Release                    place, pour/dump                Move a controlled object down to a target location,
+                                                                        container, or support surface.
+ Translate             erase, zip/unzip, sweep, pass         Move the end-effector or object along a primarily
+                                                                               linear trajectory.
+ Insert                       install, insert               Guide an object into a constrained target region with
+                                                                              spatial alignment.
+ Shape Clothes              hang, fold/flatten                 Reconfigure cloth-like objects into a desired
+                                                                       geometric state or arrangement.
+ Rotate                    wrap, roll, tie/untie,             Change an object’s orientation or configuration
+                               rotate/turn                                 through angular motion.
+ Force                        clamp, press                   Apply controlled contact force through the gripper
+                                                                                or end-effector.
+ Other                           dummy                      Represent undefined or task-specific actions outside
+                                                                        the main primitive taxonomy.
+
+
+
+6.5   Algorithm of Reward-Guided Robot Self-Improvement Loop
+
+
+Algorithm 1 Reward-Guided Robot Self-Improvement Loop
+Require: Human demonstrations Ddemo ; pretrained VLA model πVLA ; pretrained multi-task reward
+    model RM1 ; reward-model pretraining set DRM ; max iterations N
+Ensure: Improved policy πN +1
+ 1: // Stage 1: Behavior cloning
+ 2: π1 ← F INETUNE(πVLA , Ddemo )                                     ▷ supervised BC fine-tuning
+ 3: R1 ← ROLLOUT(π1 , n=50–100)                            ▷ collect rollouts from weakest policy
+ 4: // Stage 2a: One-time reward model adaptation to rollout distribution
+ 5: Rlabeled
+       1      ← H UMANA NNOTATE(R1 )                      ▷ segment-level labels + final progress
+ 6: Dadapt ← Rlabeled
+                  1       ∪ S UBSAMPLE (DRM , 0.5)              ▷ mix in 50% of pretraining data
+ 7: RM2 ← F INETUNE(RM1 , Dadapt )                                     ▷ ∼1/10 of pretraining cost
+ 8: // Stage 2b: Initial residual RL with pretrained reward model
+ 9: Dedemo ← L ABEL R EWARDS(Ddemo , RM1 )
+10: π2 ← SPIRAL(π1 , D       edemo )
+11: R2 ← ROLLOUT(π2 , n=100)
+12: // Stage 4: On-policy self-improvement loop
+13: for i = 2, 3, . . . , N do
+14:      Re i ← L ABEL R EWARDS(Ri , RM2 )
+15:      πi+1 ← SPIRAL(πi , R      ei)
+16:      Ri+1 ← ROLLOUT(πi+1 , n=100)
+17:      if S UCCESS R ATE(Ri+1 ) ≥ τsuccess then
+18:           break
+19:      end if
+20: end for
+21: return πi+1
+
+
+
+
+                                                       19
+

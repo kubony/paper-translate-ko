@@ -1,0 +1,50 @@
+<article class="paper-translation" lang="ko">
+  <header>
+    <h1>SARM2: 자기 개선형 로봇 조작을 위한 멀티태스크 단계 인식 보상 모델링</h1>
+    <p class="authors">Qianzhong Chen<sup>1</sup>, Hau Zheng<sup>1</sup>, Justin Yu<sup>2</sup>, Suning Huang<sup>1</sup>, Jiankai Sun<sup>1</sup>, Ken Goldberg<sup>2</sup>, Chuan Wen<sup>3</sup>, Pieter Abbeel<sup>2</sup>, Yide Shentu<sup>2,4</sup>, Philipp Wu<sup>4</sup>, Mac Schwager<sup>1</sup></p>
+    <p class="affiliations"><sup>1</sup>Stanford University, <sup>2</sup>UC Berkeley, <sup>3</sup>Shanghai Jiao Tong University, <sup>4</sup>xdof.ai</p>
+    <p class="preprint">arXiv:2606.10305v1 [cs.RO], 2026년 6월 9일</p>
+  </header>
+
+  <figure id="fig-1">
+    <div class="figure-placeholder">
+      <p><strong>그림 1 자리표시자</strong></p>
+      <p>다중 시점 이미지 시퀀스: N = 6 프레임, Δ = 30 스텝</p>
+      <ul>
+        <li>왼쪽 손목</li>
+        <li>탑다운</li>
+        <li>오른쪽 손목</li>
+      </ul>
+      <p>action primitive 분류기: 회전, 삽입, 지우기, 고정, 놓기, 집기, …</p>
+      <p>태스크 프롬프트: “화이트보드를 닦아라”</p>
+      <p>고유수용성 상태: 관절 상태</p>
+      <p>목표 거리 value 모델: 멀티게이트 MoE</p>
+    </div>
+    <figcaption><strong>그림 1: SARM2 개요.</strong> SARM2는 현재 세그먼트를 K+1=22개의 action primitive 중 하나로 분류하는 범용 단계 추정기를 활용하여 멀티태스크 단계 인식 보상 모델링을 달성한다. 단계 정보는 후단의 멀티게이트 Mixture of Experts(MMoE) value head에서 사용되며, 이를 통해 조작 태스크에 대해 조밀하고 정확하며 범용적인 value 추정을 달성한다.</figcaption>
+  </figure>
+
+  <section id="abstract">
+    <h2>초록</h2>
+    <p>장기 구간 조작을 위한 vision-language-action(VLA) policy의 파인튜닝은 여전히 행동 복제에 크게 의존하며, 이는 비용이 많이 드는 고품질 시연을 필요로 하고 policy를 시연 분포 부근에 머물게 한다. 보상 모델은 시연의 가중치를 재조정하고 실제 로봇 강화학습(RL)에 조밀한 감독 신호를 제공함으로써 이러한 의존성을 줄일 수 있지만, 조밀성과 정확성, 범용성을 모두 갖추어야 한다. 기존 방법은 이 요건을 충족하지 못한다. 태스크별 단계 인식 모델은 정확하지만 태스크마다 주석이 필요하며, 범용 vision-language model(VLM) 보상 모델은 폭넓게 적용할 수 있으나 세밀한 장기 구간 진행도를 포착하기에는 지나치게 거칠다. 본 연구는 action primitive 기반 단계 추정기와 멀티게이트 Mixture of Experts(MMoE) value head를 결합하여 여러 조작 태스크에 걸쳐 조밀한 스텝별 보상을 생성하는 멀티태스크 단계 인식 보상 모델 SARM2를 제안한다. SARM2를 기반으로, 저비용 자율 rollout으로부터 VLA policy를 개선하는 on-policy 보상 유도 프레임워크 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)을 추가로 제안한다. 10개 태스크 벤치마크에서 SARM2는 가장 강력한 baseline 대비 value 추정 MSE를 80% 줄인다. 또한 SPIRAL에 사용할 경우 Folding Shorts(58% → 100%)와 Cleaning Whiteboard(50% → 90%)에서 태스크 성공률을 약 50% 수준에서 거의 완벽한 성능으로 향상시키며, 고품질의 조밀한 보상이 안정적인 로봇 데이터 플라이휠의 핵심임을 보여준다. 프로젝트 웹사이트: https://qianzhong-chen.github.io/sarm2.github.io/.</p>
+    <p><strong>키워드:</strong> 보상 모델링, 강화학습, 로봇 조작</p>
+  </section>
+
+  <section id="introduction">
+    <h2>1 서론</h2>
+    <p>Vision-Language-Action(VLA) 모델은 end-to-end policy 학습을 로봇 조작의 지배적인 패러다임으로 확립했다. 그러나 대부분의 VLA는 별도의 조치 없이 단기 구간을 넘어서는 태스크를 수행하는 데 어려움을 겪는다. 이를 장기 구간 태스크로 확장하려면 일반적으로 도메인 내 데이터에 대한 파인튜닝이 필요하며, 지도 파인튜닝(SFT)은 대량의 인간 시연을 요구하고 분포 외(OOD) 실패에도 여전히 취약하다.</p>
+    <p class="contact">문의 사항은 qchen23@stanford.edu로 연락하기 바란다.</p>
+    <p>최근 방법은 보상 모델을 활용해 학습 샘플을 필터링하고 고품질 데이터에서 더 많은 가치를 추출하지만, 이러한 offline 접근법은 시연 분포에 제약되며 rollout을 통해 스스로 개선할 수 없다. π0.6<sup>∗</sup> 및 ConRFT와 같은 방법은 on-policy DAgger를 통해 policy를 지속적으로 개선하지만, 원격조작과 policy 학습 모두에 숙련된 운용자의 비용이 많이 드는 human-in-the-loop 감독이 필요하다. 별도의 연구 계열은 희소 보상과 함께 online 상호작용 데이터를 사용하지만 장기 구간 태스크에서는 충분한 성능을 내지 못한다. 이러한 연구 방향 전반에서 VLA-RL의 확장은 장기 구간 태스크의 각 세그먼트가 올바르게 실행되었는지를 충실하게 판단할 수 있는 정확한 보상 모델에 달려 있다.</p>
+    <p>기존 조작용 보상 모델은 태스크별 보상 모델과 범용 보상 모델이라는 두 부류로 나뉜다. 초기의 태스크별 설계는 일반적으로 좁은 범위의 시연으로 학습되며, 미묘한 단계 전이와 누적 오류를 포착하기 어려운 장기 구간 및 OOD 조건에서 성능이 저하된다. SARM은 장기 구간 태스크의 정확도를 향상시키는 단계 조건부 계층 구조를 추가하지만, 여전히 단일 태스크에 국한되고 태스크별 단계 주석에 의존하므로 태스크 다양성이 증가할수록 적용 가능성이 제한된다. 반면 범용 VLM 기반 보상 모델은 사전학습된 VLM의 광범위한 사전 지식을 활용하여 태스크 전반에 일반화하지만, 스텝 수준의 예측이 대체로 거칠고 잡음이 많아 장기 구간 조작을 위한 조밀한 감독 신호로는 적합하지 않다. VLA-RL을 대규모로 지원하려면 보상 모델이 조밀하고 정확하며 도메인 전반의 장기 구간 태스크를 감독할 수 있을 만큼 범용적이어야 한다는 세 가지 요건을 동시에 충족해야 하지만, 기존 보상 모델 중 이 세 요건을 모두 충족하는 모델은 없다.</p>
+    <p>본 연구는 범용 단계 추정기와 멀티게이트 Mixture of Experts(MMoE) value head를 결합한 멀티태스크 단계 인식 보상 모델 SARM2를 제안한다. 단계 추정기는 공유 action primitive 어휘를 통해 태스크 간에 전이되며, 예측된 primitive가 해당 MMoE gate를 선택하여 value head가 가장 관련성 높은 도메인별 및 action별 expert를 활성화하도록 유도함으로써 정확하고 조밀한 value 추정을 수행한다. 또한 SARM2의 조밀한 보상과 저비용 자율 rollout을 활용해 자기 개선형 데이터 플라이휠을 구성하는 on-policy 실제 로봇 RL 프레임워크 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)을 제안한다. 본 연구의 기여는 다음과 같다.</p>
+    <ul>
+      <li><p>SARM2는 일반화 가능한 action primitive 단계 추정기와 MMoE value head를 긴밀하게 결합한 멀티태스크 단계 인식 보상 모델이다. 예측된 primitive가 해당 MMoE gate를 직접 선택하여 단일 모델 내에서 다양한 장기 구간 태스크에 걸쳐 정확하고 조밀한 보상을 생성한다.</p></li>
+      <li><p>SPIRAL은 SARM2의 조밀한 보상을 활용하는 보상 정렬형 on-policy residual RL 프레임워크이다. SPIRAL은 자율 로봇 데이터 플라이휠을 완성하여 최소한의 인간 개입만으로 장기 구간 태스크에서 policy를 지속적으로 개선할 수 있게 한다.</p></li>
+      <li><p>본 연구는 실제 환경의 두 가지 장기 구간 조작 태스크인 Folding Shorts와 Cleaning Whiteboard에서 제안 방법을 검증한다. SPIRAL에 통합된 SARM2는 희소 보상 및 대규모 VLM 기반 보상 모델 baseline보다 우수한 성능을 보이며, downstream policy의 성공률을 크게 향상시킨다.</p></li>
+    </ul>
+  </section>
+
+  <section id="related-works">
+    <h2>2 관련 연구</h2>
+    <p><strong>로봇 조작을 위한 보상 모델.</strong> 태스크별 보상 모델은 CLIP 또는 SigLIP과 같은 중간 규모의 vision-language encoder를 사용하여 시각 관측으로부터 학습한다. 장기 구간의 접촉 집약적 태스크를 처리하기 위해, 단계 인식 변형 모델은 태스크를 하위 단계로 분해하고 단계 조건부 조밀 보상을 생성한다. 이러한 방법은 근본적으로 단일 태스크에 국한된다. 새로운 태스크마다 재학습이 필요하며, SARM은 추가로 프레임별 조밀한 단계 주석을 요구한다. 본 연구에서는 조밀한 주석을 사용하지 않는 가장 강력한 단일 태스크 baseline인 ReWiND와 비교한다. 이와 상호보완적인 연구 계열은 사전학습된 VLM을 기반으로 태스크 불가지론적 보상 모델을 구축한다. 이들이 별도의 조정 없이 생성하는 보상은 조밀한 스텝별 신호로 사용하기에는 지나치게 거칠며, 방대한 수의 파라미터를 파인튜닝하는 데에도 많은 비용이 든다. 본 연구에서는 TOPReward를 비교 대상으로 평가한다.</p>
+  </section>
+</article>

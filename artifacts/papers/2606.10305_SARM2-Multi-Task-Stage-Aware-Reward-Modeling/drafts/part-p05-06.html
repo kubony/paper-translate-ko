@@ -1,0 +1,40 @@
+<!-- p. 5 -->
+<figure id="fig-3">
+  <div class="figure-placeholder">[그림 3 삽입 위치]</div>
+  <figcaption><strong>그림 3: SPIRAL: SARM2 기반 자기 개선 프레임워크.</strong> (1) BC는 demo에서 π<sub>VLA</sub>를 fine-tuning하여 π<sub>1</sub>을 얻는다. (2) 이와 병렬로, (2a) π<sub>1</sub>에서 얻은 약 100개의 rollout에 대한 일회성 인간 annotation을 통해 RM<sub>1</sub> → RM<sub>2</sub>로 adaptation하여 rollout 분포를 포괄하고, (2b) pretrained RM<sub>1</sub>을 사용하는 offline SPIRAL update를 통해 π<sub>2</sub>를 학습한다. (3) 이후 자율 루프는 추가 supervision 없이 rollout 수집, RM<sub>2</sub> relabeling, SPIRAL update를 번갈아 수행한다.</figcaption>
+</figure>
+
+<p>이 기반을 조밀한 stage-aware reward와 정렬하고 장기 horizon에 대응할 수 있도록 한다. 그러나 SPIRAL을 규정하는 핵심 수정 사항은 두 가지이다. (i) TD3 [52] objective는 sparse terminal reward 대신 본 연구의 multi-task reward model이 제공하는 조밀한 per-step reward를 사용하며, (ii) 이 dense-reward TD3 objective를 sparse episode-level reward로 구동되는 Monte Carlo(MC) objective와 결합한다. 자세한 내용은 6.14절에서 설명한다. 아래에 기술하는 자율적인 rollout-relabel-update 루프와 함께, 이러한 수정은 sparse-reward residual-RL 방식을 자기 개선형 로봇 데이터 flywheel로 전환한다.</p>
+
+<p>DICE-RL [10]을 따라, value overestimation을 완화하기 위해 critic을 <em>N</em> = 5개의 chunk 기반 Q-function ensemble {Q<sub>ϕ<sub>n</sub></sub>}<sub>n=1</sub><sup>N</sup>으로 구성하며, 표준 TD3와 마찬가지로 target network와 target-policy smoothing을 사용한다. dense reward r<sub>t</sub><sup>dense</sup>는 본 연구의 reward model이 제공하며, y<sub>t</sub><sup>TD</sup>의 bootstrap action은 π<sub>θ′</sub>(s<sub>t+1</sub>) + ϵ으로 생성한다. 여기서 ϵ ∼ clip(𝒩(0, σ²), −c, c)이며, critic loss는 N개 ensemble member 전체에 걸쳐 합산한다. 이어서 residual actor를 TD3+BC 방식의 objective로 학습한다.</p>
+
+<div class="equation" id="eq-3">min<sub>θ</sub> 𝔼<sub>s∼D, z∼𝒩(0,I)</sub>[−Q<sub>ϕ</sub>(s, a) + β ‖s<sub>θ</sub>(s, z)‖<sub>2</sub><sup>2</sup>], <span class="equation-number">(3)</span></div>
+
+<p>여기서 가중치 β = 30인 BC regularizer는 residual이 pretrained policy에 가깝게 유지되도록 하는 한편, Q<sub>ϕ</sub>는 개선된 edit을 장려한다. Sun과 Song [10]의 multi-sample expectation training을 따라, 방문한 각 state에서 flow prior로부터 κ개의 latent sample {z<sub>j</sub>}<sub>j=1</sub><sup>κ</sup> ∼ 𝒩(0, I)를 추출하고, candidate action chunk a<sup>(j)</sup> = π<sub>pre</sub>(s, z<sub>j</sub>) + s<sub>θ</sub>(s, z<sub>j</sub>)를 구성한 뒤, 단일 추출값이 아니라 κ개의 candidate에 대해 critic TD target과 actor objective를 모두 평균한다. deployment 시에는 best-of-κ action selection을 적용하여 j<sup>⋆</sup> = arg max<sub>j</sub> Q<sub>ϕ</sub>(s, a<sup>(j)</sup>)인 a<sup>(j<sup>⋆</sup>)</sup>를 실행한다. 이 방식은 방문한 각 state를 κ개의 latent 추출값에 걸쳐 재사용하며, 단일 sample이 아니라 latent가 유도하는 전체 action distribution에 정렬된 저분산 신호를 제공한다.</p>
+
+<p>전체 SPIRAL pipeline은 다음 네 stage에 걸쳐 policy rollout, reward model adaptation, residual RL을 번갈아 수행한다. (1) demonstration에서 VLA backbone을 BC fine-tuning하여 π<sub>1</sub>을 얻는다. (2) pretrained reward model RM<sub>1</sub>을 사용하여 초기 offline SPIRAL update를 수행하고 π<sub>2</sub>를 생성한다. (3) 가장 약한 policy인 π<sub>1</sub>의 rollout을 인간이 annotation하고 RM<sub>1</sub> → RM<sub>2</sub>로 fine-tuning하여 rollout 분포를 포괄하는 일회성 reward model adaptation을 수행한다. (4) RM<sub>2</sub>로 새로운 rollout을 반복적으로 labeling하고 SPIRAL update를 통해 policy를 개선하는 자율 on-policy 루프를 수행하며, 추가적인 인간 label은 필요하지 않다. 프레임워크 시각화, algorithm, 상세 hyperparameter, 설계 선택, 실제 적용 시 고려 사항은 그림 3, Algorithm 1, 부록 6.3 및 부록 6.14를 참조한다.</p>
+
+<!-- p. 6 -->
+<section id="experimental-results">
+  <h2>4 실험 결과</h2>
+
+  <p>본 연구는 다음 세 가지 질문을 중심으로 SARM2와 그 자기 개선 프레임워크를 실증적으로 검증한다. <strong>Q1.</strong> action-primitive stage estimator와 MMoE가 장기 horizon 및 compositional task에서 value modeling 정확도를 향상하는가? <strong>Q2.</strong> SPIRAL은 rollout을 통해 policy를 개선하고 BC 및 offline RL baseline을 능가하는가? <strong>Q3.</strong> reward-model 품질이 manipulation data flywheel에 중요한 이유는 무엇인가?</p>
+
+  <section id="reward-model-evaluation">
+    <h3>4.1 Reward Model 평가</h3>
+
+    <p><strong>Task Suite, Baseline 및 Ablation.</strong> 10개의 manipulation task를 두 subset으로 나누어 평가한다. S1은 pick-and-place, cloth folding 등 general reward-model training data의 대부분을 차지하는 5개의 고전적 task로 구성되며, S2는 tool use 또는 multi-stage compositional execution이 필요한 5개의 비전형적 task로 구성된다. 자세한 내용은 부록 6.2에 제시한다. Baseline은 다음과 같다. ReWiND [16](RW)는 동일한 10개 task에서 처음부터 학습하며 stage estimator와 MoE를 사용하지 않는다. TOPReward [19](TR)와 Robometer [21](RM)는 범용 VLM 기반 reward model이다. TOPReward에는 Qwen3-VL-8B-Instruct variant를 사용한다. Robometer에 대해서는 공식 방식을 따라 본 연구의 10-task data로 2000 step 동안 LoRA fine-tuning한 variant(RM-FT)도 시험한다. full fine-tuning은 실용적이지 않으며, LoRA만으로도 본 연구 모델의 약 2배에 해당하는 VRAM이 필요하다. Ablation은 다음과 같다. w/o SE는 ReWiND에 single-gate MoE를 적용하되 stage estimation을 제거한다. w/o MG는 multi-gate inductive bias를 제거한 single-gate SARM2이다. S1 Var.는 S1에서만 학습한 SARM2이다.</p>
+
+    <p><strong>평가 및 분석.</strong> (i) 10개 task 전체의 held-out human demonstration과 (ii) downstream policy를 학습한 2개 task의 policy rollout에서 평가하며, MoE 구조를 갖는 모든 모델에 대해 MoE routing diagnostic을 추가로 보고한다. 전체 protocol은 부록 6.6에 제시한다. 표 1은 몇 가지 일관된 양상을 보여준다. SARM2는 두 task subset과 전체에서 가장 낮은 demonstration MSE(S1에서 0.006, S2에서 0.031, 통합 시 0.020)를 달성하며, 더 어려운 T2에서도 가장 높은 rollout classification score(ρ = 0.667)를 달성한다. 다음 네 가지 관찰 결과를 강조한다.</p>
+
+    <!-- 표 1의 원본 표 본문과 캡션은 제공된 source-p05-06.txt에 포함되어 있지 않음. -->
+
+    <p><strong>(1) 범용 VLM 기반 reward model은 조밀한 value estimation에서 성능이 낮다.</strong> 강력한 semantic generalization에도 불구하고 TOPReward와 Robometer는 S1에서 SARM2보다 4–6배 높은 demo loss를 보이고 rollout classification에서도 낮은 성능을 나타내며, 이는 주로 지나치게 낙관적인 estimation에 기인한다. 시각화는 그림 7을 참조한다. 본 연구의 10-task dataset에서 Robometer를 LoRA fine-tuning하면 demo loss와 rollout score가 모두 크게 향상되어 처음부터 학습한 ReWiND에 가까워진다. 그러나 규모가 한 order 더 큼에도 불구하고(약 4B 대 약 200M parameter) 여전히 처음부터 학습한 모든 in-domain baseline보다 성능이 낮다. 이는 두 요인에 기인한다고 본다. 첫째, LoRA는 update 가능한 parameter subspace를 제한하여 세밀한 temporal pattern에 대한 adaptation을 제약한다. 둘째이자 더 근본적으로, VLM pretraining은 dense reward modeling이 요구하는 motion-level temporal discrimination이 아니라 거친 semantic alignment를 최적화한다.</p>
+
+    <p><strong>(2) Stage estimation과 MMoE는 각각 유익하며 서로 상승효과를 낸다.</strong> stage estimator를 제거하면(w/o SE) demo loss가 0.020에서 0.034로 증가하고, multi-gate 설계를 제거하면(w/o MG) 0.026으로 증가한다. 전체 SARM2 모델은 두 경우보다 모두 크게 향상되며, 이는 stage-awareness와 multi-gate routing이 상보적 구조를 포착함을 보여준다. 즉, stage estimator는 task의 primitive sequence 내에서 모델의 위치를 특정하고, MMoE는 primitive-group 경계를 따라 capacity를 할당한다.</p>
+
+    <p><strong>(3) 더 폭넓은 task distribution에서의 학습은 성능을 향상한다.</strong> 단순 subset에서만 학습한 S1 Var. ablation은 S1에서 0.010의 demo loss를 달성하여 모든 baseline보다 우수하지만, 두 subset을 모두 학습에서 접하는 전체 SARM2(0.006)보다는 여전히 1.7배 높다. 이는 S2에서 S1으로의 positive transfer를 나타내며, 그 이유는 S2가 S1과 공유하는 progress signal을 명확히 구분하는 데 도움이 되는 더욱 다양한 action primitive와 visual context를 모델에 제공하기 때문일 가능성이 크다.</p>
+
+    <p><strong>(4) MoE routing health는 downstream 성능과 상관관계가 있다.</strong> MoE Density 행은 식 6에서 정의한 normalized top-k routing score S<sub>route</sub> ∈ [0, 1]을 보고하며, 0은 완벽하게 균형 잡힌 router에, 1은 완전히 collapse된 router에 해당한다. w/o SE는 collapse에 가장 가깝다(S<sub>route</sub> = 0.87). primitive-conditioned gating이 없으면 router가 대부분의 token을 소수의 expert subset으로 몰아넣는다. w/o MG는 훨씬 건전하지만(0.42) 여전히 집중되어 있는데, 이는 하나의 shared gate가 primitive group을 분리할 수 없기 때문이다. 두 SARM2 variant는 모두 균형이 잘 잡혀 있으며(S1 Var.는 0.23, 전체 SARM2는 0.10), 그 순위는 rollout score와 일치한다. 이는 primitive-conditioned multi-gate routing이 router collapse를 직접 완화한다는 본 연구의 주장을 뒷받침한다.</p>
+  </section>
+</section>

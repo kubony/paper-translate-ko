@@ -1,0 +1,11 @@
+{
+  "main_sections_1_to_5": true,
+  "appendix_6_1_to_6_15": true,
+  "figures_1_to_14_once": true,
+  "tables_1_to_10_present": true,
+  "equations_1_to_9_present": true,
+  "references_63": true,
+  "video_links_22": true,
+  "no_placeholders": true,
+  "core_terms": true
+}

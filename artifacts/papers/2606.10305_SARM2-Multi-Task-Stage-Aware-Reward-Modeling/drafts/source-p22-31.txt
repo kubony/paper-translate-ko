@@ -1,0 +1,852 @@
+Table 7: Ablation over MoE routing configurations of SARM2. TaEb: top-k=a over b experts;
+T2E10 is our default. We sweep k ∈ {1, 2, 4} at fixed E=10 and E ∈ {5, 10, 20} at fixed k=2; all
+other components are held identical. Lower demo MSE is better.
+
+                    Metrics    T1E10    T4E10     T2E5    T2E20     T2E10 (ours)
+                    Demo L ↓
+                    S1       0.015       0.018    0.016    0.011        0.006
+                    S2       0.033       0.037    0.032    0.031        0.031
+                    Overall  0.026       0.029    0.024    0.022        0.020
+                    Rollout ρ ↑
+                    T1          0.667    0.722    0.611    0.778        0.833
+                    T2          0.556     0.5      0.5     0.722        0.667
+                    MoE Density
+                               0.02       0.13     0.20     0.12        0.10
+
+
+
+(T2E5: 0.024, T2E20: 0.022); we attribute this to the fact that k directly controls the effective
+capacity and gradient sparsity per token, where k=1 removes the redundancy needed for stable
+specialization and k=4 over-mixes experts and dilutes the routing signal, whereas changing E only
+re-partitions an otherwise well-balanced expert pool. This suggests that the routing sparsity level is
+a more sensitive hyperparameter than the raw expert budget in our per-timestep MoE decoder.
+
+6.10   MoE Design: MoE-Decoder vs. MoE-FFN
+
+Setup. The dominant MoE recipe in large language models places experts inside the Transformer
+Feed-Forward Network (FFN) sublayer [59, 60, 61, 62, 63]. We ask whether the same placement
+transfers to multimodal reward modeling by comparing two variants of SARM2’s MMoE value
+decoder that are identical in every respect except where the inner MoE is inserted:
+
+       • MoE-FFN replaces the feed-forward sublayer of the last Transformer block of the value
+         model backbone with a sparse MoE FFN; the per-timestep output head is a plain MLP.
+       • MoE-Decoder (ours) keeps the value model backbone fully dense and places the sparse
+         MoE in the output head, acting on the fused-per-timestep representation produced by the
+         encoder.
+
+Both variants share the same SigLIP-2 features, the same 6-layer causal Transformer backbone,
+the same expert count E=10 and k=2, and the same primitive-group-conditioned MMoE outer
+gate (selected by the stage estimator’s predicted primitive ỹt , as in Section 3.1.2). The dense FFN
+sublayer of the value-model backbone follows the standard 4× expansion, giving hidden width
+4dmodel = 4×512 = 2048. For MoE-FFN, each expert is a feed-forward block of hidden width
+1024, and with k=2 activated per token the active hidden capacity is 1024×2 = 2048, which
+matches the dense FFN exactly, so the comparison is compute- and capacity-matched at the FFN
+sublayer. The inner top-k router is content-driven on whatever vector the placement hands it: for
+MoE-FFN that is one (modality, timestep) hidden state; for MoE-Decoder that is the fused timestep
+vector concatenating all modalities. Primitive-group specialization is therefore not a differentiator;
+the only thing that changes between the two is the sublayer in which the experts live.
+We report demo MSE on the S1 and S2 subsets (lower is better), rollout score ρ on T1 (Folding
+Shorts) and T2 (Cleaning Whiteboard) (higher is better), and the normalized top-k routing score
+Sroute of Equation 6 as a routing-health / compute-parity check (below 0.4 is generally healthy).
+
+Findings. MoE-Decoder more than halves demo MSE overall (0.020 vs. 0.033) and roughly triples
+rollout score on T1 (0.833 vs. 0.222) and T2 (0.667 vs. 0.278) at essentially identical routing spar-
+sity. The result inverts the LLM intuition that MoE belongs in the FFN. The rest of this section
+explains why, structured around what each sublayer is for.
+
+
+                                                 22
+Table 8: MoE-Decoder vs. MoE-FFN on SARM2. The only difference is the sublayer in which
+the inner MoE is placed; all other components, including the primitive-group-conditioned MMoE
+outer gate, are held identical. MoE-Decoder matches MoE-FFN’s routing sparsity (MoE Density)
+yet halves demo MSE overall and roughly triples rollout score on both tasks.
+
+                              Metrics       MoE-FFN        MoE-Decoder (ours)
+                              Demo L ↓
+                              S1             0.026               0.006
+                              S2             0.038               0.031
+                              Overall        0.033               0.020
+                              Rollout ρ ↑
+                              T1             0.222               0.833
+                              T2             0.278               0.667
+                              MoE Density
+                                              0.09                0.10
+
+
+
+What each sublayer is for. A Transformer FFN sublayer performs position-wise representation
+refinement: attention mixes information across positions, and the FFN re-encodes each position in
+isolation. Stacking attention and FFN is the mechanism by which the value model backbone builds
+a single coherent fused-per-timestep representation from all modalities. The output head (which
+we call the decoder in this paper) consumes that fused representation and maps it to the predicted
+progress r̂t . Placing the inner MoE in the FFN therefore specializes representation building; placing
+it in the output head specializes the prediction mapping. These are very different things.
+
+
+(i) MoE-FFN specializes the wrong stage. Per-position experts in the encoder FFN route each
+(modality, timestep) hidden state through a different MLP, and the following attention layer must
+re-fuse those divergently-processed positions back into a coherent representation. This fragments
+the backbone’s job. Worse, the per-position vector the FFN router sees inherits its identity primarily
+from the modality projection it came through, not from scene content. Even when content-driven
+specialization does emerge, it acts on intermediate per-position representations that the prediction
+does not consume directly; r̂t depends only on the final fused timestep representation, which is
+several attention layers downstream of the MoE.
+
+
+(ii) MoE-Decoder specializes the right stage. With the value model backbone dense, all
+attention+FFN layers cooperate to produce one unified fused-per-timestep representation, as the
+backbone is designed to. The inner MoE then routes that fused vector to one of several scalar output
+paths, conditioned on its content and primitive-group gate. This is the standard “shared backbone,
+specialized head” pattern made soft and top-k: no representation is fragmented, and specializa-
+tion lands on the axis that genuinely benefits from it. This makes different primitive groups (e.g.,
+pick/place, rotate, fold) call for different progress computations on top of similar fused fea-
+tures. Critically, every routing decision in the output head is supervised directly by r̂t , so the routing
+gradient is high signal-to-noise.
+
+
+(iii) Why this flips the LLM intuition. In language modeling, the per-position token is the pre-
+diction unit: each position predicts the next token from its own representation, so per-position MoE-
+FFN specialization aligns with the prediction axis, and the long context length (L ∼ 103 − 104 )
+supplies enough routing decisions per sample to stabilize specialization. In multimodal reward
+modeling neither holds. The prediction unit is the fused timestep, not the per-modality position; the
+per-sample token budget is small (L = (N +3)T ); and modality typing biases per-position routing
+toward modality-identity shortcuts. MoE-Decoder places specialization at the level where predic-
+tion actually happens, paying the sparsity cost where it buys differentiation rather than where it
+fragments shared representation.
+
+
+                                                      23
+Summary. The Transformer FFN is for building a unified representation; the output head is for
+mapping that representation to the prediction. Sparse routing helps when it specializes the right
+thing. In LLMs the FFN is the right thing because per-position prediction makes per-position spe-
+cialization useful. In SARM2’s MMoE value decoder the right thing is the output head: the value
+model backbone must stay coherent, and the head is where primitive-conditioned specialization pays
+off. MoE-Decoder matches placement to prediction; MoE-FFN does not. The numbers in Table 8
+follow from this mismatch.
+
+6.11                         Reward Model Estimation Visualization Results
+
+We first examine how accurately each reward model estimates dense progress on held-out demon-
+strations. Figure 7 visualizes per-timestep progress predictions from TOPReward, Robometer,
+Robometer-FT, ReWiND, and SARM2 against the ground truth across all 10 benchmark tasks,
+spanning both the in-distribution split S1 and the held-out split S2 . The two VLM-based baselines
+(TOPReward and Robometer) saturate near 1 early in the trajectory, exhibiting the over-optimistic
+estimation discussed in Section 4.1, while ReWiND and Robometer-FT track the ground truth more
+closely but still drift on longer-horizon tasks. SARM2 most faithfully follows the ground-truth
+progress curve across all 10 tasks, with tight agreement on both S1 and S2 .
+                                                          Pick and place plates into bin                                                                                                                           Pick and place plates into dish rack
+
+
+
+
+                     1.00                                                                                                                                                1.00
+Predicted Progress
+
+
+
+
+                                                                                                                                                    Predicted Progress
+
+
+
+
+                     0.75                                                                                                                                                0.75
+
+                     0.50                                                                                                                                                0.50
+
+                     0.25                                                                                Ground Truth              SARM2                                 0.25                                                                                             Ground Truth    SARM2
+                                                                                                         Robometer                 TOPReward                                                                                                                              Robometer       TOPReward
+                     0.00                                                                                Robometer-FT                                                    0.00                                                                                             Robometer-FT
+                         0   5                  10          15          20               25        30            35                  40                                      0                 10                              20                     30                  40                   50
+                                                                        Time (s)                                                                                                                                                           Time (s)
+                                                                 Folding shorts                                                                                                                                                Folding the t-shirt
+
+
+
+
+                     1.00                                                                                                                                                1.00
+Predicted Progress
+
+
+
+
+                                                                                                                                                    Predicted Progress
+
+
+
+
+                     0.75                                                                                                                                                0.75
+
+                     0.50                                                                                                                                                0.50
+
+                     0.25                                                                                Ground Truth              SARM2                                 0.25                                                                                             Ground Truth    SARM2
+                                                                                                         Robometer                 TOPReward                                                                                                                              Robometer       TOPReward
+                     0.00                                                                                Robometer-FT                                                    0.00                                                                                             Robometer-FT
+                         0                 10                     20                          30                  40                                                         0                      20                               40                    60                        80
+                                                                        Time (s)                                                                                                                                                           Time (s)
+                                                             Pull plug off the socket                                                                                                                         Clean whiteboard WITH whiteboard eraser
+
+
+
+
+                     1.00                                                                                                                                                1.00
+Predicted Progress
+
+
+
+
+                                                                                                                                                    Predicted Progress
+
+
+
+
+                     0.75                                                                                                                                                0.75
+
+                     0.50                                                                                                                                                0.50
+
+                     0.25                                                                                Ground Truth              SARM2                                 0.25                                                                                             Ground Truth    SARM2
+                                                                                                         Robometer                 TOPReward                                                                                                                              Robometer       TOPReward
+                     0.00                                                                                Robometer-FT                                                    0.00                                                                                             Robometer-FT
+                         0            10                    20                30                   40                        50                                              0        5                       10                15              20              25             30         35
+                                                                        Time (s)                                                                                                                                                           Time (s)
+                                                                 Set dinner table                                                                                                                                  Sweep paper scraps WITH broom
+
+
+
+
+                     1.00                                                                                                                                                1.00
+Predicted Progress
+
+
+
+
+                                                                                                                                                    Predicted Progress
+
+
+
+
+                     0.75                                                                                                                                                0.75
+
+                     0.50                                                                                                                                                0.50
+
+                     0.25                                                                               Ground Truth              SARM2                                  0.25                                                                                             Ground Truth    SARM2
+                                                                                                        Robometer                 TOPReward                                                                                                                               Robometer       TOPReward
+                     0.00                                                                               Robometer-FT                                                     0.00                                                                                             Robometer-FT
+                         0       10                  20            30               40             50                  60                 70                                 0   10                      20              30               40          50             60         70        80
+                                                                        Time (s)                                                                                                                                                           Time (s)
+                                                           Coil and wrap headphones                                                                                                                                           Put away an umbrella
+
+
+
+
+                     1.00                                                                                                                                                1.00
+Predicted Progress
+
+
+
+
+                                                                                                                                                    Predicted Progress
+
+
+
+
+                     0.75                                                                                                                                                0.75
+
+                     0.50                                                                                                                                                0.50
+
+                     0.25                                                                                Ground Truth              SARM2                                 0.25                                                                                             Ground Truth    SARM2
+                                                                                                         Robometer                 TOPReward                                                                                                                              Robometer       TOPReward
+                     0.00                                                                                Robometer-FT                                                    0.00                                                                                             Robometer-FT
+                         0            10                    20               30                    40                       50                                               0            20                        40                    60               80               100            120
+                                                                        Time (s)                                                                                                                                                           Time (s)
+
+
+
+Figure 7: Per-task progress estimates on held-out demos across all 10 benchmark tasks. Each
+panel overlays the ground truth with predictions from TOPReward, Robometer, Robometer-FT,
+ReWiND, and SARM2. The VLM baselines saturate near 1 early (the over-optimism flagged in
+Section 4.1); SARM2 closely tracks ground truth on both S1 and S2 .
+
+
+                                                                                                                                               24
+Moreover, to probe how faithfully each reward model behaves under real policy training conditions,
+we visualize the predicted progress signal alongside key frames from on-policy rollouts on two
+qualitatively different tasks, Folding Shorts (Figure 8) and Cleaning Whiteboard (Figure 9). Across
+both tasks, SARM2 captures segment-level detail of the rollout: its predicted progress rises when
+the robot is making real progress, plateaus or dips when the robot is adjusting or struggling, and
+drops sharply at catastrophic failures, in agreement with the visualized key frames. In contrast, the
+finetuned Robometer baseline (also LoRA finetuned on labeled rollouts as SARM2) misses these
+transitions, often emitting a rising progress signal while the robot is visibly struggling, or remaining
+flat through segments where the policy is in fact advancing the task. These gaps directly translate
+into downstream policy-training gaps: an incorrectly shaped value estimate produces wrong reward
+and advantage assignments, which feed noisy and sometimes sign-flipped gradients into the policy
+update and slow or destabilize self-improvement.
+Predicted Progress
+
+
+
+
+                     1.0
+
+
+                     0.5
+                                                                                            Robometer-FT
+                                                                                            SARM2
+                     0.0
+                        0    20        40         60             80             100            120
+                                                  Time (s)
+Predicted Progress
+
+
+
+
+                     1.0
+
+
+                     0.5
+                                                                                            Robometer-FT
+                                                                                            SARM2
+                     0.0
+                        0   20    40         60           80           100            120         140
+                                                  Time (s)
+
+
+
+
+Figure 8: Reward-model progress estimation on two Folding Shorts rollouts. Each panel plots
+predicted progress vs. time for two reward models used in policy training. 8 key frames along the
+trajectory are demonstrated around the progress figure. SARM2 faithfully track the moments when
+policy making progress or struggling, whereas finetuned Robometer baseline did not catch those
+details.
+
+
+
+
+                                                  25
+       Predicted Progress
+                            1.0
+
+
+                            0.5
+                                                                                                               Robometer-FT
+                                                                                                               SARM2
+                            0.0
+                               0       10        20       30       40           50      60           70        80
+                                                                     Time (s)
+       Predicted Progress
+
+
+
+
+                            1.0
+
+
+                            0.5
+                                                                                                               Robometer-FT
+                                                                                                               SARM2
+                            0.0
+                               0        10       20        30        40          50          60           70        80
+                                                                     Time (s)
+
+
+
+
+Figure 9: Reward-model progress estimation on two Cleaning Whiteboard rollouts. Each panel
+plots predicted progress vs. time for two reward models used in policy training. 8 key frames along
+the trajectory are demonstrated around the progress figure. SARM2 closely followed the situation
+of the robot station, including progress, adjusting, and even catastrophic failures, whereas finetuned
+Robometer baseline did not follow those details.
+
+6.12   Action Primitive Estimation and MoE Experts Selection Visualization Results
+
+Our action-primitive-based stage estimator attains a micro-level average accuracy of 85.22% aggre-
+gated over all timesteps; the per-task breakdown on each task’s held-out test set (10 episodes per
+task) is reported in Table 9. Figures 10 and 11 additionally show, for each task, one representa-
+tive example comparing the predicted action primitive against the ground truth, together with the
+resulting MoE expert selection along the trajectory.
+Table 9: Stage estimator accuracy across the 10 benchmark tasks. Tasks are listed in the same
+order as the per-task description in Appendix 6.2.
+
+                                   Task Name                                    Stage Estimator Accuracy (%)
+                                   Pick and place plates into bin                            89.32
+                                   Pick and place plates into dish rack                      79.01
+                                   Folding shorts                                            97.52
+                                   Folding the t-shirt                                       98.27
+                                   Pull plug off the socket                                  79.40
+                                   Clean whiteboard with whiteboard eraser                   96.22
+                                   Set dinner table                                          70.85
+                                   Sweep paper scraps with broom                             91.15
+                                   Coil and wrap headphones                                  97.72
+                                   Put away an umbrella                                      57.74
+
+
+
+                                                                     26
+                                                                                Task: Pick and place plates into bin | Accuracy: 92.7%                                                                                                                               Task: Pick and place plates into dish rack | Accuracy: 100.0%
+                                              dummy                                                                                                                                                                                  dummy
+                                                                                                                                                                       Class 0                                                                                                                                                                                    Class 0
+                                                  press                                                                                                                                                                                  press
+                                                                                                                                                                       Class 1                                                                                                                                                                                    Class 1
+                                                clamp                                                                                                                                                                                  clamp
+                                                  wrap                                                                                                                 Class 2                                                           wrap                                                                                                                     Class 2
+                                             tie/untie                                                                                                                 Class 3                                                      tie/untie                                                                                                                     Class 3
+Action Primitive (Grouped by Class)
+
+
+
+
+                                                                                                                                                                                       Action Primitive (Grouped by Class)
+                                      screw/unscrew                                                                                                                    Class 4                                               screw/unscrew                                                                                                                        Class 4
+                                           rotate/turn                                                                                                                 Class 5                                                    rotate/turn                                                                                                                     Class 5
+                                                    roll                                                                                                               Class 6                                                             roll                                                                                                                   Class 6
+                                                  hang                                                                                                                 Class 7                                                           hang                                                                                                                     Class 7
+                                          fold/flatten                                                                                                                 GT                                                        fold/flatten                                                                                                                     GT
+                                                install                                                                                                                Pred.                                                           install                                                                                                                    Pred.
+                                                 insert                                                                                                                                                                                 insert
+                                            zip/unzip                                                                                                                                                                              zip/unzip
+                                               sweep                                                                                                                                                                                  sweep
+                                                   pass                                                                                                                                                                                   pass
+                                                  erase                                                                                                                                                                                  erase
+                                          pour/dump                                                                                                                                                                              pour/dump
+                                                 place                                                                                                                                                                                  place
+                                                scoop                                                                                                                                                                                  scoop
+                                                   pull                                                                                                                                                                                   pull
+                                            pick/grab                                                                                                                                                                              pick/grab
+                                                      9                                                                                                                Top Exp.                                                              9                                                                                                                    Top Exp.
+                                                               8                                                                                                       2nd Exp.                                                                       8                                                                                                           2nd Exp.
+                                                               7                                                                                                                                                                                      7
+                                                               6                                                                                                                                                                                      6
+                                                  MoE Expert
+
+
+
+
+                                                                                                                                                                                                                                         MoE Expert
+                                                               5                                                                                                                                                                                      5
+                                                               4                                                                                                                                                                                      4
+                                                               3                                                                                                                                                                                      3
+                                                               2                                                                                                                                                                                      2
+                                                               1                                                                                                                                                                                      1
+                                                               0                                                                                                                                                                                      0
+                                                                   0   5        10            15           20               25          30    35             40                                                                                           0         10                          20                        30                  40
+                                                                                                         Time (s)                                                                                                                                                                                    Time (s)
+
+
+
+
+                                                                                          Task: Fold shorts | Accuracy: 95.0%                                                                                                                                                       Task: Fold the t-shirt | Accuracy: 96.9%
+                                              dummy                                                                                                                                                                                  dummy
+                                                                                                                                                                       Class 0                                                                                                                                                                                    Class 0
+                                                  press                                                                                                                                                                                  press
+                                                                                                                                                                       Class 1                                                                                                                                                                                    Class 1
+                                                clamp                                                                                                                                                                                  clamp
+                                                  wrap                                                                                                                 Class 2                                                           wrap                                                                                                                     Class 2
+                                             tie/untie                                                                                                                 Class 3                                                      tie/untie                                                                                                                     Class 3
+Action Primitive (Grouped by Class)
+
+
+
+
+                                                                                                                                                                                       Action Primitive (Grouped by Class)
+                                      screw/unscrew                                                                                                                    Class 4                                               screw/unscrew                                                                                                                        Class 4
+                                           rotate/turn                                                                                                                 Class 5                                                    rotate/turn                                                                                                                     Class 5
+                                                    roll                                                                                                               Class 6                                                             roll                                                                                                                   Class 6
+                                                  hang                                                                                                                 Class 7                                                           hang                                                                                                                     Class 7
+                                          fold/flatten                                                                                                                 GT                                                        fold/flatten                                                                                                                     GT
+                                                install                                                                                                                Pred.                                                           install                                                                                                                    Pred.
+                                                 insert                                                                                                                                                                                 insert
+                                            zip/unzip                                                                                                                                                                              zip/unzip
+                                               sweep                                                                                                                                                                                  sweep
+                                                   pass                                                                                                                                                                                   pass
+                                                  erase                                                                                                                                                                                  erase
+                                          pour/dump                                                                                                                                                                              pour/dump
+                                                 place                                                                                                                                                                                  place
+                                                scoop                                                                                                                                                                                  scoop
+                                                   pull                                                                                                                                                                                   pull
+                                            pick/grab                                                                                                                                                                              pick/grab
+                                                      9                                                                                                                Top Exp.                                                              9                                                                                                                    Top Exp.
+                                                               8                                                                                                       2nd Exp.                                                                       8                                                                                                           2nd Exp.
+                                                               7                                                                                                                                                                                      7
+                                                               6                                                                                                                                                                                      6
+                                                  MoE Expert
+
+
+
+
+                                                                                                                                                                                                                                         MoE Expert
+
+
+
+
+                                                               5                                                                                                                                                                                      5
+                                                               4                                                                                                                                                                                      4
+                                                               3                                                                                                                                                                                      3
+                                                               2                                                                                                                                                                                      2
+                                                               1                                                                                                                                                                                      1
+                                                               0                                                                                                                                                                                      0
+                                                                   0   5        10               15          20              25          30        35             40                                                                                      0         20                         40                    60                  80
+                                                                                                         Time (s)                                                                                                                                                                                    Time (s)
+
+
+
+
+                                                                                     Task: Pull plug off the socket | Accuracy: 94.7%                                                                                                                              Task: Clean whiteboard with whiteboard eraser | Accuracy: 92.5%
+                                              dummy                                                                                                                                                                                  dummy
+                                                                                                                                                                       Class 0                                                                                                                                                                                    Class 0
+                                                  press                                                                                                                                                                                  press
+                                                                                                                                                                       Class 1                                                                                                                                                                                    Class 1
+                                                clamp                                                                                                                                                                                  clamp
+                                                  wrap                                                                                                                 Class 2                                                           wrap                                                                                                                     Class 2
+                                             tie/untie                                                                                                                 Class 3                                                      tie/untie                                                                                                                     Class 3
+Action Primitive (Grouped by Class)
+
+
+
+
+                                                                                                                                                                                       Action Primitive (Grouped by Class)
+
+
+
+
+                                      screw/unscrew                                                                                                                    Class 4                                               screw/unscrew                                                                                                                        Class 4
+                                           rotate/turn                                                                                                                 Class 5                                                    rotate/turn                                                                                                                     Class 5
+                                                    roll                                                                                                               Class 6                                                             roll                                                                                                                   Class 6
+                                                  hang                                                                                                                 Class 7                                                           hang                                                                                                                     Class 7
+                                          fold/flatten                                                                                                                 GT                                                        fold/flatten                                                                                                                     GT
+                                                install                                                                                                                Pred.                                                           install                                                                                                                    Pred.
+                                                 insert                                                                                                                                                                                 insert
+                                            zip/unzip                                                                                                                                                                              zip/unzip
+                                               sweep                                                                                                                                                                                  sweep
+                                                   pass                                                                                                                                                                                   pass
+                                                  erase                                                                                                                                                                                  erase
+                                          pour/dump                                                                                                                                                                              pour/dump
+                                                 place                                                                                                                                                                                  place
+                                                scoop                                                                                                                                                                                  scoop
+                                                   pull                                                                                                                                                                                   pull
+                                            pick/grab                                                                                                                                                                              pick/grab
+                                                      9                                                                                                                Top Exp.                                                              9                                                                                                                    Top Exp.
+                                                               8                                                                                                       2nd Exp.                                                                       8                                                                                                           2nd Exp.
+                                                               7                                                                                                                                                                                      7
+                                                               6                                                                                                                                                                                      6
+                                                  MoE Expert
+
+
+
+
+                                                                                                                                                                                                                                         MoE Expert
+
+
+
+
+                                                               5                                                                                                                                                                                      5
+                                                               4                                                                                                                                                                                      4
+                                                               3                                                                                                                                                                                      3
+                                                               2                                                                                                                                                                                      2
+                                                               1                                                                                                                                                                                      1
+                                                               0                                                                                                                                                                                      0
+                                                                   0       10               20                    30               40          50                                                                                                         0   5           10              15             20           25            30             35        40
+                                                                                                         Time (s)                                                                                                                                                                                    Time (s)
+
+
+
+
+                                                                                        Task: Set dinner table | Accuracy: 92.6%                                                                                                                                         Task: Sweep paper scraps with broom | Accuracy: 93.2%
+                                              dummy                                                                                                                                                                                  dummy
+                                                                                                                                                                       Class 0                                                                                                                                                                                    Class 0
+                                                  press                                                                                                                                                                                  press
+                                                                                                                                                                       Class 1                                                                                                                                                                                    Class 1
+                                                clamp                                                                                                                                                                                  clamp
+                                                  wrap                                                                                                                 Class 2                                                           wrap                                                                                                                     Class 2
+                                             tie/untie                                                                                                                 Class 3                                                      tie/untie                                                                                                                     Class 3
+Action Primitive (Grouped by Class)
+
+
+
+
+                                                                                                                                                                                       Action Primitive (Grouped by Class)
+
+
+
+
+                                      screw/unscrew                                                                                                                    Class 4                                               screw/unscrew                                                                                                                        Class 4
+                                           rotate/turn                                                                                                                 Class 5                                                    rotate/turn                                                                                                                     Class 5
+                                                    roll                                                                                                               Class 6                                                             roll                                                                                                                   Class 6
+                                                  hang                                                                                                                 Class 7                                                           hang                                                                                                                     Class 7
+                                          fold/flatten                                                                                                                 GT                                                        fold/flatten                                                                                                                     GT
+                                                install                                                                                                                Pred.                                                           install                                                                                                                    Pred.
+                                                 insert                                                                                                                                                                                 insert
+                                            zip/unzip                                                                                                                                                                              zip/unzip
+                                               sweep                                                                                                                                                                                  sweep
+                                                   pass                                                                                                                                                                                   pass
+                                                  erase                                                                                                                                                                                  erase
+                                          pour/dump                                                                                                                                                                              pour/dump
+                                                 place                                                                                                                                                                                  place
+                                                scoop                                                                                                                                                                                  scoop
+                                                   pull                                                                                                                                                                                   pull
+                                            pick/grab                                                                                                                                                                              pick/grab
+                                                      9                                                                                                                Top Exp.                                                              9                                                                                                                    Top Exp.
+                                                               8                                                                                                       2nd Exp.                                                                       8                                                                                                           2nd Exp.
+                                                               7                                                                                                                                                                                      7
+                                                               6                                                                                                                                                                                      6
+                                                  MoE Expert
+
+
+
+
+                                                                                                                                                                                                                                         MoE Expert
+
+
+
+
+                                                               5                                                                                                                                                                                      5
+                                                               4                                                                                                                                                                                      4
+                                                               3                                                                                                                                                                                      3
+                                                               2                                                                                                                                                                                      2
+                                                               1                                                                                                                                                                                      1
+                                                               0                                                                                                                                                                                      0
+                                                                   0        5                    10                    15                20             25                                                                                                0   10               20              30               40             50        60             70
+                                                                                                         Time (s)                                                                                                                                                                                    Time (s)
+
+
+
+
+                                                                   Figure 10: Action-primitive predictions and MoE experts selection figures (part 1)
+
+
+                                                                                                                                                                                  27
+                                                                               Task: Coil and wrap headphones | Accuracy: 98.2%                                                                                                             Task: Put away an umbrella | Accuracy: 81.9%
+                                              dummy                                                                                                                                                       dummy
+                                                                                                                                            Class 0                                                                                                                                                         Class 0
+                                                  press                                                                                                                                                       press
+                                                                                                                                            Class 1                                                                                                                                                         Class 1
+                                                clamp                                                                                                                                                       clamp
+                                                  wrap                                                                                      Class 2                                                           wrap                                                                                          Class 2
+                                             tie/untie                                                                                      Class 3                                                      tie/untie                                                                                          Class 3
+Action Primitive (Grouped by Class)
+
+
+
+
+                                                                                                                                                            Action Primitive (Grouped by Class)
+                                      screw/unscrew                                                                                         Class 4                                               screw/unscrew                                                                                             Class 4
+                                           rotate/turn                                                                                      Class 5                                                    rotate/turn                                                                                          Class 5
+                                                    roll                                                                                    Class 6                                                             roll                                                                                        Class 6
+                                                  hang                                                                                      Class 7                                                           hang                                                                                          Class 7
+                                          fold/flatten                                                                                      GT                                                        fold/flatten                                                                                          GT
+                                                install                                                                                     Pred.                                                           install                                                                                         Pred.
+                                                 insert                                                                                                                                                      insert
+                                            zip/unzip                                                                                                                                                   zip/unzip
+                                               sweep                                                                                                                                                       sweep
+                                                   pass                                                                                                                                                        pass
+                                                  erase                                                                                                                                                       erase
+                                          pour/dump                                                                                                                                                   pour/dump
+                                                 place                                                                                                                                                       place
+                                                scoop                                                                                                                                                       scoop
+                                                   pull                                                                                                                                                        pull
+                                            pick/grab                                                                                                                                                   pick/grab
+                                                      9                                                                                     Top Exp.                                                              9                                                                                         Top Exp.
+                                                               8                                                                            2nd Exp.                                                                       8                                                                                2nd Exp.
+                                                               7                                                                                                                                                           7
+                                                               6                                                                                                                                                           6
+                                                  MoE Expert
+
+
+
+
+                                                                                                                                                                                                              MoE Expert
+                                                               5                                                                                                                                                           5
+                                                               4                                                                                                                                                           4
+                                                               3                                                                                                                                                           3
+                                                               2                                                                                                                                                           2
+                                                               1                                                                                                                                                           1
+                                                               0                                                                                                                                                           0
+                                                                    0     10           20                30                40       50                                                                                         0       20                      40                      60              80
+                                                                                                   Time (s)                                                                                                                                                   Time (s)
+
+
+
+
+Figure 11: Action-primitive predictions and MoE experts selection figures (part 2) Each panel
+has four key frames along the trajectory (top), action primitive based stage estimator predictions
+v.s. ground truth (middle), and MoE experts selection (below); mid panel colors indicate primitive
+grouping as discussed in Appendix 4.
+
+
+6.13                                                                Auxiliary Formulae
+                                                                   (m)
+Let p̄e denote the average routing probability assigned to expert e by gate m over a batch, and
+ (m)
+fe the fraction of tokens for which expert e is selected in the top-k. Following [25],
+                                                                                                  M
+                                                                                                  X                       E
+                                                                                                                          X                                                                                                            M X
+                                                                                                                                                                                                                                       X E
+                                                                         Lbalance =                            E·                 fe(m) · p̄(m)
+                                                                                                                                            e ,                          Lentropy = −                                                                       p̄(m)
+                                                                                                                                                                                                                                                              e   log p̄(m)
+                                                                                                                                                                                                                                                                        e .                                 (7)
+                                                                                                 m=0                      e=1                                                                                                      m=0 e=1
+
+Balance encourages uniform expert utilization within each gate; entropy prevents routing distribu-
+tions from becoming overly peaked early in training.
+
+6.14                                                                Additional Discussion on SPIRAL
+
+Reward model reusability. A single reward model can label demonstrations across multiple
+downstream tasks and serve as the starting point for rollout-based fine-tuning, amortizing the cost
+of reward model training across the task suite.
+
+Mixed objective for RL To motivate this hybrid design, we briefly contrast the two objectives.
+Given a critic Qϕ (s, a) trained on transitions from replay buffer D, the TD objective bootstraps
+from the next-state value, while the MC objective regresses onto the empirical discounted return:
+                                                                h                    2 i
+           ytTD = rt + γ Qϕ′ (st+1 , at+1 ),       JTD (ϕ) = ED Qϕ (st , at ) − ytTD      ,
+                                                                                      T
+                                                                                      X                                                                                                                                            h                                                        2 i            (8)
+                                                                         ytMC =                   γ k−t rk ,                                           JMC (ϕ) = ED                                                                    Qϕ (st , at ) − ytMC                                        .
+                                                                                      k=t
+
+The TD target depends only on the immediate reward rt and a one-step bootstrap, so when rt is
+dense and locally informative the critic receives a precise learning signal at every step. This makes
+TD particularly well-suited to long-horizon tasks: each transition contributes gradient, and credit
+assignment does not need to propagate across hundreds of steps from a distant terminal signal.
+The MC target, in contrast, regresses the critic onto the empirical discounted return. Under sparse
+terminal reward (rk = 0 for k < T , rT = Rsparse ), this collapses to ytMC = γ T −t Rsparse : the discount
+γ T −t exponentially attenuates terminal credit with episode length, so successful-and-fast episodes
+produce strictly larger targets than successful-but-slow ones. The MC objective therefore expresses
+a built-in, steady preference for short successful trajectories. The two objectives are complementary:
+TD drives fine-grained shaping of subtle action choices throughout the trajectory, while MC imposes
+
+
+                                                                                                                                                       28
+Table 10: Ablation of the critic objective in the offline RL stage. We compare behavior cloning
+(BC) against offline RL trained with the sparse-reward MC term only, the dense-reward TD term
+only, and our full mixed objective (JTD + α JMC ), on Folding Shorts (from flat and from crumble)
+and Cleaning Whiteboard. We report success rate (SR), average progress (Avg. Prog.), and progress
+gain over BC (Prog. Gain). The mixed objective achieves the best results on both tasks, confirming
+that the dense TD and sparse MC terms are complementary.
+
+                                  Folding Shorts (SR↑)             Cleaning Whiteboard
+         Training Methods
+                                  Flat      Crumble        SR↑      Avg. Prog. ↑   Prog. Gain ↑
+         BC                       1/12        0/12         4/20        0.475            N/A
+         RL-Sparse (MC Only)      4/12        2/12         6/20        0.625           0.150
+         RL-Dense (TD Only)       5/12        4/12         9/20        0.745           0.270
+         RL-Dense (mixed obj.)    7/12        4/12         10/20       0.813           0.338
+
+
+
+a stable global preference for fast successful episodes and lets the policy inherit their motion style.
+We combine them as
+                                  Jcritic (ϕ) = JTD (ϕ) + α · JMC (ϕ),                              (9)
+where α balances local shaping against global preference.
+To validate this hybrid design, we ablate the two reward components in the offline RL setting,
+comparing the full mixed objective against variants that use either the dense-reward TD term or
+the sparse-reward MC term alone on both tasks (Table 10).
+
+One-time human labeling effort. Reward model adaptation (Stage 2) is a one-time effort. We
+deliberately collect R1 from the BC policy π1 — the weakest policy in the pipeline — because its
+rollouts surface the most diverse out-of-distribution (OOD) failure modes, which are precisely the
+states the reward model must learn to score correctly. We collect around 100 rollouts for R1 , segment
+them, and label each segment with one of {fast progress, slow progress, adjust, mistake},
+together with a final progress value derived from our evaluation protocol. The annotation interface
+is shown in Figure 12. Based on our experience, it took 2 to 3 hours labeling 100 rollouts for both
+tasks. To prevent overfitting to the small adaptation set, Rlabeled
+                                                            1       is mixed with a 50% subsample of
+the original task-specific reward model training data; the resulting fine-tuning run requires roughly
+1/10 of the pretraining compute.
+
+Minimal human involvement. Among self-improvement pipelines, ours imposes the least de-
+manding human role. Once RM2 is obtained, the SPIRAL loop runs without any further human
+labeling: an operator is needed only for environment resets and safety supervision, and we collect
+just 50–100 rollouts per iteration, with 2–3 iterations sufficient to robustly solve the target tasks (see
+Figure 4). This contrasts sharply with intervention-based methods such as π0.6 [7], where human-in-
+the-loop corrections must be supplied online, at exactly the right moment, with precise and decisive
+motions, demanding annotators who are simultaneously expert teleoperators and intimately familiar
+with the policy’s failure modes. Our framework instead requires only offline, researcher-level anno-
+tation of an initial rollout set, a one-time effort that imposes no real-time skill requirements on the
+human and is far easier to scale.
+
+Beyond error correction. Labeling rollouts does more than fix erroneous behaviors and recover
+from OOD states: it implicitly steers the policy toward the most efficient and stable solution strate-
+gies, aligning execution style with human preferences. Figure 13 illustrates this on Cleaning White-
+board. The top frames show the canonical strategy: the left arm grasps the top corner of the board
+to hold it rigid, while the right arm wipes with the eraser under a stable contact. The bottom frames
+show a failure mode of the initial BC policy: the left arm instead grips the lower bar of the stand, an
+unstable support such that every wiping stroke tilts the board and lets it spring back, making cleaning
+slow and error-prone. This grasp does not appear in the demonstration set; it is an OOD behavior.
+Strictly speaking, it is not a mistake. Progress can still increase (the board does get cleaner), but the
+
+
+                                                     29
+Figure 12: Annotation interface for one-time reward-model adaptation (Stage 3). The annotator
+segments a rollout into chunks and labels each with one of {fast progress, slow progress,
+adjust, mistake} plus a final progress value. Annotating ∼100 rollouts of π1 takes 2–3 hours per
+task.
+
+
+
+motion is inefficient and risks toppling the whiteboard entirely. We therefore label such segments
+as “adjust” with zero reward, injecting human preference and high-level prior knowledge into RM2
+via fine-tuning. After the SPIRAL loop, the policy distills this preference and no longer adopts the
+unstable grasp.
+
+
+Imperfect results on Folding Shorts from crumble. After three rounds of SPIRAL, our policy
+achieves a substantially higher success rate than vanilla BC and offline RL (8/12 vs. 0/12 vs. 4/12).
+However, this result still shows a clear gap compared with the nearly saturated performance on Fold-
+ing Shorts from flat (12/12) and Cleaning Whiteboard (18/20), and is also lower than recent SOTA
+cloth-folding VLA policies such as X-VLA [54]. We attribute this limitation to several factors. First,
+our policy is trained with only 20 hours of demonstration data, which is a low-data regime for cloth
+folding. Moreover, the demonstrations are not filtered and have varied quality; as a rough proxy,
+the time required to fold one pair of shorts varies from 40s to 100s across episodes. The data also
+contains subtle modality differences because it is collected by different operators, who may have
+different action preferences in some steps, such as the grasping position used during folding. Sec-
+ond, compared with Folding Shorts from flat or Cleaning Whiteboard, Folding Shorts from crumble
+contains a more challenging and less structured stage: flattening the shorts. During this stage, the
+robot often needs multiple attempts to make the shorts fully flat. Due to the deformability of soft
+cloth and the diversity of cloth textures, the shorts can appear in a large number of possible states.
+As a result, the current reward model does not have sufficient granularity and accuracy to reliably
+judge whether the cloth becomes flatter after each attempt, especially for the first few attempts when
+the shorts are still highly crumpled. This causes the reward signal to remain flat or become noisy
+during this stage. Furthermore, many subtle human folding skills are difficult to label with our cur-
+rent method, as shown in Figure 12. These skills are therefore hard to distill into the downstream
+policy through SPIRAL. We recognize this as an important limitation of our method: for highly
+complex tasks with large state variation, the most effective post-training strategy may still require
+learning from a large amount of high-quality demonstration data collected under a unified protocol
+and modality.
+
+                                                 30
+                                            Preferred Action
+
+
+
+
+                                           Suboptimal Action
+
+
+
+
+Figure 13: Comparison of high efficiency action from policy after SPIRAL loop (top) and subopti-
+mal action from init BC policy (below).
+
+
+6.15   Policy Rollout Examples
+
+                                    Policy rollout: Fold shorts
+
+
+
+
+                                Policy rollout: Clean whiteboard
+
+
+
+
+Figure 14: Example policy rollout trajectories for (1) fold shorts (top), (2) clean whiteboard (below).
+
+
+
+
+                                                  31
+

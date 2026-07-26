@@ -1,0 +1,90 @@
+<!-- p. 19 -->
+<p>한 그룹 내의 primitive들은 유사한 progress signature를 나타내므로 동일한 gate의 routing distribution을 공유하는 것이 타당하다. 표 4에는 그 결과로 얻은 그룹, 각 그룹에 속하는 primitive, 그리고 각 그룹이 포착하는 motion pattern에 대한 간략한 설명을 제시한다.</p>
+
+<table id="table-4">
+  <caption><strong>표 4: Multi-gate MoE decoder를 위한 action-primitive 그룹화.</strong> 공유된 시각적·motion 특성에 따라 <em>K</em> + 1 = 22개의 primitive를 <em>M</em> + 1 = 8개의 semantic group으로 clustering한다. 각 그룹은 MMoE decoder의 gate 하나에 mapping되며 expert pool은 공유된다. Other는 정의되지 않았거나 task-specific인 action을 포괄하는 범주이다.</caption>
+  <thead>
+    <tr>
+      <th>그룹명</th>
+      <th>Action primitive</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>획득(Acquire)</td>
+      <td>퍼내기(scoop), 당기기(pull), 집기/잡기(pick/grab)</td>
+      <td>대상 object를 초기 support surface에서 들어 올리거나 이동하여 robot이 제어할 수 있는 상태로 만든다.</td>
+    </tr>
+    <tr>
+      <td>해제(Release)</td>
+      <td>놓기(place), 붓기/쏟기(pour/dump)</td>
+      <td>제어 중인 object를 아래로 이동하여 목표 위치, container 또는 support surface에 둔다.</td>
+    </tr>
+    <tr>
+      <td>병진(Translate)</td>
+      <td>지우기(erase), 지퍼 열기/닫기(zip/unzip), 쓸기(sweep), 건네기(pass)</td>
+      <td>end-effector 또는 object를 주로 선형인 trajectory를 따라 이동한다.</td>
+    </tr>
+    <tr>
+      <td>삽입(Insert)</td>
+      <td>설치하기(install), 삽입하기(insert)</td>
+      <td>spatial alignment를 유지하면서 object를 제약된 목표 영역 안으로 유도한다.</td>
+    </tr>
+    <tr>
+      <td>의류 형태 조정(Shape Clothes)</td>
+      <td>걸기(hang), 접기/평평하게 펴기(fold/flatten)</td>
+      <td>천과 유사한 object를 원하는 geometric state 또는 arrangement로 재구성한다.</td>
+    </tr>
+    <tr>
+      <td>회전(Rotate)</td>
+      <td>감싸기(wrap), 말기(roll), 묶기/풀기(tie/untie), 회전하기/돌리기(rotate/turn)</td>
+      <td>angular motion을 통해 object의 orientation 또는 configuration을 변경한다.</td>
+    </tr>
+    <tr>
+      <td>힘(Force)</td>
+      <td>고정하기(clamp), 누르기(press)</td>
+      <td>gripper 또는 end-effector를 통해 제어된 contact force를 가한다.</td>
+    </tr>
+    <tr>
+      <td>기타(Other)</td>
+      <td>더미(dummy)</td>
+      <td>주요 primitive taxonomy에 포함되지 않는, 정의되지 않았거나 task-specific인 action을 나타낸다.</td>
+    </tr>
+  </tbody>
+</table>
+
+<section id="algorithm-reward-guided-robot-self-improvement-loop">
+  <h3>6.5 보상 유도 로봇 자기 개선 루프의 Algorithm</h3>
+
+  <div class="algorithm" id="algorithm-1">
+    <p class="algorithm-title"><strong>Algorithm 1 보상 유도 로봇 자기 개선 루프</strong></p>
+    <p><strong>입력:</strong> 인간 demonstration <em>D</em><sub>demo</sub>; pretrained VLA model π<sub>VLA</sub>; pretrained multi-task reward model RM<sub>1</sub>; reward-model pretraining set <em>D</em><sub>RM</sub>; 최대 iteration 수 <em>N</em></p>
+    <p><strong>출력:</strong> 개선된 policy π<sub><em>N</em>+1</sub></p>
+    <table class="algorithm-lines">
+      <tbody>
+        <tr><td>1:</td><td>// Stage 1: Behavior cloning</td></tr>
+        <tr><td>2:</td><td>π<sub>1</sub> ← <span class="small-caps">FINETUNE</span>(π<sub>VLA</sub>, <em>D</em><sub>demo</sub>) <span class="algorithm-comment">▷ 지도 BC fine-tuning</span></td></tr>
+        <tr><td>3:</td><td><em>R</em><sub>1</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub>1</sub>, <em>n</em>=50–100) <span class="algorithm-comment">▷ 가장 약한 policy에서 rollout을 수집한다</span></td></tr>
+        <tr><td>4:</td><td>// Stage 2a: Rollout distribution에 대한 일회성 reward model adaptation</td></tr>
+        <tr><td>5:</td><td><em>R</em><sub>1</sub><sup>labeled</sup> ← <span class="small-caps">HUMANANNOTATE</span>(<em>R</em><sub>1</sub>) <span class="algorithm-comment">▷ segment-level label + 최종 progress</span></td></tr>
+        <tr><td>6:</td><td><em>D</em><sub>adapt</sub> ← <em>R</em><sub>1</sub><sup>labeled</sup> ∪ <span class="small-caps">SUBSAMPLE</span>(<em>D</em><sub>RM</sub>, 0.5) <span class="algorithm-comment">▷ pretraining data의 50%를 혼합한다</span></td></tr>
+        <tr><td>7:</td><td>RM<sub>2</sub> ← <span class="small-caps">FINETUNE</span>(RM<sub>1</sub>, <em>D</em><sub>adapt</sub>) <span class="algorithm-comment">▷ pretraining cost의 약 1/10</span></td></tr>
+        <tr><td>8:</td><td>// Stage 2b: Pretrained reward model을 사용한 초기 residual RL</td></tr>
+        <tr><td>9:</td><td><em>D̃</em><sub>demo</sub> ← <span class="small-caps">LABELREWARDS</span>(<em>D</em><sub>demo</sub>, RM<sub>1</sub>)</td></tr>
+        <tr><td>10:</td><td>π<sub>2</sub> ← <span class="small-caps">SPIRAL</span>(π<sub>1</sub>, <em>D̃</em><sub>demo</sub>)</td></tr>
+        <tr><td>11:</td><td><em>R</em><sub>2</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub>2</sub>, <em>n</em>=100)</td></tr>
+        <tr><td>12:</td><td>// Stage 4: On-policy self-improvement loop</td></tr>
+        <tr><td>13:</td><td><strong>for</strong> <em>i</em> = 2, 3, ..., <em>N</em> <strong>do</strong></td></tr>
+        <tr><td>14:</td><td class="indent-1"><em>R̃</em><sub><em>i</em></sub> ← <span class="small-caps">LABELREWARDS</span>(<em>R</em><sub><em>i</em></sub>, RM<sub>2</sub>)</td></tr>
+        <tr><td>15:</td><td class="indent-1">π<sub><em>i</em>+1</sub> ← <span class="small-caps">SPIRAL</span>(π<sub><em>i</em></sub>, <em>R̃</em><sub><em>i</em></sub>)</td></tr>
+        <tr><td>16:</td><td class="indent-1"><em>R</em><sub><em>i</em>+1</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub><em>i</em>+1</sub>, <em>n</em>=100)</td></tr>
+        <tr><td>17:</td><td class="indent-1"><strong>if</strong> <span class="small-caps">SUCCESSRATE</span>(<em>R</em><sub><em>i</em>+1</sub>) ≥ τ<sub>success</sub> <strong>then</strong></td></tr>
+        <tr><td>18:</td><td class="indent-2"><strong>break</strong></td></tr>
+        <tr><td>19:</td><td class="indent-1"><strong>end if</strong></td></tr>
+        <tr><td>20:</td><td><strong>end for</strong></td></tr>
+        <tr><td>21:</td><td><strong>return</strong> π<sub><em>i</em>+1</sub></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>

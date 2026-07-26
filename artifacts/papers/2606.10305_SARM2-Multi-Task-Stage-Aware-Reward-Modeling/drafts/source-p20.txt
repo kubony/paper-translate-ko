@@ -1,0 +1,66 @@
+6.6   Reward Model Evaluation Protocol
+
+Demonstration evaluation. We sample 10 held-out episodes per task and report the per-frame
+mean squared error (MSE) between the predicted and ground-truth progress. For clarity of pre-
+sentation, we report MSE separately on S1 and S2 , alongside a combined score. We note that the
+combined MSE is computed as a micro-average over all evaluated frames; it is therefore not the
+arithmetic mean of the two per-subset values.
+
+Rollout evaluation. Following the protocol of SARM, we assess robot rollout progress esti-
+mation on a real robotic platform. We fine-tune a π0.5 [5] policy on each target task and deploy
+intermediate checkpoints from different training stages, yielding a balanced rollout set of 36 trajec-
+tories per task: 12 successful episodes (SE), 12 partially successful episodes (PSE), and 12 failed
+episodes (FE). Each rollout is classified by the reward model according to:
+                                                              PT
+                                 if Pfinal > 0.8 ∧ T3
+                               
+                               
+                               SE,                             t=2T /3 Pt > 0.6,
+                               
+                    Label = PSE, if T1 Tt=1 Pt ≥ ξ,
+                                       P
+                                                                                                    (4)
+                           
+                           
+                           
+                             FE, otherwise,
+
+where Pt denotes the predicted progress at frame t, T is the trajectory length, and ξ is set to the
+median of the average progress across all non-successful rollouts. This adaptive threshold yields an
+equal split between PSE and FE predictions and avoids the bias introduced by manually tuning a
+fixed cutoff.
+We further summarize rollout classification accuracy via the score
+                                    #correct − #incorrect
+                               ρ=                         ∈ [−1, 1],                                (5)
+                                             36
+which assigns +1 for each correctly classified rollout and −1 otherwise, normalized by the total
+number of rollouts. A perfect classifier achieves ρ = 1, while random ternary guessing yields
+ρ ≈ −1/3.
+
+MoE routing diagnostics.       For all MoE-based reward models, we additionally report the top-k
+routing score, defined as
+                                                                   k
+                                       r−1                  NX
+                             Sroute =         ,         r =       p̄(i) ,                           (6)
+                                      N/k − 1               k i=1
+
+where N is the total number of experts, k is the number of activated experts per token, and p̄(i)
+is the i-th largest entry of the routing distribution averaged over the evaluation set. The raw con-
+centration r measures the mass placed on the top-k experts relative to a uniform baseline 1/N ,
+ranging from 1 (perfectly balanced) to N/k (fully collapsed); the affine normalization rescales Sroute
+to [0, 1], removing the dependence on N and k so expert utilization can be compared directly across
+configurations. A healthy router yields Sroute well below 1.
+
+6.7   Policy Evaluation Protocol
+
+Cleaning Whiteboard – five-tier scoring. Each episode of the Cleaning Whiteboard evaluation
+is scored using five progress tiers: 0% for no letters cleaned; 25% for successfully grasping the
+eraser, stabilizing the board, and cleaning at least one letter; 50% for cleaning more than half but
+not all letters; 75% for cleaning all letters without stopping correctly, or stopping early with letters
+remaining; and 100% for cleaning all letters and terminating correctly by releasing the eraser on
+the table and board. The reported Avg. Prog. metric is the mean tier value across all 20 evaluation
+episodes, while SR counts only episodes that reach the 100% tier.
+
+
+                                                  20
+

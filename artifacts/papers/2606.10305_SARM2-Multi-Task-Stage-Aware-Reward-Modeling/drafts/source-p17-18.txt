@@ -1,0 +1,84 @@
+                                    Coil and wrap headphones
+
+
+
+
+                                       Put away an umbrella
+
+
+
+
+Figure 6: Visualization of the 10 evaluation tasks. Top-to-bottom, page-by-page: S1 : (1) Pick
+and place plates into bin, (2) Pick and place plates into dish rack, (3) Folding the t-shirt, (4) Folding
+shorts, (5) Pull plug off the socket; S2 : (6) Clean whiteboard with whiteboard eraser, (7) Set dinner
+table, (8) Put away an umbrella, (9) Sweep paper scraps with broom, (10) Coil and wrap headphones.
+
+
+
+
+                                                   17
+6.3   Hyperparameter Table
+
+Table 3 consolidates all hyperparameters introduced in the main text, covering the action-primitive
+stage estimator, the multi-gate MoE value decoder, and the SPIRAL self-improvement loop.
+
+Table 3: Hyperparameter summary. Symbols, descriptions, and values for all hyperparameters
+referenced in the main text.
+  Symbol       Description                                                                   Value
+  Action-primitive stage estimator
+  K             Number of action primitives                                                  21
+  N             Number of recent context frames per timestep                                 6
+  ∆             Frame sampling stride                                                        30
+  LAP           Transformer encoder layers                                                   4
+  d             Transformer hidden dimension                                                 512
+  tk            Hours of data per primitive in DAP                                           3
+  lrAP          Learning rate                                                                5 × 10−5
+  BAP           Batch size                                                                   96
+  TAP           Training steps                                                               10,000
+  optAP         Optimizer                                                                    AdamW
+  Multi-gate MoE value decoder
+  LVD          Transformer encoder layers                                                    6
+  M            Number of primitive groups (gates)                                            8
+  E            Number of experts in shared pool                                              10
+  k            Top-k routing per timestep                                                    2
+  dexp         Expert hidden width                                                           256
+  nh × dexp    Expert MLP shape (depth × width)                                              3 × 256
+  λbal         Load-balance auxiliary loss weight                                            2.5
+  λent         Entropy auxiliary loss weight                                                 0.5
+  Nrw          Number of rewinding frames                                                    3
+  lrVD         Learning rate                                                                 5 × 10−5
+  BVD          Batch size                                                                    64
+  TVD          Training steps                                                                10,000
+  optVD        Optimizer                                                                     AdamW
+  Behavior Cloning
+  h            Action chunk horizon                                                          50
+  lrBC         Learning rate                                                                 5 × 10−5
+  BBC          Batch size                                                                    32
+  TBC          Training steps                                                                30,000
+  wdBC         Weight decay                                                                  Cosine
+  optBC        Optimizer                                                                     AdamW
+  SPIRAL self-improvement
+  γ            Discount factor                                                               0.9995
+  α            MC objective weight in Jcritic                                                0.5
+  β            BC regularizer weight in residual actor loss                                  30
+  Ncritic      Critic ensemble size                                                          5
+  σ            Target-policy smoothing noise std                                             0.2
+  c            Target-policy smoothing clip range                                            0.5
+  κ            DICE multi-sample latent candidates per state (and best-of-κ at deployment)   4
+  nRL × dRL Actor/Critic MLP shape (depth × width)                                           3 × 1024
+  τtgt         Target network soft-update rate                                               0.005
+  lrRL         Learning rate (actor / critic)                                                1 × 10−4
+  BRL          Batch size                                                                    16
+  TRL          Training steps per round                                                      5,000
+  optRL        Optimizer                                                                     AdamW
+
+
+
+6.4   Action Primitive Grouping Explaination
+
+To assign each of the K=21 action primitives to an MMoE gate, we cluster them into M +1=8
+semantic groups according to shared visual appearance and end-effector motion patterns, so that
+
+
+                                                    18
+

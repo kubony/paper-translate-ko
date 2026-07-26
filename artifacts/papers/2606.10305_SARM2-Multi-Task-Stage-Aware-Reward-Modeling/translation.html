@@ -1,0 +1,766 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>SARM2 한국어 전문 번역</title><style>
+  /* ===== 페이지 설정 ===== */
+  @page { size: A4; margin: 15mm; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    color: #111;
+    font-size: 9.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ===== 표지 ===== */
+  .cover {
+    position: relative;
+    min-height: 250mm;          /* 표지를 한 페이지로 채운다 */
+    padding-left: 14mm;
+    page-break-after: always;
+  }
+  .cover .bar {                 /* 좌측 검은 세로 바 */
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: #111;
+  }
+  .cover .spacer { height: 78mm; }   /* 제목을 페이지 중앙쯤으로 */
+  .cover h1 {
+    font-size: 30pt;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #111;   /* 제목 하단 굵은 밑줄 */
+    max-width: 150mm;
+  }
+  .cover .subtitle {
+    font-size: 14pt;
+    font-weight: 700;
+    margin: 10px 0 22px 0;
+  }
+  .cover .meta { font-size: 10.5pt; line-height: 1.9; }
+  .cover .meta b { font-weight: 700; }
+  .cover .note {
+    margin-top: 20px;
+    font-size: 9pt;
+    color: #666;
+    max-width: 150mm;
+  }
+
+  /* ===== 본문 2단 컨테이너 ===== */
+  .body {
+    column-count: 2;
+    column-gap: 7mm;
+    column-fill: auto;
+    text-align: justify;
+  }
+  .body p { margin: 0 0 7px 0; }
+
+  /* 문서 제목행(H1)과 큰 섹션 제목(H2)은 단 전체 폭 */
+  h1.doc-title {
+    column-span: all;
+    font-size: 17pt;
+    font-weight: 800;
+    margin: 0 0 4px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #111;
+    line-height: 1.2;
+  }
+  h2.section {
+    column-span: all;
+    font-size: 15pt;
+    font-weight: 800;
+    margin: 14px 0 8px 0;
+    padding: 6px 0;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+  }
+  /* 소제목은 단 내부 */
+  h3 { font-size: 11pt; font-weight: 700; margin: 10px 0 4px 0; }
+  h4 { font-size: 9.5pt; font-weight: 700; margin: 8px 0 3px 0; }
+  h2.section, h3, h4 { break-after: avoid; }
+
+  /* ===== 서지 + 번역 메모 (첫 2단 블록) ===== */
+  ul.biblist { margin: 0 0 8px 0; padding-left: 16px; }
+  ul.biblist li { margin-bottom: 3px; }
+  .memo-title { font-weight: 800; font-size: 12pt; margin: 0 0 6px 0; }
+  ul.memo { margin: 0; padding-left: 16px; }
+  ul.memo li { margin-bottom: 5px; }
+
+  /* ===== 코드블록 / 수식 ===== */
+  pre {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 7px 9px;
+    margin: 7px 0;
+    white-space: pre-wrap;      /* 줄바꿈 허용 */
+    word-break: break-word;
+    break-inside: avoid;
+  }
+  code {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 8.8pt;
+    background: #f0f0f0;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  /* 복잡한 수식/모델 관계를 평문으로 풀어 쓰는 설명 상자 */
+  .explain-card {
+    background: #f2f6fa;
+    border-left: 3px solid #315f86;
+    padding: 7px 9px;
+    margin: 7px 0 9px;
+    text-align: left;
+    break-inside: avoid;
+  }
+  .explain-card .card-title { color: #244b6b; font-weight: 800; }
+  .explain-card .flow {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ccd7e1;
+    padding: 4px;
+    margin: 5px 0;
+  }
+
+  /* ===== 표 ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin: 6px 0;
+    break-inside: avoid;
+  }
+  table.wide { column-span: all; }   /* 넓은 표는 단 전체 폭 */
+  th, td {
+    border: 0.6pt solid #111;
+    padding: 3px 5px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  th { background: #e8e8e8; font-weight: 700; }
+  td.l, th.l { text-align: left; }
+  /* 열이 많은 표의 셀 넘침/본문 겹침 방지: 셀 안에서 강제 줄바꿈 */
+  th, td { overflow-wrap: anywhere; word-break: break-word; }
+  /* 6열 이상이거나 셀 텍스트가 긴 표는 반드시 class="wide"로 단 전체 폭을 써라.
+     좁은 단에 욱여넣으면 셀이 겹치거나 세로 1토큰 덤프로 붕괴한다. */
+
+  /* ===== 그림 ===== */
+  figure {
+    margin: 8px 0;
+    text-align: center;
+    break-inside: avoid;
+  }
+  figure.fig-wide { column-span: all; }
+  /* max-height: 세로로 매우 긴 그림(다패널)이 페이지 경계에서 잘려
+     빈 공간+캡션 유실을 만드는 것을 방지한다 */
+  figure img { max-width: 100%; height: auto; max-height: 230mm; object-fit: contain; }
+  figcaption {
+    font-size: 8.5pt;
+    color: #444;
+    margin-top: 4px;
+    text-align: center;
+  }
+  figcaption b { color: #111; font-weight: 700; }
+
+  /* 긴 캡션 번역용 전체 폭 블록 */
+  .caption-block { column-span: all; margin: 6px 0 10px 0; }
+  .caption-block .cap-head { font-weight: 700; margin-bottom: 3px; }
+
+  /* ===== 영상 자산 (웹 출처 번역) =====
+     PDF에서는 재생되지 않으므로 썸네일 + 클릭 가능한 링크로 대신한다.
+     레포 사본과 원본 URL을 모두 남겨야 원문이 내려가도 추적할 수 있다. */
+  figure.video-card { margin: 8px 0; text-align: center; break-inside: avoid; }
+  figure.video-card img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+  .video-links { display: block; font-size: 8pt; margin-top: 2px; }
+  .video-links a { color: #1a4d8f; text-decoration: none; }
+  .video-badge {
+    display: inline-block; font-size: 7.5pt; font-weight: 700; color: #fff;
+    background: #1a4d8f; border-radius: 3px; padding: 0 4px; margin-right: 4px;
+  }
+  /* 말미 영상 부록 표 */
+  table.video-index { column-span: all; font-size: 8pt; }
+  table.video-index td { word-break: break-all; }
+
+  /* ===== 참고문헌 ===== */
+  .refs-note { font-size: 9pt; color: #555; margin-bottom: 6px; }
+  ol.refs { margin: 0; padding-left: 18px; font-size: 8.8pt; line-height: 1.4; }
+  ol.refs li { margin-bottom: 4px; }
+
+  .strong { font-weight: 700; }
+  /* 원본 표의 밑줄 강조(예: 2위 성능)를 재현할 때 사용 */
+  .ul { text-decoration: underline; }
+
+section>h2,article h2{column-span:all;font-size:15pt;font-weight:800;margin:14px 0 8px;padding:6px 0;border-top:1px solid #bbb;border-bottom:1px solid #bbb}article header{column-span:all}.paper-translation{display:contents}.algorithm-lines{font-family:Menlo,monospace;font-size:7.4pt}.video-grid{column-span:all;display:grid;grid-template-columns:1fr 1fr;gap:8px}.video-grid figure{margin:0}.video-index a{word-break:break-all;color:#1a4d8f}.asset-note{column-span:all}caption{font-weight:600;margin-bottom:4px}</style></head><body><section class="cover"><div class="bar"></div><div class="spacer"></div><h1>SARM2: Multi-Task Stage Aware Reward Modeling for Self Improving Robotic Manipulation</h1><div class="subtitle">한국어 전문 번역</div><div class="meta"><div><b>저자</b>: Qianzhong Chen, Hau Zheng, Justin Yu, Suning Huang, Jiankai Sun, Ken Goldberg, Chuan Wen, Pieter Abbeel, Yide Shentu, Philipp Wu, Mac Schwager</div><div><b>발표</b>: arXiv cs.RO v1 | <b>arXiv</b>: 2606.10305</div><div><b>원문</b>: https://arxiv.org/abs/2606.10305</div><div><b>번역 생성일</b>: 2026-07-26</div></div><div class="note">원문 정보 구조를 보존해 2단 PDF로 재구성하고 피겨·표·수식을 개별 요소로 유지했다.</div></section><div class="body"><h1 class="doc-title">SARM2: Multi-Task Stage Aware Reward Modeling for Self Improving Robotic Manipulation — 한국어 전체 번역</h1><ul class="biblist"><li><b>저자</b>: Qianzhong Chen, Hau Zheng, Justin Yu, Suning Huang, Jiankai Sun, Ken Goldberg, Chuan Wen, Pieter Abbeel, Yide Shentu, Philipp Wu, Mac Schwager</li><li><b>소속</b>: Stanford University, UC Berkeley, Shanghai Jiao Tong University, xdof.ai</li><li><b>원문</b>: <a href="https://arxiv.org/abs/2606.10305">arXiv:2606.10305v1</a></li><li><b>프로젝트</b>: <a href="https://qianzhong-chen.github.io/sarm2.github.io/">SARM2 project page</a></li><li><b>번역 기준</b>: 2026-06-09 공개 v1</li></ul><div class="memo-title">번역 메모</div><ul class="memo"><li>Vision-Language-Action은 첫 등장에 VLA와 함께 쓰며 이후 <b>VLA</b>로 표기한다.</li><li>robotics 문맥의 <b>policy</b>, <b>action</b>, <b>reward model</b>, <b>rollout</b>은 혼합 표기를 유지한다.</li><li>MoE/MMoE, stage estimator, action primitive는 구조적 의미를 보존한다.</li><li>수식은 ASCII/유니코드 표기로 재구성하고 변수·식 번호를 유지한다.</li><li>표의 수치와 모델명·dataset명·metric명은 원문 표기를 유지한다.</li><li>본문 인용 번호는 제거하고 참고문헌은 문서 말미에 원문 표기로 정리한다.</li></ul>
+  <header>
+    <h1>SARM2: 자기 개선형 로봇 조작을 위한 멀티태스크 단계 인식 보상 모델링</h1>
+    <p class="authors">Qianzhong Chen<sup>1</sup>, Hau Zheng<sup>1</sup>, Justin Yu<sup>2</sup>, Suning Huang<sup>1</sup>, Jiankai Sun<sup>1</sup>, Ken Goldberg<sup>2</sup>, Chuan Wen<sup>3</sup>, Pieter Abbeel<sup>2</sup>, Yide Shentu<sup>2,4</sup>, Philipp Wu<sup>4</sup>, Mac Schwager<sup>1</sup></p>
+    <p class="affiliations"><sup>1</sup>Stanford University, <sup>2</sup>UC Berkeley, <sup>3</sup>Shanghai Jiao Tong University, <sup>4</sup>xdof.ai</p>
+    <p class="preprint">arXiv:2606.10305v1 [cs.RO], 2026년 6월 9일</p>
+  </header>
+
+  <figure class="fig-wide" id="figure-1"><img src="figures/sarm2-overview.png" alt="원문 그림 1"><figcaption><strong>그림 1: SARM2 개요.</strong> SARM2는 현재 세그먼트를 K+1=22개의 action primitive 중 하나로 분류하는 범용 단계 추정기를 활용하여 멀티태스크 단계 인식 보상 모델링을 달성한다. 단계 정보는 후단의 멀티게이트 Mixture of Experts(MMoE) value head에서 사용되며, 이를 통해 조작 태스크에 대해 조밀하고 정확하며 범용적인 value 추정을 달성한다.</figcaption></figure>
+
+  <section id="abstract">
+    <h2>초록</h2>
+    <p>장기 구간 조작을 위한 vision-language-action(VLA) policy의 파인튜닝은 여전히 행동 복제에 크게 의존하며, 이는 비용이 많이 드는 고품질 시연을 필요로 하고 policy를 시연 분포 부근에 머물게 한다. 보상 모델은 시연의 가중치를 재조정하고 실제 로봇 강화학습(RL)에 조밀한 감독 신호를 제공함으로써 이러한 의존성을 줄일 수 있지만, 조밀성과 정확성, 범용성을 모두 갖추어야 한다. 기존 방법은 이 요건을 충족하지 못한다. 태스크별 단계 인식 모델은 정확하지만 태스크마다 주석이 필요하며, 범용 vision-language model(VLM) 보상 모델은 폭넓게 적용할 수 있으나 세밀한 장기 구간 진행도를 포착하기에는 지나치게 거칠다. 본 연구는 action primitive 기반 단계 추정기와 멀티게이트 Mixture of Experts(MMoE) value head를 결합하여 여러 조작 태스크에 걸쳐 조밀한 스텝별 보상을 생성하는 멀티태스크 단계 인식 보상 모델 SARM2를 제안한다. SARM2를 기반으로, 저비용 자율 rollout으로부터 VLA policy를 개선하는 on-policy 보상 유도 프레임워크 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)을 추가로 제안한다. 10개 태스크 벤치마크에서 SARM2는 가장 강력한 baseline 대비 value 추정 MSE를 80% 줄인다. 또한 SPIRAL에 사용할 경우 Folding Shorts(58% → 100%)와 Cleaning Whiteboard(50% → 90%)에서 태스크 성공률을 약 50% 수준에서 거의 완벽한 성능으로 향상시키며, 고품질의 조밀한 보상이 안정적인 로봇 데이터 플라이휠의 핵심임을 보여준다. 프로젝트 웹사이트: https://qianzhong-chen.github.io/sarm2.github.io/.</p>
+    <p><strong>키워드:</strong> 보상 모델링, 강화학습, 로봇 조작</p>
+  </section>
+
+  <section id="introduction">
+    <h2>1 서론</h2>
+    <p>Vision-Language-Action(VLA) 모델은 end-to-end policy 학습을 로봇 조작의 지배적인 패러다임으로 확립했다. 그러나 대부분의 VLA는 별도의 조치 없이 단기 구간을 넘어서는 태스크를 수행하는 데 어려움을 겪는다. 이를 장기 구간 태스크로 확장하려면 일반적으로 도메인 내 데이터에 대한 파인튜닝이 필요하며, 지도 파인튜닝(SFT)은 대량의 인간 시연을 요구하고 분포 외(OOD) 실패에도 여전히 취약하다.</p>
+    <p class="contact">문의 사항은 qchen23@stanford.edu로 연락하기 바란다.</p>
+    <p>최근 방법은 보상 모델을 활용해 학습 샘플을 필터링하고 고품질 데이터에서 더 많은 가치를 추출하지만, 이러한 offline 접근법은 시연 분포에 제약되며 rollout을 통해 스스로 개선할 수 없다. π0.6<sup>∗</sup> 및 ConRFT와 같은 방법은 on-policy DAgger를 통해 policy를 지속적으로 개선하지만, 원격조작과 policy 학습 모두에 숙련된 운용자의 비용이 많이 드는 human-in-the-loop 감독이 필요하다. 별도의 연구 계열은 희소 보상과 함께 online 상호작용 데이터를 사용하지만 장기 구간 태스크에서는 충분한 성능을 내지 못한다. 이러한 연구 방향 전반에서 VLA-RL의 확장은 장기 구간 태스크의 각 세그먼트가 올바르게 실행되었는지를 충실하게 판단할 수 있는 정확한 보상 모델에 달려 있다.</p>
+    <p>기존 조작용 보상 모델은 태스크별 보상 모델과 범용 보상 모델이라는 두 부류로 나뉜다. 초기의 태스크별 설계는 일반적으로 좁은 범위의 시연으로 학습되며, 미묘한 단계 전이와 누적 오류를 포착하기 어려운 장기 구간 및 OOD 조건에서 성능이 저하된다. SARM은 장기 구간 태스크의 정확도를 향상시키는 단계 조건부 계층 구조를 추가하지만, 여전히 단일 태스크에 국한되고 태스크별 단계 주석에 의존하므로 태스크 다양성이 증가할수록 적용 가능성이 제한된다. 반면 범용 VLM 기반 보상 모델은 사전학습된 VLM의 광범위한 사전 지식을 활용하여 태스크 전반에 일반화하지만, 스텝 수준의 예측이 대체로 거칠고 잡음이 많아 장기 구간 조작을 위한 조밀한 감독 신호로는 적합하지 않다. VLA-RL을 대규모로 지원하려면 보상 모델이 조밀하고 정확하며 도메인 전반의 장기 구간 태스크를 감독할 수 있을 만큼 범용적이어야 한다는 세 가지 요건을 동시에 충족해야 하지만, 기존 보상 모델 중 이 세 요건을 모두 충족하는 모델은 없다.</p>
+    <p>본 연구는 범용 단계 추정기와 멀티게이트 Mixture of Experts(MMoE) value head를 결합한 멀티태스크 단계 인식 보상 모델 SARM2를 제안한다. 단계 추정기는 공유 action primitive 어휘를 통해 태스크 간에 전이되며, 예측된 primitive가 해당 MMoE gate를 선택하여 value head가 가장 관련성 높은 도메인별 및 action별 expert를 활성화하도록 유도함으로써 정확하고 조밀한 value 추정을 수행한다. 또한 SARM2의 조밀한 보상과 저비용 자율 rollout을 활용해 자기 개선형 데이터 플라이휠을 구성하는 on-policy 실제 로봇 RL 프레임워크 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)을 제안한다. 본 연구의 기여는 다음과 같다.</p>
+    <ul>
+      <li><p>SARM2는 일반화 가능한 action primitive 단계 추정기와 MMoE value head를 긴밀하게 결합한 멀티태스크 단계 인식 보상 모델이다. 예측된 primitive가 해당 MMoE gate를 직접 선택하여 단일 모델 내에서 다양한 장기 구간 태스크에 걸쳐 정확하고 조밀한 보상을 생성한다.</p></li>
+      <li><p>SPIRAL은 SARM2의 조밀한 보상을 활용하는 보상 정렬형 on-policy residual RL 프레임워크이다. SPIRAL은 자율 로봇 데이터 플라이휠을 완성하여 최소한의 인간 개입만으로 장기 구간 태스크에서 policy를 지속적으로 개선할 수 있게 한다.</p></li>
+      <li><p>본 연구는 실제 환경의 두 가지 장기 구간 조작 태스크인 Folding Shorts와 Cleaning Whiteboard에서 제안 방법을 검증한다. SPIRAL에 통합된 SARM2는 희소 보상 및 대규모 VLM 기반 보상 모델 baseline보다 우수한 성능을 보이며, downstream policy의 성공률을 크게 향상시킨다.</p></li>
+    </ul>
+  </section>
+
+  <section id="related-works">
+    <h2>2 관련 연구</h2>
+    <p><strong>로봇 조작을 위한 보상 모델.</strong> 태스크별 보상 모델은 CLIP 또는 SigLIP과 같은 중간 규모의 vision-language encoder를 사용하여 시각 관측으로부터 학습한다. 장기 구간의 접촉 집약적 태스크를 처리하기 위해, 단계 인식 변형 모델은 태스크를 하위 단계로 분해하고 단계 조건부 조밀 보상을 생성한다. 이러한 방법은 근본적으로 단일 태스크에 국한된다. 새로운 태스크마다 재학습이 필요하며, SARM은 추가로 프레임별 조밀한 단계 주석을 요구한다. 본 연구에서는 조밀한 주석을 사용하지 않는 가장 강력한 단일 태스크 baseline인 ReWiND와 비교한다. 이와 상호보완적인 연구 계열은 사전학습된 VLM을 기반으로 태스크 불가지론적 보상 모델을 구축한다. 이들이 별도의 조정 없이 생성하는 보상은 조밀한 스텝별 신호로 사용하기에는 지나치게 거칠며, 방대한 수의 파라미터를 파인튜닝하는 데에도 많은 비용이 든다. 본 연구에서는 TOPReward를 비교 대상으로 평가한다.</p>
+  </section>
+
+
+<p>Section 4.1의 Robometer도 이에 해당한다. SARM2는 두 패러다임을 결합한다. 즉, 공유 action-primitive vocabulary를 기반으로 구축한 재사용 가능한 stage estimator와, 단일 모델에서 여러 task에 적응하는 multi-task value head를 함께 사용한다.</p>
+
+<h3>실제 로봇 강화학습(Real-Robot Reinforcement Learning)</h3>
+<p>실제 로봇 데이터에 대한 RL은 두 가지 문제로 인해 제약을 받는다. 하나는 long-horizon task에서 dense reward를 얻는 것이고, 다른 하나는 반복적인 diffusion/flow sampling을 통해 backpropagation을 수행하는 것이다. End-to-end RL은 처음부터 compact single-task policy를 학습하므로 표현력을 희생한다. Offline-to-online 방법은 BC로 초기화한 다음 RL로 개선한다. 단순한 MLP head는 fine-tuning이 쉽지만 한계가 있으며, 표현력이 높은 policy에 대한 AWR-style update는 사람의 DAgger intervention에 의존한다. RL100은 높은 계산 비용을 감수하며 denoising을 통해 PPO를 backpropagation하는 반면, steering 및 residual 방법은 weight를 업데이트하지 않고 base-policy output을 수정한다. 본 연구와 가장 가까운 방법은 value-guided action selection과 residual learning을 통합하는 DICE-RL이다. 위의 모든 방법은 sparse reward에 의존한다. Robotics에서 MoE는 policy capacity scaling을 위해 연구되어 왔지만, 저자들이 아는 한 SARM2는 multi-task robotics reward model에 MoE를 적용한 최초의 방법이다.</p>
+
+<h2>3 방법(Method)</h2>
+<p>본 방법은 두 부분으로 제시한다. Section 3.1에서는 long-horizon task 전반에 걸쳐 dense progress estimate를 생성하는 multi-task stage-aware reward model인 SARM2를 소개하고, Section 3.2에서는 SARM2의 dense reward를 autonomous on-policy data flywheel로 전환하는 self-improvement framework인 SPIRAL을 소개한다.</p>
+
+<h3>3.1 SARM2: Multi-Task Stage-Aware Reward Model</h3>
+
+<figure class="fig-wide" id="figure-2"><img src="figures/fig-p03-01.png" alt="원문 그림 2"><figcaption><strong>Figure 2: SARM2 개요.</strong> 세 개의 camera view와 proprioceptive state를 공유된 frozen SigLIP-2 backbone으로 encoding하고, caching된 frame embedding을 별도로 학습된 두 개의 causal Transformer에 입력한다. 두 Transformer는 (i) 현재 segment를 K+1=22개 candidate(K=21개 action primitive와, 모델이 불확실할 때 fallback으로 사용하는 null class) 중 하나로 분류하는 task-agnostic stage estimator와, (ii) predicted primitive group에 따라 gate가 선택되고 fused token을 top-k shared expert로 routing하여 dense progress estimate를 생성하는 multi-gate MoE value decoder이다.</figcaption></figure>
+
+<h4>3.1.1 Action-Primitive Stage Estimator</h4>
+<p>SARM은 stage-aware reward modeling이 long-horizon task에서 정확한 progress estimation을 가능하게 함을 보였지만, 그 stage estimator는 task-specific annotation에 의존하며 새로운 task마다 재학습해야 한다. 본 연구에서는 대신 action primitive를 task-agnostic intermediate representation으로 사용한다. Annotation된 10,000시간 이상의 manipulation data로 구성된 내부 corpus에서 얻은 다음 두 가지 관찰이 이러한 설계의 근거가 된다. (1) 거의 모든 task의 demonstration은 task name, scene, object의 차이에도 불구하고 task 전반에서 반복적으로 나타나는 action primitive sequence로 분해된다. (2) primitive vocabulary는 비교적 작고, 많은 primitive가 의미적으로 유사하거나(예: pour/dump) 하나의 task에서 함께 나타나는 경우가 드문 dual pair를 이루므로(예: pull/push), 추가적인 compression이 가능하다.</p>
+
+<h5>Action Primitive Dataset Construction</h5>
+<p>100개 task에 걸친 실제 환경의 manipulation data 200시간을 선별했다. Consolidation 후 전체 task duration의 90%를 초과하여 포괄하는 K = 21개의 action primitive를 식별했다. Source dataset을 annotation boundary에 따라 분할하고, (i) 각 primitive가 t<sub>k</sub> = 3시간을 기여하며 (ii) primitive별 source-task diversity를 최대화하는 balanced dataset D<sub>AP</sub>를 구축하여, 총 (K + 1) · t<sub>k</sub> = 66시간의 segment를 얻었다. 추가된 null class는 reset behavior와 출현 빈도가 낮은 action primitive를 포함한 나머지 모든 long-tail sample로 구성한다. 구축 세부 사항은 Appendix 6.4에 제시한다.</p>
+
+<h5>Model Architecture</h5>
+<p>Stage estimation을 primitive vocabulary와 null class에 대한 temporal classification 문제(K + 1 = 22개 class)로 정의한다. 시간 t에서 모델은 stride Δ = 30으로 sampling한 최근 N = 6개 frame(30 Hz에서 약 6초의 context)을 입력받는다. v ∈ {wrist<sub>L</sub>, wrist<sub>R</sub>, top}인 세 개의 view를 사용하며 이를 I<sub>t</sub><sup>(v)</sup>로 나타내고, proprioceptive state s<sub>t</sub>도 함께 사용한다. 각 frame은 frozen SigLIP-2 encoder ϕ로 encoding하며, s<sub>t</sub>는 MLP ψ로 projection한다. 모든 token은 4-layer causal Transformer f<sub>θ</sub>로 처리한 뒤 linear head g<sub>θ</sub>를 거쳐 class logit p<sub>t</sub> = softmax(g<sub>θ</sub>(h<sub>t</sub>))를 생성한다. 모델은 D<sub>AP</sub>에서 cross-entropy로 학습하며, hyperparameter의 전체 세부 사항은 Appendix 6.3에 제시한다.</p>
+
+<h4>3.1.2 MMoE Value Decoder</h4>
+<p>Stage estimator를 기반으로 dense하고 stage-conditioned인 goal-distance를 추정하는 multi-task value model을 설계한다. Primitive마다 visual dynamics와 progress signature가 현저히 다르므로, monolithic value head는 interference와 tail underfitting 문제를 겪는다. 이를 해결하기 위해 공통 expert pool을 공유하면서 primitive group별로 specialization하는 multi-gate Mixture-of-Experts(MMoE) decoder를 사용한다.</p>
+
+<p>Value model은 자체적인 6-layer causal Transformer backbone을 사용하며, stage estimator의 4-layer Transformer와 별도로 학습한다. 두 모델은 frozen SigLIP-2 encoder와 caching된 6-frame embedding만 공유하며, 이에 따라 inference 시 중복되는 visual encoding을 제거한다. Step t에서 value model은 (1) three-camera frame, (2) proprioceptive state s<sub>t</sub>, (3) task-name text embedding e<sub>task</sub>, (4) stage estimator가 예측한 ỹ<sub>t</sub>의 predicted-primitive embedding e<sub>prim</sub>을 입력받는다. SARM을 따라 input frame sequence는 첫 번째 episode frame(visual anchor), stride Δ = 30인 최근 여섯 개 frame, 그리고 implicit negative로 사용하는 최대 세 개의 rewinding frame을 연결한다. Rewinding frame은 모델이 monotonic time-index predictor로 붕괴하는 것을 방지한다.</p>
+
+<p>K + 1개의 primitive를 공유되는 visual/motion pattern에 따라 M + 1개의 semantic group으로 분할한다(Appendix 6.4 참조). MMoE를 따라 각 group에는 E개 expert로 구성된 shared pool에 대한 전용 gate G<sub>m</sub>이 있으며, 각 expert는 3-layer MLP이다. Step t의 active gate는 m(ỹ<sub>t</sub>)에 의해 선택되며, top-k routing weight와 다음의 MoE output을 생성한다.</p>
+
+<pre class="equation">oₜ = Σₑ₌₁ᴱ gₜ,ₑ^(m(ỹₜ)) · Eₑ(hₜ),    gₜ^(m) = TopK(softmax(Wₘhₜ)).    (1)</pre>
+
+<p>Group-conditioned routing은 명시적인 inductive bias를 제공한다. 서로 다른 group의 primitive는 별도의 gate를 사용하지만 shared expert에는 계속 접근할 수 있다. Router collapse를 방지하기 위해 gate별 balance auxiliary loss와 entropy auxiliary loss(L<sub>balance</sub>, L<sub>entropy</sub>)를 추가한다. 전체 수식과 ablation은 Appendix 6.8 및 6.10에, hyperparameter의 전체 세부 사항은 Appendix 6.3에 제시한다.</p>
+
+<p>π<sub>0.6</sub>을 따라 value model은 completion까지 남은 step을 정규화한 값 r<sub>t</sub><sup>⋆</sup> = −(T − t)/T ∈ [−1, 0]을 예측한다. 이 방식이 horizon이 다양한 rollout에서 fine-tuning하기 더 쉽다는 것을 확인했다. 전체 objective는 MSE term과 auxiliary loss를 결합한다.</p>
+
+<pre class="equation">L = E_D[(r̂ₜ − rₜ⋆)²] + λ_bal L_balance + λ_ent L_entropy.    (2)</pre>
+
+<h3>3.2 SPIRAL: Dense-Reward-Enabled Robot Self-Improvement Framework</h3>
+<p>Section 3.1.1의 reward model을 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)에 통합한다. SPIRAL은 on-policy rollout과 reward-guided residual RL을 통해 VLA policy를 반복적으로 개선하는 closed-loop framework이다. SPIRAL은 residual-RL substrate로 DICE-RL의 distribution contractive RL fine-tuning scheme을 채택한다. 이 scheme은 flow policy와 residual policy에 대해 여러 latent noise를 sampling하여 동일한 observation에서 다양한 action을 생성하며, 이를 통해 안정적이고 sample-efficient한 실제 로봇 학습을 위한 제어된 exploration space를 유도한다.</p>
+
+
+<figure class="fig-wide" id="figure-3"><img src="figures/fig-p05-01.png" alt="원문 그림 3"><figcaption><strong>그림 3: SPIRAL: SARM2 기반 자기 개선 프레임워크.</strong> (1) BC는 demo에서 π<sub>VLA</sub>를 fine-tuning하여 π<sub>1</sub>을 얻는다. (2) 이와 병렬로, (2a) π<sub>1</sub>에서 얻은 약 100개의 rollout에 대한 일회성 인간 annotation을 통해 RM<sub>1</sub> → RM<sub>2</sub>로 adaptation하여 rollout 분포를 포괄하고, (2b) pretrained RM<sub>1</sub>을 사용하는 offline SPIRAL update를 통해 π<sub>2</sub>를 학습한다. (3) 이후 자율 루프는 추가 supervision 없이 rollout 수집, RM<sub>2</sub> relabeling, SPIRAL update를 번갈아 수행한다.</figcaption></figure>
+
+<p>이 기반을 조밀한 stage-aware reward와 정렬하고 장기 horizon에 대응할 수 있도록 한다. 그러나 SPIRAL을 규정하는 핵심 수정 사항은 두 가지이다. (i) TD3 objective는 sparse terminal reward 대신 본 연구의 multi-task reward model이 제공하는 조밀한 per-step reward를 사용하며, (ii) 이 dense-reward TD3 objective를 sparse episode-level reward로 구동되는 Monte Carlo(MC) objective와 결합한다. 자세한 내용은 6.14절에서 설명한다. 아래에 기술하는 자율적인 rollout-relabel-update 루프와 함께, 이러한 수정은 sparse-reward residual-RL 방식을 자기 개선형 로봇 데이터 flywheel로 전환한다.</p>
+
+<p>DICE-RL을 따라, value overestimation을 완화하기 위해 critic을 <em>N</em> = 5개의 chunk 기반 Q-function ensemble {Q<sub>ϕ<sub>n</sub></sub>}<sub>n=1</sub><sup>N</sup>으로 구성하며, 표준 TD3와 마찬가지로 target network와 target-policy smoothing을 사용한다. dense reward r<sub>t</sub><sup>dense</sup>는 본 연구의 reward model이 제공하며, y<sub>t</sub><sup>TD</sup>의 bootstrap action은 π<sub>θ′</sub>(s<sub>t+1</sub>) + ϵ으로 생성한다. 여기서 ϵ ∼ clip(𝒩(0, σ²), −c, c)이며, critic loss는 N개 ensemble member 전체에 걸쳐 합산한다. 이어서 residual actor를 TD3+BC 방식의 objective로 학습한다.</p>
+
+<pre class="equation">min<sub>θ</sub> 𝔼<sub>s∼D, z∼𝒩(0,I)</sub>[−Q<sub>ϕ</sub>(s, a) + β ‖s<sub>θ</sub>(s, z)‖<sub>2</sub><sup>2</sup>], <span class="equation-number">(3)</span></pre>
+
+<p>여기서 가중치 β = 30인 BC regularizer는 residual이 pretrained policy에 가깝게 유지되도록 하는 한편, Q<sub>ϕ</sub>는 개선된 edit을 장려한다. Sun과 Song의 multi-sample expectation training을 따라, 방문한 각 state에서 flow prior로부터 κ개의 latent sample {z<sub>j</sub>}<sub>j=1</sub><sup>κ</sup> ∼ 𝒩(0, I)를 추출하고, candidate action chunk a<sup>(j)</sup> = π<sub>pre</sub>(s, z<sub>j</sub>) + s<sub>θ</sub>(s, z<sub>j</sub>)를 구성한 뒤, 단일 추출값이 아니라 κ개의 candidate에 대해 critic TD target과 actor objective를 모두 평균한다. deployment 시에는 best-of-κ action selection을 적용하여 j<sup>⋆</sup> = arg max<sub>j</sub> Q<sub>ϕ</sub>(s, a<sup>(j)</sup>)인 a<sup>(j<sup>⋆</sup>)</sup>를 실행한다. 이 방식은 방문한 각 state를 κ개의 latent 추출값에 걸쳐 재사용하며, 단일 sample이 아니라 latent가 유도하는 전체 action distribution에 정렬된 저분산 신호를 제공한다.</p>
+
+<p>전체 SPIRAL pipeline은 다음 네 stage에 걸쳐 policy rollout, reward model adaptation, residual RL을 번갈아 수행한다. (1) demonstration에서 VLA backbone을 BC fine-tuning하여 π<sub>1</sub>을 얻는다. (2) pretrained reward model RM<sub>1</sub>을 사용하여 초기 offline SPIRAL update를 수행하고 π<sub>2</sub>를 생성한다. (3) 가장 약한 policy인 π<sub>1</sub>의 rollout을 인간이 annotation하고 RM<sub>1</sub> → RM<sub>2</sub>로 fine-tuning하여 rollout 분포를 포괄하는 일회성 reward model adaptation을 수행한다. (4) RM<sub>2</sub>로 새로운 rollout을 반복적으로 labeling하고 SPIRAL update를 통해 policy를 개선하는 자율 on-policy 루프를 수행하며, 추가적인 인간 label은 필요하지 않다. 프레임워크 시각화, algorithm, 상세 hyperparameter, 설계 선택, 실제 적용 시 고려 사항은 그림 3, Algorithm 1, 부록 6.3 및 부록 6.14를 참조한다.</p>
+
+
+<section id="experimental-results">
+  <h2>4 실험 결과</h2>
+
+  <p>본 연구는 다음 세 가지 질문을 중심으로 SARM2와 그 자기 개선 프레임워크를 실증적으로 검증한다. <strong>Q1.</strong> action-primitive stage estimator와 MMoE가 장기 horizon 및 compositional task에서 value modeling 정확도를 향상하는가? <strong>Q2.</strong> SPIRAL은 rollout을 통해 policy를 개선하고 BC 및 offline RL baseline을 능가하는가? <strong>Q3.</strong> reward-model 품질이 manipulation data flywheel에 중요한 이유는 무엇인가?</p>
+
+  <section id="reward-model-evaluation">
+    <h3>4.1 Reward Model 평가</h3>
+
+    <p><strong>Task Suite, Baseline 및 Ablation.</strong> 10개의 manipulation task를 두 subset으로 나누어 평가한다. S1은 pick-and-place, cloth folding 등 general reward-model training data의 대부분을 차지하는 5개의 고전적 task로 구성되며, S2는 tool use 또는 multi-stage compositional execution이 필요한 5개의 비전형적 task로 구성된다. 자세한 내용은 부록 6.2에 제시한다. Baseline은 다음과 같다. ReWiND(RW)는 동일한 10개 task에서 처음부터 학습하며 stage estimator와 MoE를 사용하지 않는다. TOPReward(TR)와 Robometer(RM)는 범용 VLM 기반 reward model이다. TOPReward에는 Qwen3-VL-8B-Instruct variant를 사용한다. Robometer에 대해서는 공식 방식을 따라 본 연구의 10-task data로 2000 step 동안 LoRA fine-tuning한 variant(RM-FT)도 시험한다. full fine-tuning은 실용적이지 않으며, LoRA만으로도 본 연구 모델의 약 2배에 해당하는 VRAM이 필요하다. Ablation은 다음과 같다. w/o SE는 ReWiND에 single-gate MoE를 적용하되 stage estimation을 제거한다. w/o MG는 multi-gate inductive bias를 제거한 single-gate SARM2이다. S1 Var.는 S1에서만 학습한 SARM2이다.</p>
+
+    <p><strong>평가 및 분석.</strong> (i) 10개 task 전체의 held-out human demonstration과 (ii) downstream policy를 학습한 2개 task의 policy rollout에서 평가하며, MoE 구조를 갖는 모든 모델에 대해 MoE routing diagnostic을 추가로 보고한다. 전체 protocol은 부록 6.6에 제시한다. 표 1은 몇 가지 일관된 양상을 보여준다. SARM2는 두 task subset과 전체에서 가장 낮은 demonstration MSE(S1에서 0.006, S2에서 0.031, 통합 시 0.020)를 달성하며, 더 어려운 T2에서도 가장 높은 rollout classification score(ρ = 0.667)를 달성한다. 다음 네 가지 관찰 결과를 강조한다.</p>
+
+    <p><strong>(1) 범용 VLM 기반 reward model은 조밀한 value estimation에서 성능이 낮다.</strong> 강력한 semantic generalization에도 불구하고 TOPReward와 Robometer는 S1에서 SARM2보다 4–6배 높은 demo loss를 보이고 rollout classification에서도 낮은 성능을 나타내며, 이는 주로 지나치게 낙관적인 estimation에 기인한다. 시각화는 그림 7을 참조한다. 본 연구의 10-task dataset에서 Robometer를 LoRA fine-tuning하면 demo loss와 rollout score가 모두 크게 향상되어 처음부터 학습한 ReWiND에 가까워진다. 그러나 규모가 한 order 더 큼에도 불구하고(약 4B 대 약 200M parameter) 여전히 처음부터 학습한 모든 in-domain baseline보다 성능이 낮다. 이는 두 요인에 기인한다고 본다. 첫째, LoRA는 update 가능한 parameter subspace를 제한하여 세밀한 temporal pattern에 대한 adaptation을 제약한다. 둘째이자 더 근본적으로, VLM pretraining은 dense reward modeling이 요구하는 motion-level temporal discrimination이 아니라 거친 semantic alignment를 최적화한다.</p>
+
+    <p><strong>(2) Stage estimation과 MMoE는 각각 유익하며 서로 상승효과를 낸다.</strong> stage estimator를 제거하면(w/o SE) demo loss가 0.020에서 0.034로 증가하고, multi-gate 설계를 제거하면(w/o MG) 0.026으로 증가한다. 전체 SARM2 모델은 두 경우보다 모두 크게 향상되며, 이는 stage-awareness와 multi-gate routing이 상보적 구조를 포착함을 보여준다. 즉, stage estimator는 task의 primitive sequence 내에서 모델의 위치를 특정하고, MMoE는 primitive-group 경계를 따라 capacity를 할당한다.</p>
+
+    <p><strong>(3) 더 폭넓은 task distribution에서의 학습은 성능을 향상한다.</strong> 단순 subset에서만 학습한 S1 Var. ablation은 S1에서 0.010의 demo loss를 달성하여 모든 baseline보다 우수하지만, 두 subset을 모두 학습에서 접하는 전체 SARM2(0.006)보다는 여전히 1.7배 높다. 이는 S2에서 S1으로의 positive transfer를 나타내며, 그 이유는 S2가 S1과 공유하는 progress signal을 명확히 구분하는 데 도움이 되는 더욱 다양한 action primitive와 visual context를 모델에 제공하기 때문일 가능성이 크다.</p>
+
+    <p><strong>(4) MoE routing health는 downstream 성능과 상관관계가 있다.</strong> MoE Density 행은 식 6에서 정의한 normalized top-k routing score S<sub>route</sub> ∈을 보고하며, 0은 완벽하게 균형 잡힌 router에, 1은 완전히 collapse된 router에 해당한다. w/o SE는 collapse에 가장 가깝다(S<sub>route</sub> = 0.87). primitive-conditioned gating이 없으면 router가 대부분의 token을 소수의 expert subset으로 몰아넣는다. w/o MG는 훨씬 건전하지만(0.42) 여전히 집중되어 있는데, 이는 하나의 shared gate가 primitive group을 분리할 수 없기 때문이다. 두 SARM2 variant는 모두 균형이 잘 잡혀 있으며(S1 Var.는 0.23, 전체 SARM2는 0.10), 그 순위는 rollout score와 일치한다. 이는 primitive-conditioned multi-gate routing이 router collapse를 직접 완화한다는 본 연구의 주장을 뒷받침한다.</p>
+  </section>
+</section>
+
+
+
+<h2>4.2 자기 개선을 통한 정책 학습</h2>
+
+<p><strong>과제 및 평가 프로토콜.</strong> SARM<sup>2</sup> 기반 자기 개선을 평가하기 위해 대표 과제 두 가지, 즉 <em>S</em><sub>1</sub>의 고전적 과제 하나와 <em>S</em><sub>2</sub>의 비관습적 과제 하나를 선택한다. 전체 설명은 부록 6.2에 제시한다. 과제 1(고전적): Folding Shorts는 긴 지평의 변형 가능 물체 조작 과제이다. 20시간/670개 에피소드(각 60–180초, 품질 필터링 없음)를 사용하고, Flat(제한 시간 2분)과 Crumpled(제한 시간 4분,에 따르면 더 어려움)라는 두 하위 과제의 성공률을 보고하며, 3가지 반바지 색상에 걸쳐 각각 12회 시험한다. 과제 2(비관습적): Cleaning Whiteboard는 지우개를 잡고, 다른 손으로 기울어진 화이트보드를 안정화하고, 모든 글자를 지운 뒤 멈추는 과제이다. 기본 정책은 10시간/530개 에피소드로 학습한다. 보드의 50–70%를 차지하도록 글자 5–10개를 그리며, 제한 시간은 2분이다. 각 에피소드는 잡기, 부분 청소, 완전 청소, 올바른 종료를 추적하는 5단계(0/25/50/75/100%)로 채점한다. 자세한 내용은 부록 6.7을 참조한다. 4개 구성(지우개 색상 2개 × 보드 프레임 2개)을 각각 5개 에피소드로 평가한다(총 20개).</p>
+
+<p><strong>베이스라인.</strong> 학습 데이터 출처에 따라 두 그룹으로 구분한다. 시연 전용 그룹은 BC(π<sub>0.5</sub>에서 미세 조정한 기본 BC 정책), RA-BC(SARM<sup>2</sup>의 스텝별 보상을 사용하는 가중 BC), RL-Sparse(시연의 종단 보상 = 1인 DICE-RL), RL-Dense(SARM<sup>2</sup> 밀집 보상을 사용하는 SPIRAL)로 구성된다. 롤아웃 기반 자기 개선 방법은 모두 RL-Dense 시연 체크포인트에서 시작하며, 보상 출처만 서로 다르다. 보상 출처는 Sparse(사람이 기록한 종단 성공), RM (FT)(LoRA로 미세 조정한 Robometer의 밀집 레이블. 이 모델은 10개 과제 데이터셋과 레이블이 지정된 롤아웃 모두에서 미세 조정하며, SARM<sup>2</sup>와 정확히 동일한 절차를 사용한다), SARM<sup>2</sup> (ours)(본 연구의 밀집 레이블)이다. 알고리즘 1의 Round 3 이후 결과를 보고한다. 각 라운드에서 정책은 학습에 사용한 롤아웃을 생성한 체크포인트로 초기화하여, 보상 출처 간 공정한 온-정책 비교를 보장한다.</p>
+
+<p><strong>분석.</strong> 표 2와 그림 4는 세 가지 결과를 보여준다.</p>
+
+<p><strong>(1) SPIRAL은 효과적인 오프라인 RL 백본이다.</strong> 시연 전용 학습에서 RL-Dense는 Folding-Shorts Flat에서 7/12(BC는 1/12, RL-Sparse는 4/12)를 달성하고, Cleaning Whiteboard에서는 진행도 81.3%로 10/20(RL-Sparse는 62.5%로 6/20)을 달성한다. SR에서 RA-BC와의 격차는 작지만, RL-Dense는 더 어려운 하위 과제에서 더 잘 일반화하고 정성적 관찰에서 더 부드러운 움직임을 보인다. 이는 가치 부트스트랩과 결합된 밀집 보상이 종단 희소 보상이나 보상 가중 모방보다 더 강한 최적화 신호를 제공함을 나타낸다.</p>
+
+<p><strong>(2) SPIRAL은 보상 정렬 자기 개선을 통해 오프라인 베이스라인을 넘어선다.</strong> 모든 롤아웃 기반 방법은 동일한 RL-Dense 체크포인트에서 시작한다. 세 라운드 후 SARM<sup>2</sup> 밀집 보상을 사용하는 SPIRAL은 모든 지표에서 모든 오프라인 베이스라인을 능가하여, Flat에서 12/12, Crumpled에서 8/12, Whiteboard에서 진행도 97.5%로 18/20을 달성한다. 그림 4는 라운드가 진행됨에 따라 향상이 단조롭게 누적됨을 보여준다. 이는 온-정책 자율 롤아웃이 오프라인 RL만으로 얻는 수준을 크게 넘어 정책을 개선할 수 있음을 확인하며, SPIRAL이 실제 로봇 자기 개선 프레임워크로 유효함을 입증한다.</p>
+
+<p><strong>(3) 데이터 플라이휠의 병목은 보상 모델의 품질이다.</strong> 가장 어려운 설정인 Folding Shorts Crumpled가 이를 진단적으로 보여준다. 희소 종단 보상으로 학습하면 RL-Dense 체크포인트의 성능이 4/12에서 2/12로 저하된다. 단일 종점 신호로는 약 3분에 이르는 펴기 단계 전반에 걸쳐 크레딧 할당을 수행할 수 없고, 루프가 결함 있는 롤아웃을 강화하여 플라이휠을 역방향으로 돌리기 때문이다. Robometer (FT) 밀집 보상은 더 나은 결과를 내지만 여전히 SARM<sup>2</sup>에 큰 격차로 뒤처진다(Flat 10/12 대 12/12, Crumpled 5/12 대 8/12, Whiteboard 13/20 대 18/20). 이는 밀집성만으로는 충분하지 않음을 보여준다. 효과적인 로봇 자기 개선 루프를 위해서는 보상 모델이 현재 롤아웃 상태를 충실하게 반영하여 실제 진전, 교정 조정, 실수를 구별해야 한다. 시각화는 그림 8과 9에 제시한다.</p>
+
+
+
+<figure class="fig-wide" id="figure-4"><img src="figures/fig-p08-01.png" alt="원문 그림 4"><figcaption><strong>그림 4:</strong> 알고리즘 1의 세 라운드에 걸친 자기 개선 추세. 위: Folding Shorts(Flat 및 Crumpled SR). 아래: Cleaning Whiteboard(SR 및 5단계 평균 진행도). 모든 곡선은 동일한 RL-Dense 체크포인트에서 시작하지만, 이후 반복에서 사용하는 롤아웃 레이블링 보상 출처와 롤아웃 에피소드가 서로 다르다. SARM<sup>2</sup>는 두 과제 모두에서 단조롭게 향상되고, RM (FT)는 정체되며, Sparse는 Folding Shorts Crumpled에서 오프라인 베이스라인 아래로 퇴보한다.</figcaption></figure>
+
+<h2>5 결론</h2>
+
+<p>본 연구에서는 과제 비종속적 행동 프리미티브 단계 추정기와 다중 게이트 MoE 가치 디코더를 통합하여, 단일 모델로 긴 지평 조작 과제 전반에 걸쳐 밀집되고 정확한 보상을 생성하는 다중 과제 단계 인식 보상 모델 SARM<sup>2</sup>를 제시한다. SARM<sup>2</sup>를 기반으로 구축한 SPIRAL은 이러한 밀집 보상을 보상 정렬 온-정책 자기 개선 루프로 전환하여, 저비용 자율 롤아웃을 통한 지속적인 정책 개선을 가능하게 한다. 10개 과제 벤치마크에서 SARM<sup>2</sup>는 시연 MSE와 롤아웃 분류에서 과제별 베이스라인 및 VLM 기반 베이스라인을 능가하며, 제거 실험은 단계 인식, 다중 게이트 라우팅, 학습 분포 다양성이 각각 기여함을 보여준다. SPIRAL에 결합된 SARM<sup>2</sup>는 Folding Shorts와 Cleaning Whiteboard에서 상당한 향상을 이끌어내며, 보상 품질이 자립형 로봇 데이터 플라이휠을 지탱하는 핵심 요소임을 입증한다.</p>
+
+<p><strong>한계.</strong> 본 접근법에는 세 가지 주요 한계가 있다. (1) <strong>신체 구현 범위.</strong> 행동 프리미티브 어휘는 양팔 탁상 데이터셋에서 도출되므로, SARM<sup>2</sup>를 모바일 조작이나 다른 신체 형태로 확장하려면 프리미티브 집합을 재구축하고 단계 추정기를 재학습해야 한다. (2) <strong>잔차 RL의 상한.</strong> SPIRAL은 VLA 가중치를 업데이트하는 대신 잔차 RL을 통해 정책을 개선한다. 이는 행동 수준 및 모달리티별 교정에는 충분하지만, 의도 또는 과제 분해 수준의 오류를 수정할 수 없으며, 그러한 오류에는 잔차 RL을 넘어서는 메커니즘(예: VLM 미세 조정)이 필요하다. (3) <strong>샘플 효율성.</strong> 온-정책 롤아웃 수집은 여전히 상대적으로 샘플 효율성이 낮으며, 롤아웃 사이의 일상적인 재설정에는 여전히 사람 조작자가 필요하다.</p>
+
+<section id="appendix-6">
+  <h1>6 부록</h1>
+
+  <section id="appendix-6-1">
+    <h2>6.1 Hardware 구성</h2>
+
+    <p>실세계 실험에는 양팔 tabletop robot platform을 사용한다. system은 다음과 같이 구성된다.</p>
+
+    <ul>
+      <li>I2RT에서 제조한 6-DOF YAM robot arm 2대.</li>
+      <li>RealSense D405 camera 3대: 각 wrist에 장착된 camera 1대씩과 workspace 관찰을 위해 상단에 고정한 camera 1대.</li>
+    </ul>
+
+    <p>Demonstration data는 leader-follower GELLO teleoperation system을 통해 수집한다. Environment는 30 fps로 기록하며, left wrist, right wrist, fixed top view의 세 camera view에서 동기화된 stream을 포함한다. 또한 robot joint angle과 명령된 joint-angle action도 기록한다.</p>
+
+    <figure class="fig-wide" id="figure-5"><img src="figures/fig-p13-01.png" alt="원문 그림 5"><figcaption>그림 5: Data 수집 및 policy 평가에 사용한 실제 station.</figcaption></figure>
+  </section>
+
+  <section id="appendix-6-2">
+    <h2>6.2 Task 설명</h2>
+
+    <p>평가 task 10개를 subset별로 묶어 아래에 모두 설명하며, 해당 시각화는 그림 6에 모아 제시한다. S1(classic)은 pick-and-place task 2개, cloth-folding task 2개, plug 뽑기로 구성되며, 모두 일반적인 reward-model training distribution에서 지배적으로 나타나는 primitive와 잘 부합한다. S2(unconventional)는 나머지 5개 task로 구성되며, tool 사용, deformable 또는 articulated object 조작, multi-stage compositional execution을 요구한다. 하나의 episode 안에서 같은 action sequence가 여러 차례 반복되는 pick-and-place와 같은 task에서는 table이 빌 때까지 robot이 해당 sequence를 반복해야 한다.</p>
+
+    <h3>S1: Classic Task</h3>
+
+    <p><strong>Plate를 집어 bin에 넣기.</strong> 여러 장의 plate가 board 위에 놓여 있으며, robot은 이를 한 번에 하나씩 치워야 한다. 각 cycle에서 robot은 먼저 board 중앙의 plate를 집은 다음 plastic bin에 넣는다. Board에 plate가 하나도 남지 않을 때까지 이 cycle을 반복한다.</p>
+
+    <p><strong>Plate를 집어 dish rack에 놓기.</strong> 이 task는 bin task의 변형으로, 각 plate를 dish rack의 slot에 수직으로 삽입해야 한다. 따라서 gripper와 rack opening 사이의 정밀한 pose alignment가 필요하다. 각 cycle에서 robot은 먼저 board에서 plate를 집은 다음 dish rack의 빈 slot에 삽입한다. Board가 빌 때까지 이 cycle을 반복하며, 일반적으로 episode당 5~10회의 삽입 cycle이 필요하다.</p>
+
+    <p><strong>T-shirt 접기.</strong> 이는 long-horizon deformable-object task이다. Robot은 먼저 pile에서 T-shirt를 잡아 board 중앙으로 옮긴다. 그런 다음 옷을 평평하게 펴고 연속으로 두 번 접는다. 마지막으로 깔끔하게 접은 T-shirt를 board corner에 놓고 두 gripper를 모두 reset한다. 펴기 stage가 가장 길고 시각적 variation도 가장 큰 반면, 접기 stage는 bimanual이며 coordinated pinch grasp를 요구한다.</p>
+
+    <p><strong>Shorts 접기.</strong> 이 task의 절차는 T-shirt 접기와 거의 동일하다. Robot은 먼저 pile에서 shorts를 잡아 board 중앙으로 옮긴다. 그런 다음 옷을 평평하게 펴고 연속으로 두 번 접은 뒤, 마지막으로 접은 shorts를 board corner에 놓는다.</p>
+
+    <p><strong>Socket에서 plug 뽑기.</strong> Robot은 먼저 board 위 초기 위치에 있는 power strip을 작업하기 더 편한 위치로 옮긴다. 그런 다음 socket에서 plug를 하나씩 뽑아 board 중앙에 놓는 과정을 반복한다. Plug를 몇 개 뽑은 뒤에는 남은 plug가 더 접근하기 쉬운 각도로 드러나도록 power strip을 다시 옮길 수 있으며, 이후 plug를 뽑아 놓는 cycle을 계속한다. 모든 plug를 power strip에서 뽑고 power strip을 board 중앙에 다시 놓으면 episode가 종료된다.</p>
+
+    <h3>S2: Unconventional Task</h3>
+
+    <p><strong>Whiteboard eraser로 whiteboard 닦기.</strong> 한쪽 arm은 task 내내 작은 whiteboard를 단단히 잡아 안정화하고, 다른 arm은 board 중앙에 놓인 whiteboard eraser를 가져온다. 그런 다음 잡고 있는 arm이 whiteboard 표면을 드러내도록 기울이고, 다른 arm이 whiteboard의 글자를 닦는다. 다 닦은 뒤 robot은 eraser를 board 중앙에 다시 놓고, 마지막으로 whiteboard를 원래 위치로 되돌린다. Task 전 과정이 bimanual이며, 한쪽 arm이 기울어진 whiteboard를 안정화하는 동안 다른 arm이 닦는 motion을 수행한다.</p>
+
+    <p><strong>Dinner table 차리기.</strong> 이는 deformable manipulation과 multi-object placement를 결합한 composite long-horizon task이다. Robot은 먼저 workspace에 tablecloth를 펼치고 그 중앙에 plate를 놓는다. 그런 다음 right arm으로 glass를 집어 적절한 위치에 내려놓는다. 마지막으로 utensil을 배치한다. 이때 각 utensil(knife와 fork)을 최종 배치 전에 적절한 gripper로 옮기기 위해 left-to-right 및 right-to-left hand-over를 수행한다.</p>
+
+    <p><strong>Broom으로 종이 조각 쓸기.</strong> Robot은 먼저 board 중앙에서 broom을 집고, 안정적으로 쥐어 사용할 수 있는 grasp를 확보하기 위해 필요에 따라 한 번 이상의 bimanual hand-over를 수행한 다음, 다른 arm으로 dustpan을 집는다. Task의 주된 부분은 길게 반복되는 cycle이다. Robot은 board 중앙의 종이 조각을 쓸어 dustpan에 담고, dustpan에 담긴 조각을 trash bin에 버린다. 종이 조각이 하나도 남지 않을 때까지 이 sweep-gather-dump cycle을 반복한 뒤, dustpan과 broom을 board 위에 다시 놓는다.</p>
+
+    <p><strong>Headphone 감아 정리하기.</strong> 이는 높은 정밀도를 요구하는 task이다. Robot은 먼저 board 중앙에서 headphone 한 쌍을 집는다. 그런 다음 headphone 본체 주위에 cable을 감는 긴 bimanual wrapping motion을 수행한다. 감기가 끝나면 정리된 headphone을 board 중앙에 다시 놓고 두 arm을 모두 reset한다.</p>
+
+    <p><strong>Umbrella 접어 넣기.</strong> 이는 multi-stage articulated-object task이다. Robot은 먼저 board 중앙에서 펼쳐진 umbrella를 집어 right arm에서 left arm으로 넘긴다. 그런 다음 snap button을 runner에 눌러 canopy를 해제하고 shaft를 눌러 umbrella를 접는다. 이어서 canopy를 정돈하고 자연스러운 crease를 따라 접는다. 마지막으로 canopy를 shaft 주위에 말고 strap을 잡아 velcro를 고정한 뒤, 닫힌 umbrella를 board 중앙에 다시 놓는다.</p>
+
+    <figure class="fig-wide" id="figure-6"><img src="figures/fig-p15-01.png" alt="원문 그림 6"><img src="figures/fig-p16-01.png" alt="원문 그림 6"><img src="figures/fig-p17-01.png" alt="원문 그림 6"><figcaption>그림 6: 평가 task 10개의 시각화. Page별로 위에서 아래 순서는 다음과 같다. S1: (1) plate를 집어 bin에 넣기, (2) plate를 집어 dish rack에 놓기, (3) t-shirt 접기, (4) shorts 접기, (5) socket에서 plug 뽑기; S2: (6) whiteboard eraser로 whiteboard 닦기, (7) dinner table 차리기, (8) umbrella 접어 넣기, (9) broom으로 종이 조각 쓸기, (10) headphone 감아 정리하기.</figcaption></figure>
+  </section>
+</section>
+
+
+
+
+
+<section id="appendix-6-3">
+  <h2>6.3 Hyperparameter 표</h2>
+
+  <p>표 3은 본문에서 도입한 모든 hyperparameter를 하나로 정리하며, action-primitive stage estimator, multi-gate MoE value decoder 및 SPIRAL 자기 개선 loop를 포괄한다.</p>
+
+  <table class="wide" id="table-3">
+    <caption><strong>표 3: Hyperparameter 요약.</strong> 본문에서 언급한 모든 hyperparameter의 기호, 설명 및 값이다.</caption>
+    <thead>
+      <tr>
+        <th>기호</th>
+        <th>설명</th>
+        <th>값</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group"><th colspan="3">Action-primitive stage estimator</th></tr>
+      <tr><td><i>K</i></td><td>Action primitive 수</td><td>21</td></tr>
+      <tr><td><i>N</i></td><td>Timestep당 최근 context frame 수</td><td>6</td></tr>
+      <tr><td>∆</td><td>Frame sampling stride</td><td>30</td></tr>
+      <tr><td><i>L</i><sub>AP</sub></td><td>Transformer encoder layer 수</td><td>4</td></tr>
+      <tr><td><i>d</i></td><td>Transformer hidden dimension</td><td>512</td></tr>
+      <tr><td><i>t</i><sub>k</sub></td><td><i>D</i><sub>AP</sub>에서 primitive당 data 시간</td><td>3</td></tr>
+      <tr><td>lr<sub>AP</sub></td><td>Learning rate</td><td>5 × 10<sup>−5</sup></td></tr>
+      <tr><td><i>B</i><sub>AP</sub></td><td>Batch size</td><td>96</td></tr>
+      <tr><td><i>T</i><sub>AP</sub></td><td>Training step 수</td><td>10,000</td></tr>
+      <tr><td>opt<sub>AP</sub></td><td>Optimizer</td><td>AdamW</td></tr>
+
+      <tr class="group"><th colspan="3">Multi-gate MoE value decoder</th></tr>
+      <tr><td><i>L</i><sub>VD</sub></td><td>Transformer encoder layer 수</td><td>6</td></tr>
+      <tr><td><i>M</i></td><td>Primitive group(gate) 수</td><td>8</td></tr>
+      <tr><td><i>E</i></td><td>Shared pool의 expert 수</td><td>10</td></tr>
+      <tr><td><i>k</i></td><td>Timestep당 top-<i>k</i> routing</td><td>2</td></tr>
+      <tr><td><i>d</i><sub>exp</sub></td><td>Expert hidden width</td><td>256</td></tr>
+      <tr><td><i>n</i><sub>h</sub> × <i>d</i><sub>exp</sub></td><td>Expert MLP shape(depth × width)</td><td>3 × 256</td></tr>
+      <tr><td>λ<sub>bal</sub></td><td>Load-balance auxiliary loss weight</td><td>2.5</td></tr>
+      <tr><td>λ<sub>ent</sub></td><td>Entropy auxiliary loss weight</td><td>0.5</td></tr>
+      <tr><td><i>N</i><sub>rw</sub></td><td>Rewinding frame 수</td><td>3</td></tr>
+      <tr><td>lr<sub>VD</sub></td><td>Learning rate</td><td>5 × 10<sup>−5</sup></td></tr>
+      <tr><td><i>B</i><sub>VD</sub></td><td>Batch size</td><td>64</td></tr>
+      <tr><td><i>T</i><sub>VD</sub></td><td>Training step 수</td><td>10,000</td></tr>
+      <tr><td>opt<sub>VD</sub></td><td>Optimizer</td><td>AdamW</td></tr>
+
+      <tr class="group"><th colspan="3">Behavior Cloning</th></tr>
+      <tr><td><i>h</i></td><td>Action chunk horizon</td><td>50</td></tr>
+      <tr><td>lr<sub>BC</sub></td><td>Learning rate</td><td>5 × 10<sup>−5</sup></td></tr>
+      <tr><td><i>B</i><sub>BC</sub></td><td>Batch size</td><td>32</td></tr>
+      <tr><td><i>T</i><sub>BC</sub></td><td>Training step 수</td><td>30,000</td></tr>
+      <tr><td>wd<sub>BC</sub></td><td>Weight decay</td><td>Cosine</td></tr>
+      <tr><td>opt<sub>BC</sub></td><td>Optimizer</td><td>AdamW</td></tr>
+
+      <tr class="group"><th colspan="3">SPIRAL 자기 개선</th></tr>
+      <tr><td>γ</td><td>Discount factor</td><td>0.9995</td></tr>
+      <tr><td>α</td><td><i>J</i><sub>critic</sub>에서 MC objective의 weight</td><td>0.5</td></tr>
+      <tr><td>β</td><td>Residual actor loss에서 BC regularizer의 weight</td><td>30</td></tr>
+      <tr><td><i>N</i><sub>critic</sub></td><td>Critic ensemble size</td><td>5</td></tr>
+      <tr><td>σ</td><td>Target-policy smoothing noise의 standard deviation</td><td>0.2</td></tr>
+      <tr><td><i>c</i></td><td>Target-policy smoothing clip range</td><td>0.5</td></tr>
+      <tr><td>κ</td><td>State당 DICE multi-sample latent candidate 수(deployment 시 best-of-κ 적용)</td><td>4</td></tr>
+      <tr><td><i>n</i><sub>RL</sub> × <i>d</i><sub>RL</sub></td><td>Actor/Critic MLP shape(depth × width)</td><td>3 × 1024</td></tr>
+      <tr><td>τ<sub>tgt</sub></td><td>Target network soft-update rate</td><td>0.005</td></tr>
+      <tr><td>lr<sub>RL</sub></td><td>Learning rate(actor / critic)</td><td>1 × 10<sup>−4</sup></td></tr>
+      <tr><td><i>B</i><sub>RL</sub></td><td>Batch size</td><td>16</td></tr>
+      <tr><td><i>T</i><sub>RL</sub></td><td>Round당 training step 수</td><td>5,000</td></tr>
+      <tr><td>opt<sub>RL</sub></td><td>Optimizer</td><td>AdamW</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="appendix-6-4">
+  <h2>6.4 Action Primitive Grouping 설명</h2>
+
+  <p><i>K</i> = 21개의 각 action primitive를 MMoE gate에 할당하기 위해, shared visual appearance와 end-effector motion pattern에 따라 이들을 <i>M</i> + 1 = 8개의 semantic group으로 clustering한다. 이에 따라 한 group 내의 primitive는 유사한 progress signature를 나타내며, 동일한 gate의 routing distribution을 공유하는 것이 타당하다. 표 4는 이렇게 구성한 group, 각 group에 속한 primitive 및 각 group이 포착하는 motion pattern에 대한 간략한 설명을 제시한다.</p>
+
+  <table class="wide" id="table-4">
+    <caption><strong>표 4: Multi-gate MoE decoder를 위한 action-primitive grouping.</strong> <i>K</i> + 1 = 22개의 primitive를 shared visual/motion characteristic에 따라 <i>M</i> + 1 = 8개의 semantic group으로 clustering한다. 각 group은 MMoE decoder의 한 gate에 mapping되며 expert pool은 공유된다. Other는 정의되지 않았거나 task-specific한 action을 포괄하는 범주이다.</caption>
+    <thead>
+      <tr>
+        <th>Group 이름</th>
+        <th>Action Primitive</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Acquire</td><td>scoop, pull, pick/grab</td><td>Target object를 초기 support surface에서 들어 올리거나 이동하여 robot의 control 아래 둔다.</td></tr>
+      <tr><td>Release</td><td>place, pour/dump</td><td>Control 중인 object를 target location, container 또는 support surface로 내려놓는다.</td></tr>
+      <tr><td>Translate</td><td>erase, zip/unzip, sweep, pass</td><td>End-effector 또는 object를 주로 linear trajectory를 따라 이동한다.</td></tr>
+      <tr><td>Insert</td><td>install, insert</td><td>Spatial alignment를 유지하면서 object를 제약된 target region 안으로 유도한다.</td></tr>
+      <tr><td>Shape Clothes</td><td>hang, fold/flatten</td><td>Cloth-like object를 원하는 geometric state 또는 arrangement로 재구성한다.</td></tr>
+      <tr><td>Rotate</td><td>wrap, roll, tie/untie, rotate/turn</td><td>Angular motion을 통해 object의 orientation 또는 configuration을 변경한다.</td></tr>
+      <tr><td>Force</td><td>clamp, press</td><td>Gripper 또는 end-effector를 통해 제어된 contact force를 가한다.</td></tr>
+      <tr><td>Other</td><td>dummy</td><td>주요 primitive taxonomy 밖의 정의되지 않았거나 task-specific한 action을 나타낸다.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="algorithm-reward-guided-robot-self-improvement-loop">
+  <h3>6.5 보상 유도 로봇 자기 개선 루프의 Algorithm</h3>
+
+  <div class="algorithm" id="algorithm-1">
+    <p class="algorithm-title"><strong>Algorithm 1 보상 유도 로봇 자기 개선 루프</strong></p>
+    <p><strong>입력:</strong> 인간 demonstration <em>D</em><sub>demo</sub>; pretrained VLA model π<sub>VLA</sub>; pretrained multi-task reward model RM<sub>1</sub>; reward-model pretraining set <em>D</em><sub>RM</sub>; 최대 iteration 수 <em>N</em></p>
+    <p><strong>출력:</strong> 개선된 policy π<sub><em>N</em>+1</sub></p>
+    <table class="algorithm-lines">
+      <tbody>
+        <tr><td>1:</td><td>// Stage 1: Behavior cloning</td></tr>
+        <tr><td>2:</td><td>π<sub>1</sub> ← <span class="small-caps">FINETUNE</span>(π<sub>VLA</sub>, <em>D</em><sub>demo</sub>) <span class="algorithm-comment">▷ 지도 BC fine-tuning</span></td></tr>
+        <tr><td>3:</td><td><em>R</em><sub>1</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub>1</sub>, <em>n</em>=50–100) <span class="algorithm-comment">▷ 가장 약한 policy에서 rollout을 수집한다</span></td></tr>
+        <tr><td>4:</td><td>// Stage 2a: Rollout distribution에 대한 일회성 reward model adaptation</td></tr>
+        <tr><td>5:</td><td><em>R</em><sub>1</sub><sup>labeled</sup> ← <span class="small-caps">HUMANANNOTATE</span>(<em>R</em><sub>1</sub>) <span class="algorithm-comment">▷ segment-level label + 최종 progress</span></td></tr>
+        <tr><td>6:</td><td><em>D</em><sub>adapt</sub> ← <em>R</em><sub>1</sub><sup>labeled</sup> ∪ <span class="small-caps">SUBSAMPLE</span>(<em>D</em><sub>RM</sub>, 0.5) <span class="algorithm-comment">▷ pretraining data의 50%를 혼합한다</span></td></tr>
+        <tr><td>7:</td><td>RM<sub>2</sub> ← <span class="small-caps">FINETUNE</span>(RM<sub>1</sub>, <em>D</em><sub>adapt</sub>) <span class="algorithm-comment">▷ pretraining cost의 약 1/10</span></td></tr>
+        <tr><td>8:</td><td>// Stage 2b: Pretrained reward model을 사용한 초기 residual RL</td></tr>
+        <tr><td>9:</td><td><em>D̃</em><sub>demo</sub> ← <span class="small-caps">LABELREWARDS</span>(<em>D</em><sub>demo</sub>, RM<sub>1</sub>)</td></tr>
+        <tr><td>10:</td><td>π<sub>2</sub> ← <span class="small-caps">SPIRAL</span>(π<sub>1</sub>, <em>D̃</em><sub>demo</sub>)</td></tr>
+        <tr><td>11:</td><td><em>R</em><sub>2</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub>2</sub>, <em>n</em>=100)</td></tr>
+        <tr><td>12:</td><td>// Stage 4: On-policy self-improvement loop</td></tr>
+        <tr><td>13:</td><td><strong>for</strong> <em>i</em> = 2, 3, ..., <em>N</em> <strong>do</strong></td></tr>
+        <tr><td>14:</td><td class="indent-1"><em>R̃</em><sub><em>i</em></sub> ← <span class="small-caps">LABELREWARDS</span>(<em>R</em><sub><em>i</em></sub>, RM<sub>2</sub>)</td></tr>
+        <tr><td>15:</td><td class="indent-1">π<sub><em>i</em>+1</sub> ← <span class="small-caps">SPIRAL</span>(π<sub><em>i</em></sub>, <em>R̃</em><sub><em>i</em></sub>)</td></tr>
+        <tr><td>16:</td><td class="indent-1"><em>R</em><sub><em>i</em>+1</sub> ← <span class="small-caps">ROLLOUT</span>(π<sub><em>i</em>+1</sub>, <em>n</em>=100)</td></tr>
+        <tr><td>17:</td><td class="indent-1"><strong>if</strong> <span class="small-caps">SUCCESSRATE</span>(<em>R</em><sub><em>i</em>+1</sub>) ≥ τ<sub>success</sub> <strong>then</strong></td></tr>
+        <tr><td>18:</td><td class="indent-2"><strong>break</strong></td></tr>
+        <tr><td>19:</td><td class="indent-1"><strong>end if</strong></td></tr>
+        <tr><td>20:</td><td><strong>end for</strong></td></tr>
+        <tr><td>21:</td><td><strong>return</strong> π<sub><em>i</em>+1</sub></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<section id="appendix-6-6">
+  <h2>6.6 보상 모델 평가 프로토콜</h2>
+
+  <p><strong>시연 평가.</strong> Task마다 별도로 보류한 episode 10개를 sampling하고, 예측 progress와 ground-truth progress 사이의 frame별 mean squared error(MSE)를 보고한다. 제시의 명확성을 위해 S<sub>1</sub>과 S<sub>2</sub>의 MSE를 각각 보고하고 통합 score도 함께 제시한다. 통합 MSE는 평가한 모든 frame에 대한 micro-average로 계산하므로, 두 subset별 값의 산술평균이 아님에 유의한다.</p>
+
+  <p><strong>Rollout 평가.</strong> SARM의 프로토콜에 따라 실제 robot platform에서 robot rollout의 progress 추정을 평가한다. 각 target task에서 π<sub>0.5</sub> policy를 fine-tuning하고 서로 다른 training stage의 intermediate checkpoint를 배포하여, task마다 trajectory 36개로 이루어진 균형 잡힌 rollout set을 구성한다. 이는 successful episode(SE) 12개, partially successful episode(PSE) 12개, failed episode(FE) 12개로 구성된다. Reward model은 다음 기준에 따라 각 rollout을 분류한다.</p>
+
+  <pre class="equation">Label = ⎧ SE,  if P_final &gt; 0.8 ∧ (Σ_{t=2T/3}^T P_t)/(T/3) &gt; 0.6,
+        ⎨ PSE, if (1/T)Σ_{t=1}^T P_t ≥ ξ,
+        ⎩ FE,  otherwise.                                      (4)</pre>
+  <p class="equation-reading"><strong>식 (4) 읽기:</strong> Label은 최종 예측 progress <i>P</i><sub>final</sub>이 0.8보다 크고 trajectory 마지막 3분의 1 구간, 즉 <i>t</i> = 2<i>T</i>/3부터 <i>T</i>까지의 <i>P</i><sub>t</sub> 평균이 0.6보다 크면 SE이다. 그렇지 않은 경우 전체 trajectory에서의 평균 (1/<i>T</i>)Σ<sub><i>t</i>=1</sub><sup><i>T</i></sup><i>P</i><sub>t</sub>가 ξ 이상이면 PSE이며, 그 밖의 경우에는 FE이다.</p>
+
+  <p>여기서 <i>P</i><sub>t</sub>는 frame <i>t</i>에서 예측한 progress를 나타내고, <i>T</i>는 trajectory length이며, ξ는 성공하지 못한 모든 rollout의 average progress에 대한 median으로 설정한다. 이 adaptive threshold는 PSE와 FE 예측을 동일한 수로 나누며, 고정 cutoff를 수동으로 tuning할 때 발생하는 bias를 방지한다.</p>
+
+  <p>또한 다음 score를 통해 rollout 분류 정확도를 요약한다.</p>
+
+  <pre class="equation">ρ = (#correct − #incorrect)/36 ∈ [−1, 1].                    (5)</pre>
+  <p class="equation-reading"><strong>식 (5) 읽기:</strong> ρ는 올바르게 분류한 rollout 수(#correct)에서 잘못 분류한 rollout 수(#incorrect)를 뺀 값을 전체 rollout 수 36으로 나눈 score이며, 그 범위는 −1부터 1까지이다.</p>
+
+  <p>이 score는 올바르게 분류한 각 rollout에 +1을, 그렇지 않은 각 rollout에 −1을 부여한 뒤 전체 rollout 수로 정규화한다. 완벽한 classifier는 ρ = 1을 달성하는 반면, 세 class 중 하나를 무작위로 추측하면 ρ ≈ −1/3이 된다.</p>
+
+  <p><strong>MoE routing 진단.</strong> 모든 MoE 기반 reward model에 대해 다음과 같이 정의한 top-<i>k</i> routing score도 추가로 보고한다.</p>
+
+  <pre class="equation">S_route = (r − 1)/(N/k − 1),    r = (N/k)Σ_{i=1}^k p̄^(i).   (6)</pre>
+  <p class="equation-reading"><strong>식 (6) 읽기:</strong> Raw concentration <i>r</i>은 <i>i</i> = 1부터 <i>k</i>까지의 <i>i</i>번째로 큰 평균 routing 확률 p̄<sup>(<i>i</i>)</sup>을 합한 뒤 <i>N</i>/<i>k</i>를 곱한 값이다. Routing score <i>S</i><sub>route</sub>는 <i>r</i> − 1을 <i>N</i>/<i>k</i> − 1로 나누어 구한다.</p>
+
+  <p>여기서 <i>N</i>은 전체 expert 수이고, <i>k</i>는 token마다 활성화되는 expert 수이며, p̄<sup>(<i>i</i>)</sup>는 evaluation set에 걸쳐 평균한 routing distribution에서 <i>i</i>번째로 큰 entry이다. Raw concentration <i>r</i>은 균일한 baseline 1/<i>N</i>에 비해 top-<i>k</i> expert에 할당된 mass를 측정하며, 그 범위는 1(완전히 균형 잡힘)부터 <i>N</i>/<i>k</i>(완전히 collapse됨)까지이다. Affine normalization은 <i>S</i><sub>route</sub>를로 rescaling하며, <i>N</i>과 <i>k</i>에 대한 의존성을 제거하므로 configuration 간 expert utilization을 직접 비교할 수 있다. 건전한 router에서는 <i>S</i><sub>route</sub>가 1보다 현저히 작다.</p>
+</section>
+
+<section id="appendix-6-7">
+  <h2>6.7 Policy 평가 프로토콜</h2>
+
+  <p><strong>Whiteboard 닦기—5단계 scoring.</strong> Cleaning Whiteboard 평가의 각 episode는 progress 5단계로 scoring한다. 글자를 하나도 지우지 못한 경우 0%이고, eraser를 성공적으로 잡고 board를 안정시킨 뒤 글자를 하나 이상 지운 경우 25%이다. 전체 글자의 절반을 초과하여 지웠지만 모두 지우지는 못한 경우 50%이고, 모든 글자를 지웠으나 올바르게 멈추지 못했거나 글자가 남은 상태에서 일찍 멈춘 경우 75%이다. 모든 글자를 지우고 eraser를 table 위에 내려놓고 board를 놓음으로써 올바르게 종료한 경우 100%이다. 보고하는 Avg. Prog. metric은 evaluation episode 20개 전체에 대한 단계 값의 평균이며, SR은 100% 단계에 도달한 episode만 집계한다.</p>
+</section>
+
+
+<section id="appendix-6-8">
+  <h2>6.8 MoE 설계: Dense 모델과의 비교</h2>
+
+  <p>아키텍처 비교를 동등한 조건에서 수행하기 위해, decoder 수준의 Mixture-of-Experts 모델(이하 MoE-Decoder)을 parameter 수가 유사한 dense baseline과 비교한다. 두 모델은 동일한 encoder backbone을 공유하며 reward-prediction head만 다르다. 이 head는 차원이 (<i>N</i> + 3)<i>d</i> = 3072인 fused feature vector에 timestep마다 한 번 적용되며, 여기서 <i>N</i> = 3개의 camera stream과 language, task 및 state token을 합하면 길이 <i>T</i>인 modality stream이 (<i>N</i> + 3) = 6개가 된다. Dense baseline은 width 512인 3-hidden-layer MLP를 사용하여 scalar reward를 계산한다. MoE-Decoder variant는 이 MLP를 <i>E</i>개의 deep expert로 구성된 sparse top-<i>k</i> mixture로 대체하며, 각 expert 자체는 width 256인 3-hidden-layer MLP이고 동일한 fused vector에 적용된다. MoE는 timestep마다 <i>E</i> = 10개의 expert 중 <i>k</i> = 2개만 활성화하므로, 적절한 비교 대상은 total parameter 수가 아니라 activated parameter 수이다. 이 configuration에서 MoE-Decoder는 activated parameter와 FLOPs 모두에서 Dense baseline과 약 10% 이내로 일치하므로(표 5 및 6), quality 차이는 capacity 또는 compute 여유가 아니라 sparse routing structure에 기인한다.</p>
+
+  <table class="wide" id="table-5">
+    <caption><strong>표 5: MoE-Decoder와 Dense reward head의 activated-parameter 세부 내역.</strong> Configuration: fused input dimension 3072, width 256이고 <i>n</i><sub>h</sub> = 3 hidden layer인 expert <i>E</i> = 10개, <i>k</i> = 2.</caption>
+    <thead>
+      <tr>
+        <th>구성 요소</th>
+        <th>파라미터</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group"><th colspan="2">MoE-Decoder (활성화 기준)</th></tr>
+      <tr><td>활성 gate (LN, Linear 3072→10)</td><td>0.04 M</td></tr>
+      <tr><td>활성 expert (LN, Linear 3072→256, Linear 256→256×2, Linear 256→1)</td><td>0.92 M</td></tr>
+      <tr><td>× <i>k</i> = 2개의 활성 expert</td><td>1.85 M</td></tr>
+      <tr class="total"><td>MoE-Decoder 합계(활성화 기준)</td><td>1.89 M</td></tr>
+      <tr class="group"><th colspan="2">Dense baseline</th></tr>
+      <tr><td>MLP head: LN, Linear 3072→512</td><td>1.58 M</td></tr>
+      <tr><td>Linear 512→512 (×2)</td><td>0.53 M</td></tr>
+      <tr><td>Linear 512→1</td><td>&lt; 0.01 M</td></tr>
+      <tr class="total"><td>Dense 합계</td><td>2.11 M</td></tr>
+      <tr class="ratio"><td>MoE-Decoder / Dense (활성화 기준)</td><td>0.90×</td></tr>
+    </tbody>
+  </table>
+
+  <table class="wide" id="table-6">
+    <caption><strong>표 6: Reward head의 timestep당 compute(FLOPs).</strong> Multiply-accumulate 한 번을 2 FLOPs로 계산한다. 두 head 모두 fused vector에 대해 timestep마다 한 번 실행된다.</caption>
+    <thead>
+      <tr>
+        <th>구성 요소</th>
+        <th>호출당 FLOPs</th>
+        <th>Timestep당 호출 수</th>
+        <th>Timestep당 FLOPs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group"><th colspan="4">MoE-Decoder</th></tr>
+      <tr><td>활성 gate</td><td>0.08 M</td><td>1</td><td>0.08 M</td></tr>
+      <tr><td>활성 expert (×<i>k</i> = 2)</td><td>1.85 M</td><td>2</td><td>3.70 M</td></tr>
+      <tr class="total"><td>MoE-Decoder 합계</td><td></td><td></td><td>3.78 M</td></tr>
+      <tr class="group"><th colspan="4">Dense baseline</th></tr>
+      <tr><td>MLP head</td><td>4.20 M</td><td>1</td><td>4.20 M</td></tr>
+      <tr class="total"><td>Dense 합계</td><td></td><td></td><td>4.20 M</td></tr>
+      <tr class="ratio"><td>MoE-Decoder / Dense</td><td></td><td></td><td>0.90×</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="appendix-6-9">
+  <h2>6.9 MoE 설정 Ablation 연구</h2>
+
+  <p>Default configuration인 T2E10은 가장 우수한 overall demo loss(0.020)와 가장 높은 T1 rollout success(0.833)를 달성하며, 이는 <i>E</i> = 10개의 expert에 대해 <i>k</i> = 2를 사용하는 설정이 이 sweep 내에서 사실상 optimum에 도달함을 보여준다. Multi-gate 설계와 load-balance auxiliary loss 덕분에 모든 variant는 유의미한 load score(0.02–0.20)를 유지하고 routing collapse를 피하므로, 관찰된 차이는 degenerate gating이 아니라 specialization quality를 반영한다. 실험적으로 top-<i>k</i>를 변경하는 경우(T1E10: 0.026, T4E10: 0.029), expert 수를 변경하는 것보다 overall demo loss가 더 크게 저하된다.</p>
+</section>
+
+<section id="appendix-6-9-cont"><h3>6.9 MoE 설정 ablation study — 계속</h3><table class="wide"><caption>표 7. SARM2의 MoE routing 구성 ablation. TaEb는 b개 expert에서 top-k=a를 뜻하며 T2E10이 기본 구성이다.</caption><thead><tr><th>Metrics</th><th>T1E10</th><th>T4E10</th><th>T2E5</th><th>T2E20</th><th>T2E10 (ours)</th></tr></thead><tbody><tr><th>Demo L S1 ↓</th><td>0.015</td><td>0.018</td><td>0.016</td><td>0.011</td><td><b>0.006</b></td></tr><tr><th>Demo L S2 ↓</th><td>0.033</td><td>0.037</td><td>0.032</td><td><b>0.031</b></td><td><b>0.031</b></td></tr><tr><th>Overall ↓</th><td>0.026</td><td>0.029</td><td>0.024</td><td>0.022</td><td><b>0.020</b></td></tr><tr><th>Rollout ρ T1 ↑</th><td>0.667</td><td>0.722</td><td>0.611</td><td>0.778</td><td><b>0.833</b></td></tr><tr><th>Rollout ρ T2 ↑</th><td>0.556</td><td>0.5</td><td>0.5</td><td><b>0.722</b></td><td>0.667</td></tr><tr><th>MoE Density</th><td>0.02</td><td>0.13</td><td>0.20</td><td>0.12</td><td>0.10</td></tr></tbody></table><p>top-k를 바꾸면(T1E10: 0.026, T4E10: 0.029) expert 수를 바꿀 때(T2E5: 0.024, T2E20: 0.022)보다 overall demo loss가 더 나빠진다. k=1은 안정적인 specialization에 필요한 중복성을 없애고, k=4는 expert를 지나치게 혼합해 routing signal을 희석한다. 반면 E 변경은 균형 잡힌 expert pool을 재분할할 뿐이다. 따라서 timestep별 MoE decoder에서는 routing sparsity가 raw expert budget보다 더 민감한 hyperparameter이다.</p></section><section id="appendix-6-10">
+  <h2>6.10 MoE 설계: MoE-Decoder 대 MoE-FFN</h2>
+
+  <p><strong>설정.</strong> 대규모 언어 모델에서 지배적인 MoE 구성법은 expert를 Transformer의 Feed-Forward Network(FFN) 하위 계층 안에 배치한다. 동일한 배치 방식이 multimodal reward modeling에도 적용되는지 알아보기 위해, 내부 MoE가 삽입되는 위치만 다르고 나머지는 모든 면에서 동일한 SARM2 MMoE value decoder의 두 변형을 비교한다.</p>
+
+  <ul>
+    <li><strong>MoE-FFN</strong>은 value model backbone의 마지막 Transformer block에 있는 feed-forward 하위 계층을 sparse MoE FFN으로 교체하며, timestep별 output head에는 일반 MLP를 사용한다.</li>
+    <li><strong>MoE-Decoder(본 연구)</strong>는 value model backbone 전체를 dense하게 유지하고, encoder가 생성한 fused-per-timestep representation에 작용하도록 sparse MoE를 output head에 배치한다.</li>
+  </ul>
+
+  <p>두 변형은 동일한 SigLIP-2 feature, 동일한 6-layer causal Transformer backbone, 동일한 expert 수 E=10과 k=2, 그리고 동일한 primitive-group-conditioned MMoE outer gate를 공유한다. 이 outer gate는 3.1.2절과 같이 stage estimator가 예측한 primitive ỹ<sub>t</sub>에 의해 선택된다. value-model backbone의 dense FFN 하위 계층은 표준 4× expansion을 따르므로 hidden width는 4d<sub>model</sub> = 4×512 = 2048이다. MoE-FFN에서 각 expert는 hidden width가 1024인 feed-forward block이며, token마다 k=2개가 활성화되므로 active hidden capacity는 1024×2 = 2048이다. 이는 dense FFN과 정확히 일치하므로 FFN 하위 계층에서 계산량과 capacity를 맞춘 비교이다. 내부 top-k router는 배치 위치에서 전달받는 vector의 content를 기반으로 동작한다. MoE-FFN에서는 하나의 (modality, timestep) hidden state이고, MoE-Decoder에서는 모든 modality를 concatenate한 fused timestep vector이다. 따라서 primitive-group specialization은 두 방식의 차이를 만드는 요인이 아니며, 유일하게 달라지는 것은 expert가 존재하는 하위 계층이다.</p>
+
+  <p>S1 및 S2 subset의 demonstration MSE(낮을수록 좋음), T1(Folding Shorts)과 T2(Cleaning Whiteboard)의 rollout score ρ(높을수록 좋음), 그리고 routing health 및 compute parity를 확인하기 위한 식 6의 normalized top-k routing score S<sub>route</sub>(일반적으로 0.4 미만이면 건전함)를 보고한다.</p>
+
+  <p><strong>결과.</strong> MoE-Decoder는 사실상 동일한 routing sparsity에서 전체 demonstration MSE를 절반 이하로 낮추고(0.020 대 0.033), T1의 rollout score를 약 세 배(0.833 대 0.222), T2에서도 약 세 배(0.667 대 0.278)로 높인다. 이 결과는 MoE가 FFN에 속해야 한다는 LLM의 직관을 뒤집는다. 이 절의 나머지에서는 각 하위 계층의 역할을 중심으로 그 이유를 설명한다.</p>
+
+  <table class="wide">
+    <caption>표 8: SARM2에서 MoE-Decoder와 MoE-FFN의 비교. 유일한 차이는 내부 MoE를 배치하는 하위 계층이며, primitive-group-conditioned MMoE outer gate를 포함한 다른 모든 구성요소는 동일하게 유지한다. MoE-Decoder는 MoE-FFN의 routing sparsity(MoE Density)와 대등하면서도 전체 demonstration MSE를 절반으로 줄이고 두 task 모두에서 rollout score를 약 세 배로 높인다.</caption>
+    <thead>
+      <tr><th scope="col">지표</th><th scope="col">MoE-FFN</th><th scope="col">MoE-Decoder(본 연구)</th></tr>
+    </thead>
+    <tbody>
+      <tr><th colspan="3" scope="colgroup">Demo L ↓</th></tr>
+      <tr><th scope="row">S1</th><td>0.026</td><td>0.006</td></tr>
+      <tr><th scope="row">S2</th><td>0.038</td><td>0.031</td></tr>
+      <tr><th scope="row">전체</th><td>0.033</td><td>0.020</td></tr>
+      <tr><th colspan="3" scope="colgroup">Rollout ρ ↑</th></tr>
+      <tr><th scope="row">T1</th><td>0.222</td><td>0.833</td></tr>
+      <tr><th scope="row">T2</th><td>0.278</td><td>0.667</td></tr>
+      <tr><th scope="row">MoE Density</th><td>0.09</td><td>0.10</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>각 하위 계층의 역할.</strong> Transformer FFN 하위 계층은 position-wise representation refinement를 수행한다. attention은 position 사이의 정보를 혼합하고, FFN은 각 position을 독립적으로 다시 encode한다. attention과 FFN을 쌓는 것은 value model backbone이 모든 modality로부터 하나의 일관된 fused-per-timestep representation을 구성하는 메커니즘이다. 본 논문에서 decoder라고 부르는 output head는 이 fused representation을 받아 예측 progress r̂<sub>t</sub>로 mapping한다. 따라서 내부 MoE를 FFN에 배치하면 representation 구성을 specialized하고, output head에 배치하면 prediction mapping을 specialized한다. 이 둘은 매우 다른 역할이다.</p>
+
+  <p><strong>(i) MoE-FFN은 잘못된 단계를 specialized한다.</strong> encoder FFN의 position별 expert는 각 (modality, timestep) hidden state를 서로 다른 MLP로 routing하며, 뒤따르는 attention layer는 서로 다르게 처리된 이 position들을 다시 하나의 일관된 representation으로 융합해야 한다. 이는 backbone의 역할을 분절한다. 더 나쁜 점은 FFN router가 보는 position별 vector의 정체성이 scene content보다 해당 vector가 거쳐 온 modality projection에 주로 좌우된다는 것이다. content-driven specialization이 나타나더라도 prediction이 직접 사용하지 않는 중간 position별 representation에 작용한다. r̂<sub>t</sub>는 MoE에서 여러 attention layer를 더 지난 최종 fused timestep representation에만 의존한다.</p>
+
+  <p><strong>(ii) MoE-Decoder는 올바른 단계를 specialized한다.</strong> value model backbone을 dense하게 유지하면 모든 attention+FFN layer가 backbone의 설계 목적대로 하나의 통합된 fused-per-timestep representation을 만드는 데 협력한다. 그런 다음 내부 MoE는 content와 primitive-group gate를 조건으로 이 fused vector를 여러 scalar output path 가운데 하나로 routing한다. 이는 표준적인 “shared backbone, specialized head” 패턴을 soft top-k 방식으로 구현한 것이다. representation은 분절되지 않으며, specialization은 실제로 이득을 얻는 축에 적용된다. 따라서 서로 다른 primitive group(예: pick/place, rotate, fold)은 유사한 fused feature 위에서도 서로 다른 progress 계산을 수행할 수 있다. 특히 output head의 모든 routing decision은 r̂<sub>t</sub>의 직접적인 supervision을 받으므로 routing gradient의 signal-to-noise ratio가 높다.</p>
+
+  <p><strong>(iii) LLM의 직관이 뒤집히는 이유.</strong> language modeling에서는 position별 token이 prediction unit이다. 각 position은 자체 representation으로 다음 token을 예측하므로 position별 MoE-FFN specialization이 prediction axis와 일치하고, 긴 context length(L ∼ 10³–10⁴)는 sample마다 specialization을 안정화하기에 충분한 routing decision을 제공한다. multimodal reward modeling에서는 어느 조건도 성립하지 않는다. prediction unit은 modality별 position이 아니라 fused timestep이고, sample별 token budget은 작으며(L = (N+3)T), modality typing은 position별 routing이 modality identity shortcut에 치우치게 한다. MoE-Decoder는 실제 prediction이 이루어지는 수준에 specialization을 배치한다. 즉, shared representation을 분절하는 곳이 아니라 differentiation을 얻을 수 있는 곳에서 sparsity 비용을 지불한다.</p>
+
+  <p><strong>요약.</strong> Transformer FFN은 통합된 representation을 구성하기 위한 것이고, output head는 그 representation을 prediction으로 mapping하기 위한 것이다. sparse routing은 올바른 대상을 specialized할 때 유용하다. LLM에서는 position별 prediction 때문에 position별 specialization이 유용하므로 FFN이 올바른 대상이다. SARM2의 MMoE value decoder에서는 output head가 올바른 대상이다. value model backbone은 일관성을 유지해야 하며, primitive-conditioned specialization의 효과는 head에서 발생한다. MoE-Decoder는 배치 위치를 prediction과 일치시키지만 MoE-FFN은 그렇지 않다. 표 8의 수치는 이러한 불일치에서 비롯된다.</p>
+</section>
+
+<section id="appendix-6-11">
+  <h2>6.11 Reward Model 추정 시각화 결과</h2>
+
+  <p>먼저 각 reward model이 held-out demonstration의 dense progress를 얼마나 정확히 추정하는지 살펴본다. 그림 7은 in-distribution split S1과 held-out split S2에 걸친 benchmark 10개 task 모두에서 ground truth와 TOPReward, Robometer, Robometer-FT, ReWiND 및 SARM2의 timestep별 progress prediction을 시각화한다. 두 VLM 기반 baseline(TOPReward와 Robometer)은 trajectory 초반에 1 근처로 포화되어 4.1절에서 논의한 지나치게 낙관적인 추정을 보인다. ReWiND와 Robometer-FT는 ground truth를 더 가깝게 추적하지만 long-horizon task에서는 여전히 drift한다. SARM2는 10개 task 전체에서 ground-truth progress curve를 가장 충실히 따르며, S1과 S2 모두에서 높은 일치도를 보인다.</p>
+
+  <figure class="fig-wide" id="figure-7"><img src="figures/fig-p24-01.png" alt="원문 그림 7"><figcaption>그림 7: benchmark의 10개 task 전체에 대해 held-out demonstration에서 얻은 task별 progress 추정치. 각 panel은 ground truth와 TOPReward, Robometer, Robometer-FT, ReWiND 및 SARM2의 prediction을 겹쳐 표시한다. VLM baseline은 초반에 1 근처로 포화되며(4.1절에서 지적한 과도한 낙관성), SARM2는 S1과 S2 모두에서 ground truth를 면밀히 추적한다.</figcaption></figure>
+
+  <p>또한 실제 policy training 조건에서 각 reward model이 얼마나 충실하게 작동하는지 알아보기 위해, 질적으로 서로 다른 두 task인 Folding Shorts(그림 8)와 Cleaning Whiteboard(그림 9)의 on-policy rollout에서 예측 progress signal과 key frame을 함께 시각화한다. 두 task 모두에서 SARM2는 rollout의 segment-level detail을 포착한다. robot이 실제로 진전할 때 예측 progress가 상승하고, robot이 자세를 조정하거나 어려움을 겪을 때 정체하거나 하락하며, 치명적인 실패 시 급격히 감소한다. 이는 시각화된 key frame과 일치한다. 반면 SARM2와 마찬가지로 labeled rollout에서 LoRA fine-tuning한 Robometer baseline은 이러한 transition을 놓친다. robot이 눈에 띄게 어려움을 겪는데도 상승하는 progress signal을 출력하거나, policy가 실제로 task를 진전시키는 구간에서도 평평한 값을 유지하는 경우가 많다. 이러한 차이는 downstream policy-training 격차로 직접 이어진다. 잘못 shaping된 value estimate는 reward와 advantage를 잘못 할당하고, policy update에 noisy하거나 때로는 부호가 뒤집힌 gradient를 입력하여 self-improvement를 늦추거나 불안정하게 만든다.</p>
+
+  <figure class="fig-wide" id="figure-8"><img src="figures/fig-p25-01.png" alt="원문 그림 8"><figcaption>그림 8: 두 Folding Shorts rollout에서 reward model의 progress 추정. 각 panel은 policy training에 사용된 두 reward model의 예측 progress를 시간에 따라 나타낸다. trajectory를 따라 8개의 key frame을 progress figure 주위에 제시한다. SARM2는 policy가 진전하거나 어려움을 겪는 순간을 충실히 추적하지만, fine-tuned Robometer baseline은 이러한 세부 사항을 포착하지 못한다.</figcaption></figure>
+
+  <figure class="fig-wide" id="figure-9"><img src="figures/fig-p26-01.png" alt="원문 그림 9"><figcaption>그림 9: 두 Cleaning Whiteboard rollout에서 reward model의 progress 추정. 각 panel은 policy training에 사용된 두 reward model의 예측 progress를 시간에 따라 나타낸다. trajectory를 따라 8개의 key frame을 progress figure 주위에 제시한다. SARM2는 진전, 조정, 심지어 치명적인 실패까지 robot station의 상황을 면밀히 추적하지만, fine-tuned Robometer baseline은 이러한 세부 사항을 추적하지 못한다.</figcaption></figure>
+</section>
+
+<section id="appendix-6-12">
+  <h2>6.12 Action Primitive 추정 및 MoE Expert 선택 시각화 결과</h2>
+
+  <p>action primitive 기반 stage estimator는 모든 timestep에 걸쳐 집계한 micro-level 평균 정확도 85.22%를 달성한다. 각 task의 held-out test set(task당 10 episode)에 대한 task별 결과는 표 9에 제시한다. 또한 그림 10과 11은 각 task에 대해 예측 action primitive를 ground truth와 비교하고 trajectory에 따른 MoE expert 선택을 함께 보여 주는 대표 사례 하나씩을 제시한다.</p>
+
+  <table class="wide">
+    <caption>표 9: benchmark 10개 task에서 stage estimator의 정확도. task는 부록 6.2의 task별 설명과 동일한 순서로 나열한다.</caption>
+    <thead><tr><th scope="col">Task 이름</th><th scope="col">Stage Estimator 정확도(%)</th></tr></thead>
+    <tbody>
+      <tr><td>plate를 집어 bin에 넣기</td><td>89.32</td></tr>
+      <tr><td>plate를 집어 dish rack에 놓기</td><td>79.01</td></tr>
+      <tr><td>shorts 접기</td><td>97.52</td></tr>
+      <tr><td>t-shirt 접기</td><td>98.27</td></tr>
+      <tr><td>socket에서 plug 뽑기</td><td>79.40</td></tr>
+      <tr><td>whiteboard eraser로 whiteboard 닦기</td><td>96.22</td></tr>
+      <tr><td>dinner table 차리기</td><td>70.85</td></tr>
+      <tr><td>broom으로 종이 조각 쓸기</td><td>91.15</td></tr>
+      <tr><td>headphone 감아 정리하기</td><td>97.72</td></tr>
+      <tr><td>umbrella 접어 넣기</td><td>57.74</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="fig-wide" id="figure-10"><img src="figures/fig-p27-01.png" alt="원문 그림 10"><figcaption>그림 10: Action-primitive prediction 및 MoE expert 선택 figure(1부).</figcaption></figure>
+
+  <figure class="fig-wide" id="figure-11"><img src="figures/fig-p28-01.png" alt="원문 그림 11"><figcaption>그림 11: Action-primitive prediction 및 MoE expert 선택 figure(2부). 각 panel은 trajectory를 따라 배치한 4개의 key frame(상단), action primitive 기반 stage estimator의 prediction과 ground truth 비교(중단), MoE expert 선택(하단)으로 구성된다. 중단 panel의 색상은 부록 4에서 논의한 primitive grouping을 나타낸다.</figcaption></figure>
+</section>
+
+<section id="appendix-6-13">
+  <h2>6.13 보조 수식</h2>
+
+  <p>p̄<sub>e</sub><sup>(m)</sup>을 batch에서 gate m이 expert e에 할당한 평균 routing probability라 하고, f<sub>e</sub><sup>(m)</sup>을 expert e가 top-k에 선택된 token의 비율이라 한다. 그러면 다음과 같다.</p>
+
+  <pre data-equation="7"><code>L_balance = Σ_(m=0)^M E · Σ_(e=1)^E f_e^(m) · p̄_e^(m)
+L_entropy = −Σ_(m=0)^M Σ_(e=1)^E p̄_e^(m) log p̄_e^(m)                              (7)</code></pre>
+
+  <p>balance 항은 각 gate 안에서 expert가 균일하게 활용되도록 유도하며, entropy 항은 training 초기에 routing distribution이 지나치게 뾰족해지는 것을 방지한다.</p>
+</section>
+
+<section id="appendix-6-14">
+  <h2>6.14 SPIRAL에 관한 추가 논의</h2>
+
+  <p><strong>Reward model 재사용성.</strong> 하나의 reward model은 여러 downstream task의 demonstration에 label을 부여하고 rollout 기반 fine-tuning의 출발점 역할을 할 수 있으므로, reward model training 비용을 task suite 전체에 걸쳐 분산할 수 있다.</p>
+
+  <p><strong>RL을 위한 혼합 objective.</strong> 이 hybrid 설계의 동기를 설명하기 위해 두 objective를 간단히 대조한다. replay buffer D의 transition으로 학습한 critic Q<sub>ϕ</sub>(s,a)가 주어졌을 때, TD objective는 next-state value를 bootstrap하는 반면 MC objective는 empirical discounted return으로 regression한다.</p>
+
+  <pre data-equation="8"><code>y_t^TD = r_t + γ Q_ϕ′(s_(t+1), a_(t+1))
+J_TD(ϕ) = E_D[(Q_ϕ(s_t, a_t) − y_t^TD)²]
+
+y_t^MC = Σ_(k=t)^T γ^(k−t) r_k
+J_MC(ϕ) = E_D[(Q_ϕ(s_t, a_t) − y_t^MC)²]                                      (8)</code></pre>
+
+  <p>TD target은 immediate reward r<sub>t</sub>와 one-step bootstrap에만 의존하므로, r<sub>t</sub>가 dense하고 국소적으로 유용한 정보를 담고 있으면 critic은 매 step에서 정밀한 learning signal을 받는다. 이 특성 때문에 TD는 특히 long-horizon task에 적합하다. 각 transition이 gradient에 기여하며, credit assignment가 멀리 떨어진 terminal signal에서 수백 step을 거쳐 전파될 필요가 없다. 반면 MC target은 critic을 empirical discounted return에 regression한다. sparse terminal reward(r<sub>k</sub>=0 for k&lt;T, r<sub>T</sub>=R<sub>sparse</sub>)에서는 y<sub>t</sub><sup>MC</sup>=γ<sup>T−t</sup>R<sub>sparse</sub>로 축약된다. discount γ<sup>T−t</sup>는 episode 길이에 따라 terminal credit을 지수적으로 약화하므로 성공하면서 빠른 episode가 성공하지만 느린 episode보다 엄격히 더 큰 target을 갖는다. 따라서 MC objective에는 짧고 성공적인 trajectory를 꾸준히 선호하는 성질이 내재한다. 두 objective는 상호 보완적이다. TD는 trajectory 전반에서 미세한 action choice를 세밀하게 shaping하고, MC는 빠르고 성공적인 episode에 대한 안정적인 global preference를 부여하여 policy가 그러한 episode의 motion style을 계승하게 한다.</p>
+
+  <p>두 항을 다음과 같이 결합한다.</p>
+
+  <pre data-equation="9"><code>J_critic(ϕ) = J_TD(ϕ) + α · J_MC(ϕ)                                            (9)</code></pre>
+
+  <p>여기서 α는 local shaping과 global preference 사이의 균형을 조절한다. 이 hybrid 설계를 검증하기 위해 offline RL setting에서 두 reward component를 ablation하고, 두 task 모두에서 전체 mixed objective를 dense-reward TD 항 또는 sparse-reward MC 항만 사용하는 변형과 비교한다(표 10).</p>
+
+  <table class="wide">
+    <caption>표 10: offline RL 단계의 critic objective에 대한 ablation. Folding Shorts(flat 및 crumble에서 시작)와 Cleaning Whiteboard에서 behavior cloning(BC)을 sparse-reward MC 항만 사용한 offline RL, dense-reward TD 항만 사용한 offline RL, 본 연구의 전체 mixed objective(J<sub>TD</sub> + αJ<sub>MC</sub>)와 비교한다. success rate(SR), average progress(Avg. Prog.), BC 대비 progress gain(Prog. Gain)을 보고한다. mixed objective가 두 task 모두에서 가장 좋은 결과를 달성하여 dense TD 항과 sparse MC 항이 상호 보완적임을 확인한다.</caption>
+    <thead>
+      <tr><th rowspan="2" scope="col">Training 방법</th><th colspan="2" scope="colgroup">Folding Shorts(SR↑)</th><th colspan="3" scope="colgroup">Cleaning Whiteboard</th></tr>
+      <tr><th scope="col">Flat</th><th scope="col">Crumble</th><th scope="col">SR↑</th><th scope="col">Avg. Prog. ↑</th><th scope="col">Prog. Gain ↑</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">BC</th><td>1/12</td><td>0/12</td><td>4/20</td><td>0.475</td><td>N/A</td></tr>
+      <tr><th scope="row">RL-Sparse(MC만)</th><td>4/12</td><td>2/12</td><td>6/20</td><td>0.625</td><td>0.150</td></tr>
+      <tr><th scope="row">RL-Dense(TD만)</th><td>5/12</td><td>4/12</td><td>9/20</td><td>0.745</td><td>0.270</td></tr>
+      <tr><th scope="row">RL-Dense(mixed obj.)</th><td>7/12</td><td>4/12</td><td>10/20</td><td>0.813</td><td>0.338</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>일회성 human labeling effort.</strong> reward model adaptation(Stage 2)은 일회성 작업이다. pipeline에서 가장 약한 policy인 BC policy π<sub>1</sub>으로부터 R<sub>1</sub>을 의도적으로 수집한다. 이 policy의 rollout은 가장 다양한 out-of-distribution(OOD) failure mode를 드러내며, 이것이 바로 reward model이 올바르게 score하는 방법을 배워야 할 state이기 때문이다. R<sub>1</sub>으로 약 100개의 rollout을 수집하고 segment로 나눈 다음, 각 segment에 {빠른 진전, 느린 진전, 조정, 실수} 중 하나와 evaluation protocol에서 산출한 최종 progress value를 label로 부여한다. annotation interface는 그림 12에 제시한다. 경험상 두 task에서 각각 100개의 rollout에 label을 부여하는 데 2~3시간이 걸렸다. 작은 adaptation set에 대한 overfitting을 막기 위해 R<sub>1</sub><sup>labeled</sup>를 기존 task-specific reward model training data의 50% subsample과 혼합한다. 그 결과 fine-tuning run에는 pretraining compute의 약 1/10이 필요하다.</p>
+
+  <figure class="fig-wide" id="figure-12"><img src="figures/fig-p30-01.png" alt="원문 그림 12"><figcaption>그림 12: 일회성 reward-model adaptation(Stage 3)을 위한 annotation interface. annotator는 rollout을 chunk로 segment하고 각 chunk에 {빠른 진전, 느린 진전, 조정, 실수} 중 하나와 최종 progress value를 label로 부여한다. task마다 π<sub>1</sub>의 rollout 약 100개를 annotation하는 데 2~3시간이 걸린다.</figcaption></figure>
+
+  <p><strong>최소한의 human involvement.</strong> self-improvement pipeline 가운데 본 방법은 인간에게 가장 적은 부담을 요구한다. RM<sub>2</sub>를 얻은 뒤에는 추가 human labeling 없이 SPIRAL loop가 실행된다. operator는 environment reset과 safety supervision에만 필요하며, iteration마다 rollout을 50~100개만 수집해도 2~3회 iteration이면 target task를 안정적으로 해결하기에 충분하다(그림 4 참조). 이는 π0.6과 같은 intervention 기반 방법과 뚜렷이 대비된다. 이러한 방법에서는 정확한 순간에 정밀하고 단호한 motion으로 human-in-the-loop correction을 online으로 제공해야 하므로, annotator가 숙련된 teleoperator인 동시에 policy failure mode를 속속들이 알아야 한다. 반면 본 framework는 초기 rollout set에 대한 offline researcher-level annotation만 요구한다. 이는 인간에게 real-time skill을 요구하지 않는 일회성 작업이며 훨씬 쉽게 확장할 수 있다.</p>
+
+  <p><strong>Error correction을 넘어서.</strong> rollout labeling은 잘못된 behavior를 수정하고 OOD state에서 복구하는 데 그치지 않는다. policy를 가장 효율적이고 안정적인 solution strategy로 암묵적으로 유도하여 execution style을 human preference와 정렬한다. 그림 13은 Cleaning Whiteboard에서 이를 보여 준다. 위쪽 frame은 정석적인 strategy를 나타낸다. 왼팔은 board의 위쪽 corner를 잡아 단단히 고정하고, 오른팔은 안정적인 contact를 유지한 채 eraser로 닦는다. 아래쪽 frame은 초기 BC policy의 failure mode를 보여 준다. 왼팔이 stand의 아래쪽 bar를 잡는데, 이는 불안정한 지지 방식이어서 닦을 때마다 board가 기울었다가 되돌아오므로 cleaning이 느리고 오류가 발생하기 쉽다. 이러한 grasp는 demonstration set에 나타나지 않는 OOD behavior이다. 엄밀히 말하면 mistake는 아니다. progress가 계속 증가할 수 있기 때문이다(board가 실제로 더 깨끗해진다). 그러나 motion은 비효율적이고 whiteboard 전체를 넘어뜨릴 위험이 있다. 따라서 이러한 segment를 reward 0인 “조정”으로 labeling하여 fine-tuning을 통해 human preference와 high-level prior knowledge를 RM<sub>2</sub>에 주입한다. SPIRAL loop 이후 policy는 이 preference를 distill하여 더 이상 불안정한 grasp를 사용하지 않는다.</p>
+
+  <figure class="fig-wide" id="figure-13"><img src="figures/fig-p31-01.png" alt="원문 그림 13"><figcaption>그림 13: SPIRAL loop 이후 policy의 고효율 action(상단)과 초기 BC policy의 suboptimal action(하단) 비교.</figcaption></figure>
+
+  <p><strong>Crumble 상태에서 시작하는 Folding Shorts의 불완전한 결과.</strong> SPIRAL을 세 round 수행한 뒤 본 policy는 vanilla BC 및 offline RL보다 상당히 높은 success rate를 달성한다(8/12 대 0/12 대 4/12). 그러나 이 결과는 flat 상태에서 시작하는 Folding Shorts(12/12) 및 Cleaning Whiteboard(18/20)의 거의 포화된 성능과 비교하면 여전히 뚜렷한 격차가 있으며, X-VLA와 같은 최근 SOTA cloth-folding VLA policy보다도 낮다. 이 한계에는 여러 요인이 있다고 본다. 첫째, policy는 demonstration data 20시간만으로 학습되며, 이는 cloth folding에서 low-data regime에 해당한다. 더욱이 demonstration은 filtering되지 않았고 품질도 다양하다. 대략적인 proxy로 보면 shorts 한 벌을 접는 데 필요한 시간이 episode에 따라 40초에서 100초까지 차이 난다. 또한 서로 다른 operator가 데이터를 수집하므로 미묘한 modality 차이가 있다. 예를 들어 folding 중 사용하는 grasping position처럼 일부 step에서 operator마다 선호 action이 다를 수 있다. 둘째, flat 상태에서 시작하는 Folding Shorts나 Cleaning Whiteboard와 비교할 때, crumble 상태에서 시작하는 Folding Shorts에는 shorts를 평평하게 펴는 더 어렵고 덜 구조화된 stage가 포함된다. 이 stage에서 robot은 shorts를 완전히 평평하게 만들기 위해 여러 번 시도해야 하는 경우가 많다. 부드러운 cloth의 deformability와 다양한 cloth texture 때문에 shorts는 매우 많은 가능한 state로 나타날 수 있다. 그 결과 현재 reward model은 각 시도 후 cloth가 더 평평해졌는지 안정적으로 판단하기에 충분한 granularity와 accuracy를 갖추지 못했다. 특히 shorts가 여전히 심하게 구겨진 초기 몇 차례 시도에서 그렇다. 이 때문에 이 stage에서 reward signal이 평평하게 유지되거나 noisy해진다. 또한 그림 12에서 보듯 미묘한 human folding skill은 현재 방법으로 labeling하기 어렵다. 따라서 이러한 skill을 SPIRAL을 통해 downstream policy로 distill하기도 어렵다. 이는 본 방법의 중요한 한계이다. state variation이 큰 고도로 복잡한 task에서는 통일된 protocol과 modality 아래에서 수집한 대량의 고품질 demonstration data로 학습하는 것이 여전히 가장 효과적인 post-training strategy일 수 있다.</p>
+</section>
+
+<section id="appendix-6-15">
+  <h2>6.15 Policy Rollout 예시</h2>
+
+  <figure class="fig-wide" id="figure-14"><img src="figures/fig-p31-02.png" alt="원문 그림 14"><figcaption>그림 14: (1) shorts 접기(상단), (2) whiteboard 닦기(하단)에 대한 policy rollout trajectory 예시.</figcaption></figure>
+</section>
+<h2 class="section">부록. 프로젝트 페이지 영상 자산</h2><p class="asset-note">원문 프로젝트 페이지에서 수집한 영상 22개의 로컬 보존본과 원본 URL을 함께 제공한다.</p><div class="video-grid"><figure class="video-card"><a href="assets/videos/SARM2_video_compressed-e7f7c9.mp4"><img src="assets/videos/thumbs/SARM2_video_compressed-e7f7c9.jpg" alt="SARM2 video compressed"></a><figcaption><b>영상 1.</b> 프로젝트 페이지의 SARM2 video compressed demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/SARM2_video_compressed-e7f7c9.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/SARM2_video_compressed.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/episode_1772-9cd1c4.mp4"><img src="assets/videos/thumbs/episode_1772-9cd1c4.jpg" alt="episode 1772"></a><figcaption><b>영상 2.</b> 프로젝트 페이지의 episode 1772 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/episode_1772-9cd1c4.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_1772.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/episode_2025-d3087d.mp4"><img src="assets/videos/thumbs/episode_2025-d3087d.jpg" alt="episode 2025"></a><figcaption><b>영상 3.</b> 프로젝트 페이지의 episode 2025 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/episode_2025-d3087d.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_2025.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/episode_2097-666e16.mp4"><img src="assets/videos/thumbs/episode_2097-666e16.jpg" alt="episode 2097"></a><figcaption><b>영상 4.</b> 프로젝트 페이지의 episode 2097 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/episode_2097-666e16.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_2097.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/episode_3046-7386b8.mp4"><img src="assets/videos/thumbs/episode_3046-7386b8.jpg" alt="episode 3046"></a><figcaption><b>영상 5.</b> 프로젝트 페이지의 episode 3046 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/episode_3046-7386b8.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_3046.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/rm_rollout_fold_shorts_1-628a71.mp4"><img src="assets/videos/thumbs/rm_rollout_fold_shorts_1-628a71.jpg" alt="rm rollout fold shorts 1"></a><figcaption><b>영상 6.</b> 프로젝트 페이지의 rm rollout fold shorts 1 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/rm_rollout_fold_shorts_1-628a71.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_fold_shorts_1.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/rm_rollout_fold_shorts_2-f993fd.mp4"><img src="assets/videos/thumbs/rm_rollout_fold_shorts_2-f993fd.jpg" alt="rm rollout fold shorts 2"></a><figcaption><b>영상 7.</b> 프로젝트 페이지의 rm rollout fold shorts 2 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/rm_rollout_fold_shorts_2-f993fd.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_fold_shorts_2.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/rm_rollout_clean_wb_1-d26458.mp4"><img src="assets/videos/thumbs/rm_rollout_clean_wb_1-d26458.jpg" alt="rm rollout clean wb 1"></a><figcaption><b>영상 8.</b> 프로젝트 페이지의 rm rollout clean wb 1 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/rm_rollout_clean_wb_1-d26458.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_clean_wb_1.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/rm_rollout_clean_wb_2-e94664.mp4"><img src="assets/videos/thumbs/rm_rollout_clean_wb_2-e94664.jpg" alt="rm rollout clean wb 2"></a><figcaption><b>영상 9.</b> 프로젝트 페이지의 rm rollout clean wb 2 demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/rm_rollout_clean_wb_2-e94664.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_clean_wb_2.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/clean_whiteboard_3_5x-67e746.mp4"><img src="assets/videos/thumbs/clean_whiteboard_3_5x-67e746.jpg" alt="clean whiteboard 3 5x"></a><figcaption><b>영상 10.</b> 프로젝트 페이지의 clean whiteboard 3 5x demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/clean_whiteboard_3_5x-67e746.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/clean_whiteboard_3_5x.mp4">원본</a></span></figcaption></figure><figure class="video-card"><a href="assets/videos/fold_shorts_4_5x-54573a.mp4"><img src="assets/videos/thumbs/fold_shorts_4_5x-54573a.jpg" alt="fold shorts 4 5x"></a><figcaption><b>영상 11.</b> 프로젝트 페이지의 fold shorts 4 5x demo.<span class="video-links"><span class="video-badge">VIDEO</span><a href="assets/videos/fold_shorts_4_5x-54573a.mp4">레포 사본</a> · <a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_4_5x.mp4">원본</a></span></figcaption></figure></div><table class="video-index wide"><thead><tr><th>#</th><th>내용</th><th>레포 사본</th><th>원본</th></tr></thead><tbody><tr><td>1</td><td class="l">SARM2 video compressed</td><td class="l"><a href="assets/videos/SARM2_video_compressed-e7f7c9.mp4">assets/videos/SARM2_video_compressed-e7f7c9.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/SARM2_video_compressed.mp4">원본</a></td></tr><tr><td>2</td><td class="l">episode 1772</td><td class="l"><a href="assets/videos/episode_1772-9cd1c4.mp4">assets/videos/episode_1772-9cd1c4.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_1772.mp4">원본</a></td></tr><tr><td>3</td><td class="l">episode 2025</td><td class="l"><a href="assets/videos/episode_2025-d3087d.mp4">assets/videos/episode_2025-d3087d.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_2025.mp4">원본</a></td></tr><tr><td>4</td><td class="l">episode 2097</td><td class="l"><a href="assets/videos/episode_2097-666e16.mp4">assets/videos/episode_2097-666e16.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_2097.mp4">원본</a></td></tr><tr><td>5</td><td class="l">episode 3046</td><td class="l"><a href="assets/videos/episode_3046-7386b8.mp4">assets/videos/episode_3046-7386b8.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_3046.mp4">원본</a></td></tr><tr><td>6</td><td class="l">episode 001126</td><td class="l"><a href="assets/videos/episode_001126-1060db.mp4">assets/videos/episode_001126-1060db.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_001126.mp4">원본</a></td></tr><tr><td>7</td><td class="l">episode 000495</td><td class="l"><a href="assets/videos/episode_000495-eda109.mp4">assets/videos/episode_000495-eda109.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_000495.mp4">원본</a></td></tr><tr><td>8</td><td class="l">episode 002792</td><td class="l"><a href="assets/videos/episode_002792-f9a77c.mp4">assets/videos/episode_002792-f9a77c.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_002792.mp4">원본</a></td></tr><tr><td>9</td><td class="l">episode 002745</td><td class="l"><a href="assets/videos/episode_002745-a1eec8.mp4">assets/videos/episode_002745-a1eec8.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/episode_002745.mp4">원본</a></td></tr><tr><td>10</td><td class="l">rm rollout fold shorts 1</td><td class="l"><a href="assets/videos/rm_rollout_fold_shorts_1-628a71.mp4">assets/videos/rm_rollout_fold_shorts_1-628a71.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_fold_shorts_1.mp4">원본</a></td></tr><tr><td>11</td><td class="l">rm rollout fold shorts 2</td><td class="l"><a href="assets/videos/rm_rollout_fold_shorts_2-f993fd.mp4">assets/videos/rm_rollout_fold_shorts_2-f993fd.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_fold_shorts_2.mp4">원본</a></td></tr><tr><td>12</td><td class="l">rm rollout clean wb 1</td><td class="l"><a href="assets/videos/rm_rollout_clean_wb_1-d26458.mp4">assets/videos/rm_rollout_clean_wb_1-d26458.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_clean_wb_1.mp4">원본</a></td></tr><tr><td>13</td><td class="l">rm rollout clean wb 2</td><td class="l"><a href="assets/videos/rm_rollout_clean_wb_2-e94664.mp4">assets/videos/rm_rollout_clean_wb_2-e94664.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/rm_rollout_clean_wb_2.mp4">원본</a></td></tr><tr><td>14</td><td class="l">pick up</td><td class="l"><a href="assets/videos/pick_up-947c5b.mp4">assets/videos/pick_up-947c5b.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/failure_rollouts/pick_up.mp4">원본</a></td></tr><tr><td>15</td><td class="l">clean whiteboard slow</td><td class="l"><a href="assets/videos/clean_whiteboard_slow-b86e9c.mp4">assets/videos/clean_whiteboard_slow-b86e9c.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/clean_whiteboard_slow.mp4">원본</a></td></tr><tr><td>16</td><td class="l">clean whiteboard fast</td><td class="l"><a href="assets/videos/clean_whiteboard_fast-b2df13.mp4">assets/videos/clean_whiteboard_fast-b2df13.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/clean_whiteboard_fast.mp4">원본</a></td></tr><tr><td>17</td><td class="l">fold shorts flat fail</td><td class="l"><a href="assets/videos/fold_shorts_flat_fail-d8f40d.mp4">assets/videos/fold_shorts_flat_fail-d8f40d.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_flat_fail.mp4">원본</a></td></tr><tr><td>18</td><td class="l">fold shorts flat fast</td><td class="l"><a href="assets/videos/fold_shorts_flat_fast-b9a5b2.mp4">assets/videos/fold_shorts_flat_fast-b9a5b2.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_flat_fast.mp4">원본</a></td></tr><tr><td>19</td><td class="l">fold shorts full fail</td><td class="l"><a href="assets/videos/fold_shorts_full_fail-05cef3.mp4">assets/videos/fold_shorts_full_fail-05cef3.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_full_fail.mp4">원본</a></td></tr><tr><td>20</td><td class="l">fold shorts full fast 1</td><td class="l"><a href="assets/videos/fold_shorts_full_fast_1-003f41.mp4">assets/videos/fold_shorts_full_fast_1-003f41.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_full_fast_1.mp4">원본</a></td></tr><tr><td>21</td><td class="l">clean whiteboard 3 5x</td><td class="l"><a href="assets/videos/clean_whiteboard_3_5x-67e746.mp4">assets/videos/clean_whiteboard_3_5x-67e746.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/clean_whiteboard_3_5x.mp4">원본</a></td></tr><tr><td>22</td><td class="l">fold shorts 4 5x</td><td class="l"><a href="assets/videos/fold_shorts_4_5x-54573a.mp4">assets/videos/fold_shorts_4_5x-54573a.mp4</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/videos/fold_shorts_4_5x.mp4">원본</a></td></tr></tbody></table><h3>프로젝트 페이지 정적 이미지</h3><table class="wide"><thead><tr><th>#</th><th>파일</th><th>레포 사본</th><th>원본</th></tr></thead><tbody><tr><td>1</td><td class="l">lerobot-722821.png</td><td class="l"><a href="assets/images/lerobot-722821.png">assets/images/lerobot-722821.png</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/figures/lerobot.png">원본</a></td></tr><tr><td>2</td><td class="l">xiaohongshu-f3d9a5.png</td><td class="l"><a href="assets/images/xiaohongshu-f3d9a5.png">assets/images/xiaohongshu-f3d9a5.png</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/figures/xiaohongshu.png">원본</a></td></tr><tr><td>3</td><td class="l">rm_plot-501cc8.png</td><td class="l"><a href="assets/images/rm_plot-501cc8.png">assets/images/rm_plot-501cc8.png</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/figures/rm_plot.png">원본</a></td></tr><tr><td>4</td><td class="l">framework_plot-70bfdd.png</td><td class="l"><a href="assets/images/framework_plot-70bfdd.png">assets/images/framework_plot-70bfdd.png</a></td><td><a href="https://qianzhong-chen.github.io/sarm2.github.io/media/figures/framework_plot.png">원본</a></td></tr></tbody></table><h2 class="section">참고문헌 요약</h2><p class="refs-note">원문 참고문헌을 대조용으로 원문 표기 그대로 정리한다.</p><ol class="refs"><li>B. Zitkovich, T. Yu, S. Xu, P. Xu, T. Xiao, F. Xia, J. Wu, P. Wohlhart, S. Welker, A. Wahid, et al. Rt-2: Vision-language-action models transfer web knowledge to robotic control. In Conference on Robot Learning, pages 2165–2183. PMLR, 2023.</li><li>M. J. Kim, K. Pertsch, S. Karamcheti, T. Xiao, A. Balakrishna, S. Nair, R. Rafailov, E. Foster, G. Lam, P. Sanketi, et al. Openvla: An open-source vision-language-action model. arXiv preprint arXiv:2406.09246, 2024.</li><li>O. M. Team, D. Ghosh, H. Walke, K. Pertsch, K. Black, O. Mees, S. Dasari, J. Hejna, T. Kreiman, C. Xu, et al. Octo: An open-source generalist robot policy. arXiv preprint arXiv:2405.12213, 2024.</li><li>K. Black, N. Brown, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, L. Groom, K. Hausman, B. Ichter, et al. π0 : A vision-language-action flow model for general robot control. arXiv preprint arXiv:2410.24164, 2024.</li><li>P. Intelligence, K. Black, N. Brown, J. Darpinian, K. Dhabalia, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, et al. π0.5 : a vision-language-action model with open-world generalization. arXiv preprint arXiv:2504.16054, 2025.</li><li>Q. Chen, J. Yu, M. Schwager, P. Abbeel, Y. Shentu, and P. Wu. Sarm: Stage-aware reward modeling for long horizon robot manipulation. arXiv preprint arXiv:2509.25358, 2025.</li><li>Physical Intelligence, A. Amin, R. Aniceto, A. Balakrishna, K. Black, K. Conley, G. Connors, ∗ J. Darpinian, K. Dhabalia, et al. π0.6 : A vla that learns from experience. arXiv preprint arXiv:2511.14759, 2025.</li><li>Y. Chen, S. Tian, S. Liu, Y. Zhou, H. Li, and D. Zhao. Conrft: A reinforced fine-tuning method for vla models via consistency policy. arXiv preprint arXiv:2502.05450, 2025.</li><li>Y. Guo, J. Zhang, X. Chen, X. Ji, Y.-J. Wang, Y. Hu, and J. Chen. Improving vision-languageaction model with online reinforcement learning. In 2025 IEEE International Conference on Robotics and Automation (ICRA), pages 15665–15672. IEEE, 2025.</li><li>Z. Sun and S. Song. From prior to pro: Efficient skill mastery via distribution contractive rl finetuning. arXiv preprint arXiv:2603.10263, 2026.</li><li>K. Lei, H. Li, D. Yu, Z. Wei, L. Guo, Z. Jiang, Z. Wang, S. Liang, and H. Xu. Rl100: Performant robotic manipulation with real-world reinforcement learning. arXiv preprint arXiv:2510.14830, 2025.</li><li>Y. J. Ma, V. Kumar, A. Zhang, O. Bastani, and D. Jayaraman. Liv: Language-image representations and rewards for robotic control. In International Conference on Machine Learning, pages 23301–23320. PMLR, 2023.</li><li>M. Alakuijala, R. McLean, I. Woungang, N. Farsad, S. Kaski, P. Marttinen, and K. Yuan. Video-language critic: Transferable reward functions for language-conditioned robotics. arXiv preprint arXiv:2405.19988, 2024.</li><li>K.-H. Hung, P.-C. Lo, J.-F. Yeh, H.-Y. Hsu, Y.-T. Chen, and W. H. Hsu. Victor: Learning hierarchical vision-instruction correlation rewards for long-horizon manipulation. arXiv preprint arXiv:2405.16545, 2024.</li><li>C. Kim, M. Heo, D. Lee, J. Shin, H. Lee, J. J. Lim, and K. Lee. Subtask-aware visual reward learning from segmented demonstrations. arXiv preprint arXiv:2502.20630, 2025.</li><li>J. Zhang, Y. Luo, A. Anwar, S. A. Sontakke, J. J. Lim, J. Thomason, E. Biyik, and J. Zhang. Rewind: Language-guided rewards teach robot policies without new demonstrations. arXiv preprint arXiv:2505.10911, 2025. 9</li><li>Y. J. Ma, J. Hejna, C. Fu, D. Shah, J. Liang, Z. Xu, S. Kirmani, P. Xu, D. Driess, T. Xiao, et al. Vision language models are in-context value learners. In The Thirteenth International Conference on Learning Representations, 2024.</li><li>H. Tan, S. Chen, Y. Xu, Z. Wang, Y. Ji, C. Chi, Y. Lyu, Z. Zhao, X. Chen, P. Co, et al. Robodopamine: General process reward modeling for high-precision robotic manipulation. arXiv preprint arXiv:2512.23703, 2025.</li><li>S. Chen, C. Harrison, Y.-C. Lee, A. J. Yang, Z. Ren, L. J. Ratliff, J. Duan, D. Fox, and R. Krishna. Topreward: Token probabilities as hidden zero-shot rewards for robotics. arXiv preprint arXiv:2602.19313, 2026.</li><li>T. Lee, A. Wagenmaker, K. Pertsch, P. Liang, S. Levine, and C. Finn. Roboreward: Generalpurpose vision-language reward models for robotics. arXiv preprint arXiv:2601.00675, 2026.</li><li>A. Liang, Y. Korkmaz, J. Zhang, M. Hwang, A. Anwar, S. Kaushik, A. Shah, A. S. Huang, L. Zettlemoyer, D. Fox, et al. Robometer: Scaling general-purpose robotic reward models via trajectory comparisons. arXiv preprint arXiv:2603.02115, 2026.</li><li>A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning, pages 8748–8763. PmLR, 2021.</li><li>M. Tschannen, A. Gritsenko, X. Wang, M. F. Naeem, I. Alabdulmohsin, N. Parthasarathy, T. Evans, L. Beyer, Y. Xia, B. Mustafa, et al. Siglip 2: Multilingual vision-language encoders with improved semantic understanding, localization, and dense features. arXiv preprint arXiv:2502.14786, 2025.</li><li>T. Mu, M. Liu, and H. Su. Drs: Learning reusable dense rewards for multi-stage tasks. arXiv preprint arXiv:2404.16779, 2024.</li><li>S. Huang, Z. Zhang, T. Liang, Y. Xu, Z. Kou, C. Lu, G. Xu, Z. Xue, and H. Xu. Mentor: Mixture-of-experts network with task-oriented perturbation for visual reinforcement learning. arXiv preprint arXiv:2410.14972, 2024.</li><li>J. Luo, Z. Hu, C. Xu, Y. L. Tan, J. Berg, A. Sharma, S. Schaal, C. Finn, A. Gupta, and S. Levine. Serl: A software suite for sample-efficient robotic reinforcement learning. In 2024 IEEE International Conference on Robotics and Automation (ICRA), pages 16961–16969. IEEE, 2024.</li><li>J. Luo, C. Xu, J. Wu, and S. Levine. Precise and dexterous robotic manipulation via humanin-the-loop reinforcement learning. Science Robotics, 10(105):eads5033, 2025.</li><li>Y. Zhao, H. Jin, L. Jiang, X. Zhang, K. Wu, P. Ren, Z. Xu, Z. Che, L. Sun, D. Wu, et al. Real-world reinforcement learning from suboptimal interventions. arXiv preprint arXiv:2512.24288, 2025.</li><li>D. Kalashnikov, A. Irpan, P. Pastor, J. Ibarz, A. Herzog, E. Jang, D. Quillen, E. Holly, M. Kalakrishnan, V. Vanhoucke, et al. Scalable deep reinforcement learning for vision-based robotic manipulation. In Conference on robot learning, pages 651–673. PMLR, 2018.</li><li>Y. Seo, J. Uruç, and S. James. Continuous control with coarse-to-fine reinforcement learning. arXiv preprint arXiv:2407.07787, 2024.</li><li>P. Wu, A. Escontrela, D. Hafner, K. Goldberg, and P. Abbeel. Daydreamer: World models for physical robot learning. Conference on Robot Learning, 2022.</li><li>H. Hu, S. Mirchandani, and D. Sadigh. Imitation bootstrapped reinforcement learning. arXiv preprint arXiv:2311.02198, 2023. 10</li><li>J. Yang, M. S. Mark, B. Vu, A. Sharma, J. Bohg, and C. Finn. Robot fine-tuning made easy: Pre-training rewards and policies for autonomous real-world reinforcement learning. In 2024 IEEE International Conference on Robotics and Automation (ICRA), pages 4804–4811. IEEE, 2024.</li><li>P. Wu, Y. Shentu, Q. Liao, D. Jin, M. Guo, K. Sreenath, X. Lin, and P. Abbeel. Robocopilot: Human-in-the-loop interactive imitation learning for robot manipulation. arXiv preprint arXiv:2503.07771, 2025.</li><li>X. B. Peng, A. Kumar, G. Zhang, and S. Levine. Advantage-weighted regression: Simple and scalable off-policy reinforcement learning. arXiv preprint arXiv:1910.00177, 2019.</li><li>J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347, 2017.</li><li>A. Wagenmaker, M. Nakamoto, Y. Zhang, S. Park, W. Yagoub, A. Nagabandi, A. Gupta, and S. Levine. Steering your diffusion policy with latent space reinforcement learning. arXiv preprint arXiv:2506.15799, 2025.</li><li>H. Niu, Q. Chen, T. Liu, J. Li, G. Zhou, Y. Zhang, J. Hu, and X. Zhan. xted: Cross-domain adaptation via diffusion-based trajectory editing. arXiv preprint arXiv:2409.08687, 2024.</li><li>W. Xiao, H. Lin, A. Peng, H. Xue, T. He, Y. Xie, F. Hu, J. Wu, Z. Luo, L. Fan, et al. Selfimproving vision-language-action models with data generation via residual rl. arXiv preprint arXiv:2511.00091, 2025.</li><li>L. Ankile, Z. Jiang, R. Duan, G. Shi, P. Abbeel, and A. Nagabandi. Residual off-policy rl for finetuning behavior cloning policies. arXiv preprint arXiv:2509.19301, 2025.</li><li>C. Hao, X. Zhai, Y. Liu, and H. Soh. Abstracting robot manipulation skills via mixture-ofexperts diffusion policies. arXiv preprint arXiv:2601.21251, 2026.</li><li>B. Cheng, T. Liang, S. Huang, M. Shao, F. Zhang, B. Xu, Z. Xue, and H. Xu. Moe-dp: An moe-enhanced diffusion policy for robust long-horizon robotic manipulation with skill decomposition and failure recovery. arXiv preprint arXiv:2511.05007, 2025.</li><li>X. Zhang, Y. Jiang, H. Qin, J. Bai, and M. Bai. Language-conditioned representations and mixture-of-experts policy for robust multi-task robotic manipulation. IEEE Robotics and Automation Letters, 11(5):6153–6160, 2026.</li><li>W. Shen, Y. Liu, Y. Wu, Z. Liang, S. Gu, D. Wang, T. Nian, L. Xu, Y. Qin, J. Pang, et al. Expertise need not monopolize: Action-specialized mixture of experts for vision-languageaction learning. arXiv preprint arXiv:2510.14300, 2025.</li><li>Z. Du, B. Liu, Y. Liang, Y. Shen, H. Cao, X. Zheng, Z. Feng, Z. Wu, J. Yang, and Y.-G. Jiang. Himoe-vla: Hierarchical mixture-of-experts for generalist vision-language-action policies. arXiv preprint arXiv:2512.05693, 2025.</li><li>Z. Yang, Y. Chai, X. Jia, Q. Li, Y. Shao, X. Zhu, H. Su, and J. Yan. Drivemoe: Mixture-ofexperts for vision-language-action model in end-to-end autonomous driving. arXiv preprint arXiv:2505.16278, 2025.</li><li>R. Huang, S. Zhu, Y. Du, and H. Zhao. Moe-loco: Mixture of experts for multitask locomotion. In 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pages 14218–14225. IEEE, 2025.</li><li>T. Seyde, W. Schwarting, I. Gilitschenski, M. Wulfmeier, and D. Rus. Strength through diversity: Robust behavior learning via mixture policies. In Conference on Robot Learning, pages 1144–1155. PMLR, 2022. 11</li><li>Q. Chen, N. Gao, S. Huang, J. Low, T. Chen, J. Sun, and M. Schwager. Grad-nav++: Visionlanguage model enabled visual drone navigation with gaussian radiance fields and differentiable dynamics. IEEE Robotics and Automation Letters, 11(2):1418–1425, 2025.</li><li>J. Ma, Z. Zhao, X. Yi, J. Chen, L. Hong, and E. H. Chi. Modeling task relationships in multitask learning with multi-gate mixture-of-experts. In Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery &amp; data mining, pages 1930–1939, 2018.</li><li>H. Lei, X. Cheng, Q. Qin, D. Wang, K. Fan, H. Huang, Q. Gu, Y. Wu, Z. Jiang, Y. Chen, et al. M3-jepa: Multimodal alignment via multi-gate moe based on the joint-embedding predictive architecture. arXiv preprint arXiv:2409.05929, 2024.</li><li>S. Fujimoto, H. van Hoof, and D. Meger. Addressing function approximation error in actorcritic methods. In International Conference on Machine Learning, pages 1587–1596. PMLR, 2018.</li><li>J. Zheng, J. Li, Z. Wang, D. Liu, X. Kang, Y. Feng, Y. Zheng, J. Zou, Y. Chen, J. Zeng, et al. Xvla: Soft-prompted transformer as scalable cross-embodiment vision-language-action model. arXiv preprint arXiv:2510.10274, 2025.</li><li>J. Wen, Y. Zhu, J. Li, Z. Tang, C. Shen, and F. Feng. Dexvla: Vision-language model with plug-in diffusion expert for general robot control. arXiv preprint arXiv:2502.05855, 2025.</li><li>P. Kooijmans, M. Aractingi, S. Palma, C. Pascal, J. Choghari, K. Meftah, M. Russi, N. Rabault, V. Batto, L. von Werra, and T. Wolf. Unfolding robotics: The open-source recipe for teaching a robot to fold your clothes, 2026.</li><li>I2RT-Robotics. Yam – 6-dof robotic arm. https://i2rt.com/products/ yam-manipulator, 2025.</li><li>RealSense. Realsensedepth camera d405. https://store.realsenseai.com/ buy-intel-realsense-depth-camera-d405.html, 2025.</li><li>P. Wu, Y. Shentu, Z. Yi, X. Lin, and P. Abbeel. Gello: A general, low-cost, and intuitive teleoperation framework for robot manipulators. In 2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pages 12156–12163. IEEE, 2024.</li><li>W. Fedus, B. Zoph, and N. Shazeer. Switch transformers: Scaling to trillion parameter models with simple and efficient sparsity. Journal of Machine Learning Research, 23(120):1–39, 2022.</li><li>D. Lepikhin, H. Lee, Y. Xu, D. Chen, O. Firat, Y. Huang, M. Krikun, N. Shazeer, and Z. Chen. Gshard: Scaling giant models with conditional computation and automatic sharding. arXiv preprint arXiv:2006.16668, 2020.</li><li>A. Q. Jiang, A. Sablayrolles, A. Roux, A. Mensch, B. Savary, C. Bamford, D. S. Chaplot, D. d. l. Casas, E. B. Hanna, F. Bressand, et al. Mixtral of experts. arXiv preprint arXiv:2401.04088, 2024.</li><li>D. Dai, C. Deng, C. Zhao, R. Xu, H. Gao, D. Chen, J. Li, W. Zeng, X. Yu, Y. Wu, et al. Deepseekmoe: Towards ultimate expert specialization in mixture-of-experts language models. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 1280–1297, 2024.</li><li>C. Zheng, J. Sun, Y. Gao, E. Xie, Y. Wang, P. Wang, T. Xu, C. Matthew, L. Ren, J. Li, J. Xiong, K. Rasul, M. Schwager, A. Schneider, Z. Wang, and Y. Nevmyvaka. Understanding the mixture-of-experts with nadaraya-watson kernel. The Fourteenth International Conference on Learning Representations (ICLR), 2026. 12</li></ol></div></body></html>

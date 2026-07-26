@@ -1,0 +1,35 @@
+<!-- p. 20 -->
+<section id="appendix-6-6">
+  <h2>6.6 보상 모델 평가 프로토콜</h2>
+
+  <p><strong>시연 평가.</strong> Task마다 별도로 보류한 episode 10개를 sampling하고, 예측 progress와 ground-truth progress 사이의 frame별 mean squared error(MSE)를 보고한다. 제시의 명확성을 위해 S<sub>1</sub>과 S<sub>2</sub>의 MSE를 각각 보고하고 통합 score도 함께 제시한다. 통합 MSE는 평가한 모든 frame에 대한 micro-average로 계산하므로, 두 subset별 값의 산술평균이 아님에 유의한다.</p>
+
+  <p><strong>Rollout 평가.</strong> SARM의 프로토콜에 따라 실제 robot platform에서 robot rollout의 progress 추정을 평가한다. 각 target task에서 π<sub>0.5</sub> [5] policy를 fine-tuning하고 서로 다른 training stage의 intermediate checkpoint를 배포하여, task마다 trajectory 36개로 이루어진 균형 잡힌 rollout set을 구성한다. 이는 successful episode(SE) 12개, partially successful episode(PSE) 12개, failed episode(FE) 12개로 구성된다. Reward model은 다음 기준에 따라 각 rollout을 분류한다.</p>
+
+  <pre class="equation">Label = ⎧ SE,  if P_final &gt; 0.8 ∧ (Σ_{t=2T/3}^T P_t)/(T/3) &gt; 0.6,
+        ⎨ PSE, if (1/T)Σ_{t=1}^T P_t ≥ ξ,
+        ⎩ FE,  otherwise.                                      (4)</pre>
+  <p class="equation-reading"><strong>식 (4) 읽기:</strong> Label은 최종 예측 progress <i>P</i><sub>final</sub>이 0.8보다 크고 trajectory 마지막 3분의 1 구간, 즉 <i>t</i> = 2<i>T</i>/3부터 <i>T</i>까지의 <i>P</i><sub>t</sub> 평균이 0.6보다 크면 SE이다. 그렇지 않은 경우 전체 trajectory에서의 평균 (1/<i>T</i>)Σ<sub><i>t</i>=1</sub><sup><i>T</i></sup><i>P</i><sub>t</sub>가 ξ 이상이면 PSE이며, 그 밖의 경우에는 FE이다.</p>
+
+  <p>여기서 <i>P</i><sub>t</sub>는 frame <i>t</i>에서 예측한 progress를 나타내고, <i>T</i>는 trajectory length이며, ξ는 성공하지 못한 모든 rollout의 average progress에 대한 median으로 설정한다. 이 adaptive threshold는 PSE와 FE 예측을 동일한 수로 나누며, 고정 cutoff를 수동으로 tuning할 때 발생하는 bias를 방지한다.</p>
+
+  <p>또한 다음 score를 통해 rollout 분류 정확도를 요약한다.</p>
+
+  <pre class="equation">ρ = (#correct − #incorrect)/36 ∈ [−1, 1].                    (5)</pre>
+  <p class="equation-reading"><strong>식 (5) 읽기:</strong> ρ는 올바르게 분류한 rollout 수(#correct)에서 잘못 분류한 rollout 수(#incorrect)를 뺀 값을 전체 rollout 수 36으로 나눈 score이며, 그 범위는 −1부터 1까지이다.</p>
+
+  <p>이 score는 올바르게 분류한 각 rollout에 +1을, 그렇지 않은 각 rollout에 −1을 부여한 뒤 전체 rollout 수로 정규화한다. 완벽한 classifier는 ρ = 1을 달성하는 반면, 세 class 중 하나를 무작위로 추측하면 ρ ≈ −1/3이 된다.</p>
+
+  <p><strong>MoE routing 진단.</strong> 모든 MoE 기반 reward model에 대해 다음과 같이 정의한 top-<i>k</i> routing score도 추가로 보고한다.</p>
+
+  <pre class="equation">S_route = (r − 1)/(N/k − 1),    r = (N/k)Σ_{i=1}^k p̄^(i).   (6)</pre>
+  <p class="equation-reading"><strong>식 (6) 읽기:</strong> Raw concentration <i>r</i>은 <i>i</i> = 1부터 <i>k</i>까지의 <i>i</i>번째로 큰 평균 routing 확률 p̄<sup>(<i>i</i>)</sup>을 합한 뒤 <i>N</i>/<i>k</i>를 곱한 값이다. Routing score <i>S</i><sub>route</sub>는 <i>r</i> − 1을 <i>N</i>/<i>k</i> − 1로 나누어 구한다.</p>
+
+  <p>여기서 <i>N</i>은 전체 expert 수이고, <i>k</i>는 token마다 활성화되는 expert 수이며, p̄<sup>(<i>i</i>)</sup>는 evaluation set에 걸쳐 평균한 routing distribution에서 <i>i</i>번째로 큰 entry이다. Raw concentration <i>r</i>은 균일한 baseline 1/<i>N</i>에 비해 top-<i>k</i> expert에 할당된 mass를 측정하며, 그 범위는 1(완전히 균형 잡힘)부터 <i>N</i>/<i>k</i>(완전히 collapse됨)까지이다. Affine normalization은 <i>S</i><sub>route</sub>를 [0, 1]로 rescaling하며, <i>N</i>과 <i>k</i>에 대한 의존성을 제거하므로 configuration 간 expert utilization을 직접 비교할 수 있다. 건전한 router에서는 <i>S</i><sub>route</sub>가 1보다 현저히 작다.</p>
+</section>
+
+<section id="appendix-6-7">
+  <h2>6.7 Policy 평가 프로토콜</h2>
+
+  <p><strong>Whiteboard 닦기—5단계 scoring.</strong> Cleaning Whiteboard 평가의 각 episode는 progress 5단계로 scoring한다. 글자를 하나도 지우지 못한 경우 0%이고, eraser를 성공적으로 잡고 board를 안정시킨 뒤 글자를 하나 이상 지운 경우 25%이다. 전체 글자의 절반을 초과하여 지웠지만 모두 지우지는 못한 경우 50%이고, 모든 글자를 지웠으나 올바르게 멈추지 못했거나 글자가 남은 상태에서 일찍 멈춘 경우 75%이다. 모든 글자를 지우고 eraser를 table 위에 내려놓고 board를 놓음으로써 올바르게 종료한 경우 100%이다. 보고하는 Avg. Prog. metric은 evaluation episode 20개 전체에 대한 단계 값의 평균이며, SR은 100% 단계에 도달한 episode만 집계한다.</p>
+</section>

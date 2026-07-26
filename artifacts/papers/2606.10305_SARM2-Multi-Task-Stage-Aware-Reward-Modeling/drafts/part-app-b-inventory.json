@@ -1,0 +1,37 @@
+{
+  "source": "source-p22-31.txt",
+  "source_range": {
+    "start_section": "6.10",
+    "end_section": "6.15",
+    "pages": [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+  },
+  "output": "part-app-b.html",
+  "language": "ko",
+  "format": "HTML fragment",
+  "counts": {
+    "sections": 6,
+    "paragraphs": 23,
+    "list_items": 2,
+    "tables": 3,
+    "figures": 8,
+    "equations": 3
+  },
+  "sections": [
+    {"number": "6.10", "title_ko": "MoE 설계: MoE-Decoder 대 MoE-FFN"},
+    {"number": "6.11", "title_ko": "Reward Model 추정 시각화 결과"},
+    {"number": "6.12", "title_ko": "Action Primitive 추정 및 MoE Expert 선택 시각화 결과"},
+    {"number": "6.13", "title_ko": "보조 수식"},
+    {"number": "6.14", "title_ko": "SPIRAL에 관한 추가 논의"},
+    {"number": "6.15", "title_ko": "Policy Rollout 예시"}
+  ],
+  "tables": [
+    {"number": 8, "rows_including_headers": 10},
+    {"number": 9, "rows_including_headers": 11},
+    {"number": 10, "rows_including_headers": 6}
+  ],
+  "figures": [7, 8, 9, 10, 11, 12, 13, 14],
+  "equations": [7, 8, 9],
+  "citation_numbers_removed": true,
+  "math_format": "ASCII/Unicode code blocks",
+  "figure_representation": "figure placeholders with full translated captions"
+}

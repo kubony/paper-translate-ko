@@ -1,0 +1,50 @@
+<section id="appendix-6">
+  <h1>6 부록</h1>
+
+  <section id="appendix-6-1">
+    <h2>6.1 Hardware 구성</h2>
+
+    <p>실세계 실험에는 양팔 tabletop robot platform을 사용한다. system은 다음과 같이 구성된다.</p>
+
+    <ul>
+      <li>I2RT에서 제조한 6-DOF YAM robot arm 2대 [56].</li>
+      <li>RealSense D405 camera 3대: 각 wrist에 장착된 camera 1대씩과 workspace 관찰을 위해 상단에 고정한 camera 1대 [57].</li>
+    </ul>
+
+    <p>Demonstration data는 leader-follower GELLO teleoperation system [58]을 통해 수집한다. Environment는 30 fps로 기록하며, left wrist, right wrist, fixed top view의 세 camera view에서 동기화된 stream을 포함한다. 또한 robot joint angle과 명령된 joint-angle action도 기록한다.</p>
+
+    <figure data-figure="5"><figcaption>그림 5: Data 수집 및 policy 평가에 사용한 실제 station.</figcaption></figure>
+  </section>
+
+  <section id="appendix-6-2">
+    <h2>6.2 Task 설명</h2>
+
+    <p>평가 task 10개를 subset별로 묶어 아래에 모두 설명하며, 해당 시각화는 그림 6에 모아 제시한다. S1(classic)은 pick-and-place task 2개, cloth-folding task 2개, plug 뽑기로 구성되며, 모두 일반적인 reward-model training distribution에서 지배적으로 나타나는 primitive와 잘 부합한다. S2(unconventional)는 나머지 5개 task로 구성되며, tool 사용, deformable 또는 articulated object 조작, multi-stage compositional execution을 요구한다. 하나의 episode 안에서 같은 action sequence가 여러 차례 반복되는 pick-and-place와 같은 task에서는 table이 빌 때까지 robot이 해당 sequence를 반복해야 한다.</p>
+
+    <h3>S1: Classic Task</h3>
+
+    <p><strong>Plate를 집어 bin에 넣기.</strong> 여러 장의 plate가 board 위에 놓여 있으며, robot은 이를 한 번에 하나씩 치워야 한다. 각 cycle에서 robot은 먼저 board 중앙의 plate를 집은 다음 plastic bin에 넣는다. Board에 plate가 하나도 남지 않을 때까지 이 cycle을 반복한다.</p>
+
+    <p><strong>Plate를 집어 dish rack에 놓기.</strong> 이 task는 bin task의 변형으로, 각 plate를 dish rack의 slot에 수직으로 삽입해야 한다. 따라서 gripper와 rack opening 사이의 정밀한 pose alignment가 필요하다. 각 cycle에서 robot은 먼저 board에서 plate를 집은 다음 dish rack의 빈 slot에 삽입한다. Board가 빌 때까지 이 cycle을 반복하며, 일반적으로 episode당 5~10회의 삽입 cycle이 필요하다.</p>
+
+    <p><strong>T-shirt 접기.</strong> 이는 long-horizon deformable-object task이다. Robot은 먼저 pile에서 T-shirt를 잡아 board 중앙으로 옮긴다. 그런 다음 옷을 평평하게 펴고 연속으로 두 번 접는다. 마지막으로 깔끔하게 접은 T-shirt를 board corner에 놓고 두 gripper를 모두 reset한다. 펴기 stage가 가장 길고 시각적 variation도 가장 큰 반면, 접기 stage는 bimanual이며 coordinated pinch grasp를 요구한다.</p>
+
+    <p><strong>Shorts 접기.</strong> 이 task의 절차는 T-shirt 접기와 거의 동일하다. Robot은 먼저 pile에서 shorts를 잡아 board 중앙으로 옮긴다. 그런 다음 옷을 평평하게 펴고 연속으로 두 번 접은 뒤, 마지막으로 접은 shorts를 board corner에 놓는다.</p>
+
+    <p><strong>Socket에서 plug 뽑기.</strong> Robot은 먼저 board 위 초기 위치에 있는 power strip을 작업하기 더 편한 위치로 옮긴다. 그런 다음 socket에서 plug를 하나씩 뽑아 board 중앙에 놓는 과정을 반복한다. Plug를 몇 개 뽑은 뒤에는 남은 plug가 더 접근하기 쉬운 각도로 드러나도록 power strip을 다시 옮길 수 있으며, 이후 plug를 뽑아 놓는 cycle을 계속한다. 모든 plug를 power strip에서 뽑고 power strip을 board 중앙에 다시 놓으면 episode가 종료된다.</p>
+
+    <h3>S2: Unconventional Task</h3>
+
+    <p><strong>Whiteboard eraser로 whiteboard 닦기.</strong> 한쪽 arm은 task 내내 작은 whiteboard를 단단히 잡아 안정화하고, 다른 arm은 board 중앙에 놓인 whiteboard eraser를 가져온다. 그런 다음 잡고 있는 arm이 whiteboard 표면을 드러내도록 기울이고, 다른 arm이 whiteboard의 글자를 닦는다. 다 닦은 뒤 robot은 eraser를 board 중앙에 다시 놓고, 마지막으로 whiteboard를 원래 위치로 되돌린다. Task 전 과정이 bimanual이며, 한쪽 arm이 기울어진 whiteboard를 안정화하는 동안 다른 arm이 닦는 motion을 수행한다.</p>
+
+    <p><strong>Dinner table 차리기.</strong> 이는 deformable manipulation과 multi-object placement를 결합한 composite long-horizon task이다. Robot은 먼저 workspace에 tablecloth를 펼치고 그 중앙에 plate를 놓는다. 그런 다음 right arm으로 glass를 집어 적절한 위치에 내려놓는다. 마지막으로 utensil을 배치한다. 이때 각 utensil(knife와 fork)을 최종 배치 전에 적절한 gripper로 옮기기 위해 left-to-right 및 right-to-left hand-over를 수행한다.</p>
+
+    <p><strong>Broom으로 종이 조각 쓸기.</strong> Robot은 먼저 board 중앙에서 broom을 집고, 안정적으로 쥐어 사용할 수 있는 grasp를 확보하기 위해 필요에 따라 한 번 이상의 bimanual hand-over를 수행한 다음, 다른 arm으로 dustpan을 집는다. Task의 주된 부분은 길게 반복되는 cycle이다. Robot은 board 중앙의 종이 조각을 쓸어 dustpan에 담고, dustpan에 담긴 조각을 trash bin에 버린다. 종이 조각이 하나도 남지 않을 때까지 이 sweep-gather-dump cycle을 반복한 뒤, dustpan과 broom을 board 위에 다시 놓는다.</p>
+
+    <p><strong>Headphone 감아 정리하기.</strong> 이는 높은 정밀도를 요구하는 task이다. Robot은 먼저 board 중앙에서 headphone 한 쌍을 집는다. 그런 다음 headphone 본체 주위에 cable을 감는 긴 bimanual wrapping motion을 수행한다. 감기가 끝나면 정리된 headphone을 board 중앙에 다시 놓고 두 arm을 모두 reset한다.</p>
+
+    <p><strong>Umbrella 접어 넣기.</strong> 이는 multi-stage articulated-object task이다. Robot은 먼저 board 중앙에서 펼쳐진 umbrella를 집어 right arm에서 left arm으로 넘긴다. 그런 다음 snap button을 runner에 눌러 canopy를 해제하고 shaft를 눌러 umbrella를 접는다. 이어서 canopy를 정돈하고 자연스러운 crease를 따라 접는다. 마지막으로 canopy를 shaft 주위에 말고 strap을 잡아 velcro를 고정한 뒤, 닫힌 umbrella를 board 중앙에 다시 놓는다.</p>
+
+    <figure data-figure="6"><figcaption>그림 6: 평가 task 10개의 시각화. Page별로 위에서 아래 순서는 다음과 같다. S1: (1) plate를 집어 bin에 넣기, (2) plate를 집어 dish rack에 놓기, (3) t-shirt 접기, (4) shorts 접기, (5) socket에서 plug 뽑기; S2: (6) whiteboard eraser로 whiteboard 닦기, (7) dinner table 차리기, (8) umbrella 접어 넣기, (9) broom으로 종이 조각 쓸기, (10) headphone 감아 정리하기.</figcaption></figure>
+  </section>
+</section>

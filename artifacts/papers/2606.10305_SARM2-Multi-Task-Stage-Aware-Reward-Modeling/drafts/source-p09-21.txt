@@ -1,0 +1,634 @@
+References
+ [1] B. Zitkovich, T. Yu, S. Xu, P. Xu, T. Xiao, F. Xia, J. Wu, P. Wohlhart, S. Welker, A. Wahid,
+     et al. Rt-2: Vision-language-action models transfer web knowledge to robotic control. In
+     Conference on Robot Learning, pages 2165–2183. PMLR, 2023.
+ [2] M. J. Kim, K. Pertsch, S. Karamcheti, T. Xiao, A. Balakrishna, S. Nair, R. Rafailov, E. Foster,
+     G. Lam, P. Sanketi, et al. Openvla: An open-source vision-language-action model. arXiv
+     preprint arXiv:2406.09246, 2024.
+ [3] O. M. Team, D. Ghosh, H. Walke, K. Pertsch, K. Black, O. Mees, S. Dasari, J. Hejna,
+     T. Kreiman, C. Xu, et al. Octo: An open-source generalist robot policy. arXiv preprint
+     arXiv:2405.12213, 2024.
+ [4] K. Black, N. Brown, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, L. Groom, K. Hausman,
+     B. Ichter, et al. π0 : A vision-language-action flow model for general robot control. arXiv
+     preprint arXiv:2410.24164, 2024.
+ [5] P. Intelligence, K. Black, N. Brown, J. Darpinian, K. Dhabalia, D. Driess, A. Esmail, M. Equi,
+     C. Finn, N. Fusai, et al. π0.5 : a vision-language-action model with open-world generalization.
+     arXiv preprint arXiv:2504.16054, 2025.
+ [6] Q. Chen, J. Yu, M. Schwager, P. Abbeel, Y. Shentu, and P. Wu. Sarm: Stage-aware reward
+     modeling for long horizon robot manipulation. arXiv preprint arXiv:2509.25358, 2025.
+ [7] Physical Intelligence, A. Amin, R. Aniceto, A. Balakrishna, K. Black, K. Conley, G. Connors,
+                                         ∗
+     J. Darpinian, K. Dhabalia, et al. π0.6 : A vla that learns from experience. arXiv preprint
+     arXiv:2511.14759, 2025.
+ [8] Y. Chen, S. Tian, S. Liu, Y. Zhou, H. Li, and D. Zhao. Conrft: A reinforced fine-tuning method
+     for vla models via consistency policy. arXiv preprint arXiv:2502.05450, 2025.
+ [9] Y. Guo, J. Zhang, X. Chen, X. Ji, Y.-J. Wang, Y. Hu, and J. Chen. Improving vision-language-
+     action model with online reinforcement learning. In 2025 IEEE International Conference on
+     Robotics and Automation (ICRA), pages 15665–15672. IEEE, 2025.
+[10] Z. Sun and S. Song. From prior to pro: Efficient skill mastery via distribution contractive rl
+     finetuning. arXiv preprint arXiv:2603.10263, 2026.
+[11] K. Lei, H. Li, D. Yu, Z. Wei, L. Guo, Z. Jiang, Z. Wang, S. Liang, and H. Xu. Rl-
+     100: Performant robotic manipulation with real-world reinforcement learning. arXiv preprint
+     arXiv:2510.14830, 2025.
+[12] Y. J. Ma, V. Kumar, A. Zhang, O. Bastani, and D. Jayaraman. Liv: Language-image repre-
+     sentations and rewards for robotic control. In International Conference on Machine Learning,
+     pages 23301–23320. PMLR, 2023.
+[13] M. Alakuijala, R. McLean, I. Woungang, N. Farsad, S. Kaski, P. Marttinen, and K. Yuan.
+     Video-language critic: Transferable reward functions for language-conditioned robotics. arXiv
+     preprint arXiv:2405.19988, 2024.
+[14] K.-H. Hung, P.-C. Lo, J.-F. Yeh, H.-Y. Hsu, Y.-T. Chen, and W. H. Hsu. Victor: Learning hier-
+     archical vision-instruction correlation rewards for long-horizon manipulation. arXiv preprint
+     arXiv:2405.16545, 2024.
+[15] C. Kim, M. Heo, D. Lee, J. Shin, H. Lee, J. J. Lim, and K. Lee. Subtask-aware visual reward
+     learning from segmented demonstrations. arXiv preprint arXiv:2502.20630, 2025.
+[16] J. Zhang, Y. Luo, A. Anwar, S. A. Sontakke, J. J. Lim, J. Thomason, E. Biyik, and J. Zhang.
+     Rewind: Language-guided rewards teach robot policies without new demonstrations. arXiv
+     preprint arXiv:2505.10911, 2025.
+
+
+                                                 9
+[17] Y. J. Ma, J. Hejna, C. Fu, D. Shah, J. Liang, Z. Xu, S. Kirmani, P. Xu, D. Driess, T. Xiao,
+     et al. Vision language models are in-context value learners. In The Thirteenth International
+     Conference on Learning Representations, 2024.
+
+[18] H. Tan, S. Chen, Y. Xu, Z. Wang, Y. Ji, C. Chi, Y. Lyu, Z. Zhao, X. Chen, P. Co, et al. Robo-
+     dopamine: General process reward modeling for high-precision robotic manipulation. arXiv
+     preprint arXiv:2512.23703, 2025.
+
+[19] S. Chen, C. Harrison, Y.-C. Lee, A. J. Yang, Z. Ren, L. J. Ratliff, J. Duan, D. Fox, and R. Kr-
+     ishna. Topreward: Token probabilities as hidden zero-shot rewards for robotics. arXiv preprint
+     arXiv:2602.19313, 2026.
+
+[20] T. Lee, A. Wagenmaker, K. Pertsch, P. Liang, S. Levine, and C. Finn. Roboreward: General-
+     purpose vision-language reward models for robotics. arXiv preprint arXiv:2601.00675, 2026.
+
+[21] A. Liang, Y. Korkmaz, J. Zhang, M. Hwang, A. Anwar, S. Kaushik, A. Shah, A. S. Huang,
+     L. Zettlemoyer, D. Fox, et al. Robometer: Scaling general-purpose robotic reward models via
+     trajectory comparisons. arXiv preprint arXiv:2603.02115, 2026.
+
+[22] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell,
+     P. Mishkin, J. Clark, et al. Learning transferable visual models from natural language supervi-
+     sion. In International conference on machine learning, pages 8748–8763. PmLR, 2021.
+
+[23] M. Tschannen, A. Gritsenko, X. Wang, M. F. Naeem, I. Alabdulmohsin, N. Parthasarathy,
+     T. Evans, L. Beyer, Y. Xia, B. Mustafa, et al. Siglip 2: Multilingual vision-language en-
+     coders with improved semantic understanding, localization, and dense features. arXiv preprint
+     arXiv:2502.14786, 2025.
+
+[24] T. Mu, M. Liu, and H. Su. Drs: Learning reusable dense rewards for multi-stage tasks. arXiv
+     preprint arXiv:2404.16779, 2024.
+
+[25] S. Huang, Z. Zhang, T. Liang, Y. Xu, Z. Kou, C. Lu, G. Xu, Z. Xue, and H. Xu. Mentor:
+     Mixture-of-experts network with task-oriented perturbation for visual reinforcement learning.
+     arXiv preprint arXiv:2410.14972, 2024.
+
+[26] J. Luo, Z. Hu, C. Xu, Y. L. Tan, J. Berg, A. Sharma, S. Schaal, C. Finn, A. Gupta, and S. Levine.
+     Serl: A software suite for sample-efficient robotic reinforcement learning. In 2024 IEEE Inter-
+     national Conference on Robotics and Automation (ICRA), pages 16961–16969. IEEE, 2024.
+
+[27] J. Luo, C. Xu, J. Wu, and S. Levine. Precise and dexterous robotic manipulation via human-
+     in-the-loop reinforcement learning. Science Robotics, 10(105):eads5033, 2025.
+
+[28] Y. Zhao, H. Jin, L. Jiang, X. Zhang, K. Wu, P. Ren, Z. Xu, Z. Che, L. Sun, D. Wu,
+     et al. Real-world reinforcement learning from suboptimal interventions. arXiv preprint
+     arXiv:2512.24288, 2025.
+
+[29] D. Kalashnikov, A. Irpan, P. Pastor, J. Ibarz, A. Herzog, E. Jang, D. Quillen, E. Holly,
+     M. Kalakrishnan, V. Vanhoucke, et al. Scalable deep reinforcement learning for vision-based
+     robotic manipulation. In Conference on robot learning, pages 651–673. PMLR, 2018.
+
+[30] Y. Seo, J. Uruç, and S. James. Continuous control with coarse-to-fine reinforcement learning.
+     arXiv preprint arXiv:2407.07787, 2024.
+
+[31] P. Wu, A. Escontrela, D. Hafner, K. Goldberg, and P. Abbeel. Daydreamer: World models for
+     physical robot learning. Conference on Robot Learning, 2022.
+
+[32] H. Hu, S. Mirchandani, and D. Sadigh. Imitation bootstrapped reinforcement learning. arXiv
+     preprint arXiv:2311.02198, 2023.
+
+
+                                                 10
+[33] J. Yang, M. S. Mark, B. Vu, A. Sharma, J. Bohg, and C. Finn. Robot fine-tuning made easy:
+     Pre-training rewards and policies for autonomous real-world reinforcement learning. In 2024
+     IEEE International Conference on Robotics and Automation (ICRA), pages 4804–4811. IEEE,
+     2024.
+
+[34] P. Wu, Y. Shentu, Q. Liao, D. Jin, M. Guo, K. Sreenath, X. Lin, and P. Abbeel. Robocopi-
+     lot: Human-in-the-loop interactive imitation learning for robot manipulation. arXiv preprint
+     arXiv:2503.07771, 2025.
+
+[35] X. B. Peng, A. Kumar, G. Zhang, and S. Levine. Advantage-weighted regression: Simple and
+     scalable off-policy reinforcement learning. arXiv preprint arXiv:1910.00177, 2019.
+
+[36] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov. Proximal policy optimization
+     algorithms. arXiv preprint arXiv:1707.06347, 2017.
+
+[37] A. Wagenmaker, M. Nakamoto, Y. Zhang, S. Park, W. Yagoub, A. Nagabandi, A. Gupta, and
+     S. Levine. Steering your diffusion policy with latent space reinforcement learning. arXiv
+     preprint arXiv:2506.15799, 2025.
+
+[38] H. Niu, Q. Chen, T. Liu, J. Li, G. Zhou, Y. Zhang, J. Hu, and X. Zhan. xted: Cross-domain
+     adaptation via diffusion-based trajectory editing. arXiv preprint arXiv:2409.08687, 2024.
+
+[39] W. Xiao, H. Lin, A. Peng, H. Xue, T. He, Y. Xie, F. Hu, J. Wu, Z. Luo, L. Fan, et al. Self-
+     improving vision-language-action models with data generation via residual rl. arXiv preprint
+     arXiv:2511.00091, 2025.
+
+[40] L. Ankile, Z. Jiang, R. Duan, G. Shi, P. Abbeel, and A. Nagabandi. Residual off-policy rl for
+     finetuning behavior cloning policies. arXiv preprint arXiv:2509.19301, 2025.
+
+[41] C. Hao, X. Zhai, Y. Liu, and H. Soh. Abstracting robot manipulation skills via mixture-of-
+     experts diffusion policies. arXiv preprint arXiv:2601.21251, 2026.
+
+[42] B. Cheng, T. Liang, S. Huang, M. Shao, F. Zhang, B. Xu, Z. Xue, and H. Xu. Moe-dp: An
+     moe-enhanced diffusion policy for robust long-horizon robotic manipulation with skill decom-
+     position and failure recovery. arXiv preprint arXiv:2511.05007, 2025.
+
+[43] X. Zhang, Y. Jiang, H. Qin, J. Bai, and M. Bai. Language-conditioned representations and
+     mixture-of-experts policy for robust multi-task robotic manipulation. IEEE Robotics and Au-
+     tomation Letters, 11(5):6153–6160, 2026.
+
+[44] W. Shen, Y. Liu, Y. Wu, Z. Liang, S. Gu, D. Wang, T. Nian, L. Xu, Y. Qin, J. Pang, et al.
+     Expertise need not monopolize: Action-specialized mixture of experts for vision-language-
+     action learning. arXiv preprint arXiv:2510.14300, 2025.
+
+[45] Z. Du, B. Liu, Y. Liang, Y. Shen, H. Cao, X. Zheng, Z. Feng, Z. Wu, J. Yang, and Y.-G.
+     Jiang. Himoe-vla: Hierarchical mixture-of-experts for generalist vision-language-action poli-
+     cies. arXiv preprint arXiv:2512.05693, 2025.
+
+[46] Z. Yang, Y. Chai, X. Jia, Q. Li, Y. Shao, X. Zhu, H. Su, and J. Yan. Drivemoe: Mixture-of-
+     experts for vision-language-action model in end-to-end autonomous driving. arXiv preprint
+     arXiv:2505.16278, 2025.
+
+[47] R. Huang, S. Zhu, Y. Du, and H. Zhao. Moe-loco: Mixture of experts for multitask locomotion.
+     In 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pages
+     14218–14225. IEEE, 2025.
+
+[48] T. Seyde, W. Schwarting, I. Gilitschenski, M. Wulfmeier, and D. Rus. Strength through diver-
+     sity: Robust behavior learning via mixture policies. In Conference on Robot Learning, pages
+     1144–1155. PMLR, 2022.
+
+
+                                               11
+[49] Q. Chen, N. Gao, S. Huang, J. Low, T. Chen, J. Sun, and M. Schwager. Grad-nav++: Vision-
+     language model enabled visual drone navigation with gaussian radiance fields and differen-
+     tiable dynamics. IEEE Robotics and Automation Letters, 11(2):1418–1425, 2025.
+[50] J. Ma, Z. Zhao, X. Yi, J. Chen, L. Hong, and E. H. Chi. Modeling task relationships in multi-
+     task learning with multi-gate mixture-of-experts. In Proceedings of the 24th ACM SIGKDD
+     international conference on knowledge discovery & data mining, pages 1930–1939, 2018.
+[51] H. Lei, X. Cheng, Q. Qin, D. Wang, K. Fan, H. Huang, Q. Gu, Y. Wu, Z. Jiang, Y. Chen, et al.
+     M3-jepa: Multimodal alignment via multi-gate moe based on the joint-embedding predictive
+     architecture. arXiv preprint arXiv:2409.05929, 2024.
+
+[52] S. Fujimoto, H. van Hoof, and D. Meger. Addressing function approximation error in actor-
+     critic methods. In International Conference on Machine Learning, pages 1587–1596. PMLR,
+     2018.
+[53] J. Zheng, J. Li, Z. Wang, D. Liu, X. Kang, Y. Feng, Y. Zheng, J. Zou, Y. Chen, J. Zeng, et al. X-
+     vla: Soft-prompted transformer as scalable cross-embodiment vision-language-action model.
+     arXiv preprint arXiv:2510.10274, 2025.
+[54] J. Wen, Y. Zhu, J. Li, Z. Tang, C. Shen, and F. Feng. Dexvla: Vision-language model with
+     plug-in diffusion expert for general robot control. arXiv preprint arXiv:2502.05855, 2025.
+[55] P. Kooijmans, M. Aractingi, S. Palma, C. Pascal, J. Choghari, K. Meftah, M. Russi, N. Rabault,
+     V. Batto, L. von Werra, and T. Wolf. Unfolding robotics: The open-source recipe for teaching
+     a robot to fold your clothes, 2026.
+[56] I2RT-Robotics.   Yam – 6-dof robotic arm.                    https://i2rt.com/products/
+     yam-manipulator, 2025.
+[57] RealSense.  Realsensedepth camera d405.  https://store.realsenseai.com/
+     buy-intel-realsense-depth-camera-d405.html, 2025.
+[58] P. Wu, Y. Shentu, Z. Yi, X. Lin, and P. Abbeel. Gello: A general, low-cost, and intuitive
+     teleoperation framework for robot manipulators. In 2024 IEEE/RSJ International Conference
+     on Intelligent Robots and Systems (IROS), pages 12156–12163. IEEE, 2024.
+[59] W. Fedus, B. Zoph, and N. Shazeer. Switch transformers: Scaling to trillion parameter models
+     with simple and efficient sparsity. Journal of Machine Learning Research, 23(120):1–39, 2022.
+[60] D. Lepikhin, H. Lee, Y. Xu, D. Chen, O. Firat, Y. Huang, M. Krikun, N. Shazeer, and Z. Chen.
+     Gshard: Scaling giant models with conditional computation and automatic sharding. arXiv
+     preprint arXiv:2006.16668, 2020.
+
+[61] A. Q. Jiang, A. Sablayrolles, A. Roux, A. Mensch, B. Savary, C. Bamford, D. S. Chap-
+     lot, D. d. l. Casas, E. B. Hanna, F. Bressand, et al. Mixtral of experts. arXiv preprint
+     arXiv:2401.04088, 2024.
+[62] D. Dai, C. Deng, C. Zhao, R. Xu, H. Gao, D. Chen, J. Li, W. Zeng, X. Yu, Y. Wu, et al.
+     Deepseekmoe: Towards ultimate expert specialization in mixture-of-experts language models.
+     In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics
+     (Volume 1: Long Papers), pages 1280–1297, 2024.
+[63] C. Zheng, J. Sun, Y. Gao, E. Xie, Y. Wang, P. Wang, T. Xu, C. Matthew, L. Ren, J. Li,
+     J. Xiong, K. Rasul, M. Schwager, A. Schneider, Z. Wang, and Y. Nevmyvaka. Understanding
+     the mixture-of-experts with nadaraya-watson kernel. The Fourteenth International Conference
+     on Learning Representations (ICLR), 2026.
+
+
+
+
+                                                 12
+6     Appendix
+6.1   Hardware Setup
+
+For our real-world experiments, we use a bimanual tabletop robotic platform. The system consists
+of:
+
+       • Two 6-DOF YAM robot arms manufactured by I2RT [56].
+       • Three RealSense D405 cameras: one mounted on each wrist and one fixed overhead camera
+         for observing the workspace [57].
+
+Demonstration data is collected through a leader-follower GELLO teleoperation system [58]. The
+environment is recorded at 30 fps and includes synchronized streams from three camera views: the
+left wrist, the right wrist, and the fixed top view. It also records robot joint angles and commanded
+joint-angle actions.
+
+
+
+
+            Figure 5: The physical station used for data collection and policy evaluation.
+
+
+6.2   Task Description
+
+We describe all 10 evaluation tasks below, grouped by subset, with the corresponding visualizations
+consolidated in Figure 6. S1 (classic) contains the two pick-and-place tasks, two cloth-folding
+tasks, and pulling plugs, all of which align well with primitives that dominate general reward-model
+training distributions. S2 (unconventional) contains the remaining five tasks, which require tool use,
+deformable or articulated object manipulation, and multi-stage compositional execution. For tasks
+such as pick-and-place in which the same action sequence recurs many times within a single episode,
+the robot is required to repeat that sequence until the table is cleared.
+
+S1 : Classic Tasks
+Pick and place plates into bin. Several plates are arranged on the board, and the robot is required
+to clear them one at a time. In each cycle, the robot first picks up a plate from the center of the board
+and then places it in the plastic bin. The robot repeats this cycle until no plates remain on the board.
+
+Pick and place plates into dish rack. This task is a variant of the bin task in which each plate
+must instead be inserted vertically into a slot of a dish rack, which requires precise pose alignment
+between the gripper and the rack opening. In each cycle, the robot first picks up a plate from the
+board and then inserts it into an available slot of the dish rack. The robot repeats this cycle until the
+board is cleared, which typically requires 5 to 10 insertion cycles per episode.
+
+
+                                                   13
+Fold the t-shirt. This is a long-horizon deformable-object task. The robot first grasps a T-shirt
+from the pile and transports it to the center of the board. It then flattens the garment and performs
+two consecutive folds. Finally, the robot places the neatly folded T-shirt in the corner of the board
+and resets both grippers. The flattening stage is the longest and visually most variable, whereas the
+folding stages are bimanual and require coordinated pinch grasps.
+
+Fold the shorts. The procedure for this task closely mirrors that of folding the T-shirt. The robot
+first grasps the shorts from the pile and moves them to the center of the board. It then flattens the
+garment, performs two consecutive folds, and finally places the folded shorts in the corner of the
+board.
+
+Pull plugs off the socket. The robot first repositions a power strip from its initial location on the
+board to a more convenient working location. It then iteratively removes each plug from the socket
+and deposits it at the center of the board. After several plugs have been removed, the robot may
+translate the power strip again to expose the remaining plugs from a more accessible angle, after
+which the unplug-and-place cycle continues. The episode terminates once all the plugs are removed
+from power strip and the power strip has been placed back at the center of the board.
+
+S2 : Unconventional Tasks
+Clean whiteboard with whiteboard eraser. One arm closely holds the small whiteboard to stabi-
+lize it throughout the task, while the other arm retrieves the whiteboard eraser placed at the center of
+the board. The holding arm then tilts the whiteboard to expose its surface, and the other arm wipes
+the letters from the whiteboard. After wiping, the robot places the eraser back at the center of the
+board and finally returns the whiteboard to its original position. The task is bimanual throughout,
+with one arm stabilizing the tilted whiteboard while the other performs the wiping motion.
+
+Set dinner table. This is a composite long-horizon task that combines deformable manipulation
+with multi-object placement. The robot first spreads a tablecloth across the workspace and places
+a plate at the center of the cloth. It then picks up a glass with the right arm and sets it down at
+the appropriate location. Finally, the robot arranges the utensils, which involves left-to-right and
+right-to-left hand-overs to bring each utensil (a knife and a fork) into the appropriate gripper before
+its final placement on the tablecloth.
+
+Sweep paper scraps with broom. The robot first picks up a broom from the center of the board,
+performing one or more bimanual hand-overs as needed to reach a stable wielding grasp, and then
+picks up a dustpan with the other arm. The main body of the task is a long repeated cycle: the robot
+sweeps paper scraps from the center of the board, sweeps them into the dustpan, and dumps the
+scraps from the dustpan into a trash bin. This sweep-gather-dump cycle is repeated until no scraps
+remain, after which the dustpan and broom are placed back on the board.
+
+Coil and wrap headphones. This is a precision-demanding task. The robot first picks up a pair
+of headphones from the center of the board. It then performs a long bimanual wrapping motion that
+coils the cable around the body of the headphones. Once wrapping is complete, the robot places the
+wrapped headphones back at the center of the board and resets both arms.
+
+Put away an umbrella. This is a multi-stage articulated-object task. The robot first picks up an
+open umbrella from the center of the board and passes it from the right arm to the left. It then
+presses the snap button against the runner to release the canopy and presses the shaft to collapse the
+umbrella. Next, the robot adjusts and folds the canopy along its natural creases. Finally, the canopy
+is rolled around the shaft, the strap is grasped and the velcro is fastened, and the closed umbrella is
+placed back at the center of the board.
+
+
+
+
+                                                  14
+   Pick and place plates into bin
+
+
+
+
+Pick and place plates into dish rack
+
+
+
+
+        Folding the t-shirt
+
+
+
+
+          Folding shorts
+
+
+
+
+                15
+        Pull plug off the socket
+
+
+
+
+Clean whiteboard with whiteboard eraser
+
+
+
+
+            Set dinner table
+
+
+
+
+    Sweep paper scraps with broom
+
+
+
+
+                  16
+                                    Coil and wrap headphones
+
+
+
+
+                                       Put away an umbrella
+
+
+
+
+Figure 6: Visualization of the 10 evaluation tasks. Top-to-bottom, page-by-page: S1 : (1) Pick
+and place plates into bin, (2) Pick and place plates into dish rack, (3) Folding the t-shirt, (4) Folding
+shorts, (5) Pull plug off the socket; S2 : (6) Clean whiteboard with whiteboard eraser, (7) Set dinner
+table, (8) Put away an umbrella, (9) Sweep paper scraps with broom, (10) Coil and wrap headphones.
+
+
+
+
+                                                   17
+6.3   Hyperparameter Table
+
+Table 3 consolidates all hyperparameters introduced in the main text, covering the action-primitive
+stage estimator, the multi-gate MoE value decoder, and the SPIRAL self-improvement loop.
+
+Table 3: Hyperparameter summary. Symbols, descriptions, and values for all hyperparameters
+referenced in the main text.
+  Symbol       Description                                                                   Value
+  Action-primitive stage estimator
+  K             Number of action primitives                                                  21
+  N             Number of recent context frames per timestep                                 6
+  ∆             Frame sampling stride                                                        30
+  LAP           Transformer encoder layers                                                   4
+  d             Transformer hidden dimension                                                 512
+  tk            Hours of data per primitive in DAP                                           3
+  lrAP          Learning rate                                                                5 × 10−5
+  BAP           Batch size                                                                   96
+  TAP           Training steps                                                               10,000
+  optAP         Optimizer                                                                    AdamW
+  Multi-gate MoE value decoder
+  LVD          Transformer encoder layers                                                    6
+  M            Number of primitive groups (gates)                                            8
+  E            Number of experts in shared pool                                              10
+  k            Top-k routing per timestep                                                    2
+  dexp         Expert hidden width                                                           256
+  nh × dexp    Expert MLP shape (depth × width)                                              3 × 256
+  λbal         Load-balance auxiliary loss weight                                            2.5
+  λent         Entropy auxiliary loss weight                                                 0.5
+  Nrw          Number of rewinding frames                                                    3
+  lrVD         Learning rate                                                                 5 × 10−5
+  BVD          Batch size                                                                    64
+  TVD          Training steps                                                                10,000
+  optVD        Optimizer                                                                     AdamW
+  Behavior Cloning
+  h            Action chunk horizon                                                          50
+  lrBC         Learning rate                                                                 5 × 10−5
+  BBC          Batch size                                                                    32
+  TBC          Training steps                                                                30,000
+  wdBC         Weight decay                                                                  Cosine
+  optBC        Optimizer                                                                     AdamW
+  SPIRAL self-improvement
+  γ            Discount factor                                                               0.9995
+  α            MC objective weight in Jcritic                                                0.5
+  β            BC regularizer weight in residual actor loss                                  30
+  Ncritic      Critic ensemble size                                                          5
+  σ            Target-policy smoothing noise std                                             0.2
+  c            Target-policy smoothing clip range                                            0.5
+  κ            DICE multi-sample latent candidates per state (and best-of-κ at deployment)   4
+  nRL × dRL Actor/Critic MLP shape (depth × width)                                           3 × 1024
+  τtgt         Target network soft-update rate                                               0.005
+  lrRL         Learning rate (actor / critic)                                                1 × 10−4
+  BRL          Batch size                                                                    16
+  TRL          Training steps per round                                                      5,000
+  optRL        Optimizer                                                                     AdamW
+
+
+
+6.4   Action Primitive Grouping Explaination
+
+To assign each of the K=21 action primitives to an MMoE gate, we cluster them into M +1=8
+semantic groups according to shared visual appearance and end-effector motion patterns, so that
+
+
+                                                    18
+primitives within a group exhibit similar progress signatures and can plausibly share the same gate’s
+routing distribution. Table 4 lists the resulting groups, their member primitives, and a short descrip-
+tion of the motion pattern each group captures.
+
+Table 4: Action-primitive grouping for the multi-gate MoE decoder. The K+1=22 primitives
+are clustered into M +1=8 semantic groups by shared visual/motion characteristics; each group
+maps to one gate of the MMoE decoder while the expert pool is shared. Other is a catch-all for
+undefined or task-specific actions.
+
+ Group Name                 Action Primitives                                   Description
+ Acquire                  scoop, pull, pick/grab               Lift or move a target object up from its initial
+                                                                     support surface into robot control.
+ Release                    place, pour/dump                Move a controlled object down to a target location,
+                                                                        container, or support surface.
+ Translate             erase, zip/unzip, sweep, pass         Move the end-effector or object along a primarily
+                                                                               linear trajectory.
+ Insert                       install, insert               Guide an object into a constrained target region with
+                                                                              spatial alignment.
+ Shape Clothes              hang, fold/flatten                 Reconfigure cloth-like objects into a desired
+                                                                       geometric state or arrangement.
+ Rotate                    wrap, roll, tie/untie,             Change an object’s orientation or configuration
+                               rotate/turn                                 through angular motion.
+ Force                        clamp, press                   Apply controlled contact force through the gripper
+                                                                                or end-effector.
+ Other                           dummy                      Represent undefined or task-specific actions outside
+                                                                        the main primitive taxonomy.
+
+
+
+6.5   Algorithm of Reward-Guided Robot Self-Improvement Loop
+
+
+Algorithm 1 Reward-Guided Robot Self-Improvement Loop
+Require: Human demonstrations Ddemo ; pretrained VLA model πVLA ; pretrained multi-task reward
+    model RM1 ; reward-model pretraining set DRM ; max iterations N
+Ensure: Improved policy πN +1
+ 1: // Stage 1: Behavior cloning
+ 2: π1 ← F INETUNE(πVLA , Ddemo )                                     ▷ supervised BC fine-tuning
+ 3: R1 ← ROLLOUT(π1 , n=50–100)                            ▷ collect rollouts from weakest policy
+ 4: // Stage 2a: One-time reward model adaptation to rollout distribution
+ 5: Rlabeled
+       1      ← H UMANA NNOTATE(R1 )                      ▷ segment-level labels + final progress
+ 6: Dadapt ← Rlabeled
+                  1       ∪ S UBSAMPLE (DRM , 0.5)              ▷ mix in 50% of pretraining data
+ 7: RM2 ← F INETUNE(RM1 , Dadapt )                                     ▷ ∼1/10 of pretraining cost
+ 8: // Stage 2b: Initial residual RL with pretrained reward model
+ 9: Dedemo ← L ABEL R EWARDS(Ddemo , RM1 )
+10: π2 ← SPIRAL(π1 , D       edemo )
+11: R2 ← ROLLOUT(π2 , n=100)
+12: // Stage 4: On-policy self-improvement loop
+13: for i = 2, 3, . . . , N do
+14:      Re i ← L ABEL R EWARDS(Ri , RM2 )
+15:      πi+1 ← SPIRAL(πi , R      ei)
+16:      Ri+1 ← ROLLOUT(πi+1 , n=100)
+17:      if S UCCESS R ATE(Ri+1 ) ≥ τsuccess then
+18:           break
+19:      end if
+20: end for
+21: return πi+1
+
+
+
+
+                                                       19
+6.6   Reward Model Evaluation Protocol
+
+Demonstration evaluation. We sample 10 held-out episodes per task and report the per-frame
+mean squared error (MSE) between the predicted and ground-truth progress. For clarity of pre-
+sentation, we report MSE separately on S1 and S2 , alongside a combined score. We note that the
+combined MSE is computed as a micro-average over all evaluated frames; it is therefore not the
+arithmetic mean of the two per-subset values.
+
+Rollout evaluation. Following the protocol of SARM, we assess robot rollout progress esti-
+mation on a real robotic platform. We fine-tune a π0.5 [5] policy on each target task and deploy
+intermediate checkpoints from different training stages, yielding a balanced rollout set of 36 trajec-
+tories per task: 12 successful episodes (SE), 12 partially successful episodes (PSE), and 12 failed
+episodes (FE). Each rollout is classified by the reward model according to:
+                                                              PT
+                                 if Pfinal > 0.8 ∧ T3
+                               
+                               
+                               SE,                             t=2T /3 Pt > 0.6,
+                               
+                    Label = PSE, if T1 Tt=1 Pt ≥ ξ,
+                                       P
+                                                                                                    (4)
+                           
+                           
+                           
+                             FE, otherwise,
+
+where Pt denotes the predicted progress at frame t, T is the trajectory length, and ξ is set to the
+median of the average progress across all non-successful rollouts. This adaptive threshold yields an
+equal split between PSE and FE predictions and avoids the bias introduced by manually tuning a
+fixed cutoff.
+We further summarize rollout classification accuracy via the score
+                                    #correct − #incorrect
+                               ρ=                         ∈ [−1, 1],                                (5)
+                                             36
+which assigns +1 for each correctly classified rollout and −1 otherwise, normalized by the total
+number of rollouts. A perfect classifier achieves ρ = 1, while random ternary guessing yields
+ρ ≈ −1/3.
+
+MoE routing diagnostics.       For all MoE-based reward models, we additionally report the top-k
+routing score, defined as
+                                                                   k
+                                       r−1                  NX
+                             Sroute =         ,         r =       p̄(i) ,                           (6)
+                                      N/k − 1               k i=1
+
+where N is the total number of experts, k is the number of activated experts per token, and p̄(i)
+is the i-th largest entry of the routing distribution averaged over the evaluation set. The raw con-
+centration r measures the mass placed on the top-k experts relative to a uniform baseline 1/N ,
+ranging from 1 (perfectly balanced) to N/k (fully collapsed); the affine normalization rescales Sroute
+to [0, 1], removing the dependence on N and k so expert utilization can be compared directly across
+configurations. A healthy router yields Sroute well below 1.
+
+6.7   Policy Evaluation Protocol
+
+Cleaning Whiteboard – five-tier scoring. Each episode of the Cleaning Whiteboard evaluation
+is scored using five progress tiers: 0% for no letters cleaned; 25% for successfully grasping the
+eraser, stabilizing the board, and cleaning at least one letter; 50% for cleaning more than half but
+not all letters; 75% for cleaning all letters without stopping correctly, or stopping early with letters
+remaining; and 100% for cleaning all letters and terminating correctly by releasing the eraser on
+the table and board. The reported Avg. Prog. metric is the mean tier value across all 20 evaluation
+episodes, while SR counts only episodes that reach the 100% tier.
+
+
+                                                  20
+6.8    MoE Design: Comparison with Dense Model
+
+To put the architectural comparison on equal footing, we contrast our decoder-level Mixture-of-
+Experts model (henceforth MoE-Decoder) against a parameter-comparable dense baseline. Both
+models share an identical encoder backbone and differ only in the reward-prediction head, which
+is applied once per timestep to the fused feature vector of dimension (N +3) d = 3072, where the
+N =3 camera streams together with the language, task, and state tokens give (N +3)=6 modality
+streams of length T . The Dense baseline computes the scalar reward with a 3-hidden-layer MLP
+of width 512. The MoE-Decoder variant replaces this MLP with a sparse top-k mixture of E deep
+experts, each itself a 3-hidden-layer MLP of width 256, applied to the same fused vector. Because
+the MoE activates only k=2 of E=10 experts per timestep, the relevant comparison quantity is its
+activated parameter count, not its total. With this configuration, MoE-Decoder is matched to the
+Dense baseline within ∼ 10% on both activated parameters and FLOPs (Tables 5 and 6), so any
+quality difference is attributable to the sparse routing structure rather than to capacity or compute
+headroom.
+Table 5: Activated-parameter breakdown of the MoE-Decoder and Dense reward heads. Configura-
+tion: fused input dimension 3072, E=10 experts of width 256 with nh =3 hidden layers, k=2.
+
+      Component                                                                         Params
+      MoE-Decoder (activated)
+       Active gate (LN, Linear 3072→10)                                                  0.04 M
+       Active expert (LN, Linear 3072→256, Linear 256→256×2, Linear 256→1)               0.92 M
+       × k=2 active experts                                                              1.85 M
+      MoE-Decoder total (activated)                                                      1.89 M
+      Dense baseline
+        MLP head: LN, Linear 3072→512                                                    1.58 M
+                   Linear 512→512 (×2)                                                   0.53 M
+                   Linear 512→1                                                        < 0.01 M
+      Dense total                                                                        2.11 M
+      MoE-Decoder / Dense (activated)                                                     0.90×
+
+
+Table 6: Per-timestep compute of the reward head, in FLOPs (one multiply-accumulate counted as
+2 FLOPs). Both heads run once per timestep on the fused vector.
+
+          Component                 FLOPs / call      Calls / timestep   FLOPs / timestep
+          MoE-Decoder
+           Active gate                     0.08 M                   1               0.08 M
+           Active expert (×k=2)            1.85 M                   2               3.70 M
+          MoE-Decoder total                                                         3.78 M
+          Dense baseline
+            MLP head                       4.20 M                   1               4.20 M
+          Dense total                                                               4.20 M
+          MoE-Decoder / Dense                                                        0.90×
+
+
+6.9    MoE Settings Ablation study
+
+Our default configuration T2E10 attains the best overall demo loss (0.020) and the strongest T1
+rollout success (0.833), indicating that k=2 over E=10 experts essentially reaches the optimum
+within this sweep. Thanks to the multi-gate design and the load-balance auxiliary loss, all variants
+maintain non-trivial load scores (0.02–0.20) and remain away from routing collapse, so the observed
+differences reflect specialization quality rather than degenerate gating. Empirically, varying top-k
+(T1E10: 0.026, T4E10: 0.029) degrades the overall demo loss more than varying expert count
+
+
+                                                 21
+

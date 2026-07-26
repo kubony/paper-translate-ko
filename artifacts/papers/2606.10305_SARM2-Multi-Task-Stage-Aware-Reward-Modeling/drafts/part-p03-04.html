@@ -1,0 +1,41 @@
+<p>Section 4.1의 Robometer도 이에 해당한다. SARM2는 두 패러다임을 결합한다. 즉, 공유 action-primitive vocabulary를 기반으로 구축한 재사용 가능한 stage estimator와, 단일 모델에서 여러 task에 적응하는 multi-task value head를 함께 사용한다.</p>
+
+<h3>실제 로봇 강화학습(Real-Robot Reinforcement Learning)</h3>
+<p>실제 로봇 데이터에 대한 RL은 두 가지 문제로 인해 제약을 받는다. 하나는 long-horizon task에서 dense reward를 얻는 것이고, 다른 하나는 반복적인 diffusion/flow sampling을 통해 backpropagation을 수행하는 것이다. End-to-end RL은 처음부터 compact single-task policy를 학습하므로 표현력을 희생한다. Offline-to-online 방법은 BC로 초기화한 다음 RL로 개선한다. 단순한 MLP head는 fine-tuning이 쉽지만 한계가 있으며, 표현력이 높은 policy에 대한 AWR-style update는 사람의 DAgger intervention에 의존한다. RL100은 높은 계산 비용을 감수하며 denoising을 통해 PPO를 backpropagation하는 반면, steering 및 residual 방법은 weight를 업데이트하지 않고 base-policy output을 수정한다. 본 연구와 가장 가까운 방법은 value-guided action selection과 residual learning을 통합하는 DICE-RL이다. 위의 모든 방법은 sparse reward에 의존한다. Robotics에서 MoE는 policy capacity scaling을 위해 연구되어 왔지만, 저자들이 아는 한 SARM2는 multi-task robotics reward model에 MoE를 적용한 최초의 방법이다.</p>
+
+<h2>3 방법(Method)</h2>
+<p>본 방법은 두 부분으로 제시한다. Section 3.1에서는 long-horizon task 전반에 걸쳐 dense progress estimate를 생성하는 multi-task stage-aware reward model인 SARM2를 소개하고, Section 3.2에서는 SARM2의 dense reward를 autonomous on-policy data flywheel로 전환하는 self-improvement framework인 SPIRAL을 소개한다.</p>
+
+<h3>3.1 SARM2: Multi-Task Stage-Aware Reward Model</h3>
+
+<figure>
+  <div class="figure-placeholder">[Figure 2 삽입 위치]</div>
+  <figcaption><strong>Figure 2: SARM2 개요.</strong> 세 개의 camera view와 proprioceptive state를 공유된 frozen SigLIP-2 backbone으로 encoding하고, caching된 frame embedding을 별도로 학습된 두 개의 causal Transformer에 입력한다. 두 Transformer는 (i) 현재 segment를 K+1=22개 candidate(K=21개 action primitive와, 모델이 불확실할 때 fallback으로 사용하는 null class) 중 하나로 분류하는 task-agnostic stage estimator와, (ii) predicted primitive group에 따라 gate가 선택되고 fused token을 top-k shared expert로 routing하여 dense progress estimate를 생성하는 multi-gate MoE value decoder이다.</figcaption>
+</figure>
+
+<h4>3.1.1 Action-Primitive Stage Estimator</h4>
+<p>SARM은 stage-aware reward modeling이 long-horizon task에서 정확한 progress estimation을 가능하게 함을 보였지만, 그 stage estimator는 task-specific annotation에 의존하며 새로운 task마다 재학습해야 한다. 본 연구에서는 대신 action primitive를 task-agnostic intermediate representation으로 사용한다. Annotation된 10,000시간 이상의 manipulation data로 구성된 내부 corpus에서 얻은 다음 두 가지 관찰이 이러한 설계의 근거가 된다. (1) 거의 모든 task의 demonstration은 task name, scene, object의 차이에도 불구하고 task 전반에서 반복적으로 나타나는 action primitive sequence로 분해된다. (2) primitive vocabulary는 비교적 작고, 많은 primitive가 의미적으로 유사하거나(예: pour/dump) 하나의 task에서 함께 나타나는 경우가 드문 dual pair를 이루므로(예: pull/push), 추가적인 compression이 가능하다.</p>
+
+<h5>Action Primitive Dataset Construction</h5>
+<p>100개 task에 걸친 실제 환경의 manipulation data 200시간을 선별했다. Consolidation 후 전체 task duration의 90%를 초과하여 포괄하는 K = 21개의 action primitive를 식별했다. Source dataset을 annotation boundary에 따라 분할하고, (i) 각 primitive가 t<sub>k</sub> = 3시간을 기여하며 (ii) primitive별 source-task diversity를 최대화하는 balanced dataset D<sub>AP</sub>를 구축하여, 총 (K + 1) · t<sub>k</sub> = 66시간의 segment를 얻었다. 추가된 null class는 reset behavior와 출현 빈도가 낮은 action primitive를 포함한 나머지 모든 long-tail sample로 구성한다. 구축 세부 사항은 Appendix 6.4에 제시한다.</p>
+
+<h5>Model Architecture</h5>
+<p>Stage estimation을 primitive vocabulary와 null class에 대한 temporal classification 문제(K + 1 = 22개 class)로 정의한다. 시간 t에서 모델은 stride Δ = 30으로 sampling한 최근 N = 6개 frame(30 Hz에서 약 6초의 context)을 입력받는다. v ∈ {wrist<sub>L</sub>, wrist<sub>R</sub>, top}인 세 개의 view를 사용하며 이를 I<sub>t</sub><sup>(v)</sup>로 나타내고, proprioceptive state s<sub>t</sub>도 함께 사용한다. 각 frame은 frozen SigLIP-2 encoder ϕ로 encoding하며, s<sub>t</sub>는 MLP ψ로 projection한다. 모든 token은 4-layer causal Transformer f<sub>θ</sub>로 처리한 뒤 linear head g<sub>θ</sub>를 거쳐 class logit p<sub>t</sub> = softmax(g<sub>θ</sub>(h<sub>t</sub>))를 생성한다. 모델은 D<sub>AP</sub>에서 cross-entropy로 학습하며, hyperparameter의 전체 세부 사항은 Appendix 6.3에 제시한다.</p>
+
+<h4>3.1.2 MMoE Value Decoder</h4>
+<p>Stage estimator를 기반으로 dense하고 stage-conditioned인 goal-distance를 추정하는 multi-task value model을 설계한다. Primitive마다 visual dynamics와 progress signature가 현저히 다르므로, monolithic value head는 interference와 tail underfitting 문제를 겪는다. 이를 해결하기 위해 공통 expert pool을 공유하면서 primitive group별로 specialization하는 multi-gate Mixture-of-Experts(MMoE) decoder를 사용한다.</p>
+
+<p>Value model은 자체적인 6-layer causal Transformer backbone을 사용하며, stage estimator의 4-layer Transformer와 별도로 학습한다. 두 모델은 frozen SigLIP-2 encoder와 caching된 6-frame embedding만 공유하며, 이에 따라 inference 시 중복되는 visual encoding을 제거한다. Step t에서 value model은 (1) three-camera frame, (2) proprioceptive state s<sub>t</sub>, (3) task-name text embedding e<sub>task</sub>, (4) stage estimator가 예측한 ỹ<sub>t</sub>의 predicted-primitive embedding e<sub>prim</sub>을 입력받는다. SARM을 따라 input frame sequence는 첫 번째 episode frame(visual anchor), stride Δ = 30인 최근 여섯 개 frame, 그리고 implicit negative로 사용하는 최대 세 개의 rewinding frame을 연결한다. Rewinding frame은 모델이 monotonic time-index predictor로 붕괴하는 것을 방지한다.</p>
+
+<p>K + 1개의 primitive를 공유되는 visual/motion pattern에 따라 M + 1개의 semantic group으로 분할한다(Appendix 6.4 참조). MMoE를 따라 각 group에는 E개 expert로 구성된 shared pool에 대한 전용 gate G<sub>m</sub>이 있으며, 각 expert는 3-layer MLP이다. Step t의 active gate는 m(ỹ<sub>t</sub>)에 의해 선택되며, top-k routing weight와 다음의 MoE output을 생성한다.</p>
+
+<pre class="equation">oₜ = Σₑ₌₁ᴱ gₜ,ₑ^(m(ỹₜ)) · Eₑ(hₜ),    gₜ^(m) = TopK(softmax(Wₘhₜ)).    (1)</pre>
+
+<p>Group-conditioned routing은 명시적인 inductive bias를 제공한다. 서로 다른 group의 primitive는 별도의 gate를 사용하지만 shared expert에는 계속 접근할 수 있다. Router collapse를 방지하기 위해 gate별 balance auxiliary loss와 entropy auxiliary loss(L<sub>balance</sub>, L<sub>entropy</sub>)를 추가한다. 전체 수식과 ablation은 Appendix 6.8 및 6.10에, hyperparameter의 전체 세부 사항은 Appendix 6.3에 제시한다.</p>
+
+<p>π<sub>0.6</sub>을 따라 value model은 completion까지 남은 step을 정규화한 값 r<sub>t</sub><sup>⋆</sup> = −(T − t)/T ∈ [−1, 0]을 예측한다. 이 방식이 horizon이 다양한 rollout에서 fine-tuning하기 더 쉽다는 것을 확인했다. 전체 objective는 MSE term과 auxiliary loss를 결합한다.</p>
+
+<pre class="equation">L = E_D[(r̂ₜ − rₜ⋆)²] + λ_bal L_balance + λ_ent L_entropy.    (2)</pre>
+
+<h3>3.2 SPIRAL: Dense-Reward-Enabled Robot Self-Improvement Framework</h3>
+<p>Section 3.1.1의 reward model을 SPIRAL(Self-Policy Improvement via Reward-Aligned Learning)에 통합한다. SPIRAL은 on-policy rollout과 reward-guided residual RL을 통해 VLA policy를 반복적으로 개선하는 closed-loop framework이다. SPIRAL은 residual-RL substrate로 DICE-RL의 distribution contractive RL fine-tuning scheme을 채택한다. 이 scheme은 flow policy와 residual policy에 대해 여러 latent noise를 sampling하여 동일한 observation에서 다양한 action을 생성하며, 이를 통해 안정적이고 sample-efficient한 실제 로봇 학습을 위한 제어된 exploration space를 유도한다.</p>

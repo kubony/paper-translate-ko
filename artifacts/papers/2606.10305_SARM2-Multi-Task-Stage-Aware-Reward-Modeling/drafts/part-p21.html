@@ -1,0 +1,57 @@
+<!-- p. 21 -->
+<section id="appendix-6-8">
+  <h2>6.8 MoE 설계: Dense 모델과의 비교</h2>
+
+  <p>아키텍처 비교를 동등한 조건에서 수행하기 위해, decoder 수준의 Mixture-of-Experts 모델(이하 MoE-Decoder)을 parameter 수가 유사한 dense baseline과 비교한다. 두 모델은 동일한 encoder backbone을 공유하며 reward-prediction head만 다르다. 이 head는 차원이 (<i>N</i> + 3)<i>d</i> = 3072인 fused feature vector에 timestep마다 한 번 적용되며, 여기서 <i>N</i> = 3개의 camera stream과 language, task 및 state token을 합하면 길이 <i>T</i>인 modality stream이 (<i>N</i> + 3) = 6개가 된다. Dense baseline은 width 512인 3-hidden-layer MLP를 사용하여 scalar reward를 계산한다. MoE-Decoder variant는 이 MLP를 <i>E</i>개의 deep expert로 구성된 sparse top-<i>k</i> mixture로 대체하며, 각 expert 자체는 width 256인 3-hidden-layer MLP이고 동일한 fused vector에 적용된다. MoE는 timestep마다 <i>E</i> = 10개의 expert 중 <i>k</i> = 2개만 활성화하므로, 적절한 비교 대상은 total parameter 수가 아니라 activated parameter 수이다. 이 configuration에서 MoE-Decoder는 activated parameter와 FLOPs 모두에서 Dense baseline과 약 10% 이내로 일치하므로(표 5 및 6), quality 차이는 capacity 또는 compute 여유가 아니라 sparse routing structure에 기인한다.</p>
+
+  <table id="table-5">
+    <caption><strong>표 5: MoE-Decoder와 Dense reward head의 activated-parameter 세부 내역.</strong> Configuration: fused input dimension 3072, width 256이고 <i>n</i><sub>h</sub> = 3 hidden layer인 expert <i>E</i> = 10개, <i>k</i> = 2.</caption>
+    <thead>
+      <tr>
+        <th>구성 요소</th>
+        <th>파라미터</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group"><th colspan="2">MoE-Decoder (활성화 기준)</th></tr>
+      <tr><td>활성 gate (LN, Linear 3072→10)</td><td>0.04 M</td></tr>
+      <tr><td>활성 expert (LN, Linear 3072→256, Linear 256→256×2, Linear 256→1)</td><td>0.92 M</td></tr>
+      <tr><td>× <i>k</i> = 2개의 활성 expert</td><td>1.85 M</td></tr>
+      <tr class="total"><td>MoE-Decoder 합계(활성화 기준)</td><td>1.89 M</td></tr>
+      <tr class="group"><th colspan="2">Dense baseline</th></tr>
+      <tr><td>MLP head: LN, Linear 3072→512</td><td>1.58 M</td></tr>
+      <tr><td>Linear 512→512 (×2)</td><td>0.53 M</td></tr>
+      <tr><td>Linear 512→1</td><td>&lt; 0.01 M</td></tr>
+      <tr class="total"><td>Dense 합계</td><td>2.11 M</td></tr>
+      <tr class="ratio"><td>MoE-Decoder / Dense (활성화 기준)</td><td>0.90×</td></tr>
+    </tbody>
+  </table>
+
+  <table id="table-6">
+    <caption><strong>표 6: Reward head의 timestep당 compute(FLOPs).</strong> Multiply-accumulate 한 번을 2 FLOPs로 계산한다. 두 head 모두 fused vector에 대해 timestep마다 한 번 실행된다.</caption>
+    <thead>
+      <tr>
+        <th>구성 요소</th>
+        <th>호출당 FLOPs</th>
+        <th>Timestep당 호출 수</th>
+        <th>Timestep당 FLOPs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group"><th colspan="4">MoE-Decoder</th></tr>
+      <tr><td>활성 gate</td><td>0.08 M</td><td>1</td><td>0.08 M</td></tr>
+      <tr><td>활성 expert (×<i>k</i> = 2)</td><td>1.85 M</td><td>2</td><td>3.70 M</td></tr>
+      <tr class="total"><td>MoE-Decoder 합계</td><td></td><td></td><td>3.78 M</td></tr>
+      <tr class="group"><th colspan="4">Dense baseline</th></tr>
+      <tr><td>MLP head</td><td>4.20 M</td><td>1</td><td>4.20 M</td></tr>
+      <tr class="total"><td>Dense 합계</td><td></td><td></td><td>4.20 M</td></tr>
+      <tr class="ratio"><td>MoE-Decoder / Dense</td><td></td><td></td><td>0.90×</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="appendix-6-9">
+  <h2>6.9 MoE 설정 Ablation 연구</h2>
+
+  <p>Default configuration인 T2E10은 가장 우수한 overall demo loss(0.020)와 가장 높은 T1 rollout success(0.833)를 달성하며, 이는 <i>E</i> = 10개의 expert에 대해 <i>k</i> = 2를 사용하는 설정이 이 sweep 내에서 사실상 optimum에 도달함을 보여준다. Multi-gate 설계와 load-balance auxiliary loss 덕분에 모든 variant는 유의미한 load score(0.02–0.20)를 유지하고 routing collapse를 피하므로, 관찰된 차이는 degenerate gating이 아니라 specialization quality를 반영한다. 실험적으로 top-<i>k</i>를 변경하는 경우(T1E10: 0.026, T4E10: 0.029), expert 수를 변경하는 것보다 overall demo loss가 더 크게 저하된다.</p>
+</section>

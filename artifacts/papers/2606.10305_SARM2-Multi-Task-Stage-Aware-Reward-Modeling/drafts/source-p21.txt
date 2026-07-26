@@ -1,0 +1,58 @@
+6.8    MoE Design: Comparison with Dense Model
+
+To put the architectural comparison on equal footing, we contrast our decoder-level Mixture-of-
+Experts model (henceforth MoE-Decoder) against a parameter-comparable dense baseline. Both
+models share an identical encoder backbone and differ only in the reward-prediction head, which
+is applied once per timestep to the fused feature vector of dimension (N +3) d = 3072, where the
+N =3 camera streams together with the language, task, and state tokens give (N +3)=6 modality
+streams of length T . The Dense baseline computes the scalar reward with a 3-hidden-layer MLP
+of width 512. The MoE-Decoder variant replaces this MLP with a sparse top-k mixture of E deep
+experts, each itself a 3-hidden-layer MLP of width 256, applied to the same fused vector. Because
+the MoE activates only k=2 of E=10 experts per timestep, the relevant comparison quantity is its
+activated parameter count, not its total. With this configuration, MoE-Decoder is matched to the
+Dense baseline within ∼ 10% on both activated parameters and FLOPs (Tables 5 and 6), so any
+quality difference is attributable to the sparse routing structure rather than to capacity or compute
+headroom.
+Table 5: Activated-parameter breakdown of the MoE-Decoder and Dense reward heads. Configura-
+tion: fused input dimension 3072, E=10 experts of width 256 with nh =3 hidden layers, k=2.
+
+      Component                                                                         Params
+      MoE-Decoder (activated)
+       Active gate (LN, Linear 3072→10)                                                  0.04 M
+       Active expert (LN, Linear 3072→256, Linear 256→256×2, Linear 256→1)               0.92 M
+       × k=2 active experts                                                              1.85 M
+      MoE-Decoder total (activated)                                                      1.89 M
+      Dense baseline
+        MLP head: LN, Linear 3072→512                                                    1.58 M
+                   Linear 512→512 (×2)                                                   0.53 M
+                   Linear 512→1                                                        < 0.01 M
+      Dense total                                                                        2.11 M
+      MoE-Decoder / Dense (activated)                                                     0.90×
+
+
+Table 6: Per-timestep compute of the reward head, in FLOPs (one multiply-accumulate counted as
+2 FLOPs). Both heads run once per timestep on the fused vector.
+
+          Component                 FLOPs / call      Calls / timestep   FLOPs / timestep
+          MoE-Decoder
+           Active gate                     0.08 M                   1               0.08 M
+           Active expert (×k=2)            1.85 M                   2               3.70 M
+          MoE-Decoder total                                                         3.78 M
+          Dense baseline
+            MLP head                       4.20 M                   1               4.20 M
+          Dense total                                                               4.20 M
+          MoE-Decoder / Dense                                                        0.90×
+
+
+6.9    MoE Settings Ablation study
+
+Our default configuration T2E10 attains the best overall demo loss (0.020) and the strongest T1
+rollout success (0.833), indicating that k=2 over E=10 experts essentially reaches the optimum
+within this sweep. Thanks to the multi-gate design and the load-balance auxiliary loss, all variants
+maintain non-trivial load scores (0.02–0.20) and remain away from routing collapse, so the observed
+differences reflect specialization quality rather than degenerate gating. Empirically, varying top-k
+(T1E10: 0.026, T4E10: 0.029) degrades the overall demo loss more than varying expert count
+
+
+                                                 21
+

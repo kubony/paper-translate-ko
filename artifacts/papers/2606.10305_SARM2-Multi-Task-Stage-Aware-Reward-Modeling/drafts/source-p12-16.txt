@@ -1,0 +1,193 @@
+[49] Q. Chen, N. Gao, S. Huang, J. Low, T. Chen, J. Sun, and M. Schwager. Grad-nav++: Vision-
+     language model enabled visual drone navigation with gaussian radiance fields and differen-
+     tiable dynamics. IEEE Robotics and Automation Letters, 11(2):1418–1425, 2025.
+[50] J. Ma, Z. Zhao, X. Yi, J. Chen, L. Hong, and E. H. Chi. Modeling task relationships in multi-
+     task learning with multi-gate mixture-of-experts. In Proceedings of the 24th ACM SIGKDD
+     international conference on knowledge discovery & data mining, pages 1930–1939, 2018.
+[51] H. Lei, X. Cheng, Q. Qin, D. Wang, K. Fan, H. Huang, Q. Gu, Y. Wu, Z. Jiang, Y. Chen, et al.
+     M3-jepa: Multimodal alignment via multi-gate moe based on the joint-embedding predictive
+     architecture. arXiv preprint arXiv:2409.05929, 2024.
+
+[52] S. Fujimoto, H. van Hoof, and D. Meger. Addressing function approximation error in actor-
+     critic methods. In International Conference on Machine Learning, pages 1587–1596. PMLR,
+     2018.
+[53] J. Zheng, J. Li, Z. Wang, D. Liu, X. Kang, Y. Feng, Y. Zheng, J. Zou, Y. Chen, J. Zeng, et al. X-
+     vla: Soft-prompted transformer as scalable cross-embodiment vision-language-action model.
+     arXiv preprint arXiv:2510.10274, 2025.
+[54] J. Wen, Y. Zhu, J. Li, Z. Tang, C. Shen, and F. Feng. Dexvla: Vision-language model with
+     plug-in diffusion expert for general robot control. arXiv preprint arXiv:2502.05855, 2025.
+[55] P. Kooijmans, M. Aractingi, S. Palma, C. Pascal, J. Choghari, K. Meftah, M. Russi, N. Rabault,
+     V. Batto, L. von Werra, and T. Wolf. Unfolding robotics: The open-source recipe for teaching
+     a robot to fold your clothes, 2026.
+[56] I2RT-Robotics.   Yam – 6-dof robotic arm.                    https://i2rt.com/products/
+     yam-manipulator, 2025.
+[57] RealSense.  Realsensedepth camera d405.  https://store.realsenseai.com/
+     buy-intel-realsense-depth-camera-d405.html, 2025.
+[58] P. Wu, Y. Shentu, Z. Yi, X. Lin, and P. Abbeel. Gello: A general, low-cost, and intuitive
+     teleoperation framework for robot manipulators. In 2024 IEEE/RSJ International Conference
+     on Intelligent Robots and Systems (IROS), pages 12156–12163. IEEE, 2024.
+[59] W. Fedus, B. Zoph, and N. Shazeer. Switch transformers: Scaling to trillion parameter models
+     with simple and efficient sparsity. Journal of Machine Learning Research, 23(120):1–39, 2022.
+[60] D. Lepikhin, H. Lee, Y. Xu, D. Chen, O. Firat, Y. Huang, M. Krikun, N. Shazeer, and Z. Chen.
+     Gshard: Scaling giant models with conditional computation and automatic sharding. arXiv
+     preprint arXiv:2006.16668, 2020.
+
+[61] A. Q. Jiang, A. Sablayrolles, A. Roux, A. Mensch, B. Savary, C. Bamford, D. S. Chap-
+     lot, D. d. l. Casas, E. B. Hanna, F. Bressand, et al. Mixtral of experts. arXiv preprint
+     arXiv:2401.04088, 2024.
+[62] D. Dai, C. Deng, C. Zhao, R. Xu, H. Gao, D. Chen, J. Li, W. Zeng, X. Yu, Y. Wu, et al.
+     Deepseekmoe: Towards ultimate expert specialization in mixture-of-experts language models.
+     In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics
+     (Volume 1: Long Papers), pages 1280–1297, 2024.
+[63] C. Zheng, J. Sun, Y. Gao, E. Xie, Y. Wang, P. Wang, T. Xu, C. Matthew, L. Ren, J. Li,
+     J. Xiong, K. Rasul, M. Schwager, A. Schneider, Z. Wang, and Y. Nevmyvaka. Understanding
+     the mixture-of-experts with nadaraya-watson kernel. The Fourteenth International Conference
+     on Learning Representations (ICLR), 2026.
+
+
+
+
+                                                 12
+6     Appendix
+6.1   Hardware Setup
+
+For our real-world experiments, we use a bimanual tabletop robotic platform. The system consists
+of:
+
+       • Two 6-DOF YAM robot arms manufactured by I2RT [56].
+       • Three RealSense D405 cameras: one mounted on each wrist and one fixed overhead camera
+         for observing the workspace [57].
+
+Demonstration data is collected through a leader-follower GELLO teleoperation system [58]. The
+environment is recorded at 30 fps and includes synchronized streams from three camera views: the
+left wrist, the right wrist, and the fixed top view. It also records robot joint angles and commanded
+joint-angle actions.
+
+
+
+
+            Figure 5: The physical station used for data collection and policy evaluation.
+
+
+6.2   Task Description
+
+We describe all 10 evaluation tasks below, grouped by subset, with the corresponding visualizations
+consolidated in Figure 6. S1 (classic) contains the two pick-and-place tasks, two cloth-folding
+tasks, and pulling plugs, all of which align well with primitives that dominate general reward-model
+training distributions. S2 (unconventional) contains the remaining five tasks, which require tool use,
+deformable or articulated object manipulation, and multi-stage compositional execution. For tasks
+such as pick-and-place in which the same action sequence recurs many times within a single episode,
+the robot is required to repeat that sequence until the table is cleared.
+
+S1 : Classic Tasks
+Pick and place plates into bin. Several plates are arranged on the board, and the robot is required
+to clear them one at a time. In each cycle, the robot first picks up a plate from the center of the board
+and then places it in the plastic bin. The robot repeats this cycle until no plates remain on the board.
+
+Pick and place plates into dish rack. This task is a variant of the bin task in which each plate
+must instead be inserted vertically into a slot of a dish rack, which requires precise pose alignment
+between the gripper and the rack opening. In each cycle, the robot first picks up a plate from the
+board and then inserts it into an available slot of the dish rack. The robot repeats this cycle until the
+board is cleared, which typically requires 5 to 10 insertion cycles per episode.
+
+
+                                                   13
+Fold the t-shirt. This is a long-horizon deformable-object task. The robot first grasps a T-shirt
+from the pile and transports it to the center of the board. It then flattens the garment and performs
+two consecutive folds. Finally, the robot places the neatly folded T-shirt in the corner of the board
+and resets both grippers. The flattening stage is the longest and visually most variable, whereas the
+folding stages are bimanual and require coordinated pinch grasps.
+
+Fold the shorts. The procedure for this task closely mirrors that of folding the T-shirt. The robot
+first grasps the shorts from the pile and moves them to the center of the board. It then flattens the
+garment, performs two consecutive folds, and finally places the folded shorts in the corner of the
+board.
+
+Pull plugs off the socket. The robot first repositions a power strip from its initial location on the
+board to a more convenient working location. It then iteratively removes each plug from the socket
+and deposits it at the center of the board. After several plugs have been removed, the robot may
+translate the power strip again to expose the remaining plugs from a more accessible angle, after
+which the unplug-and-place cycle continues. The episode terminates once all the plugs are removed
+from power strip and the power strip has been placed back at the center of the board.
+
+S2 : Unconventional Tasks
+Clean whiteboard with whiteboard eraser. One arm closely holds the small whiteboard to stabi-
+lize it throughout the task, while the other arm retrieves the whiteboard eraser placed at the center of
+the board. The holding arm then tilts the whiteboard to expose its surface, and the other arm wipes
+the letters from the whiteboard. After wiping, the robot places the eraser back at the center of the
+board and finally returns the whiteboard to its original position. The task is bimanual throughout,
+with one arm stabilizing the tilted whiteboard while the other performs the wiping motion.
+
+Set dinner table. This is a composite long-horizon task that combines deformable manipulation
+with multi-object placement. The robot first spreads a tablecloth across the workspace and places
+a plate at the center of the cloth. It then picks up a glass with the right arm and sets it down at
+the appropriate location. Finally, the robot arranges the utensils, which involves left-to-right and
+right-to-left hand-overs to bring each utensil (a knife and a fork) into the appropriate gripper before
+its final placement on the tablecloth.
+
+Sweep paper scraps with broom. The robot first picks up a broom from the center of the board,
+performing one or more bimanual hand-overs as needed to reach a stable wielding grasp, and then
+picks up a dustpan with the other arm. The main body of the task is a long repeated cycle: the robot
+sweeps paper scraps from the center of the board, sweeps them into the dustpan, and dumps the
+scraps from the dustpan into a trash bin. This sweep-gather-dump cycle is repeated until no scraps
+remain, after which the dustpan and broom are placed back on the board.
+
+Coil and wrap headphones. This is a precision-demanding task. The robot first picks up a pair
+of headphones from the center of the board. It then performs a long bimanual wrapping motion that
+coils the cable around the body of the headphones. Once wrapping is complete, the robot places the
+wrapped headphones back at the center of the board and resets both arms.
+
+Put away an umbrella. This is a multi-stage articulated-object task. The robot first picks up an
+open umbrella from the center of the board and passes it from the right arm to the left. It then
+presses the snap button against the runner to release the canopy and presses the shaft to collapse the
+umbrella. Next, the robot adjusts and folds the canopy along its natural creases. Finally, the canopy
+is rolled around the shaft, the strap is grasped and the velcro is fastened, and the closed umbrella is
+placed back at the center of the board.
+
+
+
+
+                                                  14
+   Pick and place plates into bin
+
+
+
+
+Pick and place plates into dish rack
+
+
+
+
+        Folding the t-shirt
+
+
+
+
+          Folding shorts
+
+
+
+
+                15
+        Pull plug off the socket
+
+
+
+
+Clean whiteboard with whiteboard eraser
+
+
+
+
+            Set dinner table
+
+
+
+
+    Sweep paper scraps with broom
+
+
+
+
+                  16
+

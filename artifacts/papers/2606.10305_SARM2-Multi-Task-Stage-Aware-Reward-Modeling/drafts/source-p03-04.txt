@@ -1,0 +1,136 @@
+and Robometer [21] in Section 4.1. SARM2 combines both paradigms: a reusable stage estima-
+tor built on a shared action-primitive vocabulary, paired with a multi-task value head that adapts to
+multiple tasks in a single model.
+Real-Robot Reinforcement Learning. RL on real-robot data is hindered by two challenges: ob-
+taining dense rewards on long-horizon tasks, and backpropagation through iterative diffusion/flow
+sampling. End-to-end RL trains compact single-task policies from scratch [25, 26, 27, 28, 29, 30,
+31], sacrificing expressiveness. Offline-to-online methods initialize via BC then refine with RL:
+simple MLP heads [32, 33, 8] are easy to fine-tune but limited; AWR-style updates on expressive
+policies [34, 7, 35] depend on human DAgger interventions. RL100 [11] backpropagates PPO [36]
+through denoising at high compute cost, while steering [37, 38] and residual [39, 40] methods mod-
+ify base-policy outputs without updating weights. Closest to ours is DICE-RL [10], which unifies
+value-guided action selection with residual learning. All of the above rely on sparse rewards. MoE
+in robotics has been explored for policy capacity scaling [25, 41, 42, 43, 44, 45, 46, 47, 48, 49], but
+to our knowledge SARM2 is the first to apply MoE to a multi-task robotics reward model.
+
+3     Method
+We present our method in two parts: Section 3.1 introduces SARM2, our multi-task stage-aware
+reward model that produces dense progress estimates across long-horizon tasks, and Section 3.2
+introduces SPIRAL, a self-improvement framework that turns SARM2’s dense rewards into an au-
+tonomous on-policy data flywheel.
+3.1     SARM2: Multi-Task Stage-Aware Reward Model
+
+
+         Multi-view Image Sequence                                                                                               Action Primitive
+          N = 6 frames, Δ = 30 steps                                                                                              Distribution
+                                                                             Stage Model
+                                                                      (Action Primitive Classifier)      Classification Head
+        Left Wrist
+                                                                                                                 MLP
+                                                                       Causal Transformer encoder
+                                                                                                                                       p̂ ∈ RK+1
+                                                                                                                               K + 1 = 22 primitives
+                                       SigLIP-2                              Value Model
+        Top Down                        (image)           ⋮
+                                                                       (Goal Distance Estimator)
+                                                                                                              Predicted Primitive
+                                                  Visual Emb.          Causal Transformer encoder               ĉ = argmaxₖ p̂ₖ
+
+        Right Wrist
+                                                                                                 MMoE Regression Head
+
+                                                                                        Gate Pool                 Expert Pool
+                                                                                          Gate 1                                 w1
+              Task Prompt              SigLIP-2                                                                     Expert 1
+                                                      ⋮                                    (lift)
+           “clean the whiteboard”        (text)
+                                                                        ⋮                                Single                  w2
+                                                                                          Gate 2                    Expert 2
+                                                  Task Emb.                                              Gate ĉ
+                                                                                          (slide)
+                                                                Transformer Output                                    ⋮          wM
+                                                                                             ⋮
+              Proprioceptive State                                                                                  Expert M             Goal Dist.
+                                       State Encoder ⋮                                   Gate Null                                       Prediction
+                  Joint State
+                                                                                                                                         ŷt ∈ [-1,0]
+                                                   State Emb.
+Figure 2: Overview of SARM2. Three camera views plus proprioceptive state are encoded by a
+shared frozen SigLIP-2 backbone, whose cached frame embeddings feed two separately trained
+causal Transformers: (i) a task-agnostic stage estimator that classifies the current segment over
+K+1=22 candidates (K=21 action primitives and a null class used as a fallback when the model is
+uncertain), and (ii) a multi-gate MoE value decoder whose gate is selected by the predicted primitive
+group and routes the fused token through top-k shared experts to produce a dense progress estimate.
+
+3.1.1    Action-Primitive Stage Estimator
+
+SARM [6] showed that stage-aware reward modeling enables accurate progress estimation on long-
+horizon tasks, but its stage estimator depends on task-specific annotations and must be retrained for
+each new task. We instead use action primitives as a task-agnostic intermediate representation. Two
+observations from an internal corpus of 10,000+ hours of annotated manipulation data motivate this
+design: (1) demonstrations across nearly all tasks decompose into sequences of action primitives that
+recur across tasks, despite differences in task names, scenes, and objects; (2) the primitive vocabu-
+lary is comparatively small, and many primitives are either semantically similar (e.g., pour/dump) or
+form dual pairs rarely co-occurring within a task (e.g., pull/push), allowing further compression.
+
+                                                                       3
+Action Primitive Dataset Construction. We curated 200 hours of real-world manipulation data
+spanning 100 tasks. After consolidation we identified K = 21 action primitives that cover > 90% of
+total task duration. We partitioned the source dataset along annotation boundaries and constructed a
+balanced dataset DAP with (i) each primitive contributing tk = 3 hours, and (ii) maximum source-
+task diversity per primitive, yielding (K + 1) · tk = 66 hours of segments. The additional null class
+is formed from all remaining long-tail samples, including reset behaviors and action primitives with
+low occurrence frequency. Construction details are in Appendix 6.4.
+Model Architecture. We frame stage estimation as temporal classification over the primitive vo-
+cabulary plus a null class (K + 1 = 22 classes). At time t, the model receives N = 6 recent frames
+sampled at stride ∆ = 30 (≈ 6 s of context at 30 Hz). We use three views v ∈ {wristL , wristR , top},
+          (v)
+denoted It , plus proprioceptive state st . Each frame is encoded by a frozen SigLIP-2 [23] encoder
+ϕ; st is projected by an MLP ψ. All tokens are processed by a 4-layer causal Transformer fθ fol-
+lowed by a linear head gθ producing class logits pt = softmax(gθ (ht )). The model is trained with
+cross-entropy on DAP ; full details on hyperparameter are in Appendix 6.3.
+3.1.2 MMoE Value Decoder
+Building on the stage estimator, we design a multi-task value model that estimates dense, stage-
+conditioned goal-distance. Different primitives exhibit markedly different visual dynamics and
+progress signatures, so a monolithic value head suffers from interference and tail underfitting. We
+address this with a multi-gate Mixture-of-Experts (MMoE) decoder that specializes along primitive
+groups while sharing a common expert pool.
+The value model uses its own 6-layer causal Transformer backbone, trained separately from the stage
+estimator’s 4-layer Transformer; the two share only the frozen SigLIP-2 encoder and its cached six-
+frame embeddings, which eliminates redundant visual encoding at inference. At step t, the value
+model receives: (1) three-camera frames; (2) proprioceptive state st ; (3) task-name text embedding
+etask ; and (4) the predicted-primitive embedding eprim of ỹt from the stage estimator. Following
+SARM [6], the input frame sequence concatenates: the first episode frame (visual anchor), the six
+recent frames at stride ∆ = 30, and up to three rewinding frames as implicit negatives [16] that
+prevent the model from collapsing to a monotonic time-index predictor.
+We partition the K + 1 primitives into M + 1 semantic groups by shared visual/motion patterns (see
+Appendix 6.4). Following MMoE [50, 51], each group has a dedicated gate Gm over a shared pool
+of E experts (each a 3-layer MLP). The active gate at step t is selected by m(ỹt ), producing top-k
+routing weights and MoE output
+                        E
+                            (m(ỹ ))            (m)
+                       X
+                 ot =      gt,e t · Ee (ht ), gt = TopK(softmax(Wm ht )).                        (1)
+                        e=1
+Group-conditioned routing provides an explicit inductive bias: primitives from different groups use
+separate gates, while shared experts remain accessible. To prevent router collapse, we add per-
+gate balance and entropy auxiliary losses (Lbalance , Lentropy ); full formulae and ablations are in Ap-
+pendix 6.8 and 6.10, full details on hyperparameter are in Appendix 6.3.
+            ∗
+Following π0.6 [7], the value model predicts normalized remaining steps to completion, rt⋆ = −(T −
+t)/T ∈ [−1, 0], which we find easier to fine-tune on rollouts with variable horizons. The full
+objective combines an MSE term with the auxiliary losses:
+                          L = ED [(r̂t − rt⋆ )2 ] + λbal Lbalance + λent Lentropy .                 (2)
+
+3.2   SPIRAL: Dense-Reward-Enabled Robot Self-Improvement Framework
+
+We integrate the reward model from Section 3.1.1 into SPIRAL (Self-Policy Improvement via
+Reward-Aligned Learning), a closed-loop framework in which a VLA policy is iteratively refined
+through on-policy rollouts and reward-guided residual RL. As a residual-RL substrate, SPIRAL
+adopts the distribution contractive RL finetuning scheme of DICE-RL [10], which samples multi-
+ple latent noises for the flow policy and residual policy to generate diverse actions from the same
+observation, inducing a controlled exploration space for stable, sample-efficient real-robot learning.
+
+
+                                                     4
+

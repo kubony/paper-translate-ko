@@ -1,0 +1,257 @@
+                                         SARM2: Multi-Task Stage Aware Reward Modeling
+                                            for Self Improving Robotic Manipulation
+                                                               Qianzhong Chen1 Hau Zheng1 Justin Yu2 Suning Huang1 Jiankai Sun1
+                                            Ken Goldberg2 Chuan Wen3 Pieter Abbeel2 Yide Shentu2,4 Philipp Wu4 Mac Schwager1
+                                                                 1
+                                                                     Stanford University, 2 UC Berkeley, 3 Shanghai Jiao Tong University 4 xdof.ai
+
+                                             Multi-view Image Sequence                                      Rotate
+                                              N = 6 frames, Δ = 30 steps
+                                                                                     Action                 Insert
+                                            Left Wrist
+                                                                                    Primitive               Erase
+arXiv:2606.10305v1 [cs.RO] 9 Jun 2026
+
+
+
+
+                                                                                    Classifier              Clamp
+                                            Top Down                                                        Place
+                                                                                                             Pick
+                                                                                                             …
+                                            Right Wrist
+
+
+
+
+                                                  Task Prompt                       Goal Distance
+                                               “clean the whiteboard”
+                                                                                    Value Model
+                                                  Proprioceptive State             Multi-Gate MoE
+                                                      Joint State
+
+
+
+                                        Figure 1: Overview of SARM2. SARM2 achieves multi-task stage aware reward modeling by
+                                        leveraging a general stage estimator, which classifies the current segment over K+1=22 action
+                                        primitives. The stage information is used by a downstream multi-gate Mixture of Experts (MMoE)
+                                        value head, achieving dense, accurate, and general value estimation for manipulation tasks.
+
+                                                          Abstract: Fine-tuning vision-language-action (VLA) policies for long-horizon
+                                                          manipulation still relies heavily on behavior cloning, which requires costly high-
+                                                          quality demonstrations and keeps policies near the demonstration distribution.
+                                                          Reward models can reduce this dependence by reweighting demonstrations and
+                                                          providing dense supervision for on-robot reinforcement learning (RL), but they
+                                                          must be dense, accurate, and general. Existing methods fall short: task-specific
+                                                          stage-aware models are accurate but require per-task annotations, while gen-
+                                                          eral vision-language-model (VLM) reward models are broadly applicable but too
+                                                          coarse for fine-grained long-horizon progress. We introduce SARM2, a multi-task
+                                                          stage-aware reward model that combines an action-primitive-based stage estima-
+                                                          tor with a multi-gate Mixture-of-Experts (MMoE) value head to produce dense
+                                                          per-step rewards across manipulation tasks. Building on SARM2, we further
+                                                          propose SPIRAL (Self-Policy Improvement via Reward-Aligned Learning), an
+                                                          on-policy reward-guided framework that improves VLA policies from cheap au-
+                                                          tonomous rollouts. On a 10-task benchmark, SARM2 reduces value-estimation
+                                                          MSE by 80% over the strongest baselines; when used in SPIRAL, it improves
+                                                          task success from around 50% to near-perfect performance on Folding Shorts
+                                                          (58% → 100%) and Cleaning Whiteboard (50% → 90%), showing that high-
+                                                          quality dense rewards are key to a stable robot data flywheel. Project website:
+                                                          https://qianzhong-chen.github.io/sarm2.github.io/.
+                                                          Keywords: Reward Modeling, Reinforcement Learning, Robotic Manipulation
+
+                                        1        Introduction
+                                        Vision-Language-Action (VLA) models [1, 2, 3, 4, 5] have established end-to-end policy learning
+                                        as a dominant paradigm in robotic manipulation. Yet most VLAs struggle beyond short-horizon
+                                        For any questions, please contact: qchen23@stanford.edu
+tasks out of the box; extending them to long-horizon tasks typically requires fine-tuning on in-
+domain data, and supervised fine-tuning (SFT) demands large volumes of human demonstrations
+and remains prone to out-of-distribution (OOD) failures.
+Recent methods leverage reward models to filter training samples and extract more value from high-
+quality data [6], but these offline approaches are bounded by the demonstration distribution and
+                                                     ∗
+cannot self-improve from rollouts. Methods like π0.6     [7] and ConRFT [8] continually refine the
+policy via on-policy DAgger, but require costly human-in-the-loop supervision from operators pro-
+ficient in both teleoperation and policy training. A separate line of work [9, 10, 11] uses online
+interaction data with sparse rewards, falling short on long-horizon tasks. Across these directions,
+scaling VLA-RL relies on an accurate reward model that can faithfully judge whether each segment
+of a long-horizon task is executed correctly.
+Existing reward models for manipulation fall into two groups: task-specific reward models and
+general-purpose ones. Early task-specific designs [12, 13, 14, 15, 16] are typically trained on a nar-
+row set of demonstrations and struggle on long-horizon, OOD conditions, where subtle stage transi-
+tions and compounding errors are difficult to capture; SARM [6] adds a stage-conditioned hierarchy
+that improves accuracy on long-horizon tasks, but it remains single-task and relies on task-specific
+stage annotations, which limits its applicability as task diversity grows. General-purpose VLM-
+based reward models [17, 18, 19, 20, 21] instead leverage the broad priors of pretrained VLMs and
+generalize across tasks, yet their predictions tend to be coarse-grained and noisy at the step level,
+making them ill-suited as a dense supervisory signal for long-horizon manipulation. To support
+VLA-RL at scale, a reward model must satisfy three requirements simultaneously, being dense, ac-
+curate, and general enough to supervise long-horizon tasks across domains, yet none of the existing
+reward models meets all three.
+We propose SARM2, a multi-task stage-aware reward model pairing a general stage estimator with
+a multi-gate Mixture-of-Experts (MMoE) value head. The stage estimator transfers across tasks
+through a shared action-primitive vocabulary, and its predicted primitive selects the corresponding
+MMoE gate, guiding the value head to activate the most relevant domain- and action-specific experts
+for accurate dense value estimation. We further introduce SPIRAL (Self-Policy Improvement via
+Reward-Aligned Learning), an on-policy real-robot RL framework that leverges SARM2’s dense
+rewards and cheap autonomous rollouts into a self-improving data flywheel. Our contributions are:
+       • SARM2, a multi-task stage-aware reward model that tightly couples a generalizable action-
+         primitive stage estimator with a MMoE value head: the predicted primitive directly selects
+         the corresponding MMoE gate, producing accurate dense rewards across diverse long-
+         horizon tasks within one model.
+       • SPIRAL, a reward-aligned on-policy residual RL framework that leverages SARM2’s
+         dense rewards. SPIRAL closes an autonomous robot data flywheel, enabling continual
+         policy refinement on long-horizon tasks with minimal human intervention.
+       • We validate our method on two real-world long-horizon manipulation tasks, Folding Shorts
+         and Cleaning Whiteboard: plugged into SPIRAL, SARM2 outperforms sparse-reward and
+         large VLM-based reward-model baselines, driving substantial gains in downstream policy
+         success.
+
+2   Related Works
+Reward Models for Robotic Manipulation. Task-specific reward models learn from visual ob-
+servations using mid-sized vision-language encoders such as CLIP [22] or SigLIP [23] [12, 13, 14,
+15, 16, 7]. To handle long-horizon, contact-rich tasks, stage-aware variants [24, 15, 6] decompose
+a task into sub-stages and produce stage-conditioned dense rewards. These methods are fundamen-
+tally single-task: each new task requires retraining, and SARM [6] further requires dense per-frame
+stage annotations. We compare against ReWiND [16], the strongest single-task baseline without
+dense annotation. A complementary line builds task-agnostic reward models on top of pretrained
+VLMs [17, 20, 18, 19, 21]; their out-of-the-box rewards are too coarse for dense per-step signals,
+and fine-tuning their large parameter count is expensive. We benchmark against TOPReward [19]
+
+
+                                                  2
+and Robometer [21] in Section 4.1. SARM2 combines both paradigms: a reusable stage estima-
+tor built on a shared action-primitive vocabulary, paired with a multi-task value head that adapts to
+multiple tasks in a single model.
+Real-Robot Reinforcement Learning. RL on real-robot data is hindered by two challenges: ob-
+taining dense rewards on long-horizon tasks, and backpropagation through iterative diffusion/flow
+sampling. End-to-end RL trains compact single-task policies from scratch [25, 26, 27, 28, 29, 30,
+31], sacrificing expressiveness. Offline-to-online methods initialize via BC then refine with RL:
+simple MLP heads [32, 33, 8] are easy to fine-tune but limited; AWR-style updates on expressive
+policies [34, 7, 35] depend on human DAgger interventions. RL100 [11] backpropagates PPO [36]
+through denoising at high compute cost, while steering [37, 38] and residual [39, 40] methods mod-
+ify base-policy outputs without updating weights. Closest to ours is DICE-RL [10], which unifies
+value-guided action selection with residual learning. All of the above rely on sparse rewards. MoE
+in robotics has been explored for policy capacity scaling [25, 41, 42, 43, 44, 45, 46, 47, 48, 49], but
+to our knowledge SARM2 is the first to apply MoE to a multi-task robotics reward model.
+
+3     Method
+We present our method in two parts: Section 3.1 introduces SARM2, our multi-task stage-aware
+reward model that produces dense progress estimates across long-horizon tasks, and Section 3.2
+introduces SPIRAL, a self-improvement framework that turns SARM2’s dense rewards into an au-
+tonomous on-policy data flywheel.
+3.1     SARM2: Multi-Task Stage-Aware Reward Model
+
+
+         Multi-view Image Sequence                                                                                               Action Primitive
+          N = 6 frames, Δ = 30 steps                                                                                              Distribution
+                                                                             Stage Model
+                                                                      (Action Primitive Classifier)      Classification Head
+        Left Wrist
+                                                                                                                 MLP
+                                                                       Causal Transformer encoder
+                                                                                                                                       p̂ ∈ RK+1
+                                                                                                                               K + 1 = 22 primitives
+                                       SigLIP-2                              Value Model
+        Top Down                        (image)           ⋮
+                                                                       (Goal Distance Estimator)
+                                                                                                              Predicted Primitive
+                                                  Visual Emb.          Causal Transformer encoder               ĉ = argmaxₖ p̂ₖ
+
+        Right Wrist
+                                                                                                 MMoE Regression Head
+
+                                                                                        Gate Pool                 Expert Pool
+                                                                                          Gate 1                                 w1
+              Task Prompt              SigLIP-2                                                                     Expert 1
+                                                      ⋮                                    (lift)
+           “clean the whiteboard”        (text)
+                                                                        ⋮                                Single                  w2
+                                                                                          Gate 2                    Expert 2
+                                                  Task Emb.                                              Gate ĉ
+                                                                                          (slide)
+                                                                Transformer Output                                    ⋮          wM
+                                                                                             ⋮
+              Proprioceptive State                                                                                  Expert M             Goal Dist.
+                                       State Encoder ⋮                                   Gate Null                                       Prediction
+                  Joint State
+                                                                                                                                         ŷt ∈ [-1,0]
+                                                   State Emb.
+Figure 2: Overview of SARM2. Three camera views plus proprioceptive state are encoded by a
+shared frozen SigLIP-2 backbone, whose cached frame embeddings feed two separately trained
+causal Transformers: (i) a task-agnostic stage estimator that classifies the current segment over
+K+1=22 candidates (K=21 action primitives and a null class used as a fallback when the model is
+uncertain), and (ii) a multi-gate MoE value decoder whose gate is selected by the predicted primitive
+group and routes the fused token through top-k shared experts to produce a dense progress estimate.
+
+3.1.1    Action-Primitive Stage Estimator
+
+SARM [6] showed that stage-aware reward modeling enables accurate progress estimation on long-
+horizon tasks, but its stage estimator depends on task-specific annotations and must be retrained for
+each new task. We instead use action primitives as a task-agnostic intermediate representation. Two
+observations from an internal corpus of 10,000+ hours of annotated manipulation data motivate this
+design: (1) demonstrations across nearly all tasks decompose into sequences of action primitives that
+recur across tasks, despite differences in task names, scenes, and objects; (2) the primitive vocabu-
+lary is comparatively small, and many primitives are either semantically similar (e.g., pour/dump) or
+form dual pairs rarely co-occurring within a task (e.g., pull/push), allowing further compression.
+
+                                                                       3
+Action Primitive Dataset Construction. We curated 200 hours of real-world manipulation data
+spanning 100 tasks. After consolidation we identified K = 21 action primitives that cover > 90% of
+total task duration. We partitioned the source dataset along annotation boundaries and constructed a
+balanced dataset DAP with (i) each primitive contributing tk = 3 hours, and (ii) maximum source-
+task diversity per primitive, yielding (K + 1) · tk = 66 hours of segments. The additional null class
+is formed from all remaining long-tail samples, including reset behaviors and action primitives with
+low occurrence frequency. Construction details are in Appendix 6.4.
+Model Architecture. We frame stage estimation as temporal classification over the primitive vo-
+cabulary plus a null class (K + 1 = 22 classes). At time t, the model receives N = 6 recent frames
+sampled at stride ∆ = 30 (≈ 6 s of context at 30 Hz). We use three views v ∈ {wristL , wristR , top},
+          (v)
+denoted It , plus proprioceptive state st . Each frame is encoded by a frozen SigLIP-2 [23] encoder
+ϕ; st is projected by an MLP ψ. All tokens are processed by a 4-layer causal Transformer fθ fol-
+lowed by a linear head gθ producing class logits pt = softmax(gθ (ht )). The model is trained with
+cross-entropy on DAP ; full details on hyperparameter are in Appendix 6.3.
+3.1.2 MMoE Value Decoder
+Building on the stage estimator, we design a multi-task value model that estimates dense, stage-
+conditioned goal-distance. Different primitives exhibit markedly different visual dynamics and
+progress signatures, so a monolithic value head suffers from interference and tail underfitting. We
+address this with a multi-gate Mixture-of-Experts (MMoE) decoder that specializes along primitive
+groups while sharing a common expert pool.
+The value model uses its own 6-layer causal Transformer backbone, trained separately from the stage
+estimator’s 4-layer Transformer; the two share only the frozen SigLIP-2 encoder and its cached six-
+frame embeddings, which eliminates redundant visual encoding at inference. At step t, the value
+model receives: (1) three-camera frames; (2) proprioceptive state st ; (3) task-name text embedding
+etask ; and (4) the predicted-primitive embedding eprim of ỹt from the stage estimator. Following
+SARM [6], the input frame sequence concatenates: the first episode frame (visual anchor), the six
+recent frames at stride ∆ = 30, and up to three rewinding frames as implicit negatives [16] that
+prevent the model from collapsing to a monotonic time-index predictor.
+We partition the K + 1 primitives into M + 1 semantic groups by shared visual/motion patterns (see
+Appendix 6.4). Following MMoE [50, 51], each group has a dedicated gate Gm over a shared pool
+of E experts (each a 3-layer MLP). The active gate at step t is selected by m(ỹt ), producing top-k
+routing weights and MoE output
+                        E
+                            (m(ỹ ))            (m)
+                       X
+                 ot =      gt,e t · Ee (ht ), gt = TopK(softmax(Wm ht )).                        (1)
+                        e=1
+Group-conditioned routing provides an explicit inductive bias: primitives from different groups use
+separate gates, while shared experts remain accessible. To prevent router collapse, we add per-
+gate balance and entropy auxiliary losses (Lbalance , Lentropy ); full formulae and ablations are in Ap-
+pendix 6.8 and 6.10, full details on hyperparameter are in Appendix 6.3.
+            ∗
+Following π0.6 [7], the value model predicts normalized remaining steps to completion, rt⋆ = −(T −
+t)/T ∈ [−1, 0], which we find easier to fine-tune on rollouts with variable horizons. The full
+objective combines an MSE term with the auxiliary losses:
+                          L = ED [(r̂t − rt⋆ )2 ] + λbal Lbalance + λent Lentropy .                 (2)
+
+3.2   SPIRAL: Dense-Reward-Enabled Robot Self-Improvement Framework
+
+We integrate the reward model from Section 3.1.1 into SPIRAL (Self-Policy Improvement via
+Reward-Aligned Learning), a closed-loop framework in which a VLA policy is iteratively refined
+through on-policy rollouts and reward-guided residual RL. As a residual-RL substrate, SPIRAL
+adopts the distribution contractive RL finetuning scheme of DICE-RL [10], which samples multi-
+ple latent noises for the flow policy and residual policy to generate diverse actions from the same
+observation, inducing a controlled exploration space for stable, sample-efficient real-robot learning.
+
+
+                                                     4
+

@@ -1,0 +1,149 @@
+<section id="appendix-6-10">
+  <h2>6.10 MoE 설계: MoE-Decoder 대 MoE-FFN</h2>
+
+  <p><strong>설정.</strong> 대규모 언어 모델에서 지배적인 MoE 구성법은 expert를 Transformer의 Feed-Forward Network(FFN) 하위 계층 안에 배치한다. 동일한 배치 방식이 multimodal reward modeling에도 적용되는지 알아보기 위해, 내부 MoE가 삽입되는 위치만 다르고 나머지는 모든 면에서 동일한 SARM2 MMoE value decoder의 두 변형을 비교한다.</p>
+
+  <ul>
+    <li><strong>MoE-FFN</strong>은 value model backbone의 마지막 Transformer block에 있는 feed-forward 하위 계층을 sparse MoE FFN으로 교체하며, timestep별 output head에는 일반 MLP를 사용한다.</li>
+    <li><strong>MoE-Decoder(본 연구)</strong>는 value model backbone 전체를 dense하게 유지하고, encoder가 생성한 fused-per-timestep representation에 작용하도록 sparse MoE를 output head에 배치한다.</li>
+  </ul>
+
+  <p>두 변형은 동일한 SigLIP-2 feature, 동일한 6-layer causal Transformer backbone, 동일한 expert 수 E=10과 k=2, 그리고 동일한 primitive-group-conditioned MMoE outer gate를 공유한다. 이 outer gate는 3.1.2절과 같이 stage estimator가 예측한 primitive ỹ<sub>t</sub>에 의해 선택된다. value-model backbone의 dense FFN 하위 계층은 표준 4× expansion을 따르므로 hidden width는 4d<sub>model</sub> = 4×512 = 2048이다. MoE-FFN에서 각 expert는 hidden width가 1024인 feed-forward block이며, token마다 k=2개가 활성화되므로 active hidden capacity는 1024×2 = 2048이다. 이는 dense FFN과 정확히 일치하므로 FFN 하위 계층에서 계산량과 capacity를 맞춘 비교이다. 내부 top-k router는 배치 위치에서 전달받는 vector의 content를 기반으로 동작한다. MoE-FFN에서는 하나의 (modality, timestep) hidden state이고, MoE-Decoder에서는 모든 modality를 concatenate한 fused timestep vector이다. 따라서 primitive-group specialization은 두 방식의 차이를 만드는 요인이 아니며, 유일하게 달라지는 것은 expert가 존재하는 하위 계층이다.</p>
+
+  <p>S1 및 S2 subset의 demonstration MSE(낮을수록 좋음), T1(Folding Shorts)과 T2(Cleaning Whiteboard)의 rollout score ρ(높을수록 좋음), 그리고 routing health 및 compute parity를 확인하기 위한 식 6의 normalized top-k routing score S<sub>route</sub>(일반적으로 0.4 미만이면 건전함)를 보고한다.</p>
+
+  <p><strong>결과.</strong> MoE-Decoder는 사실상 동일한 routing sparsity에서 전체 demonstration MSE를 절반 이하로 낮추고(0.020 대 0.033), T1의 rollout score를 약 세 배(0.833 대 0.222), T2에서도 약 세 배(0.667 대 0.278)로 높인다. 이 결과는 MoE가 FFN에 속해야 한다는 LLM의 직관을 뒤집는다. 이 절의 나머지에서는 각 하위 계층의 역할을 중심으로 그 이유를 설명한다.</p>
+
+  <table>
+    <caption>표 8: SARM2에서 MoE-Decoder와 MoE-FFN의 비교. 유일한 차이는 내부 MoE를 배치하는 하위 계층이며, primitive-group-conditioned MMoE outer gate를 포함한 다른 모든 구성요소는 동일하게 유지한다. MoE-Decoder는 MoE-FFN의 routing sparsity(MoE Density)와 대등하면서도 전체 demonstration MSE를 절반으로 줄이고 두 task 모두에서 rollout score를 약 세 배로 높인다.</caption>
+    <thead>
+      <tr><th scope="col">지표</th><th scope="col">MoE-FFN</th><th scope="col">MoE-Decoder(본 연구)</th></tr>
+    </thead>
+    <tbody>
+      <tr><th colspan="3" scope="colgroup">Demo L ↓</th></tr>
+      <tr><th scope="row">S1</th><td>0.026</td><td>0.006</td></tr>
+      <tr><th scope="row">S2</th><td>0.038</td><td>0.031</td></tr>
+      <tr><th scope="row">전체</th><td>0.033</td><td>0.020</td></tr>
+      <tr><th colspan="3" scope="colgroup">Rollout ρ ↑</th></tr>
+      <tr><th scope="row">T1</th><td>0.222</td><td>0.833</td></tr>
+      <tr><th scope="row">T2</th><td>0.278</td><td>0.667</td></tr>
+      <tr><th scope="row">MoE Density</th><td>0.09</td><td>0.10</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>각 하위 계층의 역할.</strong> Transformer FFN 하위 계층은 position-wise representation refinement를 수행한다. attention은 position 사이의 정보를 혼합하고, FFN은 각 position을 독립적으로 다시 encode한다. attention과 FFN을 쌓는 것은 value model backbone이 모든 modality로부터 하나의 일관된 fused-per-timestep representation을 구성하는 메커니즘이다. 본 논문에서 decoder라고 부르는 output head는 이 fused representation을 받아 예측 progress r̂<sub>t</sub>로 mapping한다. 따라서 내부 MoE를 FFN에 배치하면 representation 구성을 specialized하고, output head에 배치하면 prediction mapping을 specialized한다. 이 둘은 매우 다른 역할이다.</p>
+
+  <p><strong>(i) MoE-FFN은 잘못된 단계를 specialized한다.</strong> encoder FFN의 position별 expert는 각 (modality, timestep) hidden state를 서로 다른 MLP로 routing하며, 뒤따르는 attention layer는 서로 다르게 처리된 이 position들을 다시 하나의 일관된 representation으로 융합해야 한다. 이는 backbone의 역할을 분절한다. 더 나쁜 점은 FFN router가 보는 position별 vector의 정체성이 scene content보다 해당 vector가 거쳐 온 modality projection에 주로 좌우된다는 것이다. content-driven specialization이 나타나더라도 prediction이 직접 사용하지 않는 중간 position별 representation에 작용한다. r̂<sub>t</sub>는 MoE에서 여러 attention layer를 더 지난 최종 fused timestep representation에만 의존한다.</p>
+
+  <p><strong>(ii) MoE-Decoder는 올바른 단계를 specialized한다.</strong> value model backbone을 dense하게 유지하면 모든 attention+FFN layer가 backbone의 설계 목적대로 하나의 통합된 fused-per-timestep representation을 만드는 데 협력한다. 그런 다음 내부 MoE는 content와 primitive-group gate를 조건으로 이 fused vector를 여러 scalar output path 가운데 하나로 routing한다. 이는 표준적인 “shared backbone, specialized head” 패턴을 soft top-k 방식으로 구현한 것이다. representation은 분절되지 않으며, specialization은 실제로 이득을 얻는 축에 적용된다. 따라서 서로 다른 primitive group(예: pick/place, rotate, fold)은 유사한 fused feature 위에서도 서로 다른 progress 계산을 수행할 수 있다. 특히 output head의 모든 routing decision은 r̂<sub>t</sub>의 직접적인 supervision을 받으므로 routing gradient의 signal-to-noise ratio가 높다.</p>
+
+  <p><strong>(iii) LLM의 직관이 뒤집히는 이유.</strong> language modeling에서는 position별 token이 prediction unit이다. 각 position은 자체 representation으로 다음 token을 예측하므로 position별 MoE-FFN specialization이 prediction axis와 일치하고, 긴 context length(L ∼ 10³–10⁴)는 sample마다 specialization을 안정화하기에 충분한 routing decision을 제공한다. multimodal reward modeling에서는 어느 조건도 성립하지 않는다. prediction unit은 modality별 position이 아니라 fused timestep이고, sample별 token budget은 작으며(L = (N+3)T), modality typing은 position별 routing이 modality identity shortcut에 치우치게 한다. MoE-Decoder는 실제 prediction이 이루어지는 수준에 specialization을 배치한다. 즉, shared representation을 분절하는 곳이 아니라 differentiation을 얻을 수 있는 곳에서 sparsity 비용을 지불한다.</p>
+
+  <p><strong>요약.</strong> Transformer FFN은 통합된 representation을 구성하기 위한 것이고, output head는 그 representation을 prediction으로 mapping하기 위한 것이다. sparse routing은 올바른 대상을 specialized할 때 유용하다. LLM에서는 position별 prediction 때문에 position별 specialization이 유용하므로 FFN이 올바른 대상이다. SARM2의 MMoE value decoder에서는 output head가 올바른 대상이다. value model backbone은 일관성을 유지해야 하며, primitive-conditioned specialization의 효과는 head에서 발생한다. MoE-Decoder는 배치 위치를 prediction과 일치시키지만 MoE-FFN은 그렇지 않다. 표 8의 수치는 이러한 불일치에서 비롯된다.</p>
+</section>
+
+<section id="appendix-6-11">
+  <h2>6.11 Reward Model 추정 시각화 결과</h2>
+
+  <p>먼저 각 reward model이 held-out demonstration의 dense progress를 얼마나 정확히 추정하는지 살펴본다. 그림 7은 in-distribution split S1과 held-out split S2에 걸친 benchmark 10개 task 모두에서 ground truth와 TOPReward, Robometer, Robometer-FT, ReWiND 및 SARM2의 timestep별 progress prediction을 시각화한다. 두 VLM 기반 baseline(TOPReward와 Robometer)은 trajectory 초반에 1 근처로 포화되어 4.1절에서 논의한 지나치게 낙관적인 추정을 보인다. ReWiND와 Robometer-FT는 ground truth를 더 가깝게 추적하지만 long-horizon task에서는 여전히 drift한다. SARM2는 10개 task 전체에서 ground-truth progress curve를 가장 충실히 따르며, S1과 S2 모두에서 높은 일치도를 보인다.</p>
+
+  <figure data-figure="7"><figcaption>그림 7: benchmark의 10개 task 전체에 대해 held-out demonstration에서 얻은 task별 progress 추정치. 각 panel은 ground truth와 TOPReward, Robometer, Robometer-FT, ReWiND 및 SARM2의 prediction을 겹쳐 표시한다. VLM baseline은 초반에 1 근처로 포화되며(4.1절에서 지적한 과도한 낙관성), SARM2는 S1과 S2 모두에서 ground truth를 면밀히 추적한다.</figcaption></figure>
+
+  <p>또한 실제 policy training 조건에서 각 reward model이 얼마나 충실하게 작동하는지 알아보기 위해, 질적으로 서로 다른 두 task인 Folding Shorts(그림 8)와 Cleaning Whiteboard(그림 9)의 on-policy rollout에서 예측 progress signal과 key frame을 함께 시각화한다. 두 task 모두에서 SARM2는 rollout의 segment-level detail을 포착한다. robot이 실제로 진전할 때 예측 progress가 상승하고, robot이 자세를 조정하거나 어려움을 겪을 때 정체하거나 하락하며, 치명적인 실패 시 급격히 감소한다. 이는 시각화된 key frame과 일치한다. 반면 SARM2와 마찬가지로 labeled rollout에서 LoRA fine-tuning한 Robometer baseline은 이러한 transition을 놓친다. robot이 눈에 띄게 어려움을 겪는데도 상승하는 progress signal을 출력하거나, policy가 실제로 task를 진전시키는 구간에서도 평평한 값을 유지하는 경우가 많다. 이러한 차이는 downstream policy-training 격차로 직접 이어진다. 잘못 shaping된 value estimate는 reward와 advantage를 잘못 할당하고, policy update에 noisy하거나 때로는 부호가 뒤집힌 gradient를 입력하여 self-improvement를 늦추거나 불안정하게 만든다.</p>
+
+  <figure data-figure="8"><figcaption>그림 8: 두 Folding Shorts rollout에서 reward model의 progress 추정. 각 panel은 policy training에 사용된 두 reward model의 예측 progress를 시간에 따라 나타낸다. trajectory를 따라 8개의 key frame을 progress figure 주위에 제시한다. SARM2는 policy가 진전하거나 어려움을 겪는 순간을 충실히 추적하지만, fine-tuned Robometer baseline은 이러한 세부 사항을 포착하지 못한다.</figcaption></figure>
+
+  <figure data-figure="9"><figcaption>그림 9: 두 Cleaning Whiteboard rollout에서 reward model의 progress 추정. 각 panel은 policy training에 사용된 두 reward model의 예측 progress를 시간에 따라 나타낸다. trajectory를 따라 8개의 key frame을 progress figure 주위에 제시한다. SARM2는 진전, 조정, 심지어 치명적인 실패까지 robot station의 상황을 면밀히 추적하지만, fine-tuned Robometer baseline은 이러한 세부 사항을 추적하지 못한다.</figcaption></figure>
+</section>
+
+<section id="appendix-6-12">
+  <h2>6.12 Action Primitive 추정 및 MoE Expert 선택 시각화 결과</h2>
+
+  <p>action primitive 기반 stage estimator는 모든 timestep에 걸쳐 집계한 micro-level 평균 정확도 85.22%를 달성한다. 각 task의 held-out test set(task당 10 episode)에 대한 task별 결과는 표 9에 제시한다. 또한 그림 10과 11은 각 task에 대해 예측 action primitive를 ground truth와 비교하고 trajectory에 따른 MoE expert 선택을 함께 보여 주는 대표 사례 하나씩을 제시한다.</p>
+
+  <table>
+    <caption>표 9: benchmark 10개 task에서 stage estimator의 정확도. task는 부록 6.2의 task별 설명과 동일한 순서로 나열한다.</caption>
+    <thead><tr><th scope="col">Task 이름</th><th scope="col">Stage Estimator 정확도(%)</th></tr></thead>
+    <tbody>
+      <tr><td>plate를 집어 bin에 넣기</td><td>89.32</td></tr>
+      <tr><td>plate를 집어 dish rack에 놓기</td><td>79.01</td></tr>
+      <tr><td>shorts 접기</td><td>97.52</td></tr>
+      <tr><td>t-shirt 접기</td><td>98.27</td></tr>
+      <tr><td>socket에서 plug 뽑기</td><td>79.40</td></tr>
+      <tr><td>whiteboard eraser로 whiteboard 닦기</td><td>96.22</td></tr>
+      <tr><td>dinner table 차리기</td><td>70.85</td></tr>
+      <tr><td>broom으로 종이 조각 쓸기</td><td>91.15</td></tr>
+      <tr><td>headphone 감아 정리하기</td><td>97.72</td></tr>
+      <tr><td>umbrella 접어 넣기</td><td>57.74</td></tr>
+    </tbody>
+  </table>
+
+  <figure data-figure="10"><figcaption>그림 10: Action-primitive prediction 및 MoE expert 선택 figure(1부).</figcaption></figure>
+
+  <figure data-figure="11"><figcaption>그림 11: Action-primitive prediction 및 MoE expert 선택 figure(2부). 각 panel은 trajectory를 따라 배치한 4개의 key frame(상단), action primitive 기반 stage estimator의 prediction과 ground truth 비교(중단), MoE expert 선택(하단)으로 구성된다. 중단 panel의 색상은 부록 4에서 논의한 primitive grouping을 나타낸다.</figcaption></figure>
+</section>
+
+<section id="appendix-6-13">
+  <h2>6.13 보조 수식</h2>
+
+  <p>p̄<sub>e</sub><sup>(m)</sup>을 batch에서 gate m이 expert e에 할당한 평균 routing probability라 하고, f<sub>e</sub><sup>(m)</sup>을 expert e가 top-k에 선택된 token의 비율이라 한다. 그러면 다음과 같다.</p>
+
+  <pre data-equation="7"><code>L_balance = Σ_(m=0)^M E · Σ_(e=1)^E f_e^(m) · p̄_e^(m)
+L_entropy = −Σ_(m=0)^M Σ_(e=1)^E p̄_e^(m) log p̄_e^(m)                              (7)</code></pre>
+
+  <p>balance 항은 각 gate 안에서 expert가 균일하게 활용되도록 유도하며, entropy 항은 training 초기에 routing distribution이 지나치게 뾰족해지는 것을 방지한다.</p>
+</section>
+
+<section id="appendix-6-14">
+  <h2>6.14 SPIRAL에 관한 추가 논의</h2>
+
+  <p><strong>Reward model 재사용성.</strong> 하나의 reward model은 여러 downstream task의 demonstration에 label을 부여하고 rollout 기반 fine-tuning의 출발점 역할을 할 수 있으므로, reward model training 비용을 task suite 전체에 걸쳐 분산할 수 있다.</p>
+
+  <p><strong>RL을 위한 혼합 objective.</strong> 이 hybrid 설계의 동기를 설명하기 위해 두 objective를 간단히 대조한다. replay buffer D의 transition으로 학습한 critic Q<sub>ϕ</sub>(s,a)가 주어졌을 때, TD objective는 next-state value를 bootstrap하는 반면 MC objective는 empirical discounted return으로 regression한다.</p>
+
+  <pre data-equation="8"><code>y_t^TD = r_t + γ Q_ϕ′(s_(t+1), a_(t+1))
+J_TD(ϕ) = E_D[(Q_ϕ(s_t, a_t) − y_t^TD)²]
+
+y_t^MC = Σ_(k=t)^T γ^(k−t) r_k
+J_MC(ϕ) = E_D[(Q_ϕ(s_t, a_t) − y_t^MC)²]                                      (8)</code></pre>
+
+  <p>TD target은 immediate reward r<sub>t</sub>와 one-step bootstrap에만 의존하므로, r<sub>t</sub>가 dense하고 국소적으로 유용한 정보를 담고 있으면 critic은 매 step에서 정밀한 learning signal을 받는다. 이 특성 때문에 TD는 특히 long-horizon task에 적합하다. 각 transition이 gradient에 기여하며, credit assignment가 멀리 떨어진 terminal signal에서 수백 step을 거쳐 전파될 필요가 없다. 반면 MC target은 critic을 empirical discounted return에 regression한다. sparse terminal reward(r<sub>k</sub>=0 for k&lt;T, r<sub>T</sub>=R<sub>sparse</sub>)에서는 y<sub>t</sub><sup>MC</sup>=γ<sup>T−t</sup>R<sub>sparse</sub>로 축약된다. discount γ<sup>T−t</sup>는 episode 길이에 따라 terminal credit을 지수적으로 약화하므로 성공하면서 빠른 episode가 성공하지만 느린 episode보다 엄격히 더 큰 target을 갖는다. 따라서 MC objective에는 짧고 성공적인 trajectory를 꾸준히 선호하는 성질이 내재한다. 두 objective는 상호 보완적이다. TD는 trajectory 전반에서 미세한 action choice를 세밀하게 shaping하고, MC는 빠르고 성공적인 episode에 대한 안정적인 global preference를 부여하여 policy가 그러한 episode의 motion style을 계승하게 한다.</p>
+
+  <p>두 항을 다음과 같이 결합한다.</p>
+
+  <pre data-equation="9"><code>J_critic(ϕ) = J_TD(ϕ) + α · J_MC(ϕ)                                            (9)</code></pre>
+
+  <p>여기서 α는 local shaping과 global preference 사이의 균형을 조절한다. 이 hybrid 설계를 검증하기 위해 offline RL setting에서 두 reward component를 ablation하고, 두 task 모두에서 전체 mixed objective를 dense-reward TD 항 또는 sparse-reward MC 항만 사용하는 변형과 비교한다(표 10).</p>
+
+  <table>
+    <caption>표 10: offline RL 단계의 critic objective에 대한 ablation. Folding Shorts(flat 및 crumble에서 시작)와 Cleaning Whiteboard에서 behavior cloning(BC)을 sparse-reward MC 항만 사용한 offline RL, dense-reward TD 항만 사용한 offline RL, 본 연구의 전체 mixed objective(J<sub>TD</sub> + αJ<sub>MC</sub>)와 비교한다. success rate(SR), average progress(Avg. Prog.), BC 대비 progress gain(Prog. Gain)을 보고한다. mixed objective가 두 task 모두에서 가장 좋은 결과를 달성하여 dense TD 항과 sparse MC 항이 상호 보완적임을 확인한다.</caption>
+    <thead>
+      <tr><th rowspan="2" scope="col">Training 방법</th><th colspan="2" scope="colgroup">Folding Shorts(SR↑)</th><th colspan="3" scope="colgroup">Cleaning Whiteboard</th></tr>
+      <tr><th scope="col">Flat</th><th scope="col">Crumble</th><th scope="col">SR↑</th><th scope="col">Avg. Prog. ↑</th><th scope="col">Prog. Gain ↑</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">BC</th><td>1/12</td><td>0/12</td><td>4/20</td><td>0.475</td><td>N/A</td></tr>
+      <tr><th scope="row">RL-Sparse(MC만)</th><td>4/12</td><td>2/12</td><td>6/20</td><td>0.625</td><td>0.150</td></tr>
+      <tr><th scope="row">RL-Dense(TD만)</th><td>5/12</td><td>4/12</td><td>9/20</td><td>0.745</td><td>0.270</td></tr>
+      <tr><th scope="row">RL-Dense(mixed obj.)</th><td>7/12</td><td>4/12</td><td>10/20</td><td>0.813</td><td>0.338</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>일회성 human labeling effort.</strong> reward model adaptation(Stage 2)은 일회성 작업이다. pipeline에서 가장 약한 policy인 BC policy π<sub>1</sub>으로부터 R<sub>1</sub>을 의도적으로 수집한다. 이 policy의 rollout은 가장 다양한 out-of-distribution(OOD) failure mode를 드러내며, 이것이 바로 reward model이 올바르게 score하는 방법을 배워야 할 state이기 때문이다. R<sub>1</sub>으로 약 100개의 rollout을 수집하고 segment로 나눈 다음, 각 segment에 {빠른 진전, 느린 진전, 조정, 실수} 중 하나와 evaluation protocol에서 산출한 최종 progress value를 label로 부여한다. annotation interface는 그림 12에 제시한다. 경험상 두 task에서 각각 100개의 rollout에 label을 부여하는 데 2~3시간이 걸렸다. 작은 adaptation set에 대한 overfitting을 막기 위해 R<sub>1</sub><sup>labeled</sup>를 기존 task-specific reward model training data의 50% subsample과 혼합한다. 그 결과 fine-tuning run에는 pretraining compute의 약 1/10이 필요하다.</p>
+
+  <figure data-figure="12"><figcaption>그림 12: 일회성 reward-model adaptation(Stage 3)을 위한 annotation interface. annotator는 rollout을 chunk로 segment하고 각 chunk에 {빠른 진전, 느린 진전, 조정, 실수} 중 하나와 최종 progress value를 label로 부여한다. task마다 π<sub>1</sub>의 rollout 약 100개를 annotation하는 데 2~3시간이 걸린다.</figcaption></figure>
+
+  <p><strong>최소한의 human involvement.</strong> self-improvement pipeline 가운데 본 방법은 인간에게 가장 적은 부담을 요구한다. RM<sub>2</sub>를 얻은 뒤에는 추가 human labeling 없이 SPIRAL loop가 실행된다. operator는 environment reset과 safety supervision에만 필요하며, iteration마다 rollout을 50~100개만 수집해도 2~3회 iteration이면 target task를 안정적으로 해결하기에 충분하다(그림 4 참조). 이는 π0.6과 같은 intervention 기반 방법과 뚜렷이 대비된다. 이러한 방법에서는 정확한 순간에 정밀하고 단호한 motion으로 human-in-the-loop correction을 online으로 제공해야 하므로, annotator가 숙련된 teleoperator인 동시에 policy failure mode를 속속들이 알아야 한다. 반면 본 framework는 초기 rollout set에 대한 offline researcher-level annotation만 요구한다. 이는 인간에게 real-time skill을 요구하지 않는 일회성 작업이며 훨씬 쉽게 확장할 수 있다.</p>
+
+  <p><strong>Error correction을 넘어서.</strong> rollout labeling은 잘못된 behavior를 수정하고 OOD state에서 복구하는 데 그치지 않는다. policy를 가장 효율적이고 안정적인 solution strategy로 암묵적으로 유도하여 execution style을 human preference와 정렬한다. 그림 13은 Cleaning Whiteboard에서 이를 보여 준다. 위쪽 frame은 정석적인 strategy를 나타낸다. 왼팔은 board의 위쪽 corner를 잡아 단단히 고정하고, 오른팔은 안정적인 contact를 유지한 채 eraser로 닦는다. 아래쪽 frame은 초기 BC policy의 failure mode를 보여 준다. 왼팔이 stand의 아래쪽 bar를 잡는데, 이는 불안정한 지지 방식이어서 닦을 때마다 board가 기울었다가 되돌아오므로 cleaning이 느리고 오류가 발생하기 쉽다. 이러한 grasp는 demonstration set에 나타나지 않는 OOD behavior이다. 엄밀히 말하면 mistake는 아니다. progress가 계속 증가할 수 있기 때문이다(board가 실제로 더 깨끗해진다). 그러나 motion은 비효율적이고 whiteboard 전체를 넘어뜨릴 위험이 있다. 따라서 이러한 segment를 reward 0인 “조정”으로 labeling하여 fine-tuning을 통해 human preference와 high-level prior knowledge를 RM<sub>2</sub>에 주입한다. SPIRAL loop 이후 policy는 이 preference를 distill하여 더 이상 불안정한 grasp를 사용하지 않는다.</p>
+
+  <figure data-figure="13"><figcaption>그림 13: SPIRAL loop 이후 policy의 고효율 action(상단)과 초기 BC policy의 suboptimal action(하단) 비교.</figcaption></figure>
+
+  <p><strong>Crumble 상태에서 시작하는 Folding Shorts의 불완전한 결과.</strong> SPIRAL을 세 round 수행한 뒤 본 policy는 vanilla BC 및 offline RL보다 상당히 높은 success rate를 달성한다(8/12 대 0/12 대 4/12). 그러나 이 결과는 flat 상태에서 시작하는 Folding Shorts(12/12) 및 Cleaning Whiteboard(18/20)의 거의 포화된 성능과 비교하면 여전히 뚜렷한 격차가 있으며, X-VLA와 같은 최근 SOTA cloth-folding VLA policy보다도 낮다. 이 한계에는 여러 요인이 있다고 본다. 첫째, policy는 demonstration data 20시간만으로 학습되며, 이는 cloth folding에서 low-data regime에 해당한다. 더욱이 demonstration은 filtering되지 않았고 품질도 다양하다. 대략적인 proxy로 보면 shorts 한 벌을 접는 데 필요한 시간이 episode에 따라 40초에서 100초까지 차이 난다. 또한 서로 다른 operator가 데이터를 수집하므로 미묘한 modality 차이가 있다. 예를 들어 folding 중 사용하는 grasping position처럼 일부 step에서 operator마다 선호 action이 다를 수 있다. 둘째, flat 상태에서 시작하는 Folding Shorts나 Cleaning Whiteboard와 비교할 때, crumble 상태에서 시작하는 Folding Shorts에는 shorts를 평평하게 펴는 더 어렵고 덜 구조화된 stage가 포함된다. 이 stage에서 robot은 shorts를 완전히 평평하게 만들기 위해 여러 번 시도해야 하는 경우가 많다. 부드러운 cloth의 deformability와 다양한 cloth texture 때문에 shorts는 매우 많은 가능한 state로 나타날 수 있다. 그 결과 현재 reward model은 각 시도 후 cloth가 더 평평해졌는지 안정적으로 판단하기에 충분한 granularity와 accuracy를 갖추지 못했다. 특히 shorts가 여전히 심하게 구겨진 초기 몇 차례 시도에서 그렇다. 이 때문에 이 stage에서 reward signal이 평평하게 유지되거나 noisy해진다. 또한 그림 12에서 보듯 미묘한 human folding skill은 현재 방법으로 labeling하기 어렵다. 따라서 이러한 skill을 SPIRAL을 통해 downstream policy로 distill하기도 어렵다. 이는 본 방법의 중요한 한계이다. state variation이 큰 고도로 복잡한 task에서는 통일된 protocol과 modality 아래에서 수집한 대량의 고품질 demonstration data로 학습하는 것이 여전히 가장 효과적인 post-training strategy일 수 있다.</p>
+</section>
+
+<section id="appendix-6-15">
+  <h2>6.15 Policy Rollout 예시</h2>
+
+  <figure data-figure="14"><figcaption>그림 14: (1) shorts 접기(상단), (2) whiteboard 닦기(하단)에 대한 policy rollout trajectory 예시.</figcaption></figure>
+</section>
