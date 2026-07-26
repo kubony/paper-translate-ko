@@ -1,0 +1,160 @@
+\documentclass[]{style/iromlab}
+
+% Fonts
+% \usepackage{times}
+
+% Math
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{units}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{adjustbox}
+
+% Figures & Floats
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{placeins}
+
+% Lists
+\usepackage{enumerate}
+\usepackage[inline]{enumitem}
+
+% Algorithms
+\usepackage[ruled,algo2e]{algorithm2e}
+\usepackage{algpseudocode}
+
+% Colors & Boxes
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+% References & Links
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{cleveref}
+\renewcommand{\backref}[1]{}
+\renewcommand{\backrefalt}[4]{}
+
+% Layout & Formatting
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{balance}
+\usepackage{microtype}
+
+% Utilities
+\usepackage{pifont}
+\usepackage{etoolbox}
+\usepackage{xspace}
+
+% Appendices
+\usepackage[title]{appendix}
+
+
+\definecolor{claude_color}{HTML}{F89E62}
+\definecolor{deepseek_color}{HTML}{78B6E8}
+\definecolor{o3_mini_color}{HTML}{6CD5A1}
+\definecolor{red_color}{HTML}{E13B55}
+\definecolor{prompt_color}{HTML}{71502B}
+
+% Nice green check and red cross
+\newcommand{\cmark}{\textcolor{green!60!black}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{red!70!black}{\ding{55}}}
+
+\tcbset{
+  promptbox/.style={
+    colback=gray!6,
+    colframe=gray!25,
+    boxrule=0.4pt,
+    arc=2pt,
+    left=6pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt
+  }
+}
+
+\makeatletter
+\newcommand{\longdash}[1][2em]{%
+  \makebox[#1]{$\m@th\smash-\mkern-7mu\cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill\mkern-7mu\smash-$}}
+\makeatother
+
+% Authors
+\author[1]{Lihan Zha}
+\author[1*]{Asher J. Hancock}
+\author[1*]{Mingtong Zhang}
+\author[1]{Tenny Yin}
+\author[1]{Yixuan Huang}
+\author[1]{Dhruv Shah}
+% \author[2,$\dagger$]{Allen Z. Ren}
+% \author[1,$\dagger$]{Anirudha Majumdar}
+\author[2,\ensuremath{\dagger}]{Allen Z. Ren}
+\author[1,\ensuremath{\dagger}]{Anirudha Majumdar}
+
+
+
+\affiliation[1]{Princeton University}
+\affiliation[2]{Physical Intelligence}
+\contribution[*]{Equal contribution.}
+\contribution[\ensuremath{\dagger}]{Equal advising.}
+
+\begin{document}
+
+\title{
+LAP: Language-Action Pre-Training Enables \\ Zero-shot Cross-Embodiment Transfer
+}
+% \title{{\LARGE LAP: Language-Action Pre-training Enables \\ Zero-Shot Cross-Embodiment Transfer}}
+
+
+\abstract{
+A long-standing goal in robotics is a generalist policy that can be deployed zero-shot on new robot embodiments without per-embodiment adaptation. Despite large-scale multi-embodiment pre-training, existing Vision--Language--Action models (VLAs) remain tightly coupled to their training embodiments and typically require costly fine-tuning. We introduce \emph{Language-Action Pre-training} (LAP), a simple recipe that represents low-level robot actions directly in natural language, aligning action supervision with the pre-trained vision--language model’s input--output distribution. LAP requires no learned tokenizer, no costly annotation, and no embodiment-specific architectural design. Based on LAP, we present \textsc{LAP-3B}, which to the best of our knowledge is the first VLA to achieve substantial zero-shot transfer to previously unseen robot embodiments without any embodiment-specific fine-tuning. Across multiple novel robots and manipulation tasks, \textsc{LAP-3B} attains over 50\% average zero-shot success, delivering roughly a $2\times$ improvement over the strongest prior VLAs. We further show that LAP enables efficient adaptation and favorable scaling, while unifying action prediction and VQA in a shared language-action format that yields additional gains through co-training.
+}
+
+\keywords{
+Vision-Language-Action Models, Cross-Embodiment Learning
+}
+
+\website{
+https://lap-vla.github.io/
+}
+{
+https://lap-vla.github.io
+}
+
+\code{
+https://github.com/lihzha/lap
+}
+{
+https://github.com/lihzha/lap
+}
+
+\maketitle
+
+\input{sections/1.introduction}
+\input{sections/2.related_works}
+\input{sections/3_methodology}
+\input{sections/4.experiments}
+\input{sections/5.conclusions}
+\input{sections/6.acknowledgments}
+
+\clearpage
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\clearpage
+\beginappendix{
+    \input{sections/appendix}
+}
+
+
+
+\end{document}
+
+

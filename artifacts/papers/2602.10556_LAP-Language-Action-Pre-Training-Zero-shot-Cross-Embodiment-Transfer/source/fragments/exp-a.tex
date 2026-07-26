@@ -1,0 +1,91 @@
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig3_zeroshot.pdf}
+    \caption{\textbf{Zero-shot cross-embodiment generalization performance.} LAP-3B achieves performance comparable to the $\pi_{0.5}$-DROID on the seen embodiment. Across three previously unseen embodiments and six real-world manipulation tasks, LAP-3B attains over \textbf{50\% average zero-shot success}, delivering approximately a $2\times$ improvement over the strongest baselines, while all open-sourced VLAs collapse to zero success rate. Error bars denote 95\% finite-sample–valid confidence intervals that control the Type-I error (miscoverage) probability, following~\cite{vincent2024generalizablebehaviorcloningpolicy}.
+}
+    \label{fig:zero-shot}
+\end{figure*}
+
+\section{Experiments}
+\label{sec:experiments}
+
+Our experiments aim to evaluate whether language-actions provide a superior action representation for VLA pre-training. In particular, we focus on \textbf{cross-embodiment generalization}, which remains a significant limitation of state-of-the-art VLAs. Concretely, we seek to answer:
+{
+% \renewcommand{\theenumi}{\Alph{enumi}}
+% \renewcommand{\labelenumi}{\theenumi.}
+\begin{enumerate}
+    \item Does LAP enable zero-shot cross-embodiment transfer?
+    \item Does LAP support efficient fine-tuning to new embodiments on challenging tasks?
+    \item How does LAP’s language-action representation shape the learned representations and enable strong cross-embodiment generalization?
+    \item What is the effect of co-training \textsc{LAP-3B} with VQA datasets?
+    \item Does LAP scale favorably with model size?
+\end{enumerate}
+}
+To address these questions, we evaluate LAP across \textbf{four robot embodiments}, \textbf{ten real-world manipulation tasks}, and the LIBERO simulation benchmark \cite{liu2023liberobenchmarkingknowledgetransfer}. We first test out-of-the-box performance on one seen and three unseen embodiments, then study fine-tuning efficiency on new robots and tasks. We investigate the impact of LAP's language-action representation on training dynamics and conclude with an analysis of co-training with Visual--Question--Answering (VQA) datasets.
+
+\noindent\textbf{Baselines.}
+We evaluate two categories of baselines below. All replicated baselines are carefully tuned (learning rate, batch size, loss weights, etc.) for fair comparison; full details are in Appendix~\ref{app:implementation_details}.
+
+
+\paragraph{Open-Sourced VLAs.}
+We evaluate several publicly released VLA checkpoints to assess whether existing methods already exhibit zero-shot cross-embodiment transfer:
+(1) \textbf{\bm{$\pi_{0.5}$}-DROID} \cite{intelligence2025pi05visionlanguageactionmodelopenworld}, currently the strongest VLA on the DROID benchmark;
+(2) \textbf{\bm{$\pi_{0.5}$}-Base} \cite{intelligence2025pi05visionlanguageactionmodelopenworld}, the strongest publicly available VLA base model to our knowledge;
+(3) \textbf{X-VLA} \cite{zheng2025xvlasoftpromptedtransformerscalable}, which explicitly targets embodiment generalization;
+(4) \textbf{MolmoAct} \cite{lee2025molmoactactionreasoningmodels}; and
+(5) \textbf{OpenVLA} \cite{kim2024openvlaopensourcevisionlanguageactionmodel}.
+
+
+\paragraph{Action-Representation Comparison.}
+To isolate the impact of language-action supervision, we train controlled baselines with identical architectures and data mixtures, differing only in action representation:
+
+\begin{enumerate}
+    \item \textbf{$\bm{\pi_{0.5}}$-replicated}: supervises the VLM using FAST tokens \cite{pertsch2025fastefficientactiontokenization}. Since the FAST tokenizer is pre-trained on substantially more robot data than our model, this forms a particularly strong baseline.
+    \item \textbf{$\bm{\pi_{0}}$-replicated}: removes action supervision from the VLM entirely and only supervises the action expert, measuring the benefit of language-action pre-training.
+    \item \textbf{VLA-0-replicated}: supervises the VLM following \citet{goyal2025vla0buildingstateoftheartvlas}, where continuous actions are represented as digit tokens.
+\end{enumerate}
+Across all experiments, we conduct \textbf{over 1300 real-robot evaluation trials}.
+
+\subsection{Zero-Shot Cross-Embodiment Generalization}
+\label{subsec:zero_shot}
+
+
+
+\noindent\textbf{Embodiments and Tasks.}
+We evaluate on four robot embodiments (Fig.~\ref{fig:zero-shot}): the DROID setup \cite{khazatsky2025droidlargescaleinthewildrobot} which is included in the pre-training mixture, three unseen embodiments---a custom 7-DoF Franka Panda robot with a novel gripper and wrist-mounted camera configuration, the 6-DoF YAM robot, and the 7-DoF Kinova robot.
+
+We evaluate five manipulation task types (Fig.~\ref{fig:zero-shot}, top row):
+\begin{enumerate}
+    \item \textbf{Pick and Place}: pick up an object and place it into a container, testing generalization across gripper geometry, camera placement, and robot appearance.
+    \item \textbf{Sort}: sort all objects on the table into a basket, evaluating long-horizon manipulation.
+    \item \textbf{Tissue}: pull tissue from a box and place it on the table, requiring adaptive grasping of deformable objects and height reasoning.
+    \item \textbf{Put Towel}: pick up a flat towel and place it into a basket, requiring precise grasp localization and large vertical motion.
+    \item \textbf{Pour}: pour contents from a bowl, testing rotational control and primitive sequencing.
+\end{enumerate}
+
+These tasks require full 6-DoF manipulation, e.g., rotating the gripper to avoid collisions during sorting, and probe complementary primitive skills.
+
+For each embodiment, we evaluate on two of these tasks with 20 trials per task. We report mean success rates with 95\% confidence intervals following the method of \cite{vincent2024generalizablebehaviorcloningpolicy}, which provides statistically valid finite-sample coverage. Unlike heuristic standard deviations, these intervals explicitly control the Type-I error (miscoverage) probability. Success metric is binary: a trial is marked successful only if the full task is completed. Results are summarized in Fig.~\ref{fig:zero-shot}.
+
+\noindent\textbf{Seen Embodiment Evaluation.} On the in-distribution DROID setup, we observe that nearly all open-sourced VLAs fail to achieve non-trivial task success, with the sole exception of $\pi_{0.5}-\text{DROID}$ \cite{intelligence2025pi05visionlanguageactionmodelopenworld}, which has been explicitly fine-tuned on the DROID dataset \cite{khazatsky2025droidlargescaleinthewildrobot}. This highlights a critical limitation of current VLAs: despite large-scale multi-embodiment pre-training, effective deployment even on seen embodiments typically requires embodiment-specific adaptation. 
+
+For our replicated comparison baselines, $\pi_{0.5}$-replicated and $\pi_{0}$-replicated achieve moderate and comparable performance. However, $\text{VLA-0}$-replicated consistently collapses to near-zero actions. We find this failure mode stems from overfitting to trivial predictions, which manifests as predicting only small-magnitude action tokens. This issue may be less of a concern on smaller, cleaner benchmarks such as LIBERO \cite{liu2023liberobenchmarkingknowledgetransfer} but becomes detrimental at large scale, where noise and behavioral diversity are unavoidable.
+
+Notably, \textsc{LAP-3B} consistently outperforms $\pi_{0.5}$-replicated and $\pi_{0}$-replicated by approximately 15 percentage points across tasks, despite sharing the same backbone architecture and training data; this highlights the superiority of the language-action representation. Moreover, \textsc{LAP-3B} achieves performance on par with $\pi_{0.5}$-DROID---without any embodiment-specific fine-tuning on the DROID dataset itself. This indicates that language-action supervision enables effective learning from large-scale, heterogeneous robot data, leading to strong in-distribution performance.
+
+
+\noindent\textbf{Unseen Embodiment Evaluation.} We next evaluate zero-shot transfer to three previously unseen robot embodiments. Across all settings, \textsc{LAP-3B} demonstrates a substantial and consistent advantage, with an \emph{average success rate exceeding 50\%}, representing an approximate \textbf{2$\times$ improvement over the strongest baseline}. Importantly, \textsc{LAP-3B} is the only model to achieve consistently high performance across all novel embodiments.
+
+In contrast, all open-sourced VLAs, including $\pi_{0.5}$-DROID, which performed strongly in-distribution, fail to generate meaningful behavior on unseen robots. This sharp collapse suggests that existing VLA training recipes remain tightly coupled to embodiment-specific control conventions, preventing transfer even when visual and task semantics remain similar.
+
+
+By contrast, \textsc{LAP-3B} exhibits both \emph{semantically grounded movements} and \emph{fine-grained spatial control} across embodiments. We hypothesize that the language-action interface provides a shared, embodiment-agnostic abstraction that better preserves the VLM’s generalizable visual-semantic representations while enabling precise execution under novel robot kinematics. This decoupling allows \textsc{LAP-3B} to retain coherent task intent while avoiding the embodiment-specific overfitting that hampers existing VLAs.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig4_finetune.pdf}
+    \caption{\textbf{Fine-tuning efficiency in simulation (LIBERO) and real-world manipulation tasks}. Across both domains, \textsc{LAP-3B} adapts substantially faster than baseline policies, reaching high performance with significantly fewer epochs and demonstrations. In simulation, \textsc{LAP-3B} converges to near-optimal success within a fraction of the training steps required by baselines. On real robots, \textsc{LAP-3B} achieves comparable task performance using approximately \textbf{$\bm{2.5\times}$ fewer demonstrations}, demonstrating substantially improved data and compute efficiency when transferring to new embodiments.}
+    \label{fig:libero-fine-tuning}
+\end{figure*}
+\vspace{2pt}
+

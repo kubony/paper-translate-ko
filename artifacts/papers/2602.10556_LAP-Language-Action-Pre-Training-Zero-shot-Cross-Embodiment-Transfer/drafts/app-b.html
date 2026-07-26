@@ -1,0 +1,87 @@
+<section id="app-implementation-details" data-entity="section-implementation-details">
+  <h2 data-entity="heading-implementation-details">구현 세부 사항</h2>
+
+  <section id="app-robot-platforms" data-entity="section-robot-platforms">
+    <h3 data-entity="heading-robot-platforms">로봇 플랫폼</h3>
+    <p data-entity="robot-platforms-p1">kinematics, sensing 구성, control interface가 서로 다른 네 가지 로봇 embodiment에서 <span class="small-caps">LAP-3B</span>를 평가한다.</p>
+    <ul data-entity="robot-platforms-list">
+      <li data-entity="robot-platform-droid"><strong>DROID</strong>: pre-training 중에 본 embodiment로, external camera와 wrist-mounted camera를 모두 갖춘 7-DoF arm으로 구성된다.</li>
+      <li data-entity="robot-platform-custom-franka"><strong>Custom Franka</strong>: external camera와 wrist-mounted camera를 갖춘, 이전에 보지 못한 7-DoF arm이다. 학습 중 관측한 Franka 로봇과 다른 새로운 gripper 및 wrist camera mounting을 사용한다.</li>
+      <li data-entity="robot-platform-yam"><strong>YAM</strong>: external camera 하나를 갖춘, 이전에 보지 못한 6-DoF arm이다.</li>
+      <li data-entity="robot-platform-kinova"><strong>Kinova</strong>: external camera와 wrist-mounted camera를 갖춘, 이전에 보지 못한 7-DoF arm이다.</li>
+    </ul>
+    <p data-entity="robot-platforms-p2">fine-tuning에서는 더 정밀한 low-level control이 가능하도록 YAM에 joint-space action을 사용하며, 그 외 모든 로봇은 end-effector pose action으로 제어한다.</p>
+  </section>
+
+  <section id="app-training-hyperparameters" data-entity="section-training-hyperparameters">
+    <h3 data-entity="heading-training-hyperparameters">학습 Hyperparameter</h3>
+
+    <table id="tab-hyperparams" data-entity="table-4" data-table="4">
+      <caption><strong>표 4. LAP-3B의 학습 Hyperparameter.</strong></caption>
+      <thead>
+        <tr><th>Hyperparameter</th><th>값</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Batch size</td><td>2048</td></tr>
+        <tr><td>Learning rate</td><td>1 × 10<sup>−4</sup></td></tr>
+        <tr><td>Warmup steps</td><td>5000</td></tr>
+        <tr><td>EMA start step</td><td>5000</td></tr>
+        <tr><td>EMA decay</td><td>0.999</td></tr>
+        <tr><td>Action horizon</td><td>16</td></tr>
+        <tr><td>Adam (β<sub>1</sub>, β<sub>2</sub>)</td><td>(0.9, 0.95)</td></tr>
+        <tr><td>Gradient clipping norm</td><td>1.0</td></tr>
+        <tr><td>Weight decay</td><td>1 × 10<sup>−4</sup></td></tr>
+      </tbody>
+    </table>
+
+    <p data-entity="training-hyperparameters-p1">전체 학습 objective는 다음과 같다.</p>
+    <pre class="equation" data-eq="A1" data-entity="equation-training-objective">L = L_flow + λ L_CE</pre>
+    <p data-entity="training-hyperparameters-p2">pre-training 중에는 λ=0.8을 사용하고 fine-tuning 중에는 λ=0.4를 사용한다. 그 밖의 hyperparameter는 표 4에 제시한다. language-action loss가 diffusion 기반 action expert보다 훨씬 빠르게 수렴하므로, pre-training 중에는 λ&lt;1로 설정하여 language-action loss의 가중치를 약간 낮춘다. 이러한 균형 조정은 더 빠른 language-action objective가 optimization을 지배하지 못하게 하고, 두 component가 비슷한 속도로 학습되도록 유도한다.</p>
+  </section>
+
+  <section id="app-baseline-implementations" data-entity="section-baseline-implementations">
+    <h3 data-entity="heading-baseline-implementations">Baseline 구현</h3>
+    <p data-entity="baseline-implementations-p1">재현한 모든 baseline(π<sub>0.5</sub>-replicated, π<sub>0</sub>-replicated, VLA-0-replicated)에 대해 hyperparameter를 신중하게 조정하고, 실제 로봇을 사용한 예비 validation run을 바탕으로 가장 좋은 성능의 checkpoint를 선택한다.</p>
+    <p data-entity="baseline-implementations-p2">모든 baseline에서 learning rate는 {1×10<sup>−4</sup>, 5×10<sup>−5</sup>} 범위로, batch size는 {1024, 2048} 범위로 sweep한다.</p>
+    <p data-entity="baseline-implementations-p3">π<sub>0.5</sub>-replicated에 대해서는 FAST token의 cross entropy loss weight를 {0.1, 0.4, 0.6, 0.8} 범위로, action horizon을 {16, 32} 범위로 추가 sweep한다.</p>
+    <p data-entity="baseline-implementations-p4">별도로 명시하지 않는 한, 재현한 모든 baseline에 최종적으로 사용하는 hyperparameter는 batch size 2048, learning rate 1×10<sup>−4</sup>, action horizon 16, loss weight λ=0.6이다.</p>
+    <p data-entity="baseline-implementations-p5">명시적으로 조정한 이 parameter 외에는 재현한 모든 baseline이 동일한 network architecture, data mixture, sampling strategy, optimization 설정을 비롯하여 본 방법과 동일한 design choice를 공유한다.</p>
+    <p data-entity="baseline-implementations-p6">나머지 모든 hyperparameter는 표 4에 나열된 설정을 따른다.</p>
+    <p data-entity="baseline-implementations-p7">π<sub>0</sub>-replicated에는 원래 OpenPI codebase의 구현을 그대로 따른다.</p>
+    <p data-entity="baseline-implementations-p8">π<sub>0.5</sub>-replicated에는 공개된 code에서 제공하지 않는 FAST action token과 Knowledge Insulation(action expert에서 backbone으로 향하는 gradient를 차단함)을 사용한 VLM backbone supervision을 포함하도록 원래 구현을 확장한다.</p>
+    <p data-entity="baseline-implementations-p9">VLA-0-replicated에는 masked action augmentation, 권장 action resolution, prompt format을 포함하여 원 논문의 specification을 엄격히 따라 방법을 재구현한다. 또한 논문에서 보고한 범위를 넘어, 특히 learning rate와 batch size를 신중하게 조정한다. 이러한 조정을 통해 재현한 모델은 LIBERO benchmark에서 대등한 성능을 달성한다. 그러나 zero-shot 절에서 논의했듯이 대규모 dataset으로는 scale되지 않는다.</p>
+  </section>
+
+  <section id="app-prompt-language-action-format" data-entity="section-prompt-language-action-format">
+    <h3 data-entity="heading-prompt-language-action-format">Prompt 및 Language-Action 형식</h3>
+    <p data-entity="prompt-format-p1">본 모델과 모든 baseline에서는 다음의 구조화된 template을 prompt로 사용한다.</p>
+    <pre class="promptbox" data-entity="prompt-template"><code>Task: &lt;instruction&gt;, predict the robot's action in the &lt;base frame&gt; or &lt;end-effector frame&gt;; State: s₁ s₂ … s_D; Answer:</code></pre>
+    <p data-entity="prompt-format-p2">예시는 다음과 같다.</p>
+    <pre class="promptbox" data-entity="prompt-example"><code>Task: Put the marker into the cup, predict the robot's action in the base frame; State: 20 121 34 144 112 45 235 44 21 255; Answer:</code></pre>
+    <p data-entity="language-action-format-p1">Language-action은 고정된 순서의 구조화된 clause로 생성한다.</p>
+    <pre class="promptbox" data-entity="language-action-template"><code>move &lt;direction&gt; &lt;k&gt; cm; tilt &lt;direction&gt; &lt;k&gt; degrees; rotate &lt;cw/ccw&gt; &lt;k&gt; degrees; open/close gripper</code></pre>
+    <p data-entity="language-action-format-p2">translation magnitude는 정수 centimeter 단위로, rotation magnitude는 정수 degree 단위로 discretize하며, 0에 가까운 control noise를 억제하기 위해 값이 0인 movement는 생략한다.</p>
+  </section>
+
+  <section id="app-motion-prediction-vqa-generation" data-entity="section-motion-prediction-vqa-generation">
+    <h3 data-entity="heading-motion-prediction-vqa-generation">Motion Prediction VQA Data 생성</h3>
+    <p data-entity="motion-vqa-p1">language–action data curation과 마찬가지로 motion prediction VQA pair는 manual annotation 없이 자동으로 생성한다. 각 training instance는 다음 prompt template을 사용하여 구성한다.</p>
+    <pre class="promptbox" data-entity="motion-vqa-prompt-template"><code>Task: question; State: s₁ s₂ … s_D; Answer:</code></pre>
+    <p data-entity="motion-vqa-p2">여기서 <code>question</code>은 두 observation 사이의 temporal relationship을 설명하도록 모델에 요구한다(예: <em>“What movement did the robot make from the first image to the second in the robot base frame?”</em>). prompt의 diversity와 robustness를 높이기 위해 의미상 동등한 question 표현을 무작위로 sampling한다. 이에 대응하는 answer로는 두 frame 사이의 robot motion을 설명하는 ground-truth language–action을 사용한다.</p>
+  </section>
+
+  <section id="app-image-preprocessing-augmentation" data-entity="section-image-preprocessing-augmentation">
+    <h3 data-entity="heading-image-preprocessing-augmentation">Image Pre-processing 및 Augmentation</h3>
+    <p data-entity="image-preprocessing-p1">모든 input image는 추가 processing에 앞서 먼저 고정 resolution으로 resize한다(padding 포함). 학습 중에는 모든 camera view의 image에 augmentation을 적용한다. image를 [0,1]로 normalize한 뒤, target resolution의 95% 크기로 random crop하고 원래 크기로 다시 resize하는 단계, [−5°, 5°]에서 균일하게 sampling한 random in-plane rotation, 그리고 brightness, contrast, saturation parameter를 각각 0.2로 설정한 color jitter로 구성된 pipeline을 적용한다. 이는 [0.8, 1.2]에서 균일하게 sampling한 multiplicative factor에 해당한다. 그런 다음 augmentation된 image를 model input에 맞게 [−1,1]로 다시 rescale한다. batch의 각 image에는 독립적인 random seed를 사용하여 augmentation을 적용한다. VQA sample에는 원래 visual input을 보존하기 위해 augmentation을 전혀 적용하지 않는다.</p>
+  </section>
+
+  <section id="app-attention-mask" data-entity="section-attention-mask">
+    <h3 data-entity="heading-attention-mask">Attention Mask</h3>
+    <figure id="fig-attention-mask" data-entity="figure-11" data-figure="11">
+      <!-- FIGURE 11 PLACEHOLDER: original path figures/appendix/fig10_attention_mask.png -->
+      <div class="figure-placeholder">[그림 11 삽입 위치: LAP-3B의 attention mask 시각화]</div>
+      <figcaption><strong>그림 11. LAP-3B의 attention mask 시각화.</strong></figcaption>
+    </figure>
+    <p data-entity="attention-mask-p1">그림 11에 <span class="small-caps">LAP-3B</span>의 attention mask를 시각화한다. image, prompt, state를 포함하는 prefix token은 bidirectional attention을 사용한다. Language-action token은 모든 prefix token에 대해 full attention을 갖는 동시에 서로에 대해서는 causal attention을 적용한다. action expert는 full self-attention을 사용하고 prefix token 전체에 full attention을 적용하지만, language-action token에는 attention을 적용하지 않는다.</p>
+  </section>
+</section>

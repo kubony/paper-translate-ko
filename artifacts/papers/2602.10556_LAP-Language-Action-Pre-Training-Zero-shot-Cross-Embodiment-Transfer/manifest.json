@@ -1,0 +1,36 @@
+{
+  "title": "Language-Action Pre-Training Enables Zero-shot Cross-Embodiment Transfer",
+  "source": "https://arxiv.org/abs/2602.10556v2",
+  "version": "v2",
+  "figures": [
+    {"no": "1", "desc": "LAP 개요와 zero-shot transfer"},
+    {"no": "2", "desc": "LAP-3B architecture와 language-action"},
+    {"no": "3", "desc": "Zero-shot cross-embodiment 성능"},
+    {"no": "4", "desc": "Fine-tuning 효율"},
+    {"no": "5", "desc": "Representation 및 action error 분석"},
+    {"no": "6", "desc": "VQA co-training"},
+    {"no": "7", "desc": "Model scaling"},
+    {"no": "8", "desc": "Baseline rollout failure"},
+    {"no": "9", "desc": "Fine-tuning rollout"},
+    {"no": "10", "desc": "LIBERO co-training compute efficiency"},
+    {"no": "11", "desc": "Attention mask"},
+    {"no": "12", "desc": "Zero-shot rollout"}
+  ],
+  "tables": [
+    {"no": "1", "desc": "Language-action VLA 비교"},
+    {"no": "2", "desc": "Unseen embodiment prediction error"},
+    {"no": "3", "desc": "LIBERO 전체 결과"},
+    {"no": "4", "desc": "LAP-3B hyperparameter"},
+    {"no": "5", "desc": "Training dataset mixture"}
+  ],
+  "display_equations": 9,
+  "video_assets": 32,
+  "sections": [
+    "초록", "1. 서론", "2. 관련 연구",
+    "3. LAP: VLA를 위한 Language-Action Pre-Training",
+    "4. 실험", "5. 결론 및 논의", "감사의 말",
+    "부록: 추가 정성 분석 및 Benchmark 결과",
+    "부록: 구현 세부 사항", "부록: 평가 Protocol",
+    "참고문헌 요약", "프로젝트 영상 자산"
+  ]
+}

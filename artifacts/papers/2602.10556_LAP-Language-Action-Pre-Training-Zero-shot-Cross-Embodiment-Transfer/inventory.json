@@ -1,0 +1,268 @@
+{
+  "figures": [
+    {
+      "file": "sections/1.introduction.tex",
+      "label": "fig:teaser",
+      "images": [
+        "figures/fig1_banner.pdf"
+      ],
+      "caption": "We introduce Language-Action Pre-training (LAP), a general VLA pre-training recipe that represents low-level actions directly in natural language to supervise a vision–language backbone, and instantiate it as \\textsc{LAP-3B}, the first VLA to demonstrate strong \\emph{zero-shot transfer} to novel embodiments. Compared to state-of-the-art VLAs, LAP-3B learns more generalizable embodiment representations and exhibits favorable scaling behavior. "
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "label": "fig:method",
+      "images": [
+        "figures/fig2_method.pdf"
+      ],
+      "caption": " (a) A unified view comparing LAP-3B with prior VLAs in terms of action representation. A VLM backbone predicts discrete language-action tokens using a cross-entropy objective, while a lightweight action expert predicts continuous actions via flow matching. Gradients from the action expert are blocked from the VLM through knowledge insulation \\cite{driess2025knowledgeinsulatingvisionlanguageactionmodels}, ensuring that the VLM is trained purely via language supervision. At test time, the action "
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "label": "fig:zero-shot",
+      "images": [
+        "figures/fig3_zeroshot.pdf"
+      ],
+      "caption": "\\textbf{Zero-shot cross-embodiment generalization performance.} LAP-3B achieves performance comparable to the $\\pi_{0.5}$-DROID on the seen embodiment. Across three previously unseen embodiments and six real-world manipulation tasks, LAP-3B attains over \\textbf{50\\% average zero-shot success}, delivering approximately a $2\\times$ improvement over the strongest baselines, while all open-sourced VLAs collapse to zero success rate. Error bars denote 95\\% finite-sample–valid confidence intervals tha"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "label": "fig:libero-fine-tuning",
+      "images": [
+        "figures/fig4_finetune.pdf"
+      ],
+      "caption": "\\textbf{Fine-tuning efficiency in simulation (LIBERO) and real-world manipulation tasks}. Across both domains, \\textsc{LAP-3B} adapts substantially faster than baseline policies, reaching high performance with significantly fewer epochs and demonstrations. In simulation, \\textsc{LAP-3B} converges to near-optimal success within a fraction of the training steps required by baselines. On real robots, \\textsc{LAP-3B} achieves comparable task performance using approximately \\textbf{$\\bm{2.5\\times}$ f"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "label": "fig:analysis",
+      "images": [
+        "figures/fig5_analysis.pdf"
+      ],
+      "caption": " \\textbf{(a) T-SNE visualizations of learned embodiment representations} for \\textsc{LAP-3B} and $\\pi_{0.5}$-replicated. \\textsc{LAP-3B} exhibits substantial overlap between training and unseen embodiments, whereas $\\pi_{0.5}$-replicated shows limited alignment, indicating that \\textsc{LAP-3B} learns more transferable, embodiment-agnostic control representations. \\textbf{(b) Action prediction error on unseen embodiments during pre-training.} \\textsc{LAP-3B} achieves consistently lower action pre"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "label": "fig:baseline-rollout-visualization",
+      "images": [
+        "figures/appendix/fig12_baseline_rollout.pdf"
+      ],
+      "caption": "\\textbf{Example baseline rollout failures on the Sort task (YAM robot)."
+    },
+    {
+      "file": "sections/appendix.tex",
+      "label": "fig:libero-cotraining",
+      "images": [
+        "figures/appendix/fig14_libero_cotrain.png"
+      ],
+      "caption": "\\textbf{Compute efficiency on the LIBERO benchmark.} Co-training with VQA data significantly accelerates convergence, enabling \\textsc{LAP-3B}+VQA Co-training to achieve high success rates in fewer gradient steps than \\textsc{LAP-3B}. For clarity, we report only the strongest replicated baseline ($\\pi_{0.5}$-replicated)."
+    },
+    {
+      "file": "sections/appendix.tex",
+      "label": "fig:finetuning-rollout-visualization",
+      "images": [
+        "figures/appendix/fig11_finetune_rollout.png"
+      ],
+      "caption": "\\textbf{Fine-tuning evaluation rollout visualizations.} Example observations from the camera views used for policy evaluation across different robot embodiments and tasks, shown from left to right."
+    },
+    {
+      "file": "sections/appendix.tex",
+      "label": "fig:zeroshot-rollout-visualization",
+      "images": [
+        "figures/appendix/fig9_rollout_visualization.pdf"
+      ],
+      "caption": "\\textbf{Zero-shot evaluation rollout visualizations.} Example observations from the camera views used for policy evaluation across different robot embodiments and tasks, shown from left to right."
+    }
+  ],
+  "tables": [
+    {
+      "file": "sections/appendix.tex",
+      "label": "tab:libero_full",
+      "images": [],
+      "caption": "LIBERO benchmark results comparing LAP-3B with other state-of-the-art VLAs. Each data point corresponds to an average over 500 trials. Best per column is bolded. Rank is based on Avg. performance (higher is better)."
+    },
+    {
+      "file": "sections/appendix.tex",
+      "label": "tab:data_mix",
+      "images": [],
+      "caption": "Training data mixture. Percentages denote the true fraction of samples from each dataset within each training batch."
+    }
+  ],
+  "equations": [
+    {
+      "file": "sections/3_methodology.tex",
+      "env": "equation",
+      "label": "eq:language-action",
+      "preview": "\\begin{equation} \\mathcal{L}_{\\text{CE.}} = -\\mathbb{E}_{(\\hat{a}_{t:t+H}^{\\text{lang.}}, o_t, l) \\sim \\mathcal{D}} \\sum_{i} \\log p_{\\theta} \\big( \\hat{a}^{\\text{lang.}}_{t,i} \\mid o_t, l, \\hat{a}^{\\text{lang.}}_{t,<i} \\big), \\label{eq:language-action} "
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "env": "equation",
+      "label": null,
+      "preview": "\\begin{equation} \\hat{a}_t^{\\text{lang.}} = \\text{``}\\langle\\text{verb}\\rangle\\, \\langle\\text{direction}\\rangle\\, \\langle\\text{magnitude}\\rangle\\, \\langle\\text{unit}\\rangle\\text{''}, "
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "env": "equation",
+      "label": null,
+      "preview": "\\begin{equation} \\mathcal{L}_{\\text{FM}} = \\mathbb{E}_{(a_{t:t+H}, o_t, l) \\sim \\mathcal{D}} \\left[ \\left\\| v_{\\phi}(o_t, l, a_{t:t+H}, \\tau) - \\dot{x}_{\\tau} \\right\\|^2 \\right], "
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "env": "equation",
+      "label": null,
+      "preview": "\\begin{equation} \\mathcal{L} = \\mathcal{L}_{\\text{FM}} + \\lambda\\,\\mathcal{L}_{\\text{CE}}. "
+    }
+  ],
+  "sections": [
+    {
+      "file": "sections/1.introduction.tex",
+      "level": "section",
+      "title": "Introduction"
+    },
+    {
+      "file": "sections/2.related_works.tex",
+      "level": "section",
+      "title": "Related Work"
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "level": "section",
+      "title": "LAP: Language-Action Pre-Training for VLAs"
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "level": "subsection",
+      "title": "Formulations"
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "level": "subsection",
+      "title": "Language-Action Dataset Curation"
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "level": "subsection",
+      "title": "Model Architecture and Training"
+    },
+    {
+      "file": "sections/3_methodology.tex",
+      "level": "subsection",
+      "title": "Implementation Details"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "section",
+      "title": "Experiments"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "subsection",
+      "title": "Zero-Shot Cross-Embodiment Generalization"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "subsection",
+      "title": "Fine-Tuning Efficiency on New Embodiments"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "subsection",
+      "title": "Analyzing LAP’s Cross-Embodiment Generalization"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "subsection",
+      "title": "Co-Training with Vision-Language Datasets"
+    },
+    {
+      "file": "sections/4.experiments.tex",
+      "level": "subsection",
+      "title": "Scaling with Model Size"
+    },
+    {
+      "file": "sections/5.conclusions.tex",
+      "level": "section",
+      "title": "Conclusions and Discussions"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "section",
+      "title": "Additional Qualitative and Benchmark Results"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Qualitative Analysis for Zero-Shot Cross-Embodiment Experiments"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Full Results for the LIBERO Benchmark"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Real-Robot Rollouts"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "section",
+      "title": "Implementation Details"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Robot Platforms"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Training Hyperparameters"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Baseline Implementations"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Prompt and Language-Action Format"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Motion Prediction VQA Data Generation"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Image Pre-processing and Augmentation"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Attention Mask"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Flow-Matching Objective"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Training Data"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "subsection",
+      "title": "Compute and Infrastructure Details"
+    },
+    {
+      "file": "sections/appendix.tex",
+      "level": "section",
+      "title": "Evaluation Protocol"
+    }
+  ]
+}

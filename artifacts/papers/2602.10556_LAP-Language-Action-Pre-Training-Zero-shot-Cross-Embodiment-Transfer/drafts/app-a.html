@@ -1,0 +1,99 @@
+<section id="sec-conclusions" data-entity="section-conclusions">
+  <h2 data-entity="heading-conclusions">결론 및 논의</h2>
+
+  <p data-entity="conclusions-p1">본 연구에서는 자연어로 action을 예측하여 로봇 embodiment 전반에 효과적으로 transfer되는 representation을 생성하는 확장 가능한 VLA pre-training 방식인 Language-Action Pre-training(LAP)을 소개한다. 또한 실제 로봇에서 상당한 zero-shot generalization을 달성하는 <span class="small-caps">LAP-3B</span>를 제시한다. 이 모델은 기존 action representation보다 절대값 기준 약 30%p 향상된 성능을 제공하며, 저자들이 아는 한 fine-tuning 없이 새로운 embodiment에서 유의미한 zero-shot 성공률을 최초로 달성한다. <span class="small-caps">LAP-3B</span>는 안정적인 학습, 유리한 scaling, 높은 fine-tuning 효율도 보인다.</p>
+
+  <h3 data-entity="heading-broader-implications">더 폭넓은 함의</h3>
+  <p data-entity="broader-implications-p1">LAP은 로보틱스를 위해 VLM을 <em>명시적으로</em> 학습할 가능성을 열어 준다. 이에 따라 로봇의 interaction data와 잠재적으로 비로봇 interaction data를 표준 VLM corpus와 자연스럽게 혼합하여, 통합된 representation space 안에서 추론하고 소통하며 행동하는 모델을 학습할 수 있다.</p>
+
+  <h3 data-entity="heading-limitations-future-work">한계 및 향후 연구</h3>
+  <p data-entity="limitations-p1">이러한 고무적인 결과에도 몇 가지 한계가 남아 있다. LAP은 훨씬 더 이질적인 로봇 system과 data source에 적용할 수 있지만, 본 논문은 single-arm manipulator 사이의 zero-shot transfer에만 초점을 맞춘다. 예를 들어 LAP은 bimanual robot에도 쉽게 적용할 수 있으며, 이때 action은 두 팔을 조율한 설명으로 표현할 수 있다(예: 왼팔: 앞으로 5 cm 이동; 오른팔: 시계 방향으로 20도 회전). language-action의 또 다른 핵심 이점은 정밀도 수준이 달라도 자연스럽게 작동하고 정확도가 낮은 action label에도 더 관대하다는 점이다. 따라서 정밀한 low-level control signal을 얻기 어려운 human pose tracking, UMI 또는 internet video와 같은 데이터를 활용할 수 있다. 이러한 방향을 대규모로 체계적으로 조사하는 일은 향후 연구의 중요한 과제로 남아 있다.</p>
+
+  <p data-entity="limitations-p2">둘째, <span class="small-caps">LAP-3B</span>는 <em>수건을 접어 바구니에 넣기(Fold Towel and Put in Basket)</em>와 <em>랙에 테이프 걸기(Hang Tape on Rack)</em>처럼 중간 수준의 dexterity가 필요한 과제에 효율적으로 적응하지만, 훨씬 더 높은 control frequency나 극도의 정밀도를 요구하는 regime(예: 빠른 reactive control 또는 세밀한 deformable object manipulation)에서는 아직 평가하지 않았다. language-action supervision을 이러한 환경으로 확장하는 일은, 잠재적으로 hierarchical 또는 multi-scale action representation을 통해 이루어질 수 있으며, 여전히 해결되지 않은 과제이다.</p>
+</section>
+
+<section id="sec-acknowledgments" data-entity="section-acknowledgments">
+  <h2 data-entity="heading-acknowledgments">감사의 말</h2>
+
+  <p data-entity="acknowledgments-p1">Cloud TPU에 접근할 수 있도록 지원한 Google의 TPU Research Cloud(TRC)에 감사한다. 또한 본 프로젝트에 귀중한 의견을 제공한 Maria Attarian, Samuel Bateman, Julian Mendes에게 감사한다.</p>
+
+  <p data-entity="acknowledgments-p2">저자들은 NSF CAREER Awards #2044149 및 #2107048, Grant N00014-23-1-2148에 따른 Office of Naval Research, DCIST CRA W911NF-17-2-0181에 따른 Army Research Laboratory, Sloan Fellowship, Gemini Academic Program의 부분 지원을 받았다. Asher J. Hancock은 NSF Graduate Research Fellowship(DGE-2146755)의 지원을 받았다.</p>
+</section>
+
+<section id="app-additional-results" data-entity="section-additional-results">
+  <h2 data-entity="heading-additional-results">추가 정성 분석 및 Benchmark 결과</h2>
+
+  <section id="app-qualitative-zero-shot" data-entity="section-qualitative-zero-shot">
+    <h3 data-entity="heading-qualitative-zero-shot">Zero-Shot Cross-Embodiment 실험의 정성 분석</h3>
+
+    <p data-entity="qualitative-zero-shot-p1">Zero-shot embodiment transfer에서 모든 baseline policy를 추가로 정성 비교하여 본문의 Zero-Shot Cross-Embodiment Generalization 절에 제시한 결과를 보완한다.</p>
+
+    <p data-entity="qualitative-zero-shot-p2">OpenVLA, MolmoAct, π<sub>0.5</sub>-Base는 모든 로봇 platform에서 일관되게 의미 있는 motion을 생성하지 못한다. X-VLA는 부드러운 trajectory를 생성하며 DROID와 Custom Franka setup에서 때때로 target object에 접근하지만, 성공적인 manipulation에 필요한 정확한 gripper–object alignment는 한 번도 달성하지 못한다.</p>
+
+    <p data-entity="qualitative-zero-shot-p3">π<sub>0</sub>-replicated baseline은 매우 부정확한 end-effector control을 보인다. 예를 들어 YAM robot의 <em>Tissue</em> 과제에서는 target을 자주 지나쳐 tissue 자체가 아니라 tissue box를 grasp한다. 반면 π<sub>0.5</sub>-replicated는 대체로 더 부드럽고 방향 측면에서 더 합리적인 motion을 생성하지만, 신뢰할 수 있는 grasp와 성공적인 과제 완료에 필요한 공간 정밀도는 여전히 부족하다. Custom Franka와 Kinova robot에서도 두 baseline은 마찬가지로 부정확한 motion을 보여, embodiment shift 상황에서 정확한 control action을 추론하는 능력이 제한적임을 시사한다. 이러한 failure mode는 평가한 모든 embodiment에서 일관되게 나타난다. rollout 예시는 그림 8에 제시한다.</p>
+
+    <!-- FIGURE 8 PLACEHOLDER: original path figures/appendix/fig12_baseline_rollout.pdf -->
+    <figure id="fig-baseline-rollout-visualization" data-entity="figure-8" data-figure="8">
+      <div class="figure-placeholder">[그림 8 삽입 위치: Sort 과제에서 baseline rollout 실패 사례]</div>
+      <figcaption><strong>그림 8. Sort 과제에서 baseline rollout이 실패한 사례(YAM robot).</strong> π<sub>0</sub>-replicated와 π<sub>0.5</sub>-replicated는 모두 부정확한 end-effector control을 보여, 어떤 물체도 먼저 grasp하지 않은 채 basket을 향해 곧바로 이동한다. 반면 LAP-3B는 유사한 초기 조건에서 과제를 성공적으로 완료한다. 오픈소스 VLA baseline은 이 환경에서 의미 있거나 안전한 control action을 생성하지 못하므로 생략한다.</figcaption>
+    </figure>
+
+    <!-- FIGURE 9 PLACEHOLDER: original path figures/appendix/fig11_finetune_rollout.png -->
+    <figure id="fig-finetuning-rollout-visualization" data-entity="figure-9" data-figure="9">
+      <div class="figure-placeholder">[그림 9 삽입 위치: Fine-tuning 평가 rollout 시각화]</div>
+      <figcaption><strong>그림 9. Fine-tuning 평가 rollout 시각화.</strong> 서로 다른 로봇 embodiment와 과제에서 policy 평가에 사용한 camera view의 관측 예시를 왼쪽부터 오른쪽 순서로 제시한다.</figcaption>
+    </figure>
+
+    <div class="table-wrapper" data-entity="table-3">
+      <table id="tab-libero-full" data-table="3">
+        <caption><strong>표 3.</strong> LAP-3B와 다른 최신 VLA를 비교한 LIBERO benchmark 결과. 각 data point는 500회 trial의 평균이다. 각 열의 최댓값은 굵게 표시한다. 순위는 평균 성능을 기준으로 하며, 높을수록 우수하다.</caption>
+        <thead>
+          <tr>
+            <th scope="col">방법</th>
+            <th scope="col">Spatial</th>
+            <th scope="col">Object</th>
+            <th scope="col">Goal</th>
+            <th scope="col">LIBERO-10</th>
+            <th scope="col">평균</th>
+            <th scope="col">순위</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>TraceVLA</td><td>84.6</td><td>85.2</td><td>75.1</td><td>54.1</td><td>74.8</td><td>13</td></tr>
+          <tr><td>X-VLA</td><td>98.2</td><td>98.6</td><td>97.8</td><td><strong>97.6</strong></td><td><strong>98.1</strong></td><td>1</td></tr>
+          <tr><td>Octo</td><td>78.9</td><td>85.7</td><td>84.6</td><td>51.1</td><td>75.1</td><td>12</td></tr>
+          <tr><td>UniAct</td><td>77.0</td><td>87.0</td><td>77.0</td><td>70.0</td><td>77.8</td><td>11</td></tr>
+          <tr><td>GR00T-N1</td><td>94.4</td><td>97.6</td><td>93.0</td><td>90.6</td><td>93.9</td><td>8</td></tr>
+          <tr><td>OpenVLA</td><td>84.7</td><td>88.4</td><td>79.2</td><td>53.7</td><td>76.5</td><td>10</td></tr>
+          <tr><td>OpenVLA-OFT</td><td>97.6</td><td>98.4</td><td>97.9</td><td>94.5</td><td>97.1</td><td>3</td></tr>
+          <tr><td>UniVLA</td><td>95.4</td><td>98.8</td><td>93.6</td><td>94.0</td><td>95.4</td><td>6</td></tr>
+          <tr><td>π<sub>0</sub></td><td>96.8</td><td>98.8</td><td>95.8</td><td>85.2</td><td>94.2</td><td>7</td></tr>
+          <tr><td>π<sub>0.5</sub></td><td>98.8</td><td>98.2</td><td>98.0</td><td>92.4</td><td>96.9</td><td>4</td></tr>
+          <tr><td>VLA-0</td><td>97.0</td><td>97.8</td><td>96.2</td><td>87.6</td><td>94.7</td><td>9</td></tr>
+          <tr class="table-separator"><td><strong><span class="small-caps">LAP-3B</span></strong></td><td>98.2</td><td><strong>99.0</strong></td><td><strong>98.8</strong></td><td>91.2</td><td>96.8</td><td>5</td></tr>
+          <tr><td><strong><span class="small-caps">LAP-3B</span> + VQA Co.</strong></td><td><strong>99.0</strong></td><td><strong>99.0</strong></td><td>97.2</td><td>93.4</td><td>97.2</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="app-libero-full-results" data-entity="section-libero-full-results">
+    <h3 data-entity="heading-libero-full-results">LIBERO Benchmark 전체 결과</h3>
+
+    <!-- FIGURE 10 PLACEHOLDER: original path figures/appendix/fig14_libero_cotrain.png -->
+    <figure id="fig-libero-cotraining" data-entity="figure-10" data-figure="10">
+      <div class="figure-placeholder">[그림 10 삽입 위치: LIBERO에서의 compute 효율]</div>
+      <figcaption><strong>그림 10. LIBERO에서의 compute 효율.</strong> VQA data와의 co-training은 수렴을 크게 가속하여, <span class="small-caps">LAP-3B</span> + VQA Co-training이 더 적은 gradient step으로 높은 성공률에 도달할 수 있게 한다. 명확성을 위해 가장 강력한 baseline인 π<sub>0.5</sub>-replicated만 보고한다.</figcaption>
+    </figure>
+
+    <p data-entity="libero-full-results-p1">표 3은 본문에 제시하지 않은 추가 오픈소스 VLA baseline을 포함한 전체 LIBERO benchmark 결과를 보고하며, task family와 세 가지 task suite 전체에서 <span class="small-caps">LAP-3B</span>가 일관된 성능 향상을 보인다는 점을 추가로 확인한다. <span class="small-caps">LAP-3B</span> + VQA Co.는 실험 절에서 설명한 대로 VQA data와 함께 co-training한 policy를 뜻한다. <span class="small-caps">LAP-3B</span> 단독 모델보다 향상된 성능은 VQA co-training의 효과를 더욱 분명히 보여준다. 또한 그림 10에서 보듯이 co-trained checkpoint는 LIBERO에서 fine-tuning 효율을 크게 높여, 동일한 gradient step으로 더 우수한 성능을 달성한다.</p>
+  </section>
+
+  <section id="app-real-robot-rollouts" data-entity="section-real-robot-rollouts">
+    <h3 data-entity="heading-real-robot-rollouts">실제 로봇 Rollout</h3>
+
+    <p data-entity="real-robot-rollouts-p1">모든 embodiment와 과제에 걸친 확장된 정성적 rollout 시각화도 추가로 제공한다. Fine-tuning 평가는 그림 9에, zero-shot 평가는 해당 zero-shot rollout 시각화 그림에 제시한다.</p>
+
+    <p data-entity="real-robot-rollouts-p2">각 panel은 policy 실행 중 사용한 camera view에 해당한다.</p>
+  </section>
+</section>

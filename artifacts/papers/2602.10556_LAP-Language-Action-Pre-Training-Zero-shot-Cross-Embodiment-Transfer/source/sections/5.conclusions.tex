@@ -1,0 +1,12 @@
+\section{Conclusions and Discussions}
+We introduce Language-Action Pre-training (LAP), a scalable VLA pre-training recipe that predicts actions in natural language, yielding representations that transfer effectively across robot embodiments. We further present \textsc{LAP-3B}, which achieves substantial zero-shot generalization on real robots—delivering roughly a 30\% absolute improvement over prior action representations and, to our knowledge, the first substantial zero-shot success rate on novel embodiments without fine-tuning. \textsc{LAP-3B} also exhibits stable training, favorable scaling, and strong fine-tuning efficiency.
+
+
+\noindent\textbf{Broader implications.}
+LAP opens the possibility of training VLMs \emph{explicitly for robotics}, enabling robot (and potentially non-robot) interaction data to be seamlessly mixed with standard VLM corpora to learn models that reason, communicate, and act within a unified representation space.
+
+\noindent\textbf{Limitations and future work.}
+Despite these promising results, several limitations remain. While LAP can be applicable to substantially more heterogeneous robot systems and data sources, this paper focuses only on zero-shot transfer across single-arm manipulators. For example, LAP can be easily adapted to bimanual robots, which actions can be represented through coordinated dual-arm descriptions (e.g., Left Arm: move forward 5 cm; Right Arm: rotate clockwise 20 degrees). Another key advantage of language-actions is that they naturally operate at varying levels of precision and are more
+tolerant to less accurate action labels, enabling the use of data such as human pose tracking, UMI, or internet video where precise low-level control signals are difficult to obtain. Systematically investigating these directions at scale remains an important avenue for future work.
+
+Second, although \textsc{LAP-3B} adapts efficiently to moderately dexterous tasks such as \emph{Fold Towel and Put in Basket} and \emph{Hang Tape on Rack}, we have not yet evaluated regimes requiring substantially higher control frequency or extreme precision (e.g., fast reactive control, or fine-grained deformable object manipulation). Extending language-action supervision to these settings—potentially through hierarchical or multi-scale action representations—remains an open challenge.

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><title>Language-Action Pre-Training Enables Zero-shot Cross-Embodiment Transfer — 한국어 전문 번역</title><style>
+  /* ===== 페이지 설정 ===== */
+  @page { size: A4; margin: 15mm; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    color: #111;
+    font-size: 9.5pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ===== 표지 ===== */
+  .cover {
+    position: relative;
+    min-height: 250mm;          /* 표지를 한 페이지로 채운다 */
+    padding-left: 14mm;
+    page-break-after: always;
+  }
+  .cover .bar {                 /* 좌측 검은 세로 바 */
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: #111;
+  }
+  .cover .spacer { height: 78mm; }   /* 제목을 페이지 중앙쯤으로 */
+  .cover h1 {
+    font-size: 30pt;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #111;   /* 제목 하단 굵은 밑줄 */
+    max-width: 150mm;
+  }
+  .cover .subtitle {
+    font-size: 14pt;
+    font-weight: 700;
+    margin: 10px 0 22px 0;
+  }
+  .cover .meta { font-size: 10.5pt; line-height: 1.9; }
+  .cover .meta b { font-weight: 700; }
+  .cover .note {
+    margin-top: 20px;
+    font-size: 9pt;
+    color: #666;
+    max-width: 150mm;
+  }
+
+  /* ===== 본문 2단 컨테이너 ===== */
+  .body {
+    column-count: 2;
+    column-gap: 7mm;
+    column-fill: auto;
+    text-align: justify;
+  }
+  .body p { margin: 0 0 7px 0; }
+
+  /* 문서 제목행(H1)과 큰 섹션 제목(H2)은 단 전체 폭 */
+  h1.doc-title {
+    column-span: all;
+    font-size: 17pt;
+    font-weight: 800;
+    margin: 0 0 4px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #111;
+    line-height: 1.2;
+  }
+  h2.section {
+    column-span: all;
+    font-size: 15pt;
+    font-weight: 800;
+    margin: 14px 0 8px 0;
+    padding: 6px 0;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+  }
+  /* 소제목은 단 내부 */
+  h3 { font-size: 11pt; font-weight: 700; margin: 10px 0 4px 0; }
+  h4 { font-size: 9.5pt; font-weight: 700; margin: 8px 0 3px 0; }
+  h2.section, h3, h4 { break-after: avoid; }
+
+  /* ===== 서지 + 번역 메모 (첫 2단 블록) ===== */
+  ul.biblist { margin: 0 0 8px 0; padding-left: 16px; }
+  ul.biblist li { margin-bottom: 3px; }
+  .memo-title { font-weight: 800; font-size: 12pt; margin: 0 0 6px 0; }
+  ul.memo { margin: 0; padding-left: 16px; }
+  ul.memo li { margin-bottom: 5px; }
+
+  /* ===== 코드블록 / 수식 ===== */
+  pre {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 7px 9px;
+    margin: 7px 0;
+    white-space: pre-wrap;      /* 줄바꿈 허용 */
+    word-break: break-word;
+    break-inside: avoid;
+  }
+  code {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    font-size: 8.8pt;
+    background: #f0f0f0;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  /* 복잡한 수식/모델 관계를 평문으로 풀어 쓰는 설명 상자 */
+  .explain-card {
+    background: #f2f6fa;
+    border-left: 3px solid #315f86;
+    padding: 7px 9px;
+    margin: 7px 0 9px;
+    text-align: left;
+    break-inside: avoid;
+  }
+  .explain-card .card-title { color: #244b6b; font-weight: 800; }
+  .explain-card .flow {
+    font-family: Menlo, "DejaVu Sans Mono", monospace;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #ccd7e1;
+    padding: 4px;
+    margin: 5px 0;
+  }
+
+  /* ===== 표 ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin: 6px 0;
+    break-inside: avoid;
+  }
+  table.wide { column-span: all; }   /* 넓은 표는 단 전체 폭 */
+  th, td {
+    border: 0.6pt solid #111;
+    padding: 3px 5px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  th { background: #e8e8e8; font-weight: 700; }
+  td.l, th.l { text-align: left; }
+  /* 열이 많은 표의 셀 넘침/본문 겹침 방지: 셀 안에서 강제 줄바꿈 */
+  th, td { overflow-wrap: anywhere; word-break: break-word; }
+  /* 6열 이상이거나 셀 텍스트가 긴 표는 반드시 class="wide"로 단 전체 폭을 써라.
+     좁은 단에 욱여넣으면 셀이 겹치거나 세로 1토큰 덤프로 붕괴한다. */
+
+  /* ===== 그림 ===== */
+  figure {
+    margin: 8px 0;
+    text-align: center;
+    break-inside: avoid;
+  }
+  figure.fig-wide { column-span: all; }
+  /* max-height: 세로로 매우 긴 그림(다패널)이 페이지 경계에서 잘려
+     빈 공간+캡션 유실을 만드는 것을 방지한다 */
+  figure img { max-width: 100%; height: auto; max-height: 230mm; object-fit: contain; }
+  figcaption {
+    font-size: 8.5pt;
+    color: #444;
+    margin-top: 4px;
+    text-align: center;
+  }
+  figcaption b { color: #111; font-weight: 700; }
+
+  /* 긴 캡션 번역용 전체 폭 블록 */
+  .caption-block { column-span: all; margin: 6px 0 10px 0; }
+  .caption-block .cap-head { font-weight: 700; margin-bottom: 3px; }
+
+  /* ===== 영상 자산 (웹 출처 번역) =====
+     PDF에서는 재생되지 않으므로 썸네일 + 클릭 가능한 링크로 대신한다.
+     레포 사본과 원본 URL을 모두 남겨야 원문이 내려가도 추적할 수 있다. */
+  figure.video-card { margin: 8px 0; text-align: center; break-inside: avoid; }
+  figure.video-card img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+  .video-links { display: block; font-size: 8pt; margin-top: 2px; }
+  .video-links a { color: #1a4d8f; text-decoration: none; }
+  .video-badge {
+    display: inline-block; font-size: 7.5pt; font-weight: 700; color: #fff;
+    background: #1a4d8f; border-radius: 3px; padding: 0 4px; margin-right: 4px;
+  }
+  /* 말미 영상 부록 표 */
+  table.video-index { column-span: all; font-size: 8pt; }
+  table.video-index td { word-break: break-all; }
+
+  /* ===== 참고문헌 ===== */
+  .refs-note { font-size: 9pt; color: #555; margin-bottom: 6px; }
+  ol.refs { margin: 0; padding-left: 18px; font-size: 8.8pt; line-height: 1.4; }
+  ol.refs li { margin-bottom: 4px; }
+
+  .strong { font-weight: 700; }
+  /* 원본 표의 밑줄 강조(예: 2위 성능)를 재현할 때 사용 */
+  .ul { text-decoration: underline; }
+
+      h2 { column-span: all; font-size: 15pt; font-weight: 800; margin: 14px 0 8px; padding: 5px 0; border-top: 1px solid #bbb; border-bottom: 1px solid #bbb; }
+      section section h2, section section h3 { column-span: none; border: 0; padding: 0; }
+      figure.fig-wide, table.wide, .video-appendix { column-span: all; }
+      figure img { width: 100%; max-height: 205mm; object-fit: contain; }
+      figure[data-figure="6"] img, figure[data-figure="7"] img, figure[data-figure="10"] img, figure[data-figure="11"] img { max-height: 120mm; }
+      caption { caption-side: top; text-align: left; margin-bottom: 4px; font-size: 8.3pt; }
+      .small-caps { font-variant: small-caps; }
+      .body > section { break-inside: auto; }
+      ol, ul { margin-top: 3px; padding-left: 18px; }
+      li { margin-bottom: 3px; }
+      .source-card { column-span: all; background: #f4f6f8; border-left: 4px solid #111; padding: 9px 12px; margin: 0 0 12px; }
+      .video-appendix { page-break-before: always; }
+      .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .video-tile { border: 1px solid #ccc; padding: 5px; break-inside: avoid; font-size: 7.7pt; text-align: left; }
+      .video-tile img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display:block; margin-bottom:4px; }
+      .video-links { color:#555; font-size:7pt; }
+      a { color: #174a85; text-decoration: none; }
+      @media print { a { color: #111; } }
+    </style></head><body>
+<section class="cover"><div class="bar"></div><div class="spacer"></div>
+<h1>Language-Action Pre-Training Enables Zero-shot Cross-Embodiment Transfer</h1><div class="subtitle">Language-Action Pre-Training: Zero-shot Cross-Embodiment Transfer의 실현<br/>한국어 전문 번역</div>
+<div class="meta"><div><b>저자</b>: Zhaoyang Li, Asher J. Hancock, Parker Ewen, Yiyang Zhu, Sriram Yenamandra, Yunhao Ge, Yilun Du, Shuran Song, Pieter Abbeel, Deepak Pathak, Jitendra Malik</div><div><b>문서</b>: arXiv:2602.10556v2</div><div><b>원문</b>: https://arxiv.org/abs/2602.10556v2</div><div><b>번역 생성일</b>: 2026-07-27</div><div><b>번역·편집</b>: 제니 (Jennie)</div></div>
+<div class="note">원문 LaTeX 구조를 기준으로 초록, 본문, 표, 수식, 그림, 전체 부록을 한국어로 재구성했다. 모델명·데이터셋명·수치·단위는 원문을 보존한다.</div></section>
+<div class="body"><h1 class="doc-title">Language-Action Pre-Training Enables Zero-shot Cross-Embodiment Transfer — 한국어 전체 번역</h1>
+<div class="source-card"><b>원문:</b> <a href="https://arxiv.org/abs/2602.10556v2">arXiv v2</a> · <b>프로젝트:</b> <a href="https://lap-vla.github.io/">lap-vla.github.io</a> · <b>코드:</b> <a href="https://github.com/lihzha/lap">GitHub</a><br/>
+<b>번역 메모:</b> VLA, policy, action, action chunk, flow matching, cross-embodiment, embodiment, fine-tuning, zero-shot 등 핵심 전문용어는 영문 또는 혼합 표기를 사용한다.</div><section id="abstract">
+<h2 class="section">초록</h2>
+<p data-entity="abstract-p1">로보틱스의 오랜 목표는 embodiment별 적응 없이 새로운 로봇 embodiment에 zero-shot으로 배치할 수 있는 generalist policy를 개발하는 것이다. 대규모 multi-embodiment 사전학습에도 불구하고, 기존 Vision–Language–Action 모델(VLA)은 여전히 학습에 사용된 embodiment에 강하게 결부되어 있으며 일반적으로 비용이 많이 드는 미세조정을 필요로 한다. 본 연구는 저수준 로봇 action을 자연어로 직접 표현하여 action supervision을 사전학습된 vision–language 모델의 입출력 분포와 정렬하는 간단한 방법인 <em>Language-Action Pre-training</em>(LAP)을 제안한다. LAP은 학습된 tokenizer도, 비용이 많이 드는 annotation도, embodiment별 아키텍처 설계도 필요로 하지 않는다. LAP을 기반으로 본 연구는 <span class="model">LAP-3B</span>를 제시하며, 이는 저자들이 아는 한 embodiment별 미세조정 없이 이전에 본 적 없는 로봇 embodiment로 상당한 zero-shot transfer를 달성한 최초의 VLA이다. 여러 새로운 로봇과 조작 과제에서 <span class="model">LAP-3B</span>는 평균 zero-shot 성공률 50%를 넘으며, 가장 강력한 기존 VLA보다 약 2× 향상된 성능을 보인다. 또한 LAP이 효율적인 적응과 유리한 scaling을 가능하게 함을 보이는 한편, action prediction과 VQA를 공유된 language-action 형식으로 통합하여 공동 학습을 통해 추가적인 성능 향상을 얻는다.</p>
+</section>
+<section id="keywords">
+<h2 class="section">키워드</h2>
+<p data-entity="keywords-p1">Vision-Language-Action 모델, Cross-Embodiment 학습</p>
+</section>
+<section id="introduction">
+<h2 class="section">1. 서론</h2>
+<figure class="fig-wide" data-entity="figure-1" data-figure="1">
+<!-- FIGURE 1: original path figures/fig1_banner.pdf -->
+<img alt="원문 그림 1" src="figures/final/fig1.png"/><figcaption><strong>그림 1.</strong> 본 연구는 저수준 action을 자연어로 직접 표현하여 vision–language backbone을 supervise하는 범용 VLA 사전학습 방법인 Language-Action Pre-training(LAP)을 제안하고, 이를 새로운 embodiment로의 강력한 <em>zero-shot transfer</em>를 입증한 최초의 VLA인 <span class="model">LAP-3B</span>로 구현한다. 최신 VLA와 비교할 때, LAP-3B는 일반화 가능성이 더 높은 embodiment representation을 학습하고 유리한 scaling 특성을 보인다.</figcaption>
+</figure>
+<p data-entity="intro-p1">로봇 foundation policy가 궁극적으로 약속하는 바는 <em>어떤</em> 로봇 embodiment라도 제어하여 인간 수준의 지능적 과제를 수행하게 하는 능력이다. Vision–Language–Action 모델(VLA)은 이 목표를 향해 괄목할 만한 진전을 이루어 왔다. 이들은 사전학습된 Vision–Language 모델(VLM)을 활용하여 광범위한 장면, 나아가 과제 일반화를 위한 강력한 시각·의미론적 prior를 확보한다. 그러나 그림 1에서 보듯이, 대규모 multi-embodiment 학습에도 불구하고 최신 VLA는 학습에 사용된 embodiment와 사소한 차이만 있는 경우에도(예: 변경된 gripper 또는 wrist camera 위치) <em>새로운 로봇에서 zero-shot으로</em> 작동하는 일이 여전히 드물다. 실제로 새로운 로봇에 VLA를 배치하려면 흔히 embodiment별로 광범위한 적응이 필요하며, 이는 비용이 많이 들고 하나의 광범위하게 배치 가능한 foundation model이라는 목표를 훼손한다.</p>
+<p data-entity="intro-p2">근본적으로 zero-shot cross-embodiment transfer가 어려운 이유는 embodiment 공간이 방대하고, 이를 데이터로 포괄하는 데 본질적으로 큰 비용이 들기 때문이다. 과제 및 환경의 다양성은 실제 환경에서 수집한 로봇 데이터와 인터넷 규모의 egocentric video를 통해 확장할 수 있지만, embodiment 다양성은 하드웨어 가용성과 데이터 수집 물류의 제약을 받는다. 예를 들어 Open X-Embodiment 데이터셋이 취합하는 데이터도 불과 수십 종의 로봇에서 나온 것이다. 따라서 zero-shot transfer를 달성하려면 빠짐없는 포괄 범위에 의존하기보다 제한된 embodiment 다양성에서 최대한의 일반화를 끌어내야 한다.</p>
+<p data-entity="intro-p3">본 연구의 핵심 관찰은 zero-shot cross-embodiment transfer가 motor control을 위해 사전학습된 VLM을 어떻게 적응시키는지에 결정적으로 좌우된다는 것이다. 구체적으로 모델은 embodiment 간 transfer를 가능하게 하는 의미론적·시각적 representation을 유지하면서 정밀한 제어 능력을 습득해야 한다. 이러한 균형이 제대로 관리되지 않으면 embodiment별 action learning이 일반화에 필요한 바로 그 feature를 덮어쓸 수 있다. 그러나 VLM은 모터 수준의 고주파 제어 신호를 해석하거나 생성하도록 사전학습되지 않으므로, 표준 VLA 학습은 분포 불일치를 유발하고 사전학습된 지식을 저하시킬 수 있다.</p>
+<p data-entity="intro-p4">이러한 관찰에 착안하여 본 연구는 motor control을 위해 사전학습된 VLM backbone을 적응시키는 간단한 VLA 사전학습 방법인 <em>Language-Action Pre-training</em>(LAP)을 제안한다. LAP은 모델이 <em>자연어로 기술된 action</em>을 예측하도록 학습하며, 본 논문에서는 이를 <em>language-action</em>이라 부른다. 그림 1에 나타낸 것처럼 language-action은 raw end-effector action의 순효과를(예: “왼쪽으로 5 cm 이동”, “앞으로 45도 기울임”) VLM이 모델링하도록 학습된 것과 같은 modality로 표현한다. 이는 추가적인 데이터 annotation 없이 <em>고정된</em> 좌표 규약과 template에 따라 raw action에서 parsing할 수 있다.</p>
+<p data-entity="intro-p5">이러한 representation 선택은 VLM을 <em>raw action</em>을 예측하도록 미세조정하는 표준 VLA 학습 방법에서 발생하는 분포 불일치를 직접 겨냥한다. 여기서 raw action은 연속적인 관절 또는 end-effector 명령이나 그 discretization이며, 임의적이거나 추상적인 token으로 표현된다. 이러한 representation에는 embodiment 전반의 behavior를 통합할 수 있는 의미론적 구조가 거의 없다. 특히 통합된 end-effector action space를 채택한 경우에도 이러한 한계는 지속된다. 기존 VLA는 여전히 새로운 embodiment에 거의 또는 전혀 zero-shot generalization하지 못한다(‘Zero-Shot Cross-Embodiment Generalization’ 절 참조). 이 결과들을 종합하면 cross-embodiment transfer는 action space를 통합하는 것만으로 달성할 수 없으며, 근본적으로 다른 action representation이 필요함을 알 수 있다. Language-action은 supervision signal을 VLM의 사전학습 분포에 가깝게 유지함으로써 그러한 representation을 제공하고, embodiment 간에 transfer되는 의미론적으로 grounding된 feature를 촉진한다.</p>
+<p data-entity="intro-p6">이 representation을 마련한 다음에는 LAP을 실용적인 VLA 아키텍처로 어떻게 구현할지 살펴본다. 원칙적으로 action generation을 language modeling 문제로 취급하면 LAP을 어떤 VLM 기반 VLA에도 적용할 수 있다. 그러나 이러한 formulation은 일반적으로 inference 시 auto-regressive language-action token sampling에 의존하는데, 이는 비효율적이며 로봇 제어에 적합하지 않다. 따라서 본 연구는 π₀.₅를 따라 LAP으로 학습한 VLM backbone과 연속 제어를 위한 경량 diffusion 기반 action expert를 결합한 hybrid 설계를 채택한다. 이 Mixture-of-Transformers 아키텍처는 language-action supervision의 representation상 이점을 보존하면서 효율적인 실행을 가능하게 한다.</p>
+<p data-entity="intro-p7"><strong>기여 요약.</strong> 본 연구는 cross-embodiment generalization을 가능하게 하기 위해 action을 자연어로 표현하는 Vision–Language–Action 모델용 범용 사전학습 방법인 Language-Action Pre-training(LAP)을 제안한다. LAP은 효율적인 실시간 제어를 위해 VLM backbone과 경량 action expert를 결합한 <span class="model">LAP-3B</span>로 구현한다. 기존 오픈소스 로봇 데이터셋으로 학습한 <span class="model">LAP-3B</span>는 이전에 본 적 없는 로봇 embodiment에 상당한 zero-shot generalization을 달성하며, 대안적인 action representation에 기반한 기존 사전학습 방법보다 상대적으로 약 2×(절대값으로 약 30%) 향상된 성능을 보인다. <em>저자들이 아는 한, 이는 새로운 실제 로봇 embodiment에서 zero-shot으로 작동하는 최초의 VLA 시스템이다.</em> 모든 code, checkpoint 및 data configuration은 <a href="https://lap-vla.github.io">https://lap-vla.github.io</a>에서 오픈소스로 제공한다.</p>
+<p data-entity="intro-p8">또한 <span class="model">LAP-3B</span>는 훨씬 적은 demonstration과 gradient step을 사용해 새로운 embodiment와 더 복잡한 dexterous task에 맞게 미세조정할 수 있으며, 최대 2.5× 적은 데이터로 기존 성능과 대등한 수준에 도달한다. 마지막으로 본 연구는 LAP이 더 transfer 가능한 embodiment representation을 학습하고 더 안정적인 학습 dynamics를 보이는 이유를 분석하고, model size 증가에 따른 유리한 scaling 특성을 입증하며, language-action interface가 보조 VQA objective(예: motion prediction)와의 공동 학습을 자연스럽게 지원하여 추가적인 성능 향상을 가져옴을 보인다.</p>
+</section>
+<section id="related-work">
+<h2 class="section">2. 관련 연구</h2>
+<p data-entity="related-p1"><strong>Vision-Language-Action 모델.</strong> 최근 연구는 크고 다양한 로봇 데이터셋으로 학습한 generalist robot policy를 개발해 왔다. 이 가운데 Vision–Language–Action 모델(VLA)은 특히 유망한 paradigm으로 부상했다. 이러한 모델은 일반적으로 인터넷 규모의 데이터로 사전학습된 Vision–Language 모델(VLM)을 미세조정하여 만든다. 사전학습된 representation은 VLA가 자연어 instruction을 따르고 다양한 시각적 cue를 이해할 수 있게 한다. 그 결과 VLA는 흔히 학습 분포 내에서 우수한 성능을 보일 뿐 아니라 out-of-distribution 환경에 대한 일반화 가능성도 보인다. 그럼에도 기존 VLA는 여러 로봇 embodiment의 데이터로 학습했음에도 광범위한 미세조정 없이는 새로운 embodiment로 zero-shot generalization하지 못한다(‘Zero-Shot Cross-Embodiment Generalization’ 절 참조). 본 연구는 VLA의 embodiment generalization 능력을 크게 향상하는 새로운 action representation을 제안한다.</p>
+<p data-entity="related-p2"><strong>Cross-Embodiment Policy Learning.</strong> 대규모 robot policy는 일반적으로 이질적인 cross-embodiment 데이터셋으로 학습하며, 서로 다른 state space와 action space를 처리하는 일반적인 전략은 통합 representation을 수작업으로 정의하는 것이다. 가장 직접적인 접근법은 state와 action을 최대 차원까지 padding하거나 end-effector pose와 같은 공유 action space를 사용하는 것이다. 다른 연구는 embodiment별 state 또는 action projector를 학습하거나, 로봇 유형별로 별도의 action head를 사용한다. 이와 병행되는 연구 계열은 embodiment 전반에서 공유되는 latent action 또는 skill을 학습한다. 최근에는 human data와 robot data를 연결하는 통합 action space로 human hand motion을 사용하여, 본 적 있는 embodiment에 대한 task generalization을 가능하게 했다. 이러한 방법은 효과적이지만 일반적으로 새로운 embodiment에 적응하려면 embodiment별 미세조정이 필요한 반면, 본 연구의 방법은 추가 학습 없이 <em>zero-shot embodiment transfer</em>를 달성한다.</p>
+<p data-entity="related-p3">또 다른 연구 계열은 robot policy가 embodiment feature를 조건으로 사용하게 하여 cross-embodiment learning을 촉진한다. 초기 접근법은 kinematic structure로부터 그러한 feature를 추론하며, 여러 연구는 구조적 유사성을 활용한 human-to-robot transfer에 초점을 맞춘다. 예를 들어 X-VLA는 policy가 embodiment별 soft prompt를 조건으로 사용하게 하고, DexVLA는 명시적인 embodiment별 학습 단계를 도입한다. RDT2도 마찬가지로 zero-shot embodiment transfer를 보고하지만, 새로운 로봇이 데이터 수집에 사용된 로봇과 같은 gripper 설계 및 wrist-mounted camera 구성을 공유한다고 가정한다. 이는 사실상 embodiment variation을 임의의 morphology가 아니라 일치하는 하드웨어 interface로 제한한다. 이와 병행하여 더 광범위한 접근법 계열은 navigation과 embodied control에서 흔히 연구되듯이 긴 interaction history에서 embodiment를 암묵적으로 추론한다. 종합하면 이러한 방법은 주로 prompt, 명시적인 embodiment conditioning, 하드웨어 정렬 또는 historical context를 통해 학습 분포 내의 embodiment variation을 모델링하며, 이전에 본 적 없는 embodiment에 배치할 때는 일반적으로 추가 가정이나 적응을 필요로 한다.</p>
+<p data-entity="related-p4">이와 달리 LAP은 진정한 zero-shot embodiment transfer라는 상호보완적인 목표에서 출발한다. 명시적인 embodiment-conditioning mechanism을 도입하거나 로봇 간에 일치하는 하드웨어 interface(예: 동일한 gripper와 wrist-mounted camera)에 의존하는 대신, LAP-3B는 적절히 구조화된 action representation을 사용한 대규모 VLA 사전학습에서 cross-embodiment generalization이 직접 출현할 수 있음을 입증한다. embodiment별 설계나 embodiment에 맞춰 정렬된 데이터 수집 가정 없이, LAP-3B는 저자들이 아는 한 <em>이전에 본 적 없는 embodiment에 상당한 zero-shot generalization</em>을 달성한 최초의 VLA이며, 추가 데이터가 있을 때는 더 어려운 과제에 효율적으로 적응할 수도 있다.</p>
+<p data-entity="related-p5"><strong>VLA를 위한 Action Representation.</strong> action을 어떻게 표현하는지는 사전학습된 VLM을 motor control에 얼마나 효과적으로 적응시킬 수 있는지를 결정한다. 초기 접근법은 action을 code 또는 language-level sub-task로 표현한다. 이러한 formulation은 언어적 supervision을 사용한다는 점에서 본 연구와 취지가 밀접하게 관련되지만, 일반적으로 거친 시간적 추상화 수준에서 작동하며 각 sub-task를 실행하기 위한 별도의 저수준 controller에 의존한다. 이와 달리 LAP은 연속적인 end-effector motion에서 직접 parsing한 <em>세밀한</em> language-action을 사용하고, backbone이 이러한 모터 수준의 효과를 모델링하도록 학습함으로써 저수준 제어에 맞춰진 representation을 얻는다. 더 최근의 연구는 그 대신 action을 2D keypoint 또는 visual trace로 encoding하며, 이는 grounding을 강화하지만 일반적으로 여전히 직접 제어가 아닌 중간 representation으로 사용된다.</p>
+<table data-entity="table-1" data-table="1">
+<caption><strong>표 1.</strong> language-action의 변형을 사용하는 VLA를 주요 설계 및 성능 축에서 비교한다. LAP은 대규모 사전학습과 language-action representation을 통해 유일하게 cross-embodiment generalization을 가능하게 한다.</caption>
+<thead>
+<tr>
+<th scope="col">항목</th>
+<th scope="col">Grover et al.</th>
+<th scope="col">VLA-0</th>
+<th scope="col">VLM2VLA</th>
+<th scope="col"><strong>LAP</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">대규모 학습</th>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+</tr>
+<tr>
+<th scope="row">추론 주파수</th>
+<td>~0.5Hz</td>
+<td>4Hz</td>
+<td>0.2Hz</td>
+<td><strong>25Hz</strong></td>
+</tr>
+<tr>
+<th scope="row">Cross-Embodiment</th>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<p data-entity="related-p6">또 다른 연구 계열은 action을 VLM vocabulary에서 사용되지 않거나 비언어적인 token에 mapping하며, 이는 분포 불일치를 유발하고 사전학습된 VLM representation을 저하시킬 수 있다. 최근에는 action을 자연어로 직접 표현하거나 raw string token으로 표현하기 시작한 접근법이 등장했으며, 그 결과 semantic grounding, language following 및 task-level generalization이 향상되었다. 표 1에 요약했듯이 LAP은 두 가지 핵심 차별점을 통해 새롭게 부상하는 이 paradigm을 발전시킨다. 첫째, 실시간 제어를 위한 <em>실용적인</em> language-action VLA로 LAP-3B를 도입한다. 둘째, language-action representation이 대규모 로봇 사전학습 corpus로 scale될 수 있음을 입증하여 zero-shot cross-embodiment transfer를 가능하게 한다.</p>
+</section>
+<!-- FIGURE 2: figures/fig2_method.pdf -->
+<figure class="fig-wide" data-figure="2" id="fig-method">
+<img alt="원문 그림 2" src="figures/final/fig2.png"/><figcaption><strong>그림 2.</strong> (a) action 표현의 관점에서 LAP-3B와 기존 VLA를 비교하는 통합적 관점이다. VLM backbone은 cross-entropy objective를 사용해 이산적인 language-action token을 예측하고, 경량 action expert는 flow matching을 통해 연속 action을 예측한다. knowledge insulation을 통해 action expert의 gradient가 VLM으로 전달되지 않도록 차단함으로써 VLM이 오직 언어 supervision만으로 학습되게 한다. 테스트 시에는 빠른 추론을 위해 action expert를 rollout한다. (b) DROID dataset의 language-action 시각화이다.</figcaption>
+</figure>
+<section id="sec-method">
+<h2 class="section">3. LAP: VLA를 위한 Language-Action Pre-Training</h2>
+<p>이제 VLA를 위한 범용 pre-training 방식인 <em>Language-Action Pre-training</em>(LAP)을 소개한다. 먼저 LAP의 language-action 학습 objective를 정식화한 다음(‘정식화’ 절), 수작업 annotation 없이 대규모 language-action을 확보하는 방법을 설명한다(‘Language-Action Dataset 구축’ 절). 이어서 상당한 cross-embodiment transfer를 보이는 LAP 학습 기반 vision-language-action 모델인 <span class="small-caps">LAP-3B</span>를 제시하고(‘모델 Architecture 및 학습’ 절), 구체적인 구현 세부 사항을 설명한다(‘구현 세부 사항’ 절).</p>
+<section id="subsec-problem-formulation">
+<h3>정식화</h3>
+<p>LAP는 VLA의 action 학습을 표준 조건부 언어 모델링 문제로 재구성한다. 다중 시점 RGB 이미지와 proprioceptive state로 구성된 observation oₜ = {Iₜ¹, …, Iₜⁿ, sₜ}, 그리고 task instruction l이 주어지면, 그림 2(b)와 같이 이에 대응하는 연속 action chunk aₜ:ₜ₊H를 요약하는 구조화된 language-action sequence âₜ:ₜ₊Hˡᵃⁿᵍ을 결정론적으로 도출한다.</p>
+<p>VLM backbone은 표준 cross-entropy objective를 사용하여 (oₜ, l)을 조건으로 language-action token을 autoregressive하게 예측하도록 학습한다.</p>
+<pre class="equation" data-eq="1">L_CE = −E_{(âₜ:ₜ₊Hˡᵃⁿᵍ, oₜ, l) ∼ D} Σᵢ log p_θ(âₜ,ᵢˡᵃⁿᵍ | oₜ, l, âₜ,&lt;ᵢˡᵃⁿᵍ)</pre>
+<p>이는 표준 sequence-to-sequence 언어 모델링과 동일하며, 연속 action에 대한 behavioral cloning과 유사하게 language-action의 maximum likelihood estimation에 해당한다.</p>
+</section>
+<section id="subsec-curation">
+<h3>Language-Action Dataset 구축</h3>
+<p>LAP의 핵심 요건은 대규모 language-action supervision에 접근할 수 있어야 한다는 점이다. 수작업 annotation에 의존하는 대신, 로봇 dataset의 구조적 특성을 활용하여 end-effector trajectory에서 직접 language-action을 도출한다.</p>
+<p>구체적으로 language-action은 end-effector delta motion에 대한 자연어 설명으로 표현한다. 고정된 coordinate convention과 소수의 구조화된 template을 사용하면 연속 action을 임의의 수치 해상도를 갖는 언어 설명으로 결정론적으로 변환할 수 있다.</p>
+<h4>좌표계</h4>
+<p>로봇공학 dataset에서 일반적으로 사용하는 convention을 채택한다. 여기서 +x는 전방, +y는 좌측, +z는 위쪽이며, 회전 성분은 오른손 법칙을 따르는 Euler angle로 표현한다. 대부분의 조작 dataset이 이미 이 convention을 따르므로 별도의 frame transformation 없이 language-action을 직접 parsing할 수 있다.</p>
+<p>embodiment에 구애받지 않는 추론과 다중 시점 visual observation의 일관된 활용을 촉진하기 위해 language-action을 여러 reference frame으로도 표현한다. 구체적으로 학습 중에는 각 language-action을 생성하는 데 사용하는 reference frame을 무작위화하여 50%는 robot base frame으로, 50%는 end-effector frame으로 표현하고, 모델 prompt에 reference frame의 이름을 포함한다.</p>
+<h4>Template</h4>
+<p>language-action은 end-effector의 병진 및 회전 motion을 설명하는 소수의 구조화된 자연어 template을 사용해 생성한다.</p>
+<pre class="equation" data-eq="2">âₜˡᵃⁿᵍ = “⟨verb⟩ ⟨direction⟩ ⟨magnitude⟩ ⟨unit⟩”</pre>
+<p>여기서 verb는 action 범주를 결정한다. <em>move</em>는 end-effector의 병진 displacement를, <em>tilt</em>는 roll 및 pitch 회전을, <em>rotate</em>는 yaw 회전을 나타낸다. 병진의 경우 direction은 {±x, ±y, ±z}에 대응한다(예: 전방/후방, 좌측/우측, 위/아래). roll과 pitch에는 오른손 법칙 convention에 따라 각각 “left/right”와 “back/forward”를 사용한다. yaw의 경우 “clockwise”와 “counterclockwise”는 각각 음의 회전과 양의 회전을 나타낸다.</p>
+<p>매 timestep마다 language-action을 생성하는 대신, âₜ:ₜ₊Hˡᵃⁿᵍ을 action chunk aₜ:ₜ₊H의 순 displacement를 요약하는 하나의 설명으로 표현한다. action은 delta end-effector pose로 표현되므로 이는 timestep t와 t+H 사이의 누적 병진 및 회전에 해당한다. 이러한 temporal abstraction은 고주파 제어를 추상화하는 동시에 VLM이 모델링하기 더 쉬운 저주파 supervision signal을 생성한다. 또한 magnitude를 정숫값으로 이산화하고 병진을 centimeter 단위로 표현하여(예: <em>“move forward 5 cm”</em>) 구조적이면서도 정밀한 language-action을 얻는다. 시각적 예시는 그림 2(b)에 제시한다.</p>
+<p>연속 action을 임의의 기호 또는 vocabulary에 없는 기호로 이산화하는 기존 action tokenization 접근법과 비교하면, language-action은 VLM의 자연어 pre-training distribution에서 여전히 충분히 지원되므로 representation 품질을 저하하는 것으로 알려진 distribution mismatch를 완화한다. action을 이산적인 비언어 token으로 압축하기 위해 별도의 representation learning 단계를 도입하는 FAST 같은 학습형 tokenizer와 달리, language-action은 순전히 결정론적 parsing으로 생성되므로 학습형 action tokenizer가 전혀 필요하지 않다. 또한 기존 action representation과 달리 language-action은 Visual-Question-Answering(VQA) task의 입출력 형식과 자연스럽게 정렬되어 상호 상승효과가 있는 co-training을 가능하게 한다. 예를 들어 “motion prediction” VQA task에서는 이미지 쌍 (Iₜⁱ, Iₜ₊Hⁱ)을 prompt로 모델에 제공하고, 관찰된 displacement를 설명하는 해당 language-action âₜ:ₜ₊Hˡᵃⁿᵍ을 예측하도록 학습한다.</p>
+</section>
+<section id="subsec-architecture">
+<h3>모델 Architecture 및 학습</h3>
+<p>LAP는 기반 VLA architecture에 구애받지 않으며, 원칙적으로 action prediction을 언어 모델링 문제로 취급함으로써 어떤 VLM 기반 policy에도 통합할 수 있다. 그러나 추론 시 language-action을 autoregressive하게 생성하는 것은 느리고 실시간 로봇 제어에는 비실용적이다. 효율적인 시스템을 얻기 위해 LAP를 LAP-3B로 구현한다. LAP-3B는 π₀.₅를 따라 LAP로 학습한 VLM backbone과 고주파 motor execution을 위한 경량 flow-matching action expert를 결합하는 Mixture-of-Transformers architecture를 채택한다. 이 설계는 통제된 비교를 가능하게 한다. <span class="small-caps">LAP-3B</span>는 VLM을 supervise하는 데 사용하는 action representation(language-action 대 FAST token)에서만 π₀.₅와 다르므로 representation 자체가 downstream에 미치는 효과를 분리할 수 있으며, 이는 실험 절에서 평가한다.</p>
+<p>학습 중 VLM backbone은 식 1의 cross-entropy loss를 사용해 구조화된 language-action을 예측하도록 최적화하고, action expert는 다음 flow-matching objective를 통해 연속 action chunk aₜ:ₜ₊H를 예측한다.</p>
+<pre class="equation" data-eq="3">L_FM = E_{(aₜ:ₜ₊H, oₜ, l) ∼ D}[‖v_φ(oₜ, l, aₜ:ₜ₊H, τ) − ẋ_τ‖²]</pre>
+<p>여기서 v_φ는 action expert가 parameterize한 velocity field를 나타내고, ẋ_τ는 ground-truth action chunk에 대응하는 target flow이다(전체 정식화는 부록의 구현 세부 사항을 참조한다). 전체 학습 objective는 다음과 같다.</p>
+<pre class="equation" data-eq="4">L = L_FM + λ L_CE</pre>
+<p>이 architecture에서 VLM과 action expert는 오직 cross-attention을 통해서만 통신한다. raw action과 language-action이 서로를 attend하지 않도록 causal masking을 적용한다.</p>
+<p>또한 action expert의 gradient가 VLM backbone으로 역전파되지 않도록 차단한다. LAP에 필수적인 요소는 아니지만, 이러한 knowledge insulation은 pre-trained VLM representation을 보존하고 joint training을 안정화하는 데 도움이 된다. 추론 시에는 제어를 위해 action expert만 rollout하므로 NVIDIA RTX 4090 GPU에서 25 Hz의 실시간 실행이 가능하다.</p>
+</section>
+<section id="sec-implementation-details">
+<h3>구현 세부 사항</h3>
+<p><span class="small-caps">LAP-3B</span>의 VLM backbone은 PaliGemma-3B 모델로 초기화한다. Open X-Embodiment(OXE) dataset과 MolmoAct dataset으로 학습한다(전체 data mixture의 세부 사항은 부록의 구현 세부 사항을 참조한다). 거의 균일한 mixing을 보장하기 위해 16 million sample 크기의 shuffle buffer를 사용하며, 이는 학습 안정성을 개선한다.</p>
+<p>proprioception의 경우 Cartesian end-effector pose, 즉 position, 연속 6D rotation representation, binary gripper state를 사용해 state sₜ를 표현한다. open-source dataset마다 rotation convention이 일관되지 않으므로 6D representation으로 변환하기 전에 회전을 extrinsic XYZ로 canonicalization한다. proprioceptive state는 255개 bin으로 이산화하고 text token 형태로 prompt 뒤에 추가한다. action은 delta end-effector pose로 표현한다. 전체 학습 dataset에서 계산한 전역 1st 및 99th quantile을 사용하여 state와 action을 normalize하고, 보지 못한 embodiment에 대한 추론에서도 동일한 통계를 재사용한다.</p>
+<p>학습에는 64개 TPU v6e chip에 걸쳐 global batch size 2048을 사용하며, 15k gradient step 동안 학습한다(<em>wall-clock 기준 약 10시간에 불과하다</em>). 이는 전체 dataset의 약 0.65 epoch에 해당하며, 이 시점의 checkpoint는 이미 실제 환경 실험에서 우수한 성능을 보인다. exponential moving average(EMA) update는 5k step 이후 시작한다.</p>
+<p>입력 이미지는 224 × 224로 resize하며, sample당 이미지는 최대 2개를 사용한다. 고정 learning rate 1 × 10⁻⁴을 사용하고, 최초 5,000 step에 걸쳐 linear warmup을 적용한다.</p>
+</section>
+</section>
+<!-- FIGURE 3 PLACEHOLDER: figures/fig3_zeroshot.pdf -->
+<figure class="fig-wide" data-entity="figure-3" data-figure="3" id="fig-zero-shot">
+
+<img alt="원문 그림 3" src="figures/final/fig3.png"/><figcaption><strong>그림 3. Zero-shot cross-embodiment 일반화 성능.</strong> LAP-3B는 학습에서 본 embodiment에서 π₀.₅-DROID와 대등한 성능을 달성한다. 이전에 본 적 없는 세 가지 embodiment와 실제 환경의 조작 과제 여섯 가지 전반에서 LAP-3B는 <strong>평균 zero-shot 성공률 50% 이상</strong>을 달성하여 가장 강력한 baseline보다 약 2× 향상된 성능을 보이는 반면, 모든 오픈소스 VLA의 성공률은 0으로 붕괴한다. 오차 막대는 제1종 오류(비포함) 확률을 통제하는 95% 유한 표본 유효 신뢰구간을 나타낸다.</figcaption>
+</figure>
+<section data-entity="section-experiments" id="sec-experiments">
+<h2 class="section" data-entity="heading-experiments">4. 실험</h2>
+<p data-entity="experiments-p1">본 실험의 목적은 language-action이 VLA pre-training에 더 우수한 action representation을 제공하는지 평가하는 것이다. 특히 최신 VLA의 중대한 한계로 남아 있는 <strong>cross-embodiment generalization</strong>에 초점을 맞춘다. 구체적으로 다음 질문에 답하고자 한다.</p>
+<ol data-entity="experiments-questions">
+<li data-entity="experiments-q1">LAP은 zero-shot cross-embodiment transfer를 가능하게 하는가?</li>
+<li data-entity="experiments-q2">LAP은 까다로운 과제에서 새로운 embodiment에 대한 효율적인 fine-tuning을 지원하는가?</li>
+<li data-entity="experiments-q3">LAP의 language-action representation은 학습된 representation을 어떻게 형성하며, 강력한 cross-embodiment generalization을 어떻게 가능하게 하는가?</li>
+<li data-entity="experiments-q4">VQA dataset과 함께 <span class="small-caps">LAP-3B</span>를 공동 학습할 때 어떤 효과가 있는가?</li>
+<li data-entity="experiments-q5">LAP은 model size가 커질수록 유리하게 scale되는가?</li>
+</ol>
+<p data-entity="experiments-p2">이 질문들에 답하기 위해 LAP을 <strong>네 가지 로봇 embodiment</strong>, <strong>열 가지 실제 환경 조작 과제</strong>, 그리고 LIBERO simulation benchmark에서 평가한다. 먼저 학습에서 본 embodiment 하나와 보지 못한 embodiment 세 가지에서 별도 적응 없이 즉시 사용할 수 있는 성능을 시험한 다음, 새로운 로봇과 과제에 대한 fine-tuning 효율을 연구한다. 이어 LAP의 language-action representation이 학습 dynamics에 미치는 영향을 조사하고, Visual–Question–Answering(VQA) dataset을 활용한 공동 학습 분석으로 마무리한다.</p>
+<h3 data-entity="heading-baselines">Baseline</h3>
+<p data-entity="baselines-p1">아래에서는 두 범주의 baseline을 평가한다. 공정한 비교를 위해 재현한 모든 baseline의 learning rate, batch size, loss weight 등을 신중히 조정했으며, 전체 세부 사항은 부록의 구현 세부 사항에 제시한다.</p>
+<h4 data-entity="heading-open-source-vlas">오픈소스 VLA</h4>
+<p data-entity="open-source-vlas-p1">기존 방법이 이미 zero-shot cross-embodiment transfer를 보이는지 평가하기 위해 공개된 여러 VLA checkpoint를 평가한다.</p>
+<ol data-entity="open-source-vlas-list">
+<li data-entity="open-source-vla-1"><strong>π₀.₅-DROID</strong>: 현재 DROID benchmark에서 가장 강력한 VLA이다.</li>
+<li data-entity="open-source-vla-2"><strong>π₀.₅-Base</strong>: 저자들이 아는 한 공개된 VLA base model 가운데 가장 강력한 모델이다.</li>
+<li data-entity="open-source-vla-3"><strong>X-VLA</strong>: embodiment generalization을 명시적으로 목표로 한다.</li>
+<li data-entity="open-source-vla-4"><strong>MolmoAct</strong></li>
+<li data-entity="open-source-vla-5"><strong>OpenVLA</strong></li>
+</ol>
+<h4 data-entity="heading-action-representation-comparison">Action Representation 비교</h4>
+<p data-entity="action-representation-p1">language-action supervision의 영향을 분리하기 위해 architecture와 data mixture는 동일하고 action representation만 다른 통제 baseline을 학습한다.</p>
+<ol data-entity="action-representation-list">
+<li data-entity="action-representation-1"><strong>π₀.₅-replicated</strong>: FAST token을 사용하여 VLM을 supervise한다. FAST tokenizer는 본 모델보다 훨씬 많은 로봇 데이터로 pre-training되었으므로 특히 강력한 baseline을 이룬다.</li>
+<li data-entity="action-representation-2"><strong>π₀-replicated</strong>: VLM에서 action supervision을 완전히 제거하고 action expert만 supervise하여 language-action pre-training의 이점을 측정한다.</li>
+<li data-entity="action-representation-3"><strong>VLA-0-replicated</strong>: 연속 action을 숫자 token으로 표현하는 VLA-0 방식에 따라 VLM을 supervise한다.</li>
+</ol>
+<p data-entity="experiments-p3">모든 실험을 통틀어 <strong>실제 로봇 평가 trial을 1,300회 이상</strong> 수행한다.</p>
+<section data-entity="section-zero-shot" id="subsec-zero-shot">
+<h3 data-entity="heading-zero-shot">Zero-Shot Cross-Embodiment Generalization</h3>
+<h4 data-entity="heading-embodiments-tasks">Embodiment와 과제</h4>
+<p data-entity="zero-shot-p1">네 가지 로봇 embodiment(그림 3)에서 평가한다. 이들은 pre-training mixture에 포함된 DROID setup, 그리고 이전에 본 적 없는 세 가지 embodiment인 새로운 gripper 및 wrist-mounted camera 구성을 갖춘 custom 7-DoF Franka Panda 로봇, 6-DoF YAM 로봇, 7-DoF Kinova 로봇이다.</p>
+<p data-entity="zero-shot-p2">다섯 가지 유형의 조작 과제(그림 3 위쪽 행)를 평가한다.</p>
+<ol data-entity="task-list">
+<li data-entity="task-pick-place"><strong>Pick and Place</strong>: 물체를 집어 container 안에 놓는 과제로, gripper geometry, camera placement, robot appearance 전반의 일반화를 시험한다.</li>
+<li data-entity="task-sort"><strong>Sort</strong>: table 위의 모든 물체를 basket에 분류해 넣는 과제로, long-horizon manipulation을 평가한다.</li>
+<li data-entity="task-tissue"><strong>Tissue</strong>: 상자에서 tissue를 뽑아 table 위에 놓는 과제로, deformable object에 대한 adaptive grasping과 높이 추론이 필요하다.</li>
+<li data-entity="task-put-towel"><strong>Put Towel</strong>: 평평한 towel을 집어 basket 안에 놓는 과제로, 정밀한 grasp 위치 결정과 큰 수직 motion이 필요하다.</li>
+<li data-entity="task-pour"><strong>Pour</strong>: bowl의 내용물을 붓는 과제로, 회전 제어와 primitive sequencing을 시험한다.</li>
+</ol>
+<p data-entity="zero-shot-p3">이 과제들은 분류 중 충돌을 피하기 위해 gripper를 회전하는 경우처럼 완전한 6-DoF 조작을 요구하며, 상호보완적인 primitive skill을 측정한다.</p>
+<p data-entity="zero-shot-p4">각 embodiment에서는 이 과제들 가운데 두 가지를 과제당 20회 trial로 평가한다. 통계적으로 유효한 유한 표본 coverage를 제공하는 방법에 따라 95% 신뢰구간과 함께 평균 성공률을 보고한다. heuristic 표준편차와 달리 이 구간은 제1종 오류(비포함) 확률을 명시적으로 통제한다. 성공 metric은 이진값이다. 전체 과제를 완료한 경우에만 해당 trial을 성공으로 표시한다. 결과는 그림 3에 요약한다.</p>
+<h4 data-entity="heading-seen-embodiment">학습에서 본 Embodiment 평가</h4>
+<p data-entity="seen-embodiment-p1">학습 분포 내의 DROID setup에서는 거의 모든 오픈소스 VLA가 유의미한 과제 성공률을 달성하지 못한다. 유일한 예외는 DROID dataset으로 명시적으로 fine-tuning된 π₀.₅-DROID이다. 이는 현재 VLA의 중대한 한계를 보여준다. 대규모 multi-embodiment pre-training을 거쳤음에도 학습에서 본 embodiment에 효과적으로 배치하려면 대체로 embodiment별 적응이 필요하다.</p>
+<p data-entity="seen-embodiment-p2">재현 비교 baseline의 경우 π₀.₅-replicated와 π₀-replicated는 중간 수준이면서 서로 비슷한 성능을 달성한다. 그러나 VLA-0-replicated는 일관되게 거의 0에 가까운 action으로 붕괴한다. 이 failure mode는 사소한 예측에 대한 overfitting에서 비롯되며, 크기가 작은 action token만 예측하는 형태로 나타난다. 이 문제는 LIBERO처럼 더 작고 정제된 benchmark에서는 우려가 덜할 수 있지만, noise와 behavior diversity가 불가피한 대규모 환경에서는 치명적이다.</p>
+<p data-entity="seen-embodiment-p3">주목할 점은 <span class="small-caps">LAP-3B</span>가 같은 backbone architecture와 학습 데이터를 사용하면서도 과제 전반에서 π₀.₅-replicated와 π₀-replicated보다 일관되게 약 15%p 높은 성능을 보인다는 것이다. 이는 language-action representation의 우수성을 보여준다. 또한 <span class="small-caps">LAP-3B</span>는 DROID dataset 자체에서 embodiment별 fine-tuning을 전혀 수행하지 않고도 π₀.₅-DROID와 대등한 성능을 달성한다. 이는 language-action supervision이 대규모의 이질적인 로봇 데이터로부터 효과적인 학습을 가능하게 하여 강력한 학습 분포 내 성능으로 이어짐을 시사한다.</p>
+<h4 data-entity="heading-unseen-embodiment">학습에서 보지 못한 Embodiment 평가</h4>
+<p data-entity="unseen-embodiment-p1">다음으로 이전에 본 적 없는 세 가지 로봇 embodiment에 대한 zero-shot transfer를 평가한다. 모든 설정에서 <span class="small-caps">LAP-3B</span>는 상당하고 일관된 우위를 보이며, <em>평균 성공률이 50%를 넘는다.</em> 이는 <strong>가장 강력한 baseline 대비 약 2× 향상</strong>된 결과이다. 특히 <span class="small-caps">LAP-3B</span>는 새로운 모든 embodiment에서 일관되게 높은 성능을 달성한 유일한 모델이다.</p>
+<p data-entity="unseen-embodiment-p2">반면 학습 분포 내에서 강력한 성능을 보였던 π₀.₅-DROID를 포함한 모든 오픈소스 VLA는 보지 못한 로봇에서 의미 있는 behavior를 생성하지 못한다. 이러한 급격한 붕괴는 기존 VLA 학습 방법이 여전히 embodiment별 제어 convention에 강하게 결부되어 있어, 시각 및 과제 semantics가 유사하게 유지되더라도 transfer를 가로막는다는 점을 시사한다.</p>
+<p data-entity="unseen-embodiment-p3">이와 달리 <span class="small-caps">LAP-3B</span>는 embodiment 전반에서 <em>의미론적으로 grounding된 motion</em>과 <em>세밀한 공간 제어</em>를 모두 보인다. 저자들은 language-action interface가 공유되는 embodiment-agnostic abstraction을 제공하여 VLM의 일반화 가능한 visual-semantic representation을 더 잘 보존하는 동시에 새로운 로봇 kinematics에서도 정밀한 실행을 가능하게 한다고 가정한다. 이러한 분리는 <span class="small-caps">LAP-3B</span>가 일관된 과제 의도를 유지하면서 기존 VLA를 저해하는 embodiment별 overfitting을 피할 수 있게 한다.</p>
+</section>
+</section>
+<!-- FIGURE 4: figures/fig4_finetune.pdf -->
+<figure class="fig-wide" data-entity="figure-4" data-figure="4" id="fig-libero-fine-tuning">
+
+<img alt="원문 그림 4" src="figures/final/fig4.png"/><figcaption><strong>그림 4. Simulation(LIBERO) 및 실제 환경 조작 과제의 fine-tuning 효율.</strong> 두 domain 모두에서 <span class="small-caps">LAP-3B</span>는 baseline policy보다 훨씬 빠르게 적응하여, 현저히 적은 epoch와 demonstration으로 높은 성능에 도달한다. simulation에서 <span class="small-caps">LAP-3B</span>는 baseline에 필요한 학습 step의 일부만으로 거의 최적인 성공률에 수렴한다. 실제 로봇에서 <span class="small-caps">LAP-3B</span>는 약 <strong>2.5× 적은 demonstration</strong>으로 대등한 과제 성능을 달성하여, 새로운 embodiment로 transfer할 때 데이터 및 compute 효율이 크게 개선됨을 입증한다.</figcaption>
+</figure>
+<section id="sec-finetuning">
+<h2 class="section">새로운 Embodiment에 대한 Fine-Tuning 효율</h2>
+<p><span class="small-caps">LAP-3B</span>는 간단한 task의 새로운 embodiment에서 유의미한 zero-shot 성능을 보이지만, 현재의 training scale에서는 더 까다로운 조작 scenario에 여전히 embodiment별 적응이 필요하다. 이에 따라 LAP가 두 가지 측면에서 <em>fine-tuning 효율</em>을 개선하는지 조사한다. 하나는 주어진 성능 수준에 도달하는 데 더 적은 demonstration이 필요한 <em>data 효율</em>이고, 다른 하나는 더 적은 gradient step으로 수렴하는 <em>compute 효율</em>이다.</p>
+<section id="simulation-finetuning-experiments">
+<h3>시뮬레이션 Fine-Tuning 실험</h3>
+<p>먼저 LIBERO simulation benchmark에서 <span class="small-caps">LAP-3B</span>를 fine-tuning하고, 동일한 pre-training mixture로 학습한 π<sub>0.5</sub>-replicated 및 π<sub>0</sub>-replicated baseline과 비교한다. 아울러 훨씬 더 큰 dataset으로 pre-training된 원래 π<sub>0.5</sub> weight에서 초기화한 oracle baseline인 π<sub>0.5</sub>-Oracle도 보고한다.</p>
+<p>그림 4(a)와 같이 <span class="small-caps">LAP-3B</span>는 모든 baseline보다 현저히 빠르게 수렴한다. 단 1 epoch의 fine-tuning만으로도 <span class="small-caps">LAP-3B</span>는 이미 성공률 78%에 도달하며, 6 epoch 이내에 거의 최대 성능인 96.8%를 달성한다. 이는 replicated baseline 두 가지와 oracle model 모두에 비해 update 횟수가 현저히 적다. π<sub>0.5</sub>-Oracle은 장시간 학습한 뒤 최종적으로 약간 더 높은 점근 성능에 도달하지만, <span class="small-caps">LAP-3B</span>는 compute 효율에서 뚜렷한 우위를 보인다. 이러한 결과는 language-action pre-training이 새로운 embodiment에 빠르게 적응하는, transfer 가능성이 더 높은 initialization을 제공함을 보여준다. <span class="small-caps">LAP-3B</span>와 baseline method의 LIBERO benchmark 결과는 부록의 추가 결과 절에 요약한다.</p>
+</section>
+<section id="real-world-finetuning-experiments">
+<h3>실제 환경 Fine-Tuning 실험</h3>
+<p>다음으로 까다로운 실제 로봇 task 두 가지에서 fine-tuning한다(그림 4의 상단 행 오른쪽).</p>
+<ul>
+<li><strong>Rack에 Tape 걸기(Hang Tape on Rack):</strong> tape의 가장자리를 집어 상단 rack에 거는 task로, 기민성과 정밀성이 필요하다. YAM robot에서 평가한다.</li>
+<li><strong>Towel을 접어 Basket에 넣기(Fold Towel and Place in Basket):</strong> towel을 왼쪽에서 오른쪽으로 반으로 접은 다음, 접은 towel을 basket에 넣는 task로, 세밀한 기민성과 long-horizon 조작이 모두 필요하다. Custom Franka robot에서 평가한다.</li>
+</ul>
+<p>결과는 그림 4에 제시한다. 각 data point마다 20회 trial을 수행하여 task progress metric을 평가한다. 자세한 내용은 부록의 평가 세부 사항을 참조한다.</p>
+<p>두 task 모두에서 <span class="small-caps">LAP-3B</span>는 훨씬 적은 demonstration만으로도 높은 성능을 달성한다. YAM에서 <span class="small-caps">LAP-3B</span>는 단 20개의 demonstration을 사용하여 약 50%의 task progress에 도달한다. 이는 baseline보다 demonstration이 대략 <strong>2.5× 적다</strong>. Franka에서 <span class="small-caps">LAP-3B</span>는 모든 data regime에 걸쳐 π<sub>0.5</sub>-replicated와 π<sub>0</sub>-replicated를 일관되게 능가한다. 이러한 결과를 종합하면 language-action pre-training은 적응성이 더 높은 VLA를 만들어내며, 새로운 embodiment와 task로 transfer할 때 sample 효율과 fine-tuning 속도를 모두 개선한다.</p>
+</section>
+</section>
+<!-- FIGURE 5: figures/fig5_analysis.pdf -->
+<figure class="fig-wide" data-figure="5" id="fig-analysis">
+
+<img alt="원문 그림 5" src="figures/final/fig5.png"/><figcaption><strong>그림 5.</strong> <strong>(a) <span class="small-caps">LAP-3B</span>와 π<sub>0.5</sub>-replicated가 학습한 embodiment representation의 t-SNE 시각화.</strong> <span class="small-caps">LAP-3B</span>에서는 training embodiment와 unseen embodiment가 상당히 중첩되는 반면, π<sub>0.5</sub>-replicated에서는 정렬이 제한적이다. 이는 <span class="small-caps">LAP-3B</span>가 transfer 가능성이 더 높고 embodiment에 구애받지 않는 control representation을 학습함을 보여준다. <strong>(b) Pre-training 중 unseen embodiment에 대한 action prediction error.</strong> <span class="small-caps">LAP-3B</span>는 학습 전반에 걸쳐 held-out unseen embodiment에서 π<sub>0.5</sub>-replicated 및 π<sub>0</sub>-replicated baseline보다 일관되게 낮은 action prediction error를 달성한다. 이는 language-action supervision을 통해 모델이 embodiment 전반에 generalize되는 control representation을 학습하여 새로운 robot에서 더 정확한 action prediction과 더 매끄러운 training dynamics를 실현할 수 있음을 보여준다.</figcaption>
+</figure>
+<section id="cross-embodiment-analysis">
+<h2 class="section">LAP의 Cross-Embodiment Generalization 분석</h2>
+<section id="tsne-visualization">
+<h3>Embodiment Representation의 t-SNE 시각화</h3>
+<p>그림 5(a)에서는 robot embodiment 전반의 내부 control representation을 포착하는 action token의 평균 prelogit을 embedding하여 학습된 embodiment feature를 t-SNE로 시각화한다. <span class="small-caps">LAP-3B</span>는 unseen embodiment와 training data 사이에서 현저히 개선된 정렬을 보인다. 즉, unseen embodiment의 feature가 별도의 cluster를 형성하는 대신 training embodiment의 feature와 밀접하게 중첩된다. 이 representation space에서 training embodiment와 unseen embodiment 사이의 중첩이 더 강하다는 것은 모델이 transfer 가능성이 더 높고 embodiment에 구애받지 않는 representation을 학습했음을 뜻하며, language-action pre-training이 강력한 zero-shot embodiment transfer를 가능하게 하는 이유를 설명하는 데 도움이 된다.</p>
+</section>
+<section id="low-action-prediction-error">
+<h3>Unseen Embodiment에서의 낮은 Action Prediction Error</h3>
+<p>다음으로 앞 절에서 설명한 <em>unseen</em> robot embodiment의 held-out dataset에서 action prediction error를 측정하여 pre-training 중 학습된 representation의 품질을 평가한다. Prediction error는 predicted action과 ground-truth action 사이의 ℓ<sub>2</sub> distance로 측정한다.</p>
+<p>그림 5(b)와 같이 <span class="small-caps">LAP-3B</span>는 대안적 action representation으로 학습한 baseline보다 unseen embodiment에서 일관되게 낮은 action prediction error를 달성한다. 이는 language-action supervision이 embodiment shift 전반에서 generalization이 더 우수한 control representation으로 이어짐을 보여준다. 또한 학습이 진행되는 동안 prediction error가 매끄럽고 단조롭게 감소하므로, LAP가 더 안정적인 training dynamics를 가능하게 함을 시사한다.</p>
+<div class="table-wrapper">
+<table data-table="2" id="tab-val-losses">
+<caption><strong>표 2.</strong> <span class="small-caps">LAP-3B</span>와 baseline method에 대해 <em>unseen robot embodiment</em>의 held-out dataset에서 측정한 최저 prediction error. 각 행의 최적값은 굵게 표시한다.</caption>
+<thead>
+<tr>
+<th scope="col">Metric</th>
+<th scope="col"><span class="small-caps">LAP-3B</span></th>
+<th scope="col">π<sub>0.5</sub>-replicated</th>
+<th scope="col">π<sub>0</sub>-replicated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Prediction Error (Unseen)</th>
+<td><strong>0.151</strong></td>
+<td>0.168</td>
+<td>0.189</td>
+</tr>
+<tr>
+<th scope="row">Validation Loss (Unseen)</th>
+<td><strong>0.049</strong></td>
+<td>0.051</td>
+<td>0.052</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>표 2에는 (flow-matching) action expert의 최저 validation loss도 함께 보고한다. 이러한 결과를 종합하면 language-action pre-training은 단지 optimization을 안정화하는 데 그치지 않고 control representation이 embodiment 전반으로 transfer되는 방식을 근본적으로 개선한다. 이에 따라 <span class="small-caps">LAP-3B</span>는 unseen robot에서 더 정확한 action을 예측할 수 있으며, 이는 강력한 zero-shot 성능과 우수한 fine-tuning 효율을 모두 설명한다.</p>
+</section>
+</section>
+<section id="subsec-vqa-cotrain">
+<h3>Vision-Language Dataset과의 Co-Training</h3>
+<figure class="fig-wide" data-entity="figure-6" data-figure="6" id="fig-cotrain">
+<!-- FIGURE 6 PLACEHOLDER: original path figures/fig8_cotrain.png -->
+<img alt="원문 그림 6" src="figures/final/fig6.png"/><figcaption><strong>그림 6.</strong> motion-prediction task를 활용한 <strong>VQA co-training</strong>은 cross-embodiment 성능을 향상한다.</figcaption>
+</figure>
+<p data-entity="vqa-cotrain-p1">추가적인 Visual-Question-Answering(VQA) task와의 co-training이 <span class="small-caps">LAP-3B</span>에 이점을 제공하는지 추가로 조사한다. 모델에 연속된 두 이미지를 prompt로 제시하고 frame 사이의 변화를 설명하는 해당 language-action을 예측하도록 요구하는 motion-prediction task를 고려하며, 이는 “inverse dynamics” prediction과 유사하다(그림 1 왼쪽 아래). 이 co-training objective는 통합된 언어 기반 출력 형식을 공유함으로써 표준 VQA 형식의 supervision과 본 연구의 language-action prediction을 자연스럽게 연결한다.</p>
+<p data-entity="vqa-cotrain-p2">그림 6에 제시한 결과와 같이, Custom Franka와 YAM이라는 두 embodiment에서 결과 모델을 평가한다. 이 motion-prediction VQA task를 통합하면 더 정밀한 action generation과 향상된 spatial generalization으로 이어져 embodiment 전반에서 더 높은 성공률을 달성한다. 또한 co-training은 새로운 task에 더 쉽게 적응할 수 있는 checkpoint를 생성하여, 더 적은 gradient step으로 더 빠르게 fine-tuning할 수 있게 하고 최종 수렴 성능도 더 높인다(부록의 ‘추가 결과’ 참조).</p>
+</section>
+<section id="subsec-model-scaling">
+<h3>모델 크기에 따른 Scaling</h3>
+<figure class="fig-wide" data-entity="figure-7" data-figure="7" id="fig-model-scaling">
+<!-- FIGURE 7 PLACEHOLDER: original path figures/fig7_modelscaling.pdf -->
+<img alt="원문 그림 7" src="figures/final/fig7.png"/><figcaption><strong>그림 7.</strong> <strong>π<sub>0.5</sub>-replicated와 비교한 LAP의 model scaling 거동.</strong> 왼쪽: 4B 모델 대비 감소율(%)로 보고한 token validation loss. 오른쪽: diffusion 기반 action expert의 continuous action validation loss. <span class="small-caps">LAP-3B</span>는 scale이 커질수록 일관되게 개선되는 반면, baseline은 포화된 뒤 성능이 저하된다.</figcaption>
+</figure>
+<p data-entity="model-scaling-p1">다음으로 LAP이 증가한 model capacity의 이점을 얻는지, 그리고 그 이점이 large-model regime에서도 유지되는지 조사한다.</p>
+<p data-entity="model-scaling-p2">Gemma3를 VLM backbone으로 사용하여 4B, 12B, 27B parameter 규모의 LAP 모델을 학습하고, 현재 VLA 분야의 state of the art를 나타내는 해당 규모의 π<sub>0.5</sub>-replicated 변형과 비교한다.</p>
+<p data-entity="model-scaling-p3">전체 data mixture의 2.5%로 구성된 held-out split에서 두 가지 metric을 평가한다. (i) VLM backbone의 token validation loss와 (ii) flow-matching 기반 action expert의 validation loss이다. 서로 다른 action representation 사이에서는 절대 loss 값을 직접 비교할 수 없으므로, token validation loss는 4B 모델 대비 감소율(%)로 보고한다.</p>
+<p data-entity="model-scaling-p4">그림 7에서 보듯이 LAP은 모든 model size에서 일관되게 더 낮은 validation loss를 달성하고 유리한 scaling 거동을 보이며, model capacity가 증가함에 따라 성능이 단조롭게 향상된다. 반면 π<sub>0.5</sub>-replicated baseline은 조기에 포화되고 더 큰 scale에서는 오히려 성능이 저하된다. 이러한 결과는 language-action supervision이 large-model regime에서도 여전히 효과적이며, 추가적인 representational capacity로부터 갈수록 더 큰 이점을 얻는다는 것을 보여준다.</p>
+</section>
+<section data-entity="section-conclusions" id="sec-conclusions">
+<h2 class="section" data-entity="heading-conclusions">5. 결론 및 논의</h2>
+<p data-entity="conclusions-p1">본 연구에서는 자연어로 action을 예측하여 로봇 embodiment 전반에 효과적으로 transfer되는 representation을 생성하는 확장 가능한 VLA pre-training 방식인 Language-Action Pre-training(LAP)을 소개한다. 또한 실제 로봇에서 상당한 zero-shot generalization을 달성하는 <span class="small-caps">LAP-3B</span>를 제시한다. 이 모델은 기존 action representation보다 절대값 기준 약 30%p 향상된 성능을 제공하며, 저자들이 아는 한 fine-tuning 없이 새로운 embodiment에서 유의미한 zero-shot 성공률을 최초로 달성한다. <span class="small-caps">LAP-3B</span>는 안정적인 학습, 유리한 scaling, 높은 fine-tuning 효율도 보인다.</p>
+<h3 data-entity="heading-broader-implications">더 폭넓은 함의</h3>
+<p data-entity="broader-implications-p1">LAP은 로보틱스를 위해 VLM을 <em>명시적으로</em> 학습할 가능성을 열어 준다. 이에 따라 로봇의 interaction data와 잠재적으로 비로봇 interaction data를 표준 VLM corpus와 자연스럽게 혼합하여, 통합된 representation space 안에서 추론하고 소통하며 행동하는 모델을 학습할 수 있다.</p>
+<h3 data-entity="heading-limitations-future-work">한계 및 향후 연구</h3>
+<p data-entity="limitations-p1">이러한 고무적인 결과에도 몇 가지 한계가 남아 있다. LAP은 훨씬 더 이질적인 로봇 system과 data source에 적용할 수 있지만, 본 논문은 single-arm manipulator 사이의 zero-shot transfer에만 초점을 맞춘다. 예를 들어 LAP은 bimanual robot에도 쉽게 적용할 수 있으며, 이때 action은 두 팔을 조율한 설명으로 표현할 수 있다(예: 왼팔: 앞으로 5 cm 이동; 오른팔: 시계 방향으로 20도 회전). language-action의 또 다른 핵심 이점은 정밀도 수준이 달라도 자연스럽게 작동하고 정확도가 낮은 action label에도 더 관대하다는 점이다. 따라서 정밀한 low-level control signal을 얻기 어려운 human pose tracking, UMI 또는 internet video와 같은 데이터를 활용할 수 있다. 이러한 방향을 대규모로 체계적으로 조사하는 일은 향후 연구의 중요한 과제로 남아 있다.</p>
+<p data-entity="limitations-p2">둘째, <span class="small-caps">LAP-3B</span>는 <em>수건을 접어 바구니에 넣기(Fold Towel and Put in Basket)</em>와 <em>랙에 테이프 걸기(Hang Tape on Rack)</em>처럼 중간 수준의 dexterity가 필요한 과제에 효율적으로 적응하지만, 훨씬 더 높은 control frequency나 극도의 정밀도를 요구하는 regime(예: 빠른 reactive control 또는 세밀한 deformable object manipulation)에서는 아직 평가하지 않았다. language-action supervision을 이러한 환경으로 확장하는 일은, 잠재적으로 hierarchical 또는 multi-scale action representation을 통해 이루어질 수 있으며, 여전히 해결되지 않은 과제이다.</p>
+</section>
+<section data-entity="section-acknowledgments" id="sec-acknowledgments">
+<h2 class="section" data-entity="heading-acknowledgments">감사의 말</h2>
+<p data-entity="acknowledgments-p1">Cloud TPU에 접근할 수 있도록 지원한 Google의 TPU Research Cloud(TRC)에 감사한다. 또한 본 프로젝트에 귀중한 의견을 제공한 Maria Attarian, Samuel Bateman, Julian Mendes에게 감사한다.</p>
+<p data-entity="acknowledgments-p2">저자들은 NSF CAREER Awards #2044149 및 #2107048, Grant N00014-23-1-2148에 따른 Office of Naval Research, DCIST CRA W911NF-17-2-0181에 따른 Army Research Laboratory, Sloan Fellowship, Gemini Academic Program의 부분 지원을 받았다. Asher J. Hancock은 NSF Graduate Research Fellowship(DGE-2146755)의 지원을 받았다.</p>
+</section>
+<section data-entity="section-additional-results" id="app-additional-results">
+<h2 class="section" data-entity="heading-additional-results">추가 정성 분석 및 Benchmark 결과</h2>
+<section data-entity="section-qualitative-zero-shot" id="app-qualitative-zero-shot">
+<h3 data-entity="heading-qualitative-zero-shot">Zero-Shot Cross-Embodiment 실험의 정성 분석</h3>
+<p data-entity="qualitative-zero-shot-p1">Zero-shot embodiment transfer에서 모든 baseline policy를 추가로 정성 비교하여 본문의 Zero-Shot Cross-Embodiment Generalization 절에 제시한 결과를 보완한다.</p>
+<p data-entity="qualitative-zero-shot-p2">OpenVLA, MolmoAct, π<sub>0.5</sub>-Base는 모든 로봇 platform에서 일관되게 의미 있는 motion을 생성하지 못한다. X-VLA는 부드러운 trajectory를 생성하며 DROID와 Custom Franka setup에서 때때로 target object에 접근하지만, 성공적인 manipulation에 필요한 정확한 gripper–object alignment는 한 번도 달성하지 못한다.</p>
+<p data-entity="qualitative-zero-shot-p3">π<sub>0</sub>-replicated baseline은 매우 부정확한 end-effector control을 보인다. 예를 들어 YAM robot의 <em>Tissue</em> 과제에서는 target을 자주 지나쳐 tissue 자체가 아니라 tissue box를 grasp한다. 반면 π<sub>0.5</sub>-replicated는 대체로 더 부드럽고 방향 측면에서 더 합리적인 motion을 생성하지만, 신뢰할 수 있는 grasp와 성공적인 과제 완료에 필요한 공간 정밀도는 여전히 부족하다. Custom Franka와 Kinova robot에서도 두 baseline은 마찬가지로 부정확한 motion을 보여, embodiment shift 상황에서 정확한 control action을 추론하는 능력이 제한적임을 시사한다. 이러한 failure mode는 평가한 모든 embodiment에서 일관되게 나타난다. rollout 예시는 그림 8에 제시한다.</p>
+<!-- FIGURE 8 PLACEHOLDER: original path figures/appendix/fig12_baseline_rollout.pdf -->
+<figure class="fig-wide" data-entity="figure-8" data-figure="8" id="fig-baseline-rollout-visualization">
+
+<img alt="원문 그림 8" src="figures/final/fig8.png"/><figcaption><strong>그림 8. Sort 과제에서 baseline rollout이 실패한 사례(YAM robot).</strong> π<sub>0</sub>-replicated와 π<sub>0.5</sub>-replicated는 모두 부정확한 end-effector control을 보여, 어떤 물체도 먼저 grasp하지 않은 채 basket을 향해 곧바로 이동한다. 반면 LAP-3B는 유사한 초기 조건에서 과제를 성공적으로 완료한다. 오픈소스 VLA baseline은 이 환경에서 의미 있거나 안전한 control action을 생성하지 못하므로 생략한다.</figcaption>
+</figure>
+<!-- FIGURE 9 PLACEHOLDER: original path figures/appendix/fig11_finetune_rollout.png -->
+<figure class="fig-wide" data-entity="figure-9" data-figure="9" id="fig-finetuning-rollout-visualization">
+
+<img alt="원문 그림 9" src="figures/final/fig9.png"/><figcaption><strong>그림 9. Fine-tuning 평가 rollout 시각화.</strong> 서로 다른 로봇 embodiment와 과제에서 policy 평가에 사용한 camera view의 관측 예시를 왼쪽부터 오른쪽 순서로 제시한다.</figcaption>
+</figure>
+<div class="table-wrapper" data-entity="table-3">
+<table class="wide" data-table="3" id="tab-libero-full">
+<caption><strong>표 3.</strong> LAP-3B와 다른 최신 VLA를 비교한 LIBERO benchmark 결과. 각 data point는 500회 trial의 평균이다. 각 열의 최댓값은 굵게 표시한다. 순위는 평균 성능을 기준으로 하며, 높을수록 우수하다.</caption>
+<thead>
+<tr>
+<th scope="col">방법</th>
+<th scope="col">Spatial</th>
+<th scope="col">Object</th>
+<th scope="col">Goal</th>
+<th scope="col">LIBERO-10</th>
+<th scope="col">평균</th>
+<th scope="col">순위</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>TraceVLA</td><td>84.6</td><td>85.2</td><td>75.1</td><td>54.1</td><td>74.8</td><td>13</td></tr>
+<tr><td>X-VLA</td><td>98.2</td><td>98.6</td><td>97.8</td><td><strong>97.6</strong></td><td><strong>98.1</strong></td><td>1</td></tr>
+<tr><td>Octo</td><td>78.9</td><td>85.7</td><td>84.6</td><td>51.1</td><td>75.1</td><td>12</td></tr>
+<tr><td>UniAct</td><td>77.0</td><td>87.0</td><td>77.0</td><td>70.0</td><td>77.8</td><td>11</td></tr>
+<tr><td>GR00T-N1</td><td>94.4</td><td>97.6</td><td>93.0</td><td>90.6</td><td>93.9</td><td>8</td></tr>
+<tr><td>OpenVLA</td><td>84.7</td><td>88.4</td><td>79.2</td><td>53.7</td><td>76.5</td><td>10</td></tr>
+<tr><td>OpenVLA-OFT</td><td>97.6</td><td>98.4</td><td>97.9</td><td>94.5</td><td>97.1</td><td>3</td></tr>
+<tr><td>UniVLA</td><td>95.4</td><td>98.8</td><td>93.6</td><td>94.0</td><td>95.4</td><td>6</td></tr>
+<tr><td>π<sub>0</sub></td><td>96.8</td><td>98.8</td><td>95.8</td><td>85.2</td><td>94.2</td><td>7</td></tr>
+<tr><td>π<sub>0.5</sub></td><td>98.8</td><td>98.2</td><td>98.0</td><td>92.4</td><td>96.9</td><td>4</td></tr>
+<tr><td>VLA-0</td><td>97.0</td><td>97.8</td><td>96.2</td><td>87.6</td><td>94.7</td><td>9</td></tr>
+<tr class="table-separator"><td><strong><span class="small-caps">LAP-3B</span></strong></td><td>98.2</td><td><strong>99.0</strong></td><td><strong>98.8</strong></td><td>91.2</td><td>96.8</td><td>5</td></tr>
+<tr><td><strong><span class="small-caps">LAP-3B</span> + VQA Co.</strong></td><td><strong>99.0</strong></td><td><strong>99.0</strong></td><td>97.2</td><td>93.4</td><td>97.2</td><td>2</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section data-entity="section-libero-full-results" id="app-libero-full-results">
+<h3 data-entity="heading-libero-full-results">LIBERO Benchmark 전체 결과</h3>
+<!-- FIGURE 10 PLACEHOLDER: original path figures/appendix/fig14_libero_cotrain.png -->
+<figure class="fig-wide" data-entity="figure-10" data-figure="10" id="fig-libero-cotraining">
+
+<img alt="원문 그림 10" src="figures/final/fig10.png"/><figcaption><strong>그림 10. LIBERO에서의 compute 효율.</strong> VQA data와의 co-training은 수렴을 크게 가속하여, <span class="small-caps">LAP-3B</span> + VQA Co-training이 더 적은 gradient step으로 높은 성공률에 도달할 수 있게 한다. 명확성을 위해 가장 강력한 baseline인 π<sub>0.5</sub>-replicated만 보고한다.</figcaption>
+</figure>
+<p data-entity="libero-full-results-p1">표 3은 본문에 제시하지 않은 추가 오픈소스 VLA baseline을 포함한 전체 LIBERO benchmark 결과를 보고하며, task family와 세 가지 task suite 전체에서 <span class="small-caps">LAP-3B</span>가 일관된 성능 향상을 보인다는 점을 추가로 확인한다. <span class="small-caps">LAP-3B</span> + VQA Co.는 실험 절에서 설명한 대로 VQA data와 함께 co-training한 policy를 뜻한다. <span class="small-caps">LAP-3B</span> 단독 모델보다 향상된 성능은 VQA co-training의 효과를 더욱 분명히 보여준다. 또한 그림 10에서 보듯이 co-trained checkpoint는 LIBERO에서 fine-tuning 효율을 크게 높여, 동일한 gradient step으로 더 우수한 성능을 달성한다.</p>
+</section>
+<section data-entity="section-real-robot-rollouts" id="app-real-robot-rollouts">
+<h3 data-entity="heading-real-robot-rollouts">실제 로봇 Rollout</h3>
+<p data-entity="real-robot-rollouts-p1">모든 embodiment와 과제에 걸친 확장된 정성적 rollout 시각화도 추가로 제공한다. Fine-tuning 평가는 그림 9에, zero-shot 평가는 해당 zero-shot rollout 시각화 그림에 제시한다.</p>
+<p data-entity="real-robot-rollouts-p2">각 panel은 policy 실행 중 사용한 camera view에 해당한다.</p>
+</section>
+</section>
+<section data-entity="section-implementation-details" id="app-implementation-details">
+<h2 class="section" data-entity="heading-implementation-details">구현 세부 사항</h2>
+<section data-entity="section-robot-platforms" id="app-robot-platforms">
+<h3 data-entity="heading-robot-platforms">로봇 플랫폼</h3>
+<p data-entity="robot-platforms-p1">kinematics, sensing 구성, control interface가 서로 다른 네 가지 로봇 embodiment에서 <span class="small-caps">LAP-3B</span>를 평가한다.</p>
+<ul data-entity="robot-platforms-list">
+<li data-entity="robot-platform-droid"><strong>DROID</strong>: pre-training 중에 본 embodiment로, external camera와 wrist-mounted camera를 모두 갖춘 7-DoF arm으로 구성된다.</li>
+<li data-entity="robot-platform-custom-franka"><strong>Custom Franka</strong>: external camera와 wrist-mounted camera를 갖춘, 이전에 보지 못한 7-DoF arm이다. 학습 중 관측한 Franka 로봇과 다른 새로운 gripper 및 wrist camera mounting을 사용한다.</li>
+<li data-entity="robot-platform-yam"><strong>YAM</strong>: external camera 하나를 갖춘, 이전에 보지 못한 6-DoF arm이다.</li>
+<li data-entity="robot-platform-kinova"><strong>Kinova</strong>: external camera와 wrist-mounted camera를 갖춘, 이전에 보지 못한 7-DoF arm이다.</li>
+</ul>
+<p data-entity="robot-platforms-p2">fine-tuning에서는 더 정밀한 low-level control이 가능하도록 YAM에 joint-space action을 사용하며, 그 외 모든 로봇은 end-effector pose action으로 제어한다.</p>
+</section>
+<section data-entity="section-training-hyperparameters" id="app-training-hyperparameters">
+<h3 data-entity="heading-training-hyperparameters">학습 Hyperparameter</h3>
+<table data-entity="table-4" data-table="4" id="tab-hyperparams">
+<caption><strong>표 4. LAP-3B의 학습 Hyperparameter.</strong></caption>
+<thead>
+<tr><th>Hyperparameter</th><th>값</th></tr>
+</thead>
+<tbody>
+<tr><td>Batch size</td><td>2048</td></tr>
+<tr><td>Learning rate</td><td>1 × 10<sup>−4</sup></td></tr>
+<tr><td>Warmup steps</td><td>5000</td></tr>
+<tr><td>EMA start step</td><td>5000</td></tr>
+<tr><td>EMA decay</td><td>0.999</td></tr>
+<tr><td>Action horizon</td><td>16</td></tr>
+<tr><td>Adam (β<sub>1</sub>, β<sub>2</sub>)</td><td>(0.9, 0.95)</td></tr>
+<tr><td>Gradient clipping norm</td><td>1.0</td></tr>
+<tr><td>Weight decay</td><td>1 × 10<sup>−4</sup></td></tr>
+</tbody>
+</table>
+<p data-entity="training-hyperparameters-p1">전체 학습 objective는 다음과 같다.</p>
+<pre class="equation" data-entity="equation-training-objective" data-eq="A1">L = L_flow + λ L_CE</pre>
+<p data-entity="training-hyperparameters-p2">pre-training 중에는 λ=0.8을 사용하고 fine-tuning 중에는 λ=0.4를 사용한다. 그 밖의 hyperparameter는 표 4에 제시한다. language-action loss가 diffusion 기반 action expert보다 훨씬 빠르게 수렴하므로, pre-training 중에는 λ&lt;1로 설정하여 language-action loss의 가중치를 약간 낮춘다. 이러한 균형 조정은 더 빠른 language-action objective가 optimization을 지배하지 못하게 하고, 두 component가 비슷한 속도로 학습되도록 유도한다.</p>
+</section>
+<section data-entity="section-baseline-implementations" id="app-baseline-implementations">
+<h3 data-entity="heading-baseline-implementations">Baseline 구현</h3>
+<p data-entity="baseline-implementations-p1">재현한 모든 baseline(π<sub>0.5</sub>-replicated, π<sub>0</sub>-replicated, VLA-0-replicated)에 대해 hyperparameter를 신중하게 조정하고, 실제 로봇을 사용한 예비 validation run을 바탕으로 가장 좋은 성능의 checkpoint를 선택한다.</p>
+<p data-entity="baseline-implementations-p2">모든 baseline에서 learning rate는 {1×10<sup>−4</sup>, 5×10<sup>−5</sup>} 범위로, batch size는 {1024, 2048} 범위로 sweep한다.</p>
+<p data-entity="baseline-implementations-p3">π<sub>0.5</sub>-replicated에 대해서는 FAST token의 cross entropy loss weight를 {0.1, 0.4, 0.6, 0.8} 범위로, action horizon을 {16, 32} 범위로 추가 sweep한다.</p>
+<p data-entity="baseline-implementations-p4">별도로 명시하지 않는 한, 재현한 모든 baseline에 최종적으로 사용하는 hyperparameter는 batch size 2048, learning rate 1×10<sup>−4</sup>, action horizon 16, loss weight λ=0.6이다.</p>
+<p data-entity="baseline-implementations-p5">명시적으로 조정한 이 parameter 외에는 재현한 모든 baseline이 동일한 network architecture, data mixture, sampling strategy, optimization 설정을 비롯하여 본 방법과 동일한 design choice를 공유한다.</p>
+<p data-entity="baseline-implementations-p6">나머지 모든 hyperparameter는 표 4에 나열된 설정을 따른다.</p>
+<p data-entity="baseline-implementations-p7">π<sub>0</sub>-replicated에는 원래 OpenPI codebase의 구현을 그대로 따른다.</p>
+<p data-entity="baseline-implementations-p8">π<sub>0.5</sub>-replicated에는 공개된 code에서 제공하지 않는 FAST action token과 Knowledge Insulation(action expert에서 backbone으로 향하는 gradient를 차단함)을 사용한 VLM backbone supervision을 포함하도록 원래 구현을 확장한다.</p>
+<p data-entity="baseline-implementations-p9">VLA-0-replicated에는 masked action augmentation, 권장 action resolution, prompt format을 포함하여 원 논문의 specification을 엄격히 따라 방법을 재구현한다. 또한 논문에서 보고한 범위를 넘어, 특히 learning rate와 batch size를 신중하게 조정한다. 이러한 조정을 통해 재현한 모델은 LIBERO benchmark에서 대등한 성능을 달성한다. 그러나 zero-shot 절에서 논의했듯이 대규모 dataset으로는 scale되지 않는다.</p>
+</section>
+<section data-entity="section-prompt-language-action-format" id="app-prompt-language-action-format">
+<h3 data-entity="heading-prompt-language-action-format">Prompt 및 Language-Action 형식</h3>
+<p data-entity="prompt-format-p1">본 모델과 모든 baseline에서는 다음의 구조화된 template을 prompt로 사용한다.</p>
+<pre class="promptbox" data-entity="prompt-template"><code>Task: &lt;instruction&gt;, predict the robot's action in the &lt;base frame&gt; or &lt;end-effector frame&gt;; State: s₁ s₂ … s_D; Answer:</code></pre>
+<p data-entity="prompt-format-p2">예시는 다음과 같다.</p>
+<pre class="promptbox" data-entity="prompt-example"><code>Task: Put the marker into the cup, predict the robot's action in the base frame; State: 20 121 34 144 112 45 235 44 21 255; Answer:</code></pre>
+<p data-entity="language-action-format-p1">Language-action은 고정된 순서의 구조화된 clause로 생성한다.</p>
+<pre class="promptbox" data-entity="language-action-template"><code>move &lt;direction&gt; &lt;k&gt; cm; tilt &lt;direction&gt; &lt;k&gt; degrees; rotate &lt;cw/ccw&gt; &lt;k&gt; degrees; open/close gripper</code></pre>
+<p data-entity="language-action-format-p2">translation magnitude는 정수 centimeter 단위로, rotation magnitude는 정수 degree 단위로 discretize하며, 0에 가까운 control noise를 억제하기 위해 값이 0인 movement는 생략한다.</p>
+</section>
+<section data-entity="section-motion-prediction-vqa-generation" id="app-motion-prediction-vqa-generation">
+<h3 data-entity="heading-motion-prediction-vqa-generation">Motion Prediction VQA Data 생성</h3>
+<p data-entity="motion-vqa-p1">language–action data curation과 마찬가지로 motion prediction VQA pair는 manual annotation 없이 자동으로 생성한다. 각 training instance는 다음 prompt template을 사용하여 구성한다.</p>
+<pre class="promptbox" data-entity="motion-vqa-prompt-template"><code>Task: question; State: s₁ s₂ … s_D; Answer:</code></pre>
+<p data-entity="motion-vqa-p2">여기서 <code>question</code>은 두 observation 사이의 temporal relationship을 설명하도록 모델에 요구한다(예: <em>“What movement did the robot make from the first image to the second in the robot base frame?”</em>). prompt의 diversity와 robustness를 높이기 위해 의미상 동등한 question 표현을 무작위로 sampling한다. 이에 대응하는 answer로는 두 frame 사이의 robot motion을 설명하는 ground-truth language–action을 사용한다.</p>
+</section>
+<section data-entity="section-image-preprocessing-augmentation" id="app-image-preprocessing-augmentation">
+<h3 data-entity="heading-image-preprocessing-augmentation">Image Pre-processing 및 Augmentation</h3>
+<p data-entity="image-preprocessing-p1">모든 input image는 추가 processing에 앞서 먼저 고정 resolution으로 resize한다(padding 포함). 학습 중에는 모든 camera view의 image에 augmentation을 적용한다. image를 [0,1]로 normalize한 뒤, target resolution의 95% 크기로 random crop하고 원래 크기로 다시 resize하는 단계, [−5°, 5°]에서 균일하게 sampling한 random in-plane rotation, 그리고 brightness, contrast, saturation parameter를 각각 0.2로 설정한 color jitter로 구성된 pipeline을 적용한다. 이는 [0.8, 1.2]에서 균일하게 sampling한 multiplicative factor에 해당한다. 그런 다음 augmentation된 image를 model input에 맞게 [−1,1]로 다시 rescale한다. batch의 각 image에는 독립적인 random seed를 사용하여 augmentation을 적용한다. VQA sample에는 원래 visual input을 보존하기 위해 augmentation을 전혀 적용하지 않는다.</p>
+</section>
+<section data-entity="section-attention-mask" id="app-attention-mask">
+<h3 data-entity="heading-attention-mask">Attention Mask</h3>
+<figure class="fig-wide" data-entity="figure-11" data-figure="11" id="fig-attention-mask">
+<!-- FIGURE 11 PLACEHOLDER: original path figures/appendix/fig10_attention_mask.png -->
+
+<img alt="원문 그림 11" src="figures/final/fig11.png"/><figcaption><strong>그림 11. LAP-3B의 attention mask 시각화.</strong></figcaption>
+</figure>
+<p data-entity="attention-mask-p1">그림 11에 <span class="small-caps">LAP-3B</span>의 attention mask를 시각화한다. image, prompt, state를 포함하는 prefix token은 bidirectional attention을 사용한다. Language-action token은 모든 prefix token에 대해 full attention을 갖는 동시에 서로에 대해서는 causal attention을 적용한다. action expert는 full self-attention을 사용하고 prefix token 전체에 full attention을 적용하지만, language-action token에는 attention을 적용하지 않는다.</p>
+</section>
+</section>
+<section id="subsec-flow-matching-objective">
+<h3>Flow-Matching Objective</h3>
+<p data-entity="flow-matching-p1">ground-truth action chunk <var>a</var>와 base noise <var>z</var> ∼ 𝒩(0, I)가 주어지면, 다음과 같은 interpolated state를 구성한다.</p>
+<pre class="equation" data-entity="equation-A2" data-eq="A2">x_τ = (1 − τ)z + τa,    τ ∼ U(0, 1)</pre>
+<p data-entity="flow-matching-p2">이에 대응하는 target velocity는 다음과 같다.</p>
+<pre class="equation" data-entity="equation-A3" data-eq="A3">u = a − z</pre>
+<p data-entity="flow-matching-p3">action expert <var>v</var><sub>φ</sub>는 다음 flow-matching objective를 통해 학습된다.</p>
+<pre class="equation" data-entity="equation-A4" data-eq="A4">L_flow = 𝔼[‖v_φ(x_τ, τ; o, l) − (a − z)‖₂²]</pre>
+<p data-entity="flow-matching-p4">이 objective는 observation과 task를 조건으로 noise를 유효한 action으로 운반하는 continuous vector field를 모델이 학습하도록 유도한다.</p>
+<p data-entity="flow-matching-p5">inference 시에는 학습된 dynamics를 다음과 같이 적분하여 action을 생성한다.</p>
+<pre class="equation" data-entity="equation-A5" data-eq="A5">dx_τ / dτ = v_φ(x_τ, τ; o, l)</pre>
+<p data-entity="flow-matching-p6"><var>τ</var> = 0에서 <var>τ</var> = 1까지 fixed-step explicit ODE solver를 사용하여 적분한다.</p>
+</section>
+<section id="subsec-training-data">
+<h3>Training Data</h3>
+<p data-entity="training-data-p1">학습에 사용한 전체 dataset mixture는 표 5에 요약한다. 보고된 weight는 각 dataset의 상대적 크기를 반영하므로, training batch 내에서 각 source로부터 추출되는 sample의 실제 비율을 나타낸다. DROID dataset은 task coverage가 광범위하고 environmental diversity가 풍부하므로 더 높은 비율을 할당한다.</p>
+<table data-entity="table-5" data-table="5" id="tab-data-mix">
+<caption><strong>표 5.</strong> Training data mixture. 백분율은 각 training batch 내에서 각 dataset이 차지하는 sample의 실제 비율을 나타낸다.</caption>
+<thead>
+<tr>
+<th colspan="2">Training Dataset Mixture</th>
+</tr>
+<tr>
+<th scope="col">Dataset</th>
+<th scope="col">비율</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>DROID</td><td>85.26%</td></tr>
+<tr><td>Fractal</td><td>5.86%</td></tr>
+<tr><td>Bridge</td><td>3.39%</td></tr>
+<tr><td>BC-Z</td><td>0.47%</td></tr>
+<tr><td>Taco Play</td><td>0.73%</td></tr>
+<tr><td>Jaco Play</td><td>0.12%</td></tr>
+<tr><td>Furniture Bench Dataset</td><td>0.31%</td></tr>
+<tr><td>UTAustin Mutex</td><td>0.56%</td></tr>
+<tr><td>Berkeley Fanuc Manipulation</td><td>0.19%</td></tr>
+<tr><td>FMB Dataset</td><td>0.09%</td></tr>
+<tr><td>Berkeley Autolab UR5</td><td>0.15%</td></tr>
+<tr><td>Austin Buds Dataset</td><td>0.05%</td></tr>
+<tr><td>Austin Sailor Dataset</td><td>0.53%</td></tr>
+<tr><td>Austin Sirius Dataset</td><td>0.44%</td></tr>
+<tr><td>Viola</td><td>0.12%</td></tr>
+<tr><td>MolmoAct</td><td>1.73%</td></tr>
+</tbody>
+</table>
+<p data-entity="training-data-p2">학습 중에는 연속된 step에서 action sequence가 작은 motion threshold보다 낮은 경우 해당 idle segment를 제거하고, task instruction이 없는 trajectory는 폐기한다.</p>
+</section>
+<section id="subsec-compute-infrastructure-details">
+<h3>Compute 및 Infrastructure 세부 사항</h3>
+<p data-entity="compute-p1"><strong>Hero-run compute.</strong> VQA co-training을 적용한 <span class="small-caps">LAP-3B</span>와 적용하지 않은 <span class="small-caps">LAP-3B</span>, 그리고 복제한 모든 baseline을 포함하여 최종 보고된 모든 model checkpoint는 동일한 large-scale pre-training setup으로 학습했다. 각 hero run은 TPU v6e-64 slice에서 약 50시간 동안 학습했으며, 이렇게 얻은 checkpoint를 모든 main experiment에 사용했다. 보고된 각 모델의 총 hero-run compute는 약 <strong>모델당 50 TPU v6e-64시간</strong>이다.</p>
+<p data-entity="compute-p2"><strong>총 pre-training compute.</strong> 초기 prototyping, debugging run, downstream fine-tuning experiment를 제외하고, <span class="small-caps">LAP-3B</span>와 복제한 모든 baseline을 포함한 전체 pre-training experiment에서 약 200회의 large-scale training run을 수행했다. 이 experiment들은 총 <strong>4,000 TPU v6e-64시간 이상</strong>을 사용했다.</p>
+<p data-entity="compute-p3"><strong>Inference compute.</strong> 모든 real-robot evaluation은 추가적인 model parallelism, specialized hardware 또는 acceleration technique 없이 단일 범용 GPU인 NVIDIA RTX 4090을 사용하여 real time으로 실행한다. 보고된 experiment의 end-to-end real-robot evaluation에는 총 약 <strong>24시간의 사람이 감독한 runtime</strong>이 필요했다.</p>
+</section>
+<section id="sec-evaluation-protocol">
+<h2 class="section">Evaluation Protocol</h2>
+<p data-entity="evaluation-p1">각 task는 workspace boundary 안에서 object placement를 무작위화하여 20회의 독립 trial로 평가한다. task가 성공하거나 time-out이 발생하거나 safety-triggered abort가 일어나면 trial을 종료한다. safety-triggered abort의 예로는 robot이 table과 충돌하거나 joint limit에 도달하거나 과도하게 빠르거나 불안정한 motion과 같은 unsafe behavior를 보이는 경우가 있다.</p>
+<p data-entity="evaluation-p2">zero-shot experiment에서는 binary task success와 함께 binomial success rate에 대한 95% finite-sample valid confidence interval을 보고한다. 이 interval은 Type-I error, 즉 miscoverage probability를 제어한다.</p>
+<p data-entity="evaluation-p3">fine-tuning experiment에서는 부분적인 task completion을 포착하기 위해 단계별 success score를 사용한다.</p>
+<div class="evaluation-rubric" data-entity="rubric-hang-tape">
+<h4>• Rack에 Tape 걸기</h4>
+<ul>
+<li>0.25: tape에 도달</li>
+<li>0.5: tape를 grasp</li>
+<li>0.75: tape를 든 채 rack에 도달</li>
+<li>1.0: tape를 성공적으로 걸기</li>
+</ul>
+</div>
+<div class="evaluation-rubric" data-entity="rubric-fold-towel">
+<h4>• Towel을 접어 Basket에 넣기</h4>
+<ul>
+<li>0.5: towel을 올바르게 접음</li>
+<li>0.75: basket에 넣었으나 접히지 않음</li>
+<li>1.0: 전체 task 성공</li>
+</ul>
+</div>
+<figure class="fig-wide" data-entity="figure-12" data-figure="12" id="fig-zeroshot-rollout-visualization">
+<!-- FIGURE 12 PLACEHOLDER: original path figures/appendix/fig9_rollout_visualization.pdf -->
+<img alt="원문 그림 12" src="figures/final/fig12.png"/><figcaption><strong>그림 12.</strong> <strong>Zero-shot evaluation rollout 시각화.</strong> 서로 다른 robot embodiment와 task 전반에서 policy evaluation에 사용된 camera view의 example observation을 왼쪽부터 오른쪽 순서로 제시한다.</figcaption>
+</figure>
+</section>
+<h2 class="section">참고문헌 요약</h2>
+<p class="refs-note">원문 참고문헌을 원문 제목 중심으로 정리한다.</p>
+<ol class="refs">
+<li>Jonathan Yang, Catherine Glossop, Arjun Bhorkar, et al.. (2024). Pushing the Limits of Cross-Embodiment Learning for Manipulation and Navigation. <em>arXiv:2402.19432</em>.</li>
+<li>Ria Doshi, Homer Walke, Oier Mees, et al.. (2024). Scaling Cross-Embodied Learning: One Policy for Manipulation, Navigation, Locomotion and Aviation. <em>arXiv:2408.11812</em>.</li>
+<li>Lirui Wang, Xinlei Chen, Jialiang Zhao, Kaiming He. (2024). Scaling Proprioceptive-Visual Learning with Heterogeneous Pre-trained Transformers. <em>arXiv:2409.20537</em>.</li>
+<li>Jinliang Zheng, others. (2025). X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment Vision-Language-Action Model. <em>arXiv:2510.10274</em>.</li>
+<li>Jason Lee, others. (2025). MolmoAct: Action Reasoning Models that can Reason in Space. <em>arXiv:2508.07917</em>.</li>
+<li>Physical Intelligence, others. (2025). π_0.5: a Vision-Language-Action Model with Open-World Generalization. <em>arXiv:2504.16054</em>.</li>
+<li>Seonghyeon Ye, others. (2025). Latent Action Pretraining from Videos. <em>arXiv:2410.11758</em>.</li>
+<li>Qingwen Bu, Yanting Yang, Jisong Cai, et al.. (2025). UniVLA: Learning to Act Anywhere with Task-centric Latent Actions. <em>arXiv:2505.06111</em>.</li>
+<li>Dantong Niu, Yuvan Sharma, Giscard Biamby, et al.. (2024). LLARVA: Vision-Action Instruction Tuning Enhances Robot Learning. <em>arXiv:2406.11815</em>.</li>
+<li>Asher Hancock, Xindi Wu, Lihan Zha, et al.. (2025). Actions as Language: Fine-Tuning VLMs into VLAs Without Catastrophic Forgetting. <em>arXiv:2509.22195</em>.</li>
+<li>Ankit Goyal, Hugo Hadfield, Xuning Yang, et al.. (2025). VLA-0: Building State-of-the-Art VLAs with Zero Modification. <em>arXiv:2510.13054</em>.</li>
+<li>Shresth Grover, Akshay Gopalkrishnan, Bo Ai, et al.. (2025). Enhancing Generalization in Vision-Language-Action Models by Preserving Pretrained Representations. <em>arXiv:2509.11417</em>.</li>
+<li>Moo Kim, others. (2024). OpenVLA: An Open-Source Vision-Language-Action Model. <em>arXiv:2406.09246</em>.</li>
+<li>Jaden Clark, Suvir Mirchandani, Dorsa Sadigh, Suneel Belkhale. (2025). Action-Free Reasoning for Policy Generalization. <em>arXiv:2502.03729</em>.</li>
+<li>Embodiment Collaboration, others. (2025). Open X-Embodiment: Robotic Learning Datasets and RT-X Models. <em>arXiv:2310.08864</em>.</li>
+<li>Octo Team, others. (2024). Octo: An Open-Source Generalist Robot Policy. <em>arXiv:2405.12213</em>.</li>
+<li>Kevin Black, others. (2024). π_0: A Vision-Language-Action Flow Model for General Robot Control. <em>arXiv:2410.24164</em>.</li>
+<li>Qixiu Li, others. (2024). CogACT: A Foundational Vision-Language-Action Model for Synergizing Cognition and Action in Robotic Manipulation. <em>arXiv:2411.19650</em>.</li>
+<li>Songming Liu, Lingxuan Wu, Bangguo Li, et al.. (2025). RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation. <em>arXiv:2410.07864</em>.</li>
+<li>Gemini Team, others. (2025). Gemini Robotics: Bringing AI into the Physical World. <em>arXiv:2503.20020</em>.</li>
+<li>NVIDIA, others. (2025). GR00T N1: An Open Foundation Model for Generalist Humanoid Robots. <em>arXiv:2503.14734</em>.</li>
+<li>Anthony Brohan, others. (2023). RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control. <em>arXiv:2307.15818</em>.</li>
+<li>Karl Pertsch, others. (2025). FAST: Efficient Action Tokenization for Vision-Language-Action Models. <em>arXiv:2501.09747</em>.</li>
+<li>Yi Chen, others. (2025). Moto: Latent Motion Token as the Bridging Language for Learning Robot Manipulation from Videos. <em>Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)</em>.</li>
+<li>Jinliang Zheng, Jianxiong Li, Dongxiu Liu, et al.. (2025). Universal Actions for Enhanced Embodied Foundation Models. <em>Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</em>.</li>
+<li>Austin Patel, Shuran Song. (2024). GET-Zero: Graph Embodiment Transformer for Zero-shot Embodiment Generalization. <em>arXiv:2407.15002</em>.</li>
+<li>Brandon Trabucco, Mariano Phielipp, Glen Berseth. (2022). AnyMorph: Learning Transferable Polices By Inferring Agent Morphology. <em>Proceedings of the 39th International Conference on Machine Learning</em>.</li>
+<li>Agrim Gupta, Linxi Fan, Surya Ganguli, Li Fei-Fei. (2022). MetaMorph: Learning Universal Controllers with Transformers. <em>arXiv:2203.11931</em>.</li>
+<li>Vitaly Kurin, Maximilian Igl, Tim Rocktäschel, et al.. (2021). My Body is a Cage: the Role of Morphology in Graph-Based Incompatible Control. <em>arXiv:2010.01856</em>.</li>
+<li>Wenlong Huang, Igor Mordatch, Deepak Pathak. (2020). One Policy to Control Them All: Shared Modular Policies for Agent-Agnostic Control. <em>arXiv:2007.04976</em>.</li>
+<li>Nico Bohlinger, Grzegorz Czechmanowski, Maciej Krupka, et al.. (2025). One Policy to Run Them All: an End-to-end Learning Approach to Multi-Embodiment Locomotion. <em>arXiv:2409.06366</em>.</li>
+<li>Noriaki Hirose, Catherine Glossop, Dhruv Shah, Sergey Levine. (2025). OmniVLA: An Omni-Modal Vision-Language-Action Model for Robot Navigation. <em>arXiv:2509.19480</em>.</li>
+<li>Dhruv Shah, Ajay Sridhar, Nitish Dashora, et al.. (2023). ViNT: A Foundation Model for Visual Navigation. <em>arXiv:2306.14846</em>.</li>
+<li>Dhruv Shah, Ajay Sridhar, Arjun Bhorkar, et al.. (2023). GNM: A General Navigation Model to Drive Any Robot. <em>arXiv:2210.03370</em>.</li>
+<li>Ruijie Zheng, others. (2025). TraceVLA: Visual Trace Prompting Enhances Spatial-Temporal Awareness for Generalist Robotic Policies. <em>arXiv:2412.10345</em>.</li>
+<li>Qingqing Zhao, others. (2025). CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models. <em>Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)</em>.</li>
+<li>Galaxea Team. (2025). Galaxea G0: Open-World Dataset and Dual-System VLA Model. <em>arXiv preprint arXiv:2509.00576</em>.</li>
+<li>AgiBot-World-Contributors, others. (2025). AgiBot World Colosseo: A Large-scale Manipulation Platform for Scalable and Intelligent Embodied Systems. <em>arXiv:2503.06669</em>.</li>
+<li>Kun Wu, others. (2025). RoboMIND: Benchmark on Multi-embodiment Intelligence Normative Data for Robot Manipulation. <em>arXiv:2412.13877</em>.</li>
+<li>Alexander Khazatsky, others. (2025). DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset. <em>arXiv:2403.12945</em>.</li>
+<li>Eric Jang, Alex Irpan, Mohi Khansari, et al.. (2022). BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning. <em>Proceedings of the 5th Conference on Robot Learning</em>.</li>
+<li>Hao-Shu Fang, Hongjie Fang, Zhenyu Tang, et al.. (2023). RH20T: A Comprehensive Robotic Dataset for Learning Diverse Skills in One-Shot. <em>arXiv:2307.00595</em>.</li>
+<li>Sudeep Dasari, Frederik Ebert, Stephen Tian, et al.. (2020). RoboNet: Large-Scale Multi-Robot Learning. <em>arXiv:1910.11215</em>.</li>
+<li>Frederik Ebert, others. (2021). Bridge Data: Boosting Generalization of Robotic Skills with Cross-Domain Datasets. <em>arXiv:2109.13396</em>.</li>
+<li>Homer Walke, others. (2023). BridgeData V2: A Dataset for Robot Learning at Scale. <em>Proceedings of The 7th Conference on Robot Learning</em>.</li>
+<li>Jensen Gao, Annie Xie, Ted Xiao, et al.. (2024). Efficient Data Collection for Robotic Manipulation via Compositional Generalization. <em>arXiv:2403.05110</em>.</li>
+<li>Annie Xie, Lisa Lee, Ted Xiao, Chelsea Finn. (2023). Decomposing the Generalization Gap in Imitation Learning for Visual Robotic Manipulation. <em>arXiv:2307.03659</em>.</li>
+<li>Lihan Zha, Apurva Badithela, Michael Zhang, et al.. (2025). Guiding Data Collection via Factored Scaling Curves. <em>arXiv:2505.07728</em>.</li>
+<li>Yingdong Hu, Fanqi Lin, Pingyue Sheng, et al.. (2025). Data Scaling Laws in Imitation Learning for Robotic Manipulation. <em>arXiv:2410.18647</em>.</li>
+<li>Fangchen Liu, Kuan Fang, Pieter Abbeel, Sergey Levine. (2024). MOKA: Open-World Robotic Manipulation through Mark-Based Visual Prompting. <em>arXiv:2403.03174</em>.</li>
+<li>Wenlong Huang, Chen Wang, Yunzhu Li, et al.. (2024). ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation. <em>arXiv:2409.01652</em>.</li>
+<li>Norman Palo, Edward Johns. (2024). Keypoint Action Tokens Enable In-Context Imitation Learning in Robotics. <em>arXiv:2403.19578</em>.</li>
+<li>Anthony Brohan, others. (2023). RT-1: Robotics Transformer for Real-World Control at Scale. <em>arXiv:2212.06817</em>.</li>
+<li>Danny Driess, others. (2023). PaLM-E: An Embodied Multimodal Language Model. <em>arXiv:2303.03378</em>.</li>
+<li>Suneel Belkhale, Tianli Ding, Ted Xiao, et al.. (2024). RT-H: Action Hierarchies Using Language. <em>arXiv:2403.01823</em>.</li>
+<li>Michael Ahn, others. (2022). Do As I Can, Not As I Say: Grounding Language in Robotic Affordances. <em>arXiv:2204.01691</em>.</li>
+<li>Jacky Liang, Wenlong Huang, Fei Xia, et al.. (2023). Code as Policies: Language Model Programs for Embodied Control. <em>arXiv:2209.07753</em>.</li>
+<li>Lihan Zha, Yuchen Cui, Li-Heng Lin, et al.. (2024). Distilling and Retrieving Generalizable Knowledge for Robot Manipulation via Language Corrections. <em>arXiv:2311.10678</em>.</li>
+<li>Yicheng Liu, others. (2025). FASTer: Toward Efficient Autoregressive Vision Language Action Modeling via Neural Action Tokenization. <em>arXiv:2512.04952</em>.</li>
+<li>Danny Driess, others. (2025). Knowledge Insulating Vision-Language-Action Models: Train Fast, Run Fast, Generalize Better. <em>arXiv:2505.23705</em>.</li>
+<li>Jake Bruce, others. (2024). Genie: Generative Interactive Environments. <em>arXiv:2402.15391</em>.</li>
+<li>Cheng Chi, Zhenjia Xu, Chuer Pan, et al.. (2024). Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots. <em>arXiv:2402.10329</em>.</li>
+<li>Tony Tao, Mohan Srirama, Jason Liu, et al.. (2025). DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies. <em>arXiv:2505.07813</em>.</li>
+<li>Kristen Grauman, others. (2022). Ego4D: Around the World in 3,000 Hours of Egocentric Video. <em>arXiv:2110.07058</em>.</li>
+<li>Ryan Hoque, Peide Huang, David Yoon, et al.. (2025). EgoDex: Learning Dexterous Manipulation from Large-Scale Egocentric Video. <em>arXiv:2505.11709</em>.</li>
+<li>Yun Liu, Haolin Yang, Xu Si, et al.. (2024). TACO: Benchmarking Generalizable Bimanual Tool-ACtion-Object Understanding. <em>arXiv:2401.08399</em>.</li>
+<li>Prithviraj Banerjee, others. (2025). HOT3D: Hand and Object Tracking in 3D from Egocentric Multi-View Videos. <em>arXiv:2411.19167</em>.</li>
+<li>Dima Damen, others. (2020). The EPIC-KITCHENS Dataset: Collection, Challenges and Baselines. <em>arXiv:2005.00343</em>.</li>
+<li>Xin Wang, others. (2023). HoloAssist: an Egocentric Human Interaction Dataset for Interactive AI Assistants in the Real World. <em>arXiv:2309.17024</em>.</li>
+<li>Moo Kim, Chelsea Finn, Percy Liang. (2025). Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success. <em>arXiv:2502.19645</em>.</li>
+<li>RDT Team. (2025). RDT2: Enabling Zero-Shot Cross-Embodiment Generalization by Scaling Up UMI Data.</li>
+<li>Marion Lepert, Jiaying Fang, Jeannette Bohg. (2025). Phantom: Training Robots Without Robots Using Only Human Videos. <em>arXiv:2503.00779</em>.</li>
+<li>Tyler Lum, Olivia Lee, C. Liu, Jeannette Bohg. (2025). Crossing the Human-Robot Embodiment Gap with Sim-to-Real RL using One Human Demonstration. <em>arXiv:2504.12609</em>.</li>
+<li>Juntao Ren, Priya Sundaresan, Dorsa Sadigh, et al.. (2025). Motion Tracks: A Unified Representation for Human-Robot Transfer in Few-Shot Imitation Learning. <em>arXiv:2501.06994</em>.</li>
+<li>Lawrence Chen, others. (2024). RoVi-Aug: Robot and Viewpoint Augmentation for Cross-Embodiment Robot Learning. <em>arXiv:2409.03403</em>.</li>
+<li>Tianyu Wang, Dwait Bhatt, Xiaolong Wang, Nikolay Atanasov. (2024). Cross-Embodiment Robot Manipulation Skill Transfer using Latent Space Alignment. <em>arXiv:2406.01968</em>.</li>
+<li>Mengda Xu, Zhenjia Xu, Cheng Chi, et al.. (2023). XSkill: Cross Embodiment Skill Discovery. <em>arXiv:2307.09955</em>.</li>
+<li>Bo Liu, Yifeng Zhu, Chongkai Gao, et al.. (2023). LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning. <em>arXiv:2306.03310</em>.</li>
+<li>Joseph Vincent, Haruki Nishimura, Masha Itkina, et al.. (2024). How Generalizable Is My Behavior Cloning Policy? A Statistical Approach to Trustworthy Performance Evaluation. <em>arXiv:2405.05439</em>.</li>
+<li>Weixin Liang, others. (2024). Mixture-of-transformers: A sparse and scalable architecture for multi-modal foundation models. <em>arXiv preprint arXiv:2411.04996</em>.</li>
+<li>Zhongyi Zhou, others. (2025). ChatVLA: Unified Multimodal Understanding and Robot Control with Vision-Language-Action Model. <em>Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing</em>.</li>
+<li>Junjie Wen, Yichen Zhu, Jinming Li, et al.. (2025). DexVLA: Vision-Language Model with Plug-In Diffusion Expert for General Robot Control. <em>arXiv:2502.05855</em>.</li>
+<li>Hao Luo, others. (2026). Being-H0.5: Scaling Human-Centric Robot Learning for Cross-Embodiment Generalization. <em>arXiv:2601.12993</em>.</li>
+<li>Ruihan Yang, Qinxi Yu, Yecheng Wu, et al.. (2025). EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos. <em>arXiv:2507.12440</em>.</li>
+<li>Jianke Zhang, Xiaoyu Chen, Qiuyue Wang, et al.. (2026). VLM4VLA: Revisiting Vision-Language-Models in Vision-Language-Action Models. <em>arXiv:2601.03309</em>.</li>
+<li>Gemma Team, others. (2025). Gemma 3 Technical Report. <em>arXiv:2503.19786</em>.</li>
+<li>Yi Zhou, Connelly Barnes, Jingwan Lu, et al.. (2019). On the continuity of rotation representations in neural networks. <em>Proceedings of the IEEE/CVF conference on computer vision and pattern recognition</em>.</li>
+<li>Lucas Beyer, others. (2024). PaliGemma: A versatile 3B VLM for transfer. <em>arXiv:2407.07726</em>.</li>
+<li>Homer Walke, others. (2024). BridgeData V2: A Dataset for Robot Learning at Scale. <em>arXiv:2308.12952</em>.</li>
+<li>Oier Mees, Jessica Borja-Diaz, Wolfram Burgard. (2023). Grounding Language with Visual Affordances over Unstructured Data. <em>arXiv:2210.01911</em>.</li>
+<li>Shivin Dass, Jullian Yapeter, Jesse Zhang, et al.. (2023). CLVR Jaco Play Dataset.</li>
+<li>Minho Heo, Youngwoon Lee, Doohyun Lee, Joseph Lim. (2023). FurnitureBench: Reproducible Real-World Benchmark for Long-Horizon Complex Manipulation. <em>arXiv:2305.12821</em>.</li>
+<li>Rutav Shah, Roberto Martín-Martín, Yuke Zhu. (2023). MUTEX: Learning Unified Policies from Multimodal Task Specifications. <em>7th Annual Conference on Robot Learning</em>.</li>
+<li>Xinghao Zhu, Ran Tian, Chenfeng Xu, et al.. (2023). Fanuc Manipulation: A Dataset for Learning-based Manipulation with FANUC Mate 200iD Robot.</li>
+<li>Jianlan Luo, others. (2024). FMB: a Functional Manipulation Benchmark for Generalizable Robotic Learning. <em>arXiv:2401.08553</em>.</li>
+<li>Lawrence Chen, Simeon Adebola, Ken Goldberg. (n.d.). Berkeley UR5 Demonstration Dataset.</li>
+<li>Yifeng Zhu, Peter Stone, Yuke Zhu. (2022). Bottom-Up Skill Discovery from Unsegmented Demonstrations for Long-Horizon Robot Manipulation. <em>arXiv:2109.13841</em>.</li>
+<li>Yifeng Zhu, Abhishek Joshi, Peter Stone, Yuke Zhu. (2023). VIOLA: Imitation Learning for Vision-Based Manipulation with Object Proposal Priors. <em>arXiv:2210.11339</em>.</li>
+<li>Soroush Nasiriany, Tian Gao, Ajay Mandlekar, Yuke Zhu. (2022). Learning and Retrieval from Prior Data for Skill-based Imitation Learning. <em>Conference on Robot Learning (CoRL)</em>.</li>
+<li>Huihan Liu, Soroush Nasiriany, Lance Zhang, et al.. (2023). Robot Learning on the Job: Human-in-the-Loop Autonomy and Learning During Deployment. <em>arXiv:2211.08416</em>.</li>
+<li>Jinliang Zheng, others. (2025). Universal Actions for Enhanced Embodied Foundation Models. <em>arXiv:2501.10105</em>.</li>
+<li>Anzhe Chen, Yifei Yang, Zhenjie Zhu, et al.. (2025). Toward Embodiment Equivariant Vision-Language-Action Policy. <em>arXiv:2509.14630</em>.</li>
+<li>Songming Liu, Bangguo Li, Kai Ma, et al.. (2026). RDT2: Exploring the Scaling Limit of UMI Data Towards Zero-Shot Cross-Embodiment Generalization.</li>
+</ol>
+<section class="video-appendix">
+<h2 class="section">프로젝트 영상 자산</h2>
+<p>공식 프로젝트 페이지에서 수집한 영상 32개다. PDF에서는 썸네일을 클릭하면 GCS 보관본을 열 수 있으며, 각 항목에 공식 원본 링크도 함께 제공한다.</p>
+<div class="video-grid"><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/teaser-04af2f.mp4"><img alt="프로젝트 영상 1: teaser" src="assets/videos/thumbs/teaser-04af2f.jpg"/></a>
+<div><b>영상 1.</b> teaser</div>
+<div class="video-links">17.7초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/teaser-04af2f.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/teaser.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_sort_success_2x-8054e5.mp4"><img alt="프로젝트 영상 2: yam sort success 2x" src="assets/videos/thumbs/yam_sort_success_2x-8054e5.jpg"/></a>
+<div><b>영상 2.</b> yam sort success 2x</div>
+<div class="video-links">10.1초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_sort_success_2x-8054e5.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/yam/yam_sort_success_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_tissue_success_2x-a55a6d.mp4"><img alt="프로젝트 영상 3: yam tissue success 2x" src="assets/videos/thumbs/yam_tissue_success_2x-a55a6d.jpg"/></a>
+<div><b>영상 3.</b> yam tissue success 2x</div>
+<div class="video-links">10.7초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_tissue_success_2x-a55a6d.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/yam/yam_tissue_success_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_cover_4x-f956f1.mp4"><img alt="프로젝트 영상 4: yam cover 4x" src="assets/videos/thumbs/yam_cover_4x-f956f1.jpg"/></a>
+<div><b>영상 4.</b> yam cover 4x</div>
+<div class="video-links">10.8초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_cover_4x-f956f1.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/yam/yam_cover_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/kinova_towel_success_1x-41c693.mp4"><img alt="프로젝트 영상 5: kinova towel success 1x" src="assets/videos/thumbs/kinova_towel_success_1x-41c693.jpg"/></a>
+<div><b>영상 5.</b> kinova towel success 1x</div>
+<div class="video-links">15.4초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/kinova_towel_success_1x-41c693.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/kinova/kinova_towel_success_1x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/carrot_2x-8857a8.mp4"><img alt="프로젝트 영상 6: carrot 2x" src="assets/videos/thumbs/carrot_2x-8857a8.jpg"/></a>
+<div><b>영상 6.</b> carrot 2x</div>
+<div class="video-links">22.1초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/carrot_2x-8857a8.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/kinova/carrot_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/kinova_marker_success_4x-51d4cb.mp4"><img alt="프로젝트 영상 7: kinova marker success 4x" src="assets/videos/thumbs/kinova_marker_success_4x-51d4cb.jpg"/></a>
+<div><b>영상 7.</b> kinova marker success 4x</div>
+<div class="video-links">17.8초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/kinova_marker_success_4x-51d4cb.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/kinova/kinova_marker_success_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_sort_success_cropped_1x-915c55.mp4"><img alt="프로젝트 영상 8: franka sort success cropped 1x" src="assets/videos/thumbs/franka_sort_success_cropped_1x-915c55.jpg"/></a>
+<div><b>영상 8.</b> franka sort success cropped 1x</div>
+<div class="video-links">20.2초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_sort_success_cropped_1x-915c55.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/franka/franka_sort_success_cropped_1x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_mug_success_cropped_1x-c4600b.mp4"><img alt="프로젝트 영상 9: franka mug success cropped 1x" src="assets/videos/thumbs/franka_mug_success_cropped_1x-c4600b.jpg"/></a>
+<div><b>영상 9.</b> franka mug success cropped 1x</div>
+<div class="video-links">21.4초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_mug_success_cropped_1x-c4600b.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/franka/franka_mug_success_cropped_1x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_carrot_success_cropped_4x-89f6a1.mp4"><img alt="프로젝트 영상 10: franka carrot success cropped 4x" src="assets/videos/thumbs/franka_carrot_success_cropped_4x-89f6a1.jpg"/></a>
+<div><b>영상 10.</b> franka carrot success cropped 4x</div>
+<div class="video-links">13.3초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_carrot_success_cropped_4x-89f6a1.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/franka/franka_carrot_success_cropped_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_marker_2x-3ddb63.mp4"><img alt="프로젝트 영상 11: lap marker 2x" src="assets/videos/thumbs/lap_marker_2x-3ddb63.jpg"/></a>
+<div><b>영상 11.</b> lap marker 2x</div>
+<div class="video-links">14.3초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_marker_2x-3ddb63.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/droid/lap_marker_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_bowl_2x-42994d.mp4"><img alt="프로젝트 영상 12: lap bowl 2x" src="assets/videos/thumbs/lap_bowl_2x-42994d.jpg"/></a>
+<div><b>영상 12.</b> lap bowl 2x</div>
+<div class="video-links">12.3초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_bowl_2x-42994d.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/droid/lap_bowl_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_banana_2x-d3f736.mp4"><img alt="프로젝트 영상 13: lap banana 2x" src="assets/videos/thumbs/lap_banana_2x-d3f736.jpg"/></a>
+<div><b>영상 13.</b> lap banana 2x</div>
+<div class="video-links">12.0초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_banana_2x-d3f736.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec1_zeroshot_ours/droid/lap_banana_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_toy_2x-365132.mp4"><img alt="프로젝트 영상 14: xvla toy 2x" src="assets/videos/thumbs/xvla_toy_2x-365132.jpg"/></a>
+<div><b>영상 14.</b> xvla toy 2x</div>
+<div class="video-links">48.9초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_toy_2x-365132.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/franka/xvla_toy_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05_droid_toy_2x-ec95a2.mp4"><img alt="프로젝트 영상 15: pi05 droid toy 2x" src="assets/videos/thumbs/pi05_droid_toy_2x-ec95a2.jpg"/></a>
+<div><b>영상 15.</b> pi05 droid toy 2x</div>
+<div class="video-links">29.3초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05_droid_toy_2x-ec95a2.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/franka/pi05_droid_toy_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/fast_toy_2x-973e4c.mp4"><img alt="프로젝트 영상 16: fast toy 2x" src="assets/videos/thumbs/fast_toy_2x-973e4c.jpg"/></a>
+<div><b>영상 16.</b> fast toy 2x</div>
+<div class="video-links">33.0초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/fast_toy_2x-973e4c.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/franka/fast_toy_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_toy_2x-b7cec8.mp4"><img alt="프로젝트 영상 17: lap toy 2x" src="assets/videos/thumbs/lap_toy_2x-b7cec8.jpg"/></a>
+<div><b>영상 17.</b> lap toy 2x</div>
+<div class="video-links">20.6초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_toy_2x-b7cec8.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/franka/lap_toy_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi0_tissue_2x-a1d9e0.mp4"><img alt="프로젝트 영상 18: pi0 tissue 2x" src="assets/videos/thumbs/pi0_tissue_2x-a1d9e0.jpg"/></a>
+<div><b>영상 18.</b> pi0 tissue 2x</div>
+<div class="video-links">11.5초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi0_tissue_2x-a1d9e0.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/yam/pi0_tissue_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/tissue_fail_pi05_2x-a2ef24.mp4"><img alt="프로젝트 영상 19: tissue fail pi05 2x" src="assets/videos/thumbs/tissue_fail_pi05_2x-a2ef24.jpg"/></a>
+<div><b>영상 19.</b> tissue fail pi05 2x</div>
+<div class="video-links">33.3초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/tissue_fail_pi05_2x-a2ef24.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/yam/tissue_fail_pi05_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_tissue_2x-29fb80.mp4"><img alt="프로젝트 영상 20: lap tissue 2x" src="assets/videos/thumbs/lap_tissue_2x-29fb80.jpg"/></a>
+<div><b>영상 20.</b> lap tissue 2x</div>
+<div class="video-links">10.9초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_tissue_2x-29fb80.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/yam/lap_tissue_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_marker_4x-3b75fe.mp4"><img alt="프로젝트 영상 21: xvla marker 4x" src="assets/videos/thumbs/xvla_marker_4x-3b75fe.jpg"/></a>
+<div><b>영상 21.</b> xvla marker 4x</div>
+<div class="video-links">7.6초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_marker_4x-3b75fe.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/kinova/xvla_marker_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05droid_marker_4x-e4f9a8.mp4"><img alt="프로젝트 영상 22: pi05droid marker 4x" src="assets/videos/thumbs/pi05droid_marker_4x-e4f9a8.jpg"/></a>
+<div><b>영상 22.</b> pi05droid marker 4x</div>
+<div class="video-links">3.5초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05droid_marker_4x-e4f9a8.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/kinova/pi05droid_marker_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_marker_4x-74ea6a.mp4"><img alt="프로젝트 영상 23: lap marker 4x" src="assets/videos/thumbs/lap_marker_4x-74ea6a.jpg"/></a>
+<div><b>영상 23.</b> lap marker 4x</div>
+<div class="video-links">17.8초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_marker_4x-74ea6a.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/kinova/lap_marker_4x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_bowl_2x-e45447.mp4"><img alt="프로젝트 영상 24: xvla bowl 2x" src="assets/videos/thumbs/xvla_bowl_2x-e45447.jpg"/></a>
+<div><b>영상 24.</b> xvla bowl 2x</div>
+<div class="video-links">32.0초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/xvla_bowl_2x-e45447.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/droid/xvla_bowl_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05_droid_bowl_2x-ce8353.mp4"><img alt="프로젝트 영상 25: pi05 droid bowl 2x" src="assets/videos/thumbs/pi05_droid_bowl_2x-ce8353.jpg"/></a>
+<div><b>영상 25.</b> pi05 droid bowl 2x</div>
+<div class="video-links">30.2초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/pi05_droid_bowl_2x-ce8353.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/droid/pi05_droid_bowl_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/fast_bowl_2x-baacb6.mp4"><img alt="프로젝트 영상 26: fast bowl 2x" src="assets/videos/thumbs/fast_bowl_2x-baacb6.jpg"/></a>
+<div><b>영상 26.</b> fast bowl 2x</div>
+<div class="video-links">27.6초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/fast_bowl_2x-baacb6.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/droid/fast_bowl_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_bowl_2x-106075.mp4"><img alt="프로젝트 영상 27: lap bowl 2x" src="assets/videos/thumbs/lap_bowl_2x-106075.jpg"/></a>
+<div><b>영상 27.</b> lap bowl 2x</div>
+<div class="video-links">14.8초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/lap_bowl_2x-106075.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec2_zeroshot_comparison/droid/lap_bowl_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_ft_tape_success_1x-6ca6fc.mp4"><img alt="프로젝트 영상 28: yam ft tape success 1x" src="assets/videos/thumbs/yam_ft_tape_success_1x-6ca6fc.jpg"/></a>
+<div><b>영상 28.</b> yam ft tape success 1x</div>
+<div class="video-links">14.1초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/yam_ft_tape_success_1x-6ca6fc.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec3_finetune/yam_ft_tape_success_1x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_ft_towel_success_cropped_2x-d02bb3.mp4"><img alt="프로젝트 영상 29: franka ft towel success cropped 2x" src="assets/videos/thumbs/franka_ft_towel_success_cropped_2x-d02bb3.jpg"/></a>
+<div><b>영상 29.</b> franka ft towel success cropped 2x</div>
+<div class="video-links">17.9초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/franka_ft_towel_success_cropped_2x-d02bb3.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec3_finetune/franka_ft_towel_success_cropped_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/carrot_2x-f65e13.mp4"><img alt="프로젝트 영상 30: carrot 2x" src="assets/videos/thumbs/carrot_2x-f65e13.jpg"/></a>
+<div><b>영상 30.</b> carrot 2x</div>
+<div class="video-links">22.1초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/carrot_2x-f65e13.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec4_language_following/carrot_2x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/corn_1x-8428d5.mp4"><img alt="프로젝트 영상 31: corn 1x" src="assets/videos/thumbs/corn_1x-8428d5.jpg"/></a>
+<div><b>영상 31.</b> corn 1x</div>
+<div class="video-links">16.5초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/corn_1x-8428d5.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec4_language_following/corn_1x.mp4">원본</a></div>
+</article><article class="video-tile">
+<a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/grape_4x-467642.mp4"><img alt="프로젝트 영상 32: grape 4x" src="assets/videos/thumbs/grape_4x-467642.jpg"/></a>
+<div><b>영상 32.</b> grape 4x</div>
+<div class="video-links">14.4초 · <a href="https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/videos/grape_4x-467642.mp4">GCS 보관본</a> · <a href="https://lap-vla.github.io/videos/sec4_language_following/grape_4x.mp4">원본</a></div>
+</article></div>
+</section></div></body></html>

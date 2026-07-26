@@ -1,0 +1,78 @@
+<!-- FIGURE 2: figures/fig2_method.pdf -->
+<figure id="fig-method" data-figure="2">
+  <figcaption><strong>그림 2.</strong> (a) action 표현의 관점에서 LAP-3B와 기존 VLA를 비교하는 통합적 관점이다. VLM backbone은 cross-entropy objective를 사용해 이산적인 language-action token을 예측하고, 경량 action expert는 flow matching을 통해 연속 action을 예측한다. knowledge insulation을 통해 action expert의 gradient가 VLM으로 전달되지 않도록 차단함으로써 VLM이 오직 언어 supervision만으로 학습되게 한다. 테스트 시에는 빠른 추론을 위해 action expert를 rollout한다. (b) DROID dataset의 language-action 시각화이다.</figcaption>
+</figure>
+
+<section id="sec-method">
+  <h2>LAP: VLA를 위한 Language-Action Pre-Training</h2>
+
+  <p>이제 VLA를 위한 범용 pre-training 방식인 <em>Language-Action Pre-training</em>(LAP)을 소개한다. 먼저 LAP의 language-action 학습 objective를 정식화한 다음(‘정식화’ 절), 수작업 annotation 없이 대규모 language-action을 확보하는 방법을 설명한다(‘Language-Action Dataset 구축’ 절). 이어서 상당한 cross-embodiment transfer를 보이는 LAP 학습 기반 vision-language-action 모델인 <span class="small-caps">LAP-3B</span>를 제시하고(‘모델 Architecture 및 학습’ 절), 구체적인 구현 세부 사항을 설명한다(‘구현 세부 사항’ 절).</p>
+
+  <section id="subsec-problem-formulation">
+    <h3>정식화</h3>
+
+    <p>LAP는 VLA의 action 학습을 표준 조건부 언어 모델링 문제로 재구성한다. 다중 시점 RGB 이미지와 proprioceptive state로 구성된 observation oₜ = {Iₜ¹, …, Iₜⁿ, sₜ}, 그리고 task instruction l이 주어지면, 그림 2(b)와 같이 이에 대응하는 연속 action chunk aₜ:ₜ₊H를 요약하는 구조화된 language-action sequence âₜ:ₜ₊Hˡᵃⁿᵍ을 결정론적으로 도출한다.</p>
+
+    <p>VLM backbone은 표준 cross-entropy objective를 사용하여 (oₜ, l)을 조건으로 language-action token을 autoregressive하게 예측하도록 학습한다.</p>
+
+    <pre class="equation" data-eq="1">L_CE = −E_{(âₜ:ₜ₊Hˡᵃⁿᵍ, oₜ, l) ∼ D} Σᵢ log p_θ(âₜ,ᵢˡᵃⁿᵍ | oₜ, l, âₜ,&lt;ᵢˡᵃⁿᵍ)</pre>
+
+    <p>이는 표준 sequence-to-sequence 언어 모델링과 동일하며, 연속 action에 대한 behavioral cloning과 유사하게 language-action의 maximum likelihood estimation에 해당한다.</p>
+  </section>
+
+  <section id="subsec-curation">
+    <h3>Language-Action Dataset 구축</h3>
+
+    <p>LAP의 핵심 요건은 대규모 language-action supervision에 접근할 수 있어야 한다는 점이다. 수작업 annotation에 의존하는 대신, 로봇 dataset의 구조적 특성을 활용하여 end-effector trajectory에서 직접 language-action을 도출한다.</p>
+
+    <p>구체적으로 language-action은 end-effector delta motion에 대한 자연어 설명으로 표현한다. 고정된 coordinate convention과 소수의 구조화된 template을 사용하면 연속 action을 임의의 수치 해상도를 갖는 언어 설명으로 결정론적으로 변환할 수 있다.</p>
+
+    <h4>좌표계</h4>
+
+    <p>로봇공학 dataset에서 일반적으로 사용하는 convention을 채택한다. 여기서 +x는 전방, +y는 좌측, +z는 위쪽이며, 회전 성분은 오른손 법칙을 따르는 Euler angle로 표현한다. 대부분의 조작 dataset이 이미 이 convention을 따르므로 별도의 frame transformation 없이 language-action을 직접 parsing할 수 있다.</p>
+
+    <p>embodiment에 구애받지 않는 추론과 다중 시점 visual observation의 일관된 활용을 촉진하기 위해 language-action을 여러 reference frame으로도 표현한다. 구체적으로 학습 중에는 각 language-action을 생성하는 데 사용하는 reference frame을 무작위화하여 50%는 robot base frame으로, 50%는 end-effector frame으로 표현하고, 모델 prompt에 reference frame의 이름을 포함한다.</p>
+
+    <h4>Template</h4>
+
+    <p>language-action은 end-effector의 병진 및 회전 motion을 설명하는 소수의 구조화된 자연어 template을 사용해 생성한다.</p>
+
+    <pre class="equation" data-eq="2">âₜˡᵃⁿᵍ = “⟨verb⟩ ⟨direction⟩ ⟨magnitude⟩ ⟨unit⟩”</pre>
+
+    <p>여기서 verb는 action 범주를 결정한다. <em>move</em>는 end-effector의 병진 displacement를, <em>tilt</em>는 roll 및 pitch 회전을, <em>rotate</em>는 yaw 회전을 나타낸다. 병진의 경우 direction은 {±x, ±y, ±z}에 대응한다(예: 전방/후방, 좌측/우측, 위/아래). roll과 pitch에는 오른손 법칙 convention에 따라 각각 “left/right”와 “back/forward”를 사용한다. yaw의 경우 “clockwise”와 “counterclockwise”는 각각 음의 회전과 양의 회전을 나타낸다.</p>
+
+    <p>매 timestep마다 language-action을 생성하는 대신, âₜ:ₜ₊Hˡᵃⁿᵍ을 action chunk aₜ:ₜ₊H의 순 displacement를 요약하는 하나의 설명으로 표현한다. action은 delta end-effector pose로 표현되므로 이는 timestep t와 t+H 사이의 누적 병진 및 회전에 해당한다. 이러한 temporal abstraction은 고주파 제어를 추상화하는 동시에 VLM이 모델링하기 더 쉬운 저주파 supervision signal을 생성한다. 또한 magnitude를 정숫값으로 이산화하고 병진을 centimeter 단위로 표현하여(예: <em>“move forward 5 cm”</em>) 구조적이면서도 정밀한 language-action을 얻는다. 시각적 예시는 그림 2(b)에 제시한다.</p>
+
+    <p>연속 action을 임의의 기호 또는 vocabulary에 없는 기호로 이산화하는 기존 action tokenization 접근법과 비교하면, language-action은 VLM의 자연어 pre-training distribution에서 여전히 충분히 지원되므로 representation 품질을 저하하는 것으로 알려진 distribution mismatch를 완화한다. action을 이산적인 비언어 token으로 압축하기 위해 별도의 representation learning 단계를 도입하는 FAST 같은 학습형 tokenizer와 달리, language-action은 순전히 결정론적 parsing으로 생성되므로 학습형 action tokenizer가 전혀 필요하지 않다. 또한 기존 action representation과 달리 language-action은 Visual-Question-Answering(VQA) task의 입출력 형식과 자연스럽게 정렬되어 상호 상승효과가 있는 co-training을 가능하게 한다. 예를 들어 “motion prediction” VQA task에서는 이미지 쌍 (Iₜⁱ, Iₜ₊Hⁱ)을 prompt로 모델에 제공하고, 관찰된 displacement를 설명하는 해당 language-action âₜ:ₜ₊Hˡᵃⁿᵍ을 예측하도록 학습한다.</p>
+  </section>
+
+  <section id="subsec-architecture">
+    <h3>모델 Architecture 및 학습</h3>
+
+    <p>LAP는 기반 VLA architecture에 구애받지 않으며, 원칙적으로 action prediction을 언어 모델링 문제로 취급함으로써 어떤 VLM 기반 policy에도 통합할 수 있다. 그러나 추론 시 language-action을 autoregressive하게 생성하는 것은 느리고 실시간 로봇 제어에는 비실용적이다. 효율적인 시스템을 얻기 위해 LAP를 LAP-3B로 구현한다. LAP-3B는 π₀.₅를 따라 LAP로 학습한 VLM backbone과 고주파 motor execution을 위한 경량 flow-matching action expert를 결합하는 Mixture-of-Transformers architecture를 채택한다. 이 설계는 통제된 비교를 가능하게 한다. <span class="small-caps">LAP-3B</span>는 VLM을 supervise하는 데 사용하는 action representation(language-action 대 FAST token)에서만 π₀.₅와 다르므로 representation 자체가 downstream에 미치는 효과를 분리할 수 있으며, 이는 실험 절에서 평가한다.</p>
+
+    <p>학습 중 VLM backbone은 식 1의 cross-entropy loss를 사용해 구조화된 language-action을 예측하도록 최적화하고, action expert는 다음 flow-matching objective를 통해 연속 action chunk aₜ:ₜ₊H를 예측한다.</p>
+
+    <pre class="equation" data-eq="3">L_FM = E_{(aₜ:ₜ₊H, oₜ, l) ∼ D}[‖v_φ(oₜ, l, aₜ:ₜ₊H, τ) − ẋ_τ‖²]</pre>
+
+    <p>여기서 v_φ는 action expert가 parameterize한 velocity field를 나타내고, ẋ_τ는 ground-truth action chunk에 대응하는 target flow이다(전체 정식화는 부록의 구현 세부 사항을 참조한다). 전체 학습 objective는 다음과 같다.</p>
+
+    <pre class="equation" data-eq="4">L = L_FM + λ L_CE</pre>
+
+    <p>이 architecture에서 VLM과 action expert는 오직 cross-attention을 통해서만 통신한다. raw action과 language-action이 서로를 attend하지 않도록 causal masking을 적용한다.</p>
+
+    <p>또한 action expert의 gradient가 VLM backbone으로 역전파되지 않도록 차단한다. LAP에 필수적인 요소는 아니지만, 이러한 knowledge insulation은 pre-trained VLM representation을 보존하고 joint training을 안정화하는 데 도움이 된다. 추론 시에는 제어를 위해 action expert만 rollout하므로 NVIDIA RTX 4090 GPU에서 25 Hz의 실시간 실행이 가능하다.</p>
+  </section>
+
+  <section id="sec-implementation-details">
+    <h3>구현 세부 사항</h3>
+
+    <p><span class="small-caps">LAP-3B</span>의 VLM backbone은 PaliGemma-3B 모델로 초기화한다. Open X-Embodiment(OXE) dataset과 MolmoAct dataset으로 학습한다(전체 data mixture의 세부 사항은 부록의 구현 세부 사항을 참조한다). 거의 균일한 mixing을 보장하기 위해 16 million sample 크기의 shuffle buffer를 사용하며, 이는 학습 안정성을 개선한다.</p>
+
+    <p>proprioception의 경우 Cartesian end-effector pose, 즉 position, 연속 6D rotation representation, binary gripper state를 사용해 state sₜ를 표현한다. open-source dataset마다 rotation convention이 일관되지 않으므로 6D representation으로 변환하기 전에 회전을 extrinsic XYZ로 canonicalization한다. proprioceptive state는 255개 bin으로 이산화하고 text token 형태로 prompt 뒤에 추가한다. action은 delta end-effector pose로 표현한다. 전체 학습 dataset에서 계산한 전역 1st 및 99th quantile을 사용하여 state와 action을 normalize하고, 보지 못한 embodiment에 대한 추론에서도 동일한 통계를 재사용한다.</p>
+
+    <p>학습에는 64개 TPU v6e chip에 걸쳐 global batch size 2048을 사용하며, 15k gradient step 동안 학습한다(<em>wall-clock 기준 약 10시간에 불과하다</em>). 이는 전체 dataset의 약 0.65 epoch에 해당하며, 이 시점의 checkpoint는 이미 실제 환경 실험에서 우수한 성능을 보인다. exponential moving average(EMA) update는 5k step 이후 시작한다.</p>
+
+    <p>입력 이미지는 224 × 224로 resize하며, sample당 이미지는 최대 2개를 사용한다. 고정 learning rate 1 × 10⁻⁴을 사용하고, 최초 5,000 step에 걸쳐 linear warmup을 적용한다.</p>
+  </section>
+</section>

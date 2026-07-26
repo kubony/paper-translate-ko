@@ -1,0 +1,81 @@
+<section id="sec-finetuning">
+  <h2>새로운 Embodiment에 대한 Fine-Tuning 효율</h2>
+
+  <p><span class="small-caps">LAP-3B</span>는 간단한 task의 새로운 embodiment에서 유의미한 zero-shot 성능을 보이지만, 현재의 training scale에서는 더 까다로운 조작 scenario에 여전히 embodiment별 적응이 필요하다. 이에 따라 LAP가 두 가지 측면에서 <em>fine-tuning 효율</em>을 개선하는지 조사한다. 하나는 주어진 성능 수준에 도달하는 데 더 적은 demonstration이 필요한 <em>data 효율</em>이고, 다른 하나는 더 적은 gradient step으로 수렴하는 <em>compute 효율</em>이다.</p>
+
+  <section id="simulation-finetuning-experiments">
+    <h3>시뮬레이션 Fine-Tuning 실험</h3>
+
+    <p>먼저 LIBERO simulation benchmark에서 <span class="small-caps">LAP-3B</span>를 fine-tuning하고, 동일한 pre-training mixture로 학습한 π<sub>0.5</sub>-replicated 및 π<sub>0</sub>-replicated baseline과 비교한다. 아울러 훨씬 더 큰 dataset으로 pre-training된 원래 π<sub>0.5</sub> weight에서 초기화한 oracle baseline인 π<sub>0.5</sub>-Oracle도 보고한다.</p>
+
+    <p>그림 4(a)와 같이 <span class="small-caps">LAP-3B</span>는 모든 baseline보다 현저히 빠르게 수렴한다. 단 1 epoch의 fine-tuning만으로도 <span class="small-caps">LAP-3B</span>는 이미 성공률 78%에 도달하며, 6 epoch 이내에 거의 최대 성능인 96.8%를 달성한다. 이는 replicated baseline 두 가지와 oracle model 모두에 비해 update 횟수가 현저히 적다. π<sub>0.5</sub>-Oracle은 장시간 학습한 뒤 최종적으로 약간 더 높은 점근 성능에 도달하지만, <span class="small-caps">LAP-3B</span>는 compute 효율에서 뚜렷한 우위를 보인다. 이러한 결과는 language-action pre-training이 새로운 embodiment에 빠르게 적응하는, transfer 가능성이 더 높은 initialization을 제공함을 보여준다. <span class="small-caps">LAP-3B</span>와 baseline method의 LIBERO benchmark 결과는 부록의 추가 결과 절에 요약한다.</p>
+  </section>
+
+  <section id="real-world-finetuning-experiments">
+    <h3>실제 환경 Fine-Tuning 실험</h3>
+
+    <p>다음으로 까다로운 실제 로봇 task 두 가지에서 fine-tuning한다(그림 4의 상단 행 오른쪽).</p>
+    <ul>
+      <li><strong>Rack에 Tape 걸기(Hang Tape on Rack):</strong> tape의 가장자리를 집어 상단 rack에 거는 task로, 기민성과 정밀성이 필요하다. YAM robot에서 평가한다.</li>
+      <li><strong>Towel을 접어 Basket에 넣기(Fold Towel and Place in Basket):</strong> towel을 왼쪽에서 오른쪽으로 반으로 접은 다음, 접은 towel을 basket에 넣는 task로, 세밀한 기민성과 long-horizon 조작이 모두 필요하다. Custom Franka robot에서 평가한다.</li>
+    </ul>
+
+    <p>결과는 그림 4에 제시한다. 각 data point마다 20회 trial을 수행하여 task progress metric을 평가한다. 자세한 내용은 부록의 평가 세부 사항을 참조한다.</p>
+
+    <p>두 task 모두에서 <span class="small-caps">LAP-3B</span>는 훨씬 적은 demonstration만으로도 높은 성능을 달성한다. YAM에서 <span class="small-caps">LAP-3B</span>는 단 20개의 demonstration을 사용하여 약 50%의 task progress에 도달한다. 이는 baseline보다 demonstration이 대략 <strong>2.5× 적다</strong>. Franka에서 <span class="small-caps">LAP-3B</span>는 모든 data regime에 걸쳐 π<sub>0.5</sub>-replicated와 π<sub>0</sub>-replicated를 일관되게 능가한다. 이러한 결과를 종합하면 language-action pre-training은 적응성이 더 높은 VLA를 만들어내며, 새로운 embodiment와 task로 transfer할 때 sample 효율과 fine-tuning 속도를 모두 개선한다.</p>
+  </section>
+</section>
+
+<!-- FIGURE 5: figures/fig5_analysis.pdf -->
+<figure id="fig-analysis" data-figure="5">
+  <div class="figure-placeholder">[그림 5 자리표시자: figures/fig5_analysis.pdf]</div>
+  <figcaption><strong>그림 5.</strong> <strong>(a) <span class="small-caps">LAP-3B</span>와 π<sub>0.5</sub>-replicated가 학습한 embodiment representation의 t-SNE 시각화.</strong> <span class="small-caps">LAP-3B</span>에서는 training embodiment와 unseen embodiment가 상당히 중첩되는 반면, π<sub>0.5</sub>-replicated에서는 정렬이 제한적이다. 이는 <span class="small-caps">LAP-3B</span>가 transfer 가능성이 더 높고 embodiment에 구애받지 않는 control representation을 학습함을 보여준다. <strong>(b) Pre-training 중 unseen embodiment에 대한 action prediction error.</strong> <span class="small-caps">LAP-3B</span>는 학습 전반에 걸쳐 held-out unseen embodiment에서 π<sub>0.5</sub>-replicated 및 π<sub>0</sub>-replicated baseline보다 일관되게 낮은 action prediction error를 달성한다. 이는 language-action supervision을 통해 모델이 embodiment 전반에 generalize되는 control representation을 학습하여 새로운 robot에서 더 정확한 action prediction과 더 매끄러운 training dynamics를 실현할 수 있음을 보여준다.</figcaption>
+</figure>
+
+<section id="cross-embodiment-analysis">
+  <h2>LAP의 Cross-Embodiment Generalization 분석</h2>
+
+  <section id="tsne-visualization">
+    <h3>Embodiment Representation의 t-SNE 시각화</h3>
+
+    <p>그림 5(a)에서는 robot embodiment 전반의 내부 control representation을 포착하는 action token의 평균 prelogit을 embedding하여 학습된 embodiment feature를 t-SNE로 시각화한다. <span class="small-caps">LAP-3B</span>는 unseen embodiment와 training data 사이에서 현저히 개선된 정렬을 보인다. 즉, unseen embodiment의 feature가 별도의 cluster를 형성하는 대신 training embodiment의 feature와 밀접하게 중첩된다. 이 representation space에서 training embodiment와 unseen embodiment 사이의 중첩이 더 강하다는 것은 모델이 transfer 가능성이 더 높고 embodiment에 구애받지 않는 representation을 학습했음을 뜻하며, language-action pre-training이 강력한 zero-shot embodiment transfer를 가능하게 하는 이유를 설명하는 데 도움이 된다.</p>
+  </section>
+
+  <section id="low-action-prediction-error">
+    <h3>Unseen Embodiment에서의 낮은 Action Prediction Error</h3>
+
+    <p>다음으로 앞 절에서 설명한 <em>unseen</em> robot embodiment의 held-out dataset에서 action prediction error를 측정하여 pre-training 중 학습된 representation의 품질을 평가한다. Prediction error는 predicted action과 ground-truth action 사이의 ℓ<sub>2</sub> distance로 측정한다.</p>
+
+    <p>그림 5(b)와 같이 <span class="small-caps">LAP-3B</span>는 대안적 action representation으로 학습한 baseline보다 unseen embodiment에서 일관되게 낮은 action prediction error를 달성한다. 이는 language-action supervision이 embodiment shift 전반에서 generalization이 더 우수한 control representation으로 이어짐을 보여준다. 또한 학습이 진행되는 동안 prediction error가 매끄럽고 단조롭게 감소하므로, LAP가 더 안정적인 training dynamics를 가능하게 함을 시사한다.</p>
+
+    <div class="table-wrapper">
+      <table id="tab-val-losses" data-table="2">
+        <caption><strong>표 2.</strong> <span class="small-caps">LAP-3B</span>와 baseline method에 대해 <em>unseen robot embodiment</em>의 held-out dataset에서 측정한 최저 prediction error. 각 행의 최적값은 굵게 표시한다.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col"><span class="small-caps">LAP-3B</span></th>
+            <th scope="col">π<sub>0.5</sub>-replicated</th>
+            <th scope="col">π<sub>0</sub>-replicated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Prediction Error (Unseen)</th>
+            <td><strong>0.151</strong></td>
+            <td>0.168</td>
+            <td>0.189</td>
+          </tr>
+          <tr>
+            <th scope="row">Validation Loss (Unseen)</th>
+            <td><strong>0.049</strong></td>
+            <td>0.051</td>
+            <td>0.052</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>표 2에는 (flow-matching) action expert의 최저 validation loss도 함께 보고한다. 이러한 결과를 종합하면 language-action pre-training은 단지 optimization을 안정화하는 데 그치지 않고 control representation이 embodiment 전반으로 transfer되는 방식을 근본적으로 개선한다. 이에 따라 <span class="small-caps">LAP-3B</span>는 unseen robot에서 더 정확한 action을 예측할 수 있으며, 이는 강력한 zero-shot 성능과 우수한 fine-tuning 효율을 모두 설명한다.</p>
+  </section>
+</section>

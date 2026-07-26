@@ -1,0 +1,29 @@
+<section id="subsec-vqa-cotrain">
+  <h3>Vision-Language Dataset과의 Co-Training</h3>
+
+  <figure id="fig-cotrain" data-entity="figure-6" data-figure="6">
+    <!-- FIGURE 6 PLACEHOLDER: original path figures/fig8_cotrain.png -->
+    <figcaption><strong>그림 6.</strong> motion-prediction task를 활용한 <strong>VQA co-training</strong>은 cross-embodiment 성능을 향상한다.</figcaption>
+  </figure>
+
+  <p data-entity="vqa-cotrain-p1">추가적인 Visual-Question-Answering(VQA) task와의 co-training이 <span class="small-caps">LAP-3B</span>에 이점을 제공하는지 추가로 조사한다. 모델에 연속된 두 이미지를 prompt로 제시하고 frame 사이의 변화를 설명하는 해당 language-action을 예측하도록 요구하는 motion-prediction task를 고려하며, 이는 “inverse dynamics” prediction과 유사하다(그림 1 왼쪽 아래). 이 co-training objective는 통합된 언어 기반 출력 형식을 공유함으로써 표준 VQA 형식의 supervision과 본 연구의 language-action prediction을 자연스럽게 연결한다.</p>
+
+  <p data-entity="vqa-cotrain-p2">그림 6에 제시한 결과와 같이, Custom Franka와 YAM이라는 두 embodiment에서 결과 모델을 평가한다. 이 motion-prediction VQA task를 통합하면 더 정밀한 action generation과 향상된 spatial generalization으로 이어져 embodiment 전반에서 더 높은 성공률을 달성한다. 또한 co-training은 새로운 task에 더 쉽게 적응할 수 있는 checkpoint를 생성하여, 더 적은 gradient step으로 더 빠르게 fine-tuning할 수 있게 하고 최종 수렴 성능도 더 높인다(부록의 ‘추가 결과’ 참조).</p>
+</section>
+
+<section id="subsec-model-scaling">
+  <h3>모델 크기에 따른 Scaling</h3>
+
+  <figure id="fig-model-scaling" data-entity="figure-7" data-figure="7">
+    <!-- FIGURE 7 PLACEHOLDER: original path figures/fig7_modelscaling.pdf -->
+    <figcaption><strong>그림 7.</strong> <strong>π<sub>0.5</sub>-replicated와 비교한 LAP의 model scaling 거동.</strong> 왼쪽: 4B 모델 대비 감소율(%)로 보고한 token validation loss. 오른쪽: diffusion 기반 action expert의 continuous action validation loss. <span class="small-caps">LAP-3B</span>는 scale이 커질수록 일관되게 개선되는 반면, baseline은 포화된 뒤 성능이 저하된다.</figcaption>
+  </figure>
+
+  <p data-entity="model-scaling-p1">다음으로 LAP이 증가한 model capacity의 이점을 얻는지, 그리고 그 이점이 large-model regime에서도 유지되는지 조사한다.</p>
+
+  <p data-entity="model-scaling-p2">Gemma3를 VLM backbone으로 사용하여 4B, 12B, 27B parameter 규모의 LAP 모델을 학습하고, 현재 VLA 분야의 state of the art를 나타내는 해당 규모의 π<sub>0.5</sub>-replicated 변형과 비교한다.</p>
+
+  <p data-entity="model-scaling-p3">전체 data mixture의 2.5%로 구성된 held-out split에서 두 가지 metric을 평가한다. (i) VLM backbone의 token validation loss와 (ii) flow-matching 기반 action expert의 validation loss이다. 서로 다른 action representation 사이에서는 절대 loss 값을 직접 비교할 수 없으므로, token validation loss는 4B 모델 대비 감소율(%)로 보고한다.</p>
+
+  <p data-entity="model-scaling-p4">그림 7에서 보듯이 LAP은 모든 model size에서 일관되게 더 낮은 validation loss를 달성하고 유리한 scaling 거동을 보이며, model capacity가 증가함에 따라 성능이 단조롭게 향상된다. 반면 π<sub>0.5</sub>-replicated baseline은 조기에 포화되고 더 큰 scale에서는 오히려 성능이 저하된다. 이러한 결과는 language-action supervision이 large-model regime에서도 여전히 효과적이며, 추가적인 representational capacity로부터 갈수록 더 큰 이점을 얻는다는 것을 보여준다.</p>
+</section>

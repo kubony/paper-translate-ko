@@ -1,0 +1,67 @@
+<section id="abstract">
+  <h2>초록</h2>
+  <p data-entity="abstract-p1">로보틱스의 오랜 목표는 embodiment별 적응 없이 새로운 로봇 embodiment에 zero-shot으로 배치할 수 있는 generalist policy를 개발하는 것이다. 대규모 multi-embodiment 사전학습에도 불구하고, 기존 Vision–Language–Action 모델(VLA)은 여전히 학습에 사용된 embodiment에 강하게 결부되어 있으며 일반적으로 비용이 많이 드는 미세조정을 필요로 한다. 본 연구는 저수준 로봇 action을 자연어로 직접 표현하여 action supervision을 사전학습된 vision–language 모델의 입출력 분포와 정렬하는 간단한 방법인 <em>Language-Action Pre-training</em>(LAP)을 제안한다. LAP은 학습된 tokenizer도, 비용이 많이 드는 annotation도, embodiment별 아키텍처 설계도 필요로 하지 않는다. LAP을 기반으로 본 연구는 <span class="model">LAP-3B</span>를 제시하며, 이는 저자들이 아는 한 embodiment별 미세조정 없이 이전에 본 적 없는 로봇 embodiment로 상당한 zero-shot transfer를 달성한 최초의 VLA이다. 여러 새로운 로봇과 조작 과제에서 <span class="model">LAP-3B</span>는 평균 zero-shot 성공률 50%를 넘으며, 가장 강력한 기존 VLA보다 약 2× 향상된 성능을 보인다. 또한 LAP이 효율적인 적응과 유리한 scaling을 가능하게 함을 보이는 한편, action prediction과 VQA를 공유된 language-action 형식으로 통합하여 공동 학습을 통해 추가적인 성능 향상을 얻는다.</p>
+</section>
+<section id="keywords">
+  <h2>키워드</h2>
+  <p data-entity="keywords-p1">Vision-Language-Action 모델, Cross-Embodiment 학습</p>
+</section>
+<section id="introduction">
+  <h2>1. 서론</h2>
+  <figure data-entity="figure-1" data-figure="1">
+    <!-- FIGURE 1: original path figures/fig1_banner.pdf -->
+    <figcaption><strong>그림 1.</strong> 본 연구는 저수준 action을 자연어로 직접 표현하여 vision–language backbone을 supervise하는 범용 VLA 사전학습 방법인 Language-Action Pre-training(LAP)을 제안하고, 이를 새로운 embodiment로의 강력한 <em>zero-shot transfer</em>를 입증한 최초의 VLA인 <span class="model">LAP-3B</span>로 구현한다. 최신 VLA와 비교할 때, LAP-3B는 일반화 가능성이 더 높은 embodiment representation을 학습하고 유리한 scaling 특성을 보인다.</figcaption>
+  </figure>
+  <p data-entity="intro-p1">로봇 foundation policy가 궁극적으로 약속하는 바는 <em>어떤</em> 로봇 embodiment라도 제어하여 인간 수준의 지능적 과제를 수행하게 하는 능력이다. Vision–Language–Action 모델(VLA)은 이 목표를 향해 괄목할 만한 진전을 이루어 왔다. 이들은 사전학습된 Vision–Language 모델(VLM)을 활용하여 광범위한 장면, 나아가 과제 일반화를 위한 강력한 시각·의미론적 prior를 확보한다. 그러나 그림 1에서 보듯이, 대규모 multi-embodiment 학습에도 불구하고 최신 VLA는 학습에 사용된 embodiment와 사소한 차이만 있는 경우에도(예: 변경된 gripper 또는 wrist camera 위치) <em>새로운 로봇에서 zero-shot으로</em> 작동하는 일이 여전히 드물다. 실제로 새로운 로봇에 VLA를 배치하려면 흔히 embodiment별로 광범위한 적응이 필요하며, 이는 비용이 많이 들고 하나의 광범위하게 배치 가능한 foundation model이라는 목표를 훼손한다.</p>
+  <p data-entity="intro-p2">근본적으로 zero-shot cross-embodiment transfer가 어려운 이유는 embodiment 공간이 방대하고, 이를 데이터로 포괄하는 데 본질적으로 큰 비용이 들기 때문이다. 과제 및 환경의 다양성은 실제 환경에서 수집한 로봇 데이터와 인터넷 규모의 egocentric video를 통해 확장할 수 있지만, embodiment 다양성은 하드웨어 가용성과 데이터 수집 물류의 제약을 받는다. 예를 들어 Open X-Embodiment 데이터셋이 취합하는 데이터도 불과 수십 종의 로봇에서 나온 것이다. 따라서 zero-shot transfer를 달성하려면 빠짐없는 포괄 범위에 의존하기보다 제한된 embodiment 다양성에서 최대한의 일반화를 끌어내야 한다.</p>
+  <p data-entity="intro-p3">본 연구의 핵심 관찰은 zero-shot cross-embodiment transfer가 motor control을 위해 사전학습된 VLM을 어떻게 적응시키는지에 결정적으로 좌우된다는 것이다. 구체적으로 모델은 embodiment 간 transfer를 가능하게 하는 의미론적·시각적 representation을 유지하면서 정밀한 제어 능력을 습득해야 한다. 이러한 균형이 제대로 관리되지 않으면 embodiment별 action learning이 일반화에 필요한 바로 그 feature를 덮어쓸 수 있다. 그러나 VLM은 모터 수준의 고주파 제어 신호를 해석하거나 생성하도록 사전학습되지 않으므로, 표준 VLA 학습은 분포 불일치를 유발하고 사전학습된 지식을 저하시킬 수 있다.</p>
+  <p data-entity="intro-p4">이러한 관찰에 착안하여 본 연구는 motor control을 위해 사전학습된 VLM backbone을 적응시키는 간단한 VLA 사전학습 방법인 <em>Language-Action Pre-training</em>(LAP)을 제안한다. LAP은 모델이 <em>자연어로 기술된 action</em>을 예측하도록 학습하며, 본 논문에서는 이를 <em>language-action</em>이라 부른다. 그림 1에 나타낸 것처럼 language-action은 raw end-effector action의 순효과를(예: “왼쪽으로 5 cm 이동”, “앞으로 45도 기울임”) VLM이 모델링하도록 학습된 것과 같은 modality로 표현한다. 이는 추가적인 데이터 annotation 없이 <em>고정된</em> 좌표 규약과 template에 따라 raw action에서 parsing할 수 있다.</p>
+  <p data-entity="intro-p5">이러한 representation 선택은 VLM을 <em>raw action</em>을 예측하도록 미세조정하는 표준 VLA 학습 방법에서 발생하는 분포 불일치를 직접 겨냥한다. 여기서 raw action은 연속적인 관절 또는 end-effector 명령이나 그 discretization이며, 임의적이거나 추상적인 token으로 표현된다. 이러한 representation에는 embodiment 전반의 behavior를 통합할 수 있는 의미론적 구조가 거의 없다. 특히 통합된 end-effector action space를 채택한 경우에도 이러한 한계는 지속된다. 기존 VLA는 여전히 새로운 embodiment에 거의 또는 전혀 zero-shot generalization하지 못한다(‘Zero-Shot Cross-Embodiment Generalization’ 절 참조). 이 결과들을 종합하면 cross-embodiment transfer는 action space를 통합하는 것만으로 달성할 수 없으며, 근본적으로 다른 action representation이 필요함을 알 수 있다. Language-action은 supervision signal을 VLM의 사전학습 분포에 가깝게 유지함으로써 그러한 representation을 제공하고, embodiment 간에 transfer되는 의미론적으로 grounding된 feature를 촉진한다.</p>
+  <p data-entity="intro-p6">이 representation을 마련한 다음에는 LAP을 실용적인 VLA 아키텍처로 어떻게 구현할지 살펴본다. 원칙적으로 action generation을 language modeling 문제로 취급하면 LAP을 어떤 VLM 기반 VLA에도 적용할 수 있다. 그러나 이러한 formulation은 일반적으로 inference 시 auto-regressive language-action token sampling에 의존하는데, 이는 비효율적이며 로봇 제어에 적합하지 않다. 따라서 본 연구는 π₀.₅를 따라 LAP으로 학습한 VLM backbone과 연속 제어를 위한 경량 diffusion 기반 action expert를 결합한 hybrid 설계를 채택한다. 이 Mixture-of-Transformers 아키텍처는 language-action supervision의 representation상 이점을 보존하면서 효율적인 실행을 가능하게 한다.</p>
+  <p data-entity="intro-p7"><strong>기여 요약.</strong> 본 연구는 cross-embodiment generalization을 가능하게 하기 위해 action을 자연어로 표현하는 Vision–Language–Action 모델용 범용 사전학습 방법인 Language-Action Pre-training(LAP)을 제안한다. LAP은 효율적인 실시간 제어를 위해 VLM backbone과 경량 action expert를 결합한 <span class="model">LAP-3B</span>로 구현한다. 기존 오픈소스 로봇 데이터셋으로 학습한 <span class="model">LAP-3B</span>는 이전에 본 적 없는 로봇 embodiment에 상당한 zero-shot generalization을 달성하며, 대안적인 action representation에 기반한 기존 사전학습 방법보다 상대적으로 약 2×(절대값으로 약 30%) 향상된 성능을 보인다. <em>저자들이 아는 한, 이는 새로운 실제 로봇 embodiment에서 zero-shot으로 작동하는 최초의 VLA 시스템이다.</em> 모든 code, checkpoint 및 data configuration은 <a href="https://lap-vla.github.io">https://lap-vla.github.io</a>에서 오픈소스로 제공한다.</p>
+  <p data-entity="intro-p8">또한 <span class="model">LAP-3B</span>는 훨씬 적은 demonstration과 gradient step을 사용해 새로운 embodiment와 더 복잡한 dexterous task에 맞게 미세조정할 수 있으며, 최대 2.5× 적은 데이터로 기존 성능과 대등한 수준에 도달한다. 마지막으로 본 연구는 LAP이 더 transfer 가능한 embodiment representation을 학습하고 더 안정적인 학습 dynamics를 보이는 이유를 분석하고, model size 증가에 따른 유리한 scaling 특성을 입증하며, language-action interface가 보조 VQA objective(예: motion prediction)와의 공동 학습을 자연스럽게 지원하여 추가적인 성능 향상을 가져옴을 보인다.</p>
+</section>
+<section id="related-work">
+  <h2>2. 관련 연구</h2>
+  <p data-entity="related-p1"><strong>Vision-Language-Action 모델.</strong> 최근 연구는 크고 다양한 로봇 데이터셋으로 학습한 generalist robot policy를 개발해 왔다. 이 가운데 Vision–Language–Action 모델(VLA)은 특히 유망한 paradigm으로 부상했다. 이러한 모델은 일반적으로 인터넷 규모의 데이터로 사전학습된 Vision–Language 모델(VLM)을 미세조정하여 만든다. 사전학습된 representation은 VLA가 자연어 instruction을 따르고 다양한 시각적 cue를 이해할 수 있게 한다. 그 결과 VLA는 흔히 학습 분포 내에서 우수한 성능을 보일 뿐 아니라 out-of-distribution 환경에 대한 일반화 가능성도 보인다. 그럼에도 기존 VLA는 여러 로봇 embodiment의 데이터로 학습했음에도 광범위한 미세조정 없이는 새로운 embodiment로 zero-shot generalization하지 못한다(‘Zero-Shot Cross-Embodiment Generalization’ 절 참조). 본 연구는 VLA의 embodiment generalization 능력을 크게 향상하는 새로운 action representation을 제안한다.</p>
+  <p data-entity="related-p2"><strong>Cross-Embodiment Policy Learning.</strong> 대규모 robot policy는 일반적으로 이질적인 cross-embodiment 데이터셋으로 학습하며, 서로 다른 state space와 action space를 처리하는 일반적인 전략은 통합 representation을 수작업으로 정의하는 것이다. 가장 직접적인 접근법은 state와 action을 최대 차원까지 padding하거나 end-effector pose와 같은 공유 action space를 사용하는 것이다. 다른 연구는 embodiment별 state 또는 action projector를 학습하거나, 로봇 유형별로 별도의 action head를 사용한다. 이와 병행되는 연구 계열은 embodiment 전반에서 공유되는 latent action 또는 skill을 학습한다. 최근에는 human data와 robot data를 연결하는 통합 action space로 human hand motion을 사용하여, 본 적 있는 embodiment에 대한 task generalization을 가능하게 했다. 이러한 방법은 효과적이지만 일반적으로 새로운 embodiment에 적응하려면 embodiment별 미세조정이 필요한 반면, 본 연구의 방법은 추가 학습 없이 <em>zero-shot embodiment transfer</em>를 달성한다.</p>
+  <p data-entity="related-p3">또 다른 연구 계열은 robot policy가 embodiment feature를 조건으로 사용하게 하여 cross-embodiment learning을 촉진한다. 초기 접근법은 kinematic structure로부터 그러한 feature를 추론하며, 여러 연구는 구조적 유사성을 활용한 human-to-robot transfer에 초점을 맞춘다. 예를 들어 X-VLA는 policy가 embodiment별 soft prompt를 조건으로 사용하게 하고, DexVLA는 명시적인 embodiment별 학습 단계를 도입한다. RDT2도 마찬가지로 zero-shot embodiment transfer를 보고하지만, 새로운 로봇이 데이터 수집에 사용된 로봇과 같은 gripper 설계 및 wrist-mounted camera 구성을 공유한다고 가정한다. 이는 사실상 embodiment variation을 임의의 morphology가 아니라 일치하는 하드웨어 interface로 제한한다. 이와 병행하여 더 광범위한 접근법 계열은 navigation과 embodied control에서 흔히 연구되듯이 긴 interaction history에서 embodiment를 암묵적으로 추론한다. 종합하면 이러한 방법은 주로 prompt, 명시적인 embodiment conditioning, 하드웨어 정렬 또는 historical context를 통해 학습 분포 내의 embodiment variation을 모델링하며, 이전에 본 적 없는 embodiment에 배치할 때는 일반적으로 추가 가정이나 적응을 필요로 한다.</p>
+  <p data-entity="related-p4">이와 달리 LAP은 진정한 zero-shot embodiment transfer라는 상호보완적인 목표에서 출발한다. 명시적인 embodiment-conditioning mechanism을 도입하거나 로봇 간에 일치하는 하드웨어 interface(예: 동일한 gripper와 wrist-mounted camera)에 의존하는 대신, LAP-3B는 적절히 구조화된 action representation을 사용한 대규모 VLA 사전학습에서 cross-embodiment generalization이 직접 출현할 수 있음을 입증한다. embodiment별 설계나 embodiment에 맞춰 정렬된 데이터 수집 가정 없이, LAP-3B는 저자들이 아는 한 <em>이전에 본 적 없는 embodiment에 상당한 zero-shot generalization</em>을 달성한 최초의 VLA이며, 추가 데이터가 있을 때는 더 어려운 과제에 효율적으로 적응할 수도 있다.</p>
+  <p data-entity="related-p5"><strong>VLA를 위한 Action Representation.</strong> action을 어떻게 표현하는지는 사전학습된 VLM을 motor control에 얼마나 효과적으로 적응시킬 수 있는지를 결정한다. 초기 접근법은 action을 code 또는 language-level sub-task로 표현한다. 이러한 formulation은 언어적 supervision을 사용한다는 점에서 본 연구와 취지가 밀접하게 관련되지만, 일반적으로 거친 시간적 추상화 수준에서 작동하며 각 sub-task를 실행하기 위한 별도의 저수준 controller에 의존한다. 이와 달리 LAP은 연속적인 end-effector motion에서 직접 parsing한 <em>세밀한</em> language-action을 사용하고, backbone이 이러한 모터 수준의 효과를 모델링하도록 학습함으로써 저수준 제어에 맞춰진 representation을 얻는다. 더 최근의 연구는 그 대신 action을 2D keypoint 또는 visual trace로 encoding하며, 이는 grounding을 강화하지만 일반적으로 여전히 직접 제어가 아닌 중간 representation으로 사용된다.</p>
+  <table data-entity="table-1" data-table="1">
+    <caption><strong>표 1.</strong> language-action의 변형을 사용하는 VLA를 주요 설계 및 성능 축에서 비교한다. LAP은 대규모 사전학습과 language-action representation을 통해 유일하게 cross-embodiment generalization을 가능하게 한다.</caption>
+    <thead>
+      <tr>
+        <th scope="col">항목</th>
+        <th scope="col">Grover et al.</th>
+        <th scope="col">VLA-0</th>
+        <th scope="col">VLM2VLA</th>
+        <th scope="col"><strong>LAP</strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">대규모 학습</th>
+        <td>✓</td>
+        <td>✗</td>
+        <td>✗</td>
+        <td>✓</td>
+      </tr>
+      <tr>
+        <th scope="row">추론 주파수</th>
+        <td>~0.5Hz</td>
+        <td>4Hz</td>
+        <td>0.2Hz</td>
+        <td><strong>25Hz</strong></td>
+      </tr>
+      <tr>
+        <th scope="row">Cross-Embodiment</th>
+        <td>✗</td>
+        <td>✗</td>
+        <td>✗</td>
+        <td>✓</td>
+      </tr>
+    </tbody>
+  </table>
+  <p data-entity="related-p6">또 다른 연구 계열은 action을 VLM vocabulary에서 사용되지 않거나 비언어적인 token에 mapping하며, 이는 분포 불일치를 유발하고 사전학습된 VLM representation을 저하시킬 수 있다. 최근에는 action을 자연어로 직접 표현하거나 raw string token으로 표현하기 시작한 접근법이 등장했으며, 그 결과 semantic grounding, language following 및 task-level generalization이 향상되었다. 표 1에 요약했듯이 LAP은 두 가지 핵심 차별점을 통해 새롭게 부상하는 이 paradigm을 발전시킨다. 첫째, 실시간 제어를 위한 <em>실용적인</em> language-action VLA로 LAP-3B를 도입한다. 둘째, language-action representation이 대규모 로봇 사전학습 corpus로 scale될 수 있음을 입증하여 zero-shot cross-embodiment transfer를 가능하게 한다.</p>
+</section>

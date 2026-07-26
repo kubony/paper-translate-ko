@@ -1,0 +1,69 @@
+\subsection{Fine-Tuning Efficiency on New Embodiments}
+\label{sec:finetuing}
+
+While \textsc{LAP-3B} exhibits non-trivial zero-shot performance on novel embodiments for simple tasks, more challenging manipulation scenarios still require embodiment-specific adaptation at the current training scale. We therefore investigate whether LAP improves \emph{fine-tuning efficiency} along two axes: \emph{data efficiency}---requiring fewer demonstrations to reach a given performance level, and \emph{compute efficiency}---converging with fewer gradient steps.
+
+\noindent\textbf{Simulation Fine-Tuning Experiments.}
+We first fine-tune \textsc{LAP-3B} on the LIBERO simulation benchmark \cite{liu2023liberobenchmarkingknowledgetransfer} and compare against $\pi_{0.5}$-replicated and $\pi_0$-replicated baselines trained on the same pre-training mixture. We additionally report an oracle baseline, $\pi_{0.5}$-Oracle, initialized from the original $\pi_{0.5}$ weights pre-trained on substantially larger datasets.
+
+
+As shown in Fig.~\ref{fig:libero-fine-tuning}(a), \textsc{LAP-3B} converges substantially faster than all baselines. With only a single epoch of fine-tuning, \textsc{LAP-3B} already reaches 78\% success, and achieves near-maximum performance (96.8\%) within six epochs---significantly fewer updates than both replicated baselines and the oracle model \cite{intelligence2025pi05visionlanguageactionmodelopenworld}. While $\pi_{0.5}$-Oracle eventually attains slightly higher asymptotic performance after extended training, \textsc{LAP-3B} demonstrates markedly superior compute efficiency. These results indicate that language-action pre-training yields a more transferable initialization that adapts rapidly to new embodiments. We summarize LIBERO benchmark results for \textsc{LAP-3B} and baseline methods in Appendix~\ref{app:additional_results}.
+% Table~\ref{tab:libero_results_small}, along with several open-source models. For a full comparison with additional open-source models, see Appendix~\ref{app:additional_results}.
+
+\noindent\textbf{Real-World Fine-Tuning Experiments.}
+We next fine-tune on two challenging real-robot tasks (Fig.~\ref{fig:libero-fine-tuning} top row, right):
+\begin{itemize}
+    \item \textbf{Hang Tape on Rack}: pick up the tape by its edge and hang it on the top rack, requiring dexterity and precision. The task is evaluated on the YAM robot.
+    \item \textbf{Fold Towel and Place in Basket}: fold the towel in half from left to right, then place the folded towel into a basket, requiring both fine-grained dexterity and long-horizon manipulation. The task is evaluated on the Custom Franka robot.
+\end{itemize}
+Results are shown in Fig.~\ref{fig:libero-fine-tuning}. We evaluate task progress metrics over 20 trials per data point (see Appendix~\ref{app:evaluation_details} for details).
+
+Across both tasks, \textsc{LAP-3B} achieves strong performance with substantially fewer demonstrations. On YAM, \textsc{LAP-3B} reaches approximately 50\% task progress using only 20 demonstrations---roughly \textbf{$\bm{2.5\times}$ demos fewer than baselines}. On Franka, \textsc{LAP-3B} consistently outperforms $\pi_{0.5}$-replicated and $\pi_0$-replicated across all data regimes. Together, these results demonstrate that language-action pre-training produces a more adaptable VLA, improving both sample efficiency and fine-tuning speed when transferring to new embodiments and tasks.
+
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig5_analysis.pdf}
+    \caption{
+    \textbf{(a) T-SNE visualizations of learned embodiment representations} for \textsc{LAP-3B} and $\pi_{0.5}$-replicated. \textsc{LAP-3B} exhibits substantial overlap between training and unseen embodiments, whereas $\pi_{0.5}$-replicated shows limited alignment, indicating that \textsc{LAP-3B} learns more transferable, embodiment-agnostic control representations.
+    \textbf{(b) Action prediction error on unseen embodiments during pre-training.} \textsc{LAP-3B} achieves consistently lower action prediction error on held-out unseen embodiments throughout training, compared to $\pi_{0.5}$-replicated and $\pi_{0}$-replicated baselines. This indicates that language-action supervision enables the model to learn control representations that generalize across embodiments, allowing more accurate action prediction on novel robots as well as smoother training dynamics.
+    }
+    \label{fig:analysis}
+\end{figure*}
+
+\subsection{Analyzing LAP’s Cross-Embodiment Generalization}
+
+\noindent\textbf{T-SNE visualization of embodiment representations.}
+We visualize learned embodiment features using t-SNE in Fig.~\ref{fig:analysis}(a) by embedding the average prelogits of action tokens, which capture internal control representations across robot embodiments. \textsc{LAP-3B} exhibits substantially improved alignment between unseen embodiments and training data, with features from unseen embodiments overlapping closely with those from training embodiments rather than forming separate clusters. In this representation space, stronger overlap between training and unseen embodiments indicates that the model has learned more transferable, embodiment-agnostic representations, helping explain why language-action pre-training enables strong zero-shot embodiment transfer.
+
+
+\noindent\textbf{Low action prediction error on unseen embodiments.}
+We next evaluate the quality of representations learned during pre-training by measuring action prediction error on held-out datasets from \emph{unseen} robot embodiments described in Sec.~\ref{sec:finetuing}. Prediction error is measured as the $\ell_2$ distance between predicted and ground-truth actions.
+
+As shown in Fig.~\ref{fig:analysis}(b), \textsc{LAP-3B} consistently achieves lower action prediction error on unseen embodiments than baselines trained with alternative action representations, indicating that language-action supervision leads to more generalizable control representations across embodiment shifts. In addition, the prediction error decreases smoothly and monotonically over training, suggesting that LAP enables more stable training dynamics.
+
+\begin{wraptable}{r}{0.5\columnwidth}
+\vspace{-12pt}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{0.95}
+\caption{Best prediction errors on held-out datasets from \emph{unseen robot embodiments} for \textsc{LAP-3B} and baseline methods. Best per row is bolded.}
+\label{tab:val_losses}
+\begin{tabular}{lccc}
+\toprule
+ & \textbf{\textsc{LAP-3B}} & $\pi_{0.5}$-replicated & $\pi_{0}$-replicated \\
+\midrule
+Prediction Error (Unseen) & \textbf{0.151} & 0.168 & 0.189 \\
+Validation Loss (Unseen) & \textbf{0.049} & 0.051 & 0.052 \\
+\bottomrule
+\end{tabular}
+\vspace{-12pt}
+\end{wraptable}
+
+We additionally report the best validation loss of the (flow-matching) action expert in Table~\ref{tab:val_losses}. Taken together, these results suggest that language-action pre-training does not merely stabilize optimization, but fundamentally improves how control representations transfer across embodiments—allowing \textsc{LAP-3B} to predict more accurate actions on unseen robots and explaining both its strong zero-shot performance and superior fine-tuning efficiency.
+
+
+
+
+

@@ -1,0 +1,54 @@
+{
+  "arxiv_id": "2602.10556v2",
+  "title": "LAP: Language-Action Pre-Training Enables Zero-shot Cross-Embodiment Transfer",
+  "authors": [
+    {
+      "name": "Lihan Zha",
+      "affiliation": ""
+    },
+    {
+      "name": "Asher J. Hancock",
+      "affiliation": ""
+    },
+    {
+      "name": "Mingtong Zhang",
+      "affiliation": ""
+    },
+    {
+      "name": "Tenny Yin",
+      "affiliation": ""
+    },
+    {
+      "name": "Yixuan Huang",
+      "affiliation": ""
+    },
+    {
+      "name": "Dhruv Shah",
+      "affiliation": ""
+    },
+    {
+      "name": "Allen Z. Ren",
+      "affiliation": ""
+    },
+    {
+      "name": "Anirudha Majumdar",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "A long-standing goal in robotics is a generalist policy that can be deployed zero-shot on new robot embodiments without per-embodiment adaptation. Despite large-scale multi-embodiment pre-training, existing Vision-Language-Action models (VLAs) remain tightly coupled to their training embodiments and typically require costly fine-tuning. We introduce Language-Action Pre-training (LAP), a simple recipe that represents low-level robot actions directly in natural language, aligning action supervision with the pre-trained vision-language model's input-output distribution. LAP requires no learned tokenizer, no costly annotation, and no embodiment-specific architectural design. Based on LAP, we present LAP-3B, which to the best of our knowledge is the first VLA to achieve substantial zero-shot transfer to previously unseen robot embodiments without any embodiment-specific fine-tuning. Across multiple novel robots and manipulation tasks, LAP-3B attains over 50% average zero-shot success, delivering roughly a 2x improvement over the strongest prior VLAs. We further show that LAP enables efficient adaptation and favorable scaling, while unifying action prediction and VQA in a shared language-action format that yields additional gains through co-training.",
+  "comment": "Project website: https://lap-vla.github.io",
+  "journal_ref": "",
+  "primary_category": "cs.RO",
+  "categories": [
+    "cs.RO",
+    "cs.AI"
+  ],
+  "published": "2026-02-11T06:09:11Z",
+  "updated": "2026-02-15T15:32:16Z",
+  "abs_url": "https://arxiv.org/abs/2602.10556",
+  "pdf_url": "https://arxiv.org/pdf/2602.10556",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2602.10556v2",
+    "pdf": "https://arxiv.org/pdf/2602.10556v2"
+  }
+}

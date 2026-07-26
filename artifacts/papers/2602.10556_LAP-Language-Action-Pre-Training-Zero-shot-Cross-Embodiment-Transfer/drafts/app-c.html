@@ -1,0 +1,106 @@
+<section id="subsec-flow-matching-objective">
+  <h3>Flow-Matching Objective</h3>
+
+  <p data-entity="flow-matching-p1">ground-truth action chunk <var>a</var>와 base noise <var>z</var> ∼ 𝒩(0, I)가 주어지면, 다음과 같은 interpolated state를 구성한다.</p>
+
+  <pre class="equation" data-eq="A2" data-entity="equation-A2">x_τ = (1 − τ)z + τa,    τ ∼ U(0, 1)</pre>
+
+  <p data-entity="flow-matching-p2">이에 대응하는 target velocity는 다음과 같다.</p>
+
+  <pre class="equation" data-eq="A3" data-entity="equation-A3">u = a − z</pre>
+
+  <p data-entity="flow-matching-p3">action expert <var>v</var><sub>φ</sub>는 다음 flow-matching objective를 통해 학습된다.</p>
+
+  <pre class="equation" data-eq="A4" data-entity="equation-A4">L_flow = 𝔼[‖v_φ(x_τ, τ; o, l) − (a − z)‖₂²]</pre>
+
+  <p data-entity="flow-matching-p4">이 objective는 observation과 task를 조건으로 noise를 유효한 action으로 운반하는 continuous vector field를 모델이 학습하도록 유도한다.</p>
+
+  <p data-entity="flow-matching-p5">inference 시에는 학습된 dynamics를 다음과 같이 적분하여 action을 생성한다.</p>
+
+  <pre class="equation" data-eq="A5" data-entity="equation-A5">dx_τ / dτ = v_φ(x_τ, τ; o, l)</pre>
+
+  <p data-entity="flow-matching-p6"><var>τ</var> = 0에서 <var>τ</var> = 1까지 fixed-step explicit ODE solver를 사용하여 적분한다.</p>
+</section>
+
+<section id="subsec-training-data">
+  <h3>Training Data</h3>
+
+  <p data-entity="training-data-p1">학습에 사용한 전체 dataset mixture는 표 5에 요약한다. 보고된 weight는 각 dataset의 상대적 크기를 반영하므로, training batch 내에서 각 source로부터 추출되는 sample의 실제 비율을 나타낸다. DROID dataset은 task coverage가 광범위하고 environmental diversity가 풍부하므로 더 높은 비율을 할당한다.</p>
+
+  <table id="tab-data-mix" data-entity="table-5" data-table="5">
+    <caption><strong>표 5.</strong> Training data mixture. 백분율은 각 training batch 내에서 각 dataset이 차지하는 sample의 실제 비율을 나타낸다.</caption>
+    <thead>
+      <tr>
+        <th colspan="2">Training Dataset Mixture</th>
+      </tr>
+      <tr>
+        <th scope="col">Dataset</th>
+        <th scope="col">비율</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>DROID</td><td>85.26%</td></tr>
+      <tr><td>Fractal</td><td>5.86%</td></tr>
+      <tr><td>Bridge</td><td>3.39%</td></tr>
+      <tr><td>BC-Z</td><td>0.47%</td></tr>
+      <tr><td>Taco Play</td><td>0.73%</td></tr>
+      <tr><td>Jaco Play</td><td>0.12%</td></tr>
+      <tr><td>Furniture Bench Dataset</td><td>0.31%</td></tr>
+      <tr><td>UTAustin Mutex</td><td>0.56%</td></tr>
+      <tr><td>Berkeley Fanuc Manipulation</td><td>0.19%</td></tr>
+      <tr><td>FMB Dataset</td><td>0.09%</td></tr>
+      <tr><td>Berkeley Autolab UR5</td><td>0.15%</td></tr>
+      <tr><td>Austin Buds Dataset</td><td>0.05%</td></tr>
+      <tr><td>Austin Sailor Dataset</td><td>0.53%</td></tr>
+      <tr><td>Austin Sirius Dataset</td><td>0.44%</td></tr>
+      <tr><td>Viola</td><td>0.12%</td></tr>
+      <tr><td>MolmoAct</td><td>1.73%</td></tr>
+    </tbody>
+  </table>
+
+  <p data-entity="training-data-p2">학습 중에는 연속된 step에서 action sequence가 작은 motion threshold보다 낮은 경우 해당 idle segment를 제거하고, task instruction이 없는 trajectory는 폐기한다.</p>
+</section>
+
+<section id="subsec-compute-infrastructure-details">
+  <h3>Compute 및 Infrastructure 세부 사항</h3>
+
+  <p data-entity="compute-p1"><strong>Hero-run compute.</strong> VQA co-training을 적용한 <span class="small-caps">LAP-3B</span>와 적용하지 않은 <span class="small-caps">LAP-3B</span>, 그리고 복제한 모든 baseline을 포함하여 최종 보고된 모든 model checkpoint는 동일한 large-scale pre-training setup으로 학습했다. 각 hero run은 TPU v6e-64 slice에서 약 50시간 동안 학습했으며, 이렇게 얻은 checkpoint를 모든 main experiment에 사용했다. 보고된 각 모델의 총 hero-run compute는 약 <strong>모델당 50 TPU v6e-64시간</strong>이다.</p>
+
+  <p data-entity="compute-p2"><strong>총 pre-training compute.</strong> 초기 prototyping, debugging run, downstream fine-tuning experiment를 제외하고, <span class="small-caps">LAP-3B</span>와 복제한 모든 baseline을 포함한 전체 pre-training experiment에서 약 200회의 large-scale training run을 수행했다. 이 experiment들은 총 <strong>4,000 TPU v6e-64시간 이상</strong>을 사용했다.</p>
+
+  <p data-entity="compute-p3"><strong>Inference compute.</strong> 모든 real-robot evaluation은 추가적인 model parallelism, specialized hardware 또는 acceleration technique 없이 단일 범용 GPU인 NVIDIA RTX 4090을 사용하여 real time으로 실행한다. 보고된 experiment의 end-to-end real-robot evaluation에는 총 약 <strong>24시간의 사람이 감독한 runtime</strong>이 필요했다.</p>
+</section>
+
+<section id="sec-evaluation-protocol">
+  <h2>Evaluation Protocol</h2>
+
+  <p data-entity="evaluation-p1">각 task는 workspace boundary 안에서 object placement를 무작위화하여 20회의 독립 trial로 평가한다. task가 성공하거나 time-out이 발생하거나 safety-triggered abort가 일어나면 trial을 종료한다. safety-triggered abort의 예로는 robot이 table과 충돌하거나 joint limit에 도달하거나 과도하게 빠르거나 불안정한 motion과 같은 unsafe behavior를 보이는 경우가 있다.</p>
+
+  <p data-entity="evaluation-p2">zero-shot experiment에서는 binary task success와 함께 binomial success rate에 대한 95% finite-sample valid confidence interval을 보고한다. 이 interval은 Type-I error, 즉 miscoverage probability를 제어한다.</p>
+
+  <p data-entity="evaluation-p3">fine-tuning experiment에서는 부분적인 task completion을 포착하기 위해 단계별 success score를 사용한다.</p>
+
+  <div class="evaluation-rubric" data-entity="rubric-hang-tape">
+    <h4>• Rack에 Tape 걸기</h4>
+    <ul>
+      <li>0.25: tape에 도달</li>
+      <li>0.5: tape를 grasp</li>
+      <li>0.75: tape를 든 채 rack에 도달</li>
+      <li>1.0: tape를 성공적으로 걸기</li>
+    </ul>
+  </div>
+
+  <div class="evaluation-rubric" data-entity="rubric-fold-towel">
+    <h4>• Towel을 접어 Basket에 넣기</h4>
+    <ul>
+      <li>0.5: towel을 올바르게 접음</li>
+      <li>0.75: basket에 넣었으나 접히지 않음</li>
+      <li>1.0: 전체 task 성공</li>
+    </ul>
+  </div>
+
+  <figure id="fig-zeroshot-rollout-visualization" data-entity="figure-12" data-figure="12">
+    <!-- FIGURE 12 PLACEHOLDER: original path figures/appendix/fig9_rollout_visualization.pdf -->
+    <figcaption><strong>그림 12.</strong> <strong>Zero-shot evaluation rollout 시각화.</strong> 서로 다른 robot embodiment와 task 전반에서 policy evaluation에 사용된 camera view의 example observation을 왼쪽부터 오른쪽 순서로 제시한다.</figcaption>
+  </figure>
+</section>

@@ -1,0 +1,83 @@
+<!-- FIGURE 3 PLACEHOLDER: figures/fig3_zeroshot.pdf -->
+<figure id="fig-zero-shot" data-entity="figure-3" data-figure="3">
+  <div class="figure-placeholder">[그림 3 삽입 위치: Zero-shot cross-embodiment 일반화 성능]</div>
+  <figcaption><strong>그림 3. Zero-shot cross-embodiment 일반화 성능.</strong> LAP-3B는 학습에서 본 embodiment에서 π₀.₅-DROID와 대등한 성능을 달성한다. 이전에 본 적 없는 세 가지 embodiment와 실제 환경의 조작 과제 여섯 가지 전반에서 LAP-3B는 <strong>평균 zero-shot 성공률 50% 이상</strong>을 달성하여 가장 강력한 baseline보다 약 2× 향상된 성능을 보이는 반면, 모든 오픈소스 VLA의 성공률은 0으로 붕괴한다. 오차 막대는 제1종 오류(비포함) 확률을 통제하는 95% 유한 표본 유효 신뢰구간을 나타낸다.</figcaption>
+</figure>
+
+<section id="sec-experiments" data-entity="section-experiments">
+  <h2 data-entity="heading-experiments">실험</h2>
+
+  <p data-entity="experiments-p1">본 실험의 목적은 language-action이 VLA pre-training에 더 우수한 action representation을 제공하는지 평가하는 것이다. 특히 최신 VLA의 중대한 한계로 남아 있는 <strong>cross-embodiment generalization</strong>에 초점을 맞춘다. 구체적으로 다음 질문에 답하고자 한다.</p>
+
+  <ol data-entity="experiments-questions">
+    <li data-entity="experiments-q1">LAP은 zero-shot cross-embodiment transfer를 가능하게 하는가?</li>
+    <li data-entity="experiments-q2">LAP은 까다로운 과제에서 새로운 embodiment에 대한 효율적인 fine-tuning을 지원하는가?</li>
+    <li data-entity="experiments-q3">LAP의 language-action representation은 학습된 representation을 어떻게 형성하며, 강력한 cross-embodiment generalization을 어떻게 가능하게 하는가?</li>
+    <li data-entity="experiments-q4">VQA dataset과 함께 <span class="small-caps">LAP-3B</span>를 공동 학습할 때 어떤 효과가 있는가?</li>
+    <li data-entity="experiments-q5">LAP은 model size가 커질수록 유리하게 scale되는가?</li>
+  </ol>
+
+  <p data-entity="experiments-p2">이 질문들에 답하기 위해 LAP을 <strong>네 가지 로봇 embodiment</strong>, <strong>열 가지 실제 환경 조작 과제</strong>, 그리고 LIBERO simulation benchmark에서 평가한다. 먼저 학습에서 본 embodiment 하나와 보지 못한 embodiment 세 가지에서 별도 적응 없이 즉시 사용할 수 있는 성능을 시험한 다음, 새로운 로봇과 과제에 대한 fine-tuning 효율을 연구한다. 이어 LAP의 language-action representation이 학습 dynamics에 미치는 영향을 조사하고, Visual–Question–Answering(VQA) dataset을 활용한 공동 학습 분석으로 마무리한다.</p>
+
+  <h3 data-entity="heading-baselines">Baseline</h3>
+  <p data-entity="baselines-p1">아래에서는 두 범주의 baseline을 평가한다. 공정한 비교를 위해 재현한 모든 baseline의 learning rate, batch size, loss weight 등을 신중히 조정했으며, 전체 세부 사항은 부록의 구현 세부 사항에 제시한다.</p>
+
+  <h4 data-entity="heading-open-source-vlas">오픈소스 VLA</h4>
+  <p data-entity="open-source-vlas-p1">기존 방법이 이미 zero-shot cross-embodiment transfer를 보이는지 평가하기 위해 공개된 여러 VLA checkpoint를 평가한다.</p>
+  <ol data-entity="open-source-vlas-list">
+    <li data-entity="open-source-vla-1"><strong>π₀.₅-DROID</strong>: 현재 DROID benchmark에서 가장 강력한 VLA이다.</li>
+    <li data-entity="open-source-vla-2"><strong>π₀.₅-Base</strong>: 저자들이 아는 한 공개된 VLA base model 가운데 가장 강력한 모델이다.</li>
+    <li data-entity="open-source-vla-3"><strong>X-VLA</strong>: embodiment generalization을 명시적으로 목표로 한다.</li>
+    <li data-entity="open-source-vla-4"><strong>MolmoAct</strong></li>
+    <li data-entity="open-source-vla-5"><strong>OpenVLA</strong></li>
+  </ol>
+
+  <h4 data-entity="heading-action-representation-comparison">Action Representation 비교</h4>
+  <p data-entity="action-representation-p1">language-action supervision의 영향을 분리하기 위해 architecture와 data mixture는 동일하고 action representation만 다른 통제 baseline을 학습한다.</p>
+  <ol data-entity="action-representation-list">
+    <li data-entity="action-representation-1"><strong>π₀.₅-replicated</strong>: FAST token을 사용하여 VLM을 supervise한다. FAST tokenizer는 본 모델보다 훨씬 많은 로봇 데이터로 pre-training되었으므로 특히 강력한 baseline을 이룬다.</li>
+    <li data-entity="action-representation-2"><strong>π₀-replicated</strong>: VLM에서 action supervision을 완전히 제거하고 action expert만 supervise하여 language-action pre-training의 이점을 측정한다.</li>
+    <li data-entity="action-representation-3"><strong>VLA-0-replicated</strong>: 연속 action을 숫자 token으로 표현하는 VLA-0 방식에 따라 VLM을 supervise한다.</li>
+  </ol>
+  <p data-entity="experiments-p3">모든 실험을 통틀어 <strong>실제 로봇 평가 trial을 1,300회 이상</strong> 수행한다.</p>
+
+  <section id="subsec-zero-shot" data-entity="section-zero-shot">
+    <h3 data-entity="heading-zero-shot">Zero-Shot Cross-Embodiment Generalization</h3>
+
+    <h4 data-entity="heading-embodiments-tasks">Embodiment와 과제</h4>
+    <p data-entity="zero-shot-p1">네 가지 로봇 embodiment(그림 3)에서 평가한다. 이들은 pre-training mixture에 포함된 DROID setup, 그리고 이전에 본 적 없는 세 가지 embodiment인 새로운 gripper 및 wrist-mounted camera 구성을 갖춘 custom 7-DoF Franka Panda 로봇, 6-DoF YAM 로봇, 7-DoF Kinova 로봇이다.</p>
+
+    <p data-entity="zero-shot-p2">다섯 가지 유형의 조작 과제(그림 3 위쪽 행)를 평가한다.</p>
+    <ol data-entity="task-list">
+      <li data-entity="task-pick-place"><strong>Pick and Place</strong>: 물체를 집어 container 안에 놓는 과제로, gripper geometry, camera placement, robot appearance 전반의 일반화를 시험한다.</li>
+      <li data-entity="task-sort"><strong>Sort</strong>: table 위의 모든 물체를 basket에 분류해 넣는 과제로, long-horizon manipulation을 평가한다.</li>
+      <li data-entity="task-tissue"><strong>Tissue</strong>: 상자에서 tissue를 뽑아 table 위에 놓는 과제로, deformable object에 대한 adaptive grasping과 높이 추론이 필요하다.</li>
+      <li data-entity="task-put-towel"><strong>Put Towel</strong>: 평평한 towel을 집어 basket 안에 놓는 과제로, 정밀한 grasp 위치 결정과 큰 수직 motion이 필요하다.</li>
+      <li data-entity="task-pour"><strong>Pour</strong>: bowl의 내용물을 붓는 과제로, 회전 제어와 primitive sequencing을 시험한다.</li>
+    </ol>
+
+    <p data-entity="zero-shot-p3">이 과제들은 분류 중 충돌을 피하기 위해 gripper를 회전하는 경우처럼 완전한 6-DoF 조작을 요구하며, 상호보완적인 primitive skill을 측정한다.</p>
+
+    <p data-entity="zero-shot-p4">각 embodiment에서는 이 과제들 가운데 두 가지를 과제당 20회 trial로 평가한다. 통계적으로 유효한 유한 표본 coverage를 제공하는 방법에 따라 95% 신뢰구간과 함께 평균 성공률을 보고한다. heuristic 표준편차와 달리 이 구간은 제1종 오류(비포함) 확률을 명시적으로 통제한다. 성공 metric은 이진값이다. 전체 과제를 완료한 경우에만 해당 trial을 성공으로 표시한다. 결과는 그림 3에 요약한다.</p>
+
+    <h4 data-entity="heading-seen-embodiment">학습에서 본 Embodiment 평가</h4>
+    <p data-entity="seen-embodiment-p1">학습 분포 내의 DROID setup에서는 거의 모든 오픈소스 VLA가 유의미한 과제 성공률을 달성하지 못한다. 유일한 예외는 DROID dataset으로 명시적으로 fine-tuning된 π₀.₅-DROID이다. 이는 현재 VLA의 중대한 한계를 보여준다. 대규모 multi-embodiment pre-training을 거쳤음에도 학습에서 본 embodiment에 효과적으로 배치하려면 대체로 embodiment별 적응이 필요하다.</p>
+
+    <p data-entity="seen-embodiment-p2">재현 비교 baseline의 경우 π₀.₅-replicated와 π₀-replicated는 중간 수준이면서 서로 비슷한 성능을 달성한다. 그러나 VLA-0-replicated는 일관되게 거의 0에 가까운 action으로 붕괴한다. 이 failure mode는 사소한 예측에 대한 overfitting에서 비롯되며, 크기가 작은 action token만 예측하는 형태로 나타난다. 이 문제는 LIBERO처럼 더 작고 정제된 benchmark에서는 우려가 덜할 수 있지만, noise와 behavior diversity가 불가피한 대규모 환경에서는 치명적이다.</p>
+
+    <p data-entity="seen-embodiment-p3">주목할 점은 <span class="small-caps">LAP-3B</span>가 같은 backbone architecture와 학습 데이터를 사용하면서도 과제 전반에서 π₀.₅-replicated와 π₀-replicated보다 일관되게 약 15%p 높은 성능을 보인다는 것이다. 이는 language-action representation의 우수성을 보여준다. 또한 <span class="small-caps">LAP-3B</span>는 DROID dataset 자체에서 embodiment별 fine-tuning을 전혀 수행하지 않고도 π₀.₅-DROID와 대등한 성능을 달성한다. 이는 language-action supervision이 대규모의 이질적인 로봇 데이터로부터 효과적인 학습을 가능하게 하여 강력한 학습 분포 내 성능으로 이어짐을 시사한다.</p>
+
+    <h4 data-entity="heading-unseen-embodiment">학습에서 보지 못한 Embodiment 평가</h4>
+    <p data-entity="unseen-embodiment-p1">다음으로 이전에 본 적 없는 세 가지 로봇 embodiment에 대한 zero-shot transfer를 평가한다. 모든 설정에서 <span class="small-caps">LAP-3B</span>는 상당하고 일관된 우위를 보이며, <em>평균 성공률이 50%를 넘는다.</em> 이는 <strong>가장 강력한 baseline 대비 약 2× 향상</strong>된 결과이다. 특히 <span class="small-caps">LAP-3B</span>는 새로운 모든 embodiment에서 일관되게 높은 성능을 달성한 유일한 모델이다.</p>
+
+    <p data-entity="unseen-embodiment-p2">반면 학습 분포 내에서 강력한 성능을 보였던 π₀.₅-DROID를 포함한 모든 오픈소스 VLA는 보지 못한 로봇에서 의미 있는 behavior를 생성하지 못한다. 이러한 급격한 붕괴는 기존 VLA 학습 방법이 여전히 embodiment별 제어 convention에 강하게 결부되어 있어, 시각 및 과제 semantics가 유사하게 유지되더라도 transfer를 가로막는다는 점을 시사한다.</p>
+
+    <p data-entity="unseen-embodiment-p3">이와 달리 <span class="small-caps">LAP-3B</span>는 embodiment 전반에서 <em>의미론적으로 grounding된 motion</em>과 <em>세밀한 공간 제어</em>를 모두 보인다. 저자들은 language-action interface가 공유되는 embodiment-agnostic abstraction을 제공하여 VLM의 일반화 가능한 visual-semantic representation을 더 잘 보존하는 동시에 새로운 로봇 kinematics에서도 정밀한 실행을 가능하게 한다고 가정한다. 이러한 분리는 <span class="small-caps">LAP-3B</span>가 일관된 과제 의도를 유지하면서 기존 VLA를 저해하는 embodiment별 overfitting을 피할 수 있게 한다.</p>
+  </section>
+</section>
+
+<!-- FIGURE 4: figures/fig4_finetune.pdf -->
+<figure id="fig-libero-fine-tuning" data-entity="figure-4" data-figure="4">
+  <div class="figure-placeholder">[그림 4 삽입 위치: Simulation(LIBERO) 및 실제 환경 조작 과제의 fine-tuning 효율]</div>
+  <figcaption><strong>그림 4. Simulation(LIBERO) 및 실제 환경 조작 과제의 fine-tuning 효율.</strong> 두 domain 모두에서 <span class="small-caps">LAP-3B</span>는 baseline policy보다 훨씬 빠르게 적응하여, 현저히 적은 epoch와 demonstration으로 높은 성능에 도달한다. simulation에서 <span class="small-caps">LAP-3B</span>는 baseline에 필요한 학습 step의 일부만으로 거의 최적인 성공률에 수렴한다. 실제 로봇에서 <span class="small-caps">LAP-3B</span>는 약 <strong>2.5× 적은 demonstration</strong>으로 대등한 과제 성능을 달성하여, 새로운 embodiment로 transfer할 때 데이터 및 compute 효율이 크게 개선됨을 입증한다.</figcaption>
+</figure>
