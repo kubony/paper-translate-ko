@@ -105,6 +105,81 @@ MACHINE_TRANSLATION_RESIDUE = (
 INLINE_CITE = re.compile(r"\[\d{1,3}(?:,\s*\d{1,3})*\]")
 CITE_OK_CONTEXT = re.compile(r"[∈±\[\(=,]\s*$")
 
+# 백슬래시가 벗겨진 LaTeX 매크로. LATEX_REMNANT는 `\\[A-Za-z]+`를 찾으므로
+# LaTeX 소스를 기계 치환해 백슬래시만 사라진 산출물(`noindent본문...`,
+# `표. textbf평가 결과`, longtable preamble 덤프)을 통과시켰다.
+# 자연어·정상 번역문에 등장할 수 없는 토큰만 골라 오탐을 막는다.
+BARE_LATEX_TOKENS = (
+    "noindent", "textbf", "textit", "texttt", "toprule", "midrule", "bottomrule",
+    "lowerrule", "endhead", "endfoot", "hdashline", "tabcolsep", "arraystretch",
+    "raggedright", "arraybackslash", "longtable", "longtabel", "cmark", "xmark",
+    "trianglemark", "finalonly", "showcomments", "togglefalse", "mathdollar",
+    "displaystyle", "bfseries", "itshape", "resizebox", "multirow", "multicolumn",
+    "cellcolor", "rowcolor", "linewidth", "textwidth", "scriptsize", "footnotesize",
+    "vskip", "arraybackslashp",
+)
+BARE_LATEX = re.compile(
+    r"(?<![A-Za-z])(?:" + "|".join(BARE_LATEX_TOKENS) + r")(?![A-Za-z])"
+)
+# `\num[round-mode=places, round-precision=4]` 처럼 옵션 인자만 남은 흔적.
+BARE_LATEX_OPTARG = re.compile(r"\bnum\[round-mode", re.IGNORECASE)
+# `\ref{sec:cost}` 가 풀려 `부록 sec:cost_parameters` 로 인쇄된 흔적.
+REF_LABEL = re.compile(r"(?<![A-Za-z])(?:sub)?(?:sec|tab|fig|eq|alg|app|thm|lem|def):[A-Za-z0-9_\-]{2,}")
+
+# 마크다운 원문이 조판되지 않고 그대로 인쇄된 흔적.
+# `|---|---:|` 정렬 구분선은 산문에 나올 수 없으므로 단독으로 FAIL 근거가 된다.
+MD_TABLE_SEP = re.compile(r"^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)+\|?[ \t]*$", re.M)
+# `# 부록` 같은 해시 헤딩. 코드블록 주석과 구별할 수 없어 WARN으로만 다룬다.
+MD_HEADING = re.compile(r"^[ \t]*#{1,6}[ \t]+\S", re.M)
+
+# 캡션에 원본 파일명·자산 URL이 노출된 흔적.
+# 규칙은 `그림 N. <한 줄 요약>.` 이므로 캡션 행에 확장자가 오면 번역되지 않은 것이다.
+CAPTION_FILENAME = re.compile(
+    r"^[ \t]*(?:그림|표|사진|이미지|영상|동영상|원문\s*피겨|Figure|Table)\b[^\n]{0,90}?"
+    r"\.(?:png|jpe?g|gif|webp|svg|mp4|webm|mov)\b",
+    re.M | re.IGNORECASE,
+)
+
+# 렌더 템플릿이 값 없는 항목을 걸러내지 못해 남은 자리표시 문자열.
+NULL_RESIDUE_PATTERNS = (
+    ("없음(null)", re.compile(r"없음\s*\(\s*null\s*\)")),
+    ("제공되지 않음", re.compile(r"(?:URL|url)[^\n]{0,20}제공되지\s*않(?:음|았)")),
+    ("undefined", re.compile(r"(?<![A-Za-z])undefined(?![A-Za-z])")),
+    ("[object Object]", re.compile(r"\[object\s+Object\]")),
+)
+NULL_RESIDUE_LIMIT = 3      # 이 개수를 넘으면 템플릿 누수로 보고 FAIL
+
+# 본문이 참조하는 표/그림 번호 대비 실제 캡션 존재 검사.
+# 캡션은 줄 첫머리의 `표 3.` / `그림 3:` 형태, 참조는 `표 3에` 처럼 문장 안에 온다.
+# 캡션 번호는 `그림 3a` 처럼 패널별로 쪼개질 수 있다. 서브라벨을 벗긴 기본 번호도
+# 캡션이 있는 것으로 인정해야 `그림 3` 참조가 누락으로 오탐되지 않는다.
+CAPTION_DEF = re.compile(r"(?:^|\n)[ \t]*(그림|표)\s*(\d{1,2})([a-z])?\s*[.:]")
+NUMBERED_REF = re.compile(r"(그림|표)\s*(\d{1,2})")
+MIN_CAPTIONS_FOR_REF_CHECK = 2  # 캡션 표기 규약이 다른 산출물에서 오탐을 막는 최소치
+MIN_REFS_FOR_MISSING_CAPTIONS = 2  # 캡션이 0개일 때 "번호 헤더 자체가 없다"로 볼 최소 참조 수
+
+# 번역문과 원문 캡션이 겹쳐 인쇄된 흔적: `그림 1. 그림 1: HABIT는 ...`
+DUP_CAPTION = re.compile(r"(그림|표)\s*(\d{1,2})\s*[.:]\s*(?:Figure|Table|그림|표)\s*\2\s*[.:]", re.IGNORECASE)
+# 섹션 번호가 두 번 찍힌 흔적: `1. 1 소개`, `2.1 2.1 태스크 설계`, `5. 5 관련 연구`.
+# 뒤따르는 글자를 한글/대문자로 제한해 표의 반복 수치(`53.3 53.3 8`)를 걸러낸다.
+DUP_SECTION_NO = re.compile(r"(?:^|\n)[ \t]*(\d{1,2}(?:\.\d{1,2})?)\.?[ \t]+\1[ \t]+[가-힣A-Z]", re.M)
+
+# 미번역 영어 문단 잔존. 2단 PDF는 한 문단이 여러 줄로 쪼개지므로 정규식 한 방으로는
+# 잡히지 않는다 — 한글이 없는 줄을 이어 붙여 블록으로 만든 뒤 단어 수로 판정한다.
+# 부록의 영문 프롬프트 템플릿·코드처럼 원문 유지가 정상인 경우가 있어 WARN으로만 다룬다.
+ENGLISH_BLOCK_MIN_WORDS = 25
+# 참고문헌 구간 이후는 원문 유지가 정상이라 검사 대상에서 뺀다.
+BIBLIOGRAPHY_HEAD = re.compile(r"(?:^|\n)[ \t]*(?:참고문헌|참고 문헌|References|참고자료)")
+ENGLISH_WORD = re.compile(r"[A-Za-z][A-Za-z'’\-]{2,}")
+# 표 헤더·저자 명단·스펙 표는 한글이 없어도 정상이다. 영어 *산문*만 걸러내기 위해
+# 기능어 비율을 본다 — 명사 나열에는 the/of/is 같은 기능어가 거의 없다.
+ENGLISH_FUNCTION_WORDS = frozenset("""
+the of is are was were that this these those which with for and but not from
+have has had been being can could should would will may might must our their its
+when while where because although however than then there here what such each
+""".split())
+ENGLISH_FUNCTION_RATIO = 0.18
+
 
 class Report:
     """항목별 결과를 모으고 종합 판정을 낸다."""
@@ -257,6 +332,214 @@ def _machine_translation_residue_hits(text):
     return [label for label, pattern in MACHINE_TRANSLATION_RESIDUE if pattern.search(text)]
 
 
+def _bare_latex_hits(text):
+    """백슬래시가 벗겨진 LaTeX 매크로 잔재를 (토큰, 횟수)로 반환한다."""
+    counts = {}
+    for match in BARE_LATEX.finditer(text):
+        token = match.group(0).lower()
+        counts[token] = counts.get(token, 0) + 1
+    if BARE_LATEX_OPTARG.search(text):
+        counts["num[round-mode"] = len(BARE_LATEX_OPTARG.findall(text))
+    return sorted(counts.items(), key=lambda kv: -kv[1])
+
+
+def _ref_label_hits(text):
+    """`\\ref{sec:...}`가 풀려 인쇄된 label 참조를 반환한다."""
+    seen = []
+    for match in REF_LABEL.finditer(text):
+        label = match.group(0)
+        if label not in seen:
+            seen.append(label)
+    return seen
+
+
+def _caption_filename_hits(text):
+    """캡션 자리에 원본 파일명/자산 URL이 남은 행을 반환한다."""
+    return [m.group(0).strip()[:90] for m in CAPTION_FILENAME.finditer(text)]
+
+
+def _null_residue_hits(text):
+    """렌더 템플릿의 값 없는 자리표시 문자열을 (라벨, 횟수)로 반환한다."""
+    hits = []
+    for label, pattern in NULL_RESIDUE_PATTERNS:
+        n = len(pattern.findall(text))
+        if n:
+            hits.append((label, n))
+    return hits
+
+
+def _missing_numbered_refs(text):
+    """본문이 참조하지만 대응 캡션이 없는 표/그림 번호를 반환한다.
+
+    KOFFVQA의 표 1(주 결과표) 통째 누락, D2E의 표 5·6·9·12·18과 그림 7·8 누락처럼
+    "본문은 가리키는데 산출물에 없는" 결함은 육안으로만 잡혔다. 캡션 표기 규약이
+    다른 산출물에서 오탐이 나지 않도록, 캡션이 충분히 발견된 종류만 검사한다.
+    """
+    captions = {"그림": set(), "표": set()}
+    for kind, no, _sub in CAPTION_DEF.findall(text):
+        captions[kind].add(no)  # `그림 3a`는 `그림 3` 캡션이 있는 것으로 센다
+
+    referenced = {"그림": set(), "표": set()}
+    for kind, no in NUMBERED_REF.findall(text):
+        referenced[kind].add(no)
+
+    missing, uncaptioned = {}, []
+    for kind in ("그림", "표"):
+        if not captions[kind]:
+            # 캡션이 하나도 없는데 본문은 번호로 가리킨다 — 번호 헤더 자체가 빠졌다.
+            # (KOFFVQA: 표 1~3을 참조하나 `표 N.` 헤더가 전무, CANVAS도 동일)
+            if len(referenced[kind]) >= MIN_REFS_FOR_MISSING_CAPTIONS:
+                uncaptioned.append((kind, sorted(referenced[kind], key=int)))
+            continue
+        if len(captions[kind]) < MIN_CAPTIONS_FOR_REF_CHECK:
+            continue  # 캡션 규약을 파악할 수 없다 — 검사 생략
+        gap = sorted(referenced[kind] - captions[kind], key=int)
+        if gap:
+            missing[kind] = gap
+    return missing, uncaptioned
+
+
+def _untranslated_english_paragraphs(text):
+    """참고문헌 앞 본문에 남은 영어 산문 문단을 반환한다.
+
+    HABIT처럼 원문 문단이 수식/코드로 오인돼 영어 그대로, 심지어 문장 중간에서
+    잘린 채 남는 사례가 있었다. 참고문헌·인명 목록은 원문 유지가 규칙이므로
+    첫 참고문헌 헤딩 이후는 검사 대상에서 뺀다.
+    """
+    bib = BIBLIOGRAPHY_HEAD.search(text)
+    body = text[: bib.start()] if bib else text
+
+    blocks, current = [], []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped or re.search(r"[가-힣]", stripped):
+            if current:
+                blocks.append(" ".join(current))
+                current = []
+            continue
+        current.append(stripped)
+    if current:
+        blocks.append(" ".join(current))
+
+    prose = []
+    for block in blocks:
+        words = [w.lower() for w in ENGLISH_WORD.findall(block)]
+        if len(words) < ENGLISH_BLOCK_MIN_WORDS:
+            continue
+        n_function = sum(1 for w in words if w in ENGLISH_FUNCTION_WORDS)
+        if n_function / len(words) >= ENGLISH_FUNCTION_RATIO:
+            prose.append(block[:110])
+    return prose
+
+
+def check_source_residue(rep, text, where):
+    """원문 소스(LaTeX/마크다운/템플릿)가 산출물에 새어 나온 흔적을 검사한다.
+
+    번역 원문을 PDF 시각 판독이 아니라 LaTeX 소스·마크다운·DOM에서 뽑았을 때
+    나타나는 실패군이다. HTML과 최종 PDF 모두에서 같은 기준으로 본다.
+    """
+    bare = _bare_latex_hits(text)
+    if bare:
+        preview = ", ".join(f"{tok}({n})" for tok, n in bare[:8])
+        rep.fail(
+            f"{where}에 백슬래시 없는 LaTeX 매크로 잔재 발견 [{preview}]. "
+            f"LaTeX 소스를 기계 치환한 흔적이다 — 번역 원문은 Read 도구로 원본 PDF를 "
+            f"시각 판독해 다시 세우고, 표는 HTML <table>로 재구성하라."
+        )
+    else:
+        rep.ok(f"{where}: 백슬래시 없는 LaTeX 매크로 잔재 없음.")
+
+    labels = _ref_label_hits(text)
+    if labels:
+        rep.fail(
+            f"{where}에 LaTeX label 참조 노출 {labels[:8]}. `\\ref{{sec:...}}`가 풀린 "
+            f"흔적이다 — 실제 섹션·표·그림 번호로 바꿔라."
+        )
+    else:
+        rep.ok(f"{where}: LaTeX label 참조 노출 없음.")
+
+    if MD_TABLE_SEP.search(text):
+        n = len(MD_TABLE_SEP.findall(text))
+        rep.fail(
+            f"{where}에 마크다운 표 정렬 구분선 {n}개 발견(`|---|---:|`). 표가 조판되지 "
+            f"않고 마크다운 원문으로 인쇄됐다 — HTML <table>로 재구성하라(넓은 표는 class=\"wide\")."
+        )
+    else:
+        rep.ok(f"{where}: 마크다운 표 잔재 없음.")
+
+    if MD_HEADING.search(text):
+        sample = [m.group(0).strip()[:40] for m in MD_HEADING.finditer(text)][:5]
+        rep.warn(
+            f"{where}에 마크다운 헤딩 형태의 행 {sample}. 코드블록 주석이면 무시해도 되나, "
+            f"`# 부록`처럼 섹션 제목이면 해시를 제거하고 제목 태그로 조판하라."
+        )
+
+    captions = _caption_filename_hits(text)
+    if captions:
+        rep.fail(
+            f"{where}의 캡션에 원본 파일명/자산 URL 노출 {len(captions)}건: {captions[:4]}. "
+            f"캡션은 `그림 N. <한 줄 요약>.` 형식이어야 한다 — 파일명을 번역 캡션으로 교체하라."
+        )
+    else:
+        rep.ok(f"{where}: 캡션 파일명 노출 없음.")
+
+    nulls = _null_residue_hits(text)
+    if nulls:
+        total = sum(n for _, n in nulls)
+        detail = ", ".join(f"{label}({n})" for label, n in nulls)
+        if total > NULL_RESIDUE_LIMIT:
+            rep.fail(
+                f"{where}에 템플릿 자리표시 잔재 {total}건 [{detail}]. 값이 없는 항목은 "
+                f"렌더에서 제외하라 — `없음(null)` 같은 문자열이 산출물에 남으면 안 된다."
+            )
+        else:
+            rep.warn(f"{where}에 템플릿 자리표시 잔재 {total}건 [{detail}] — 확인 권장.")
+    else:
+        rep.ok(f"{where}: 템플릿 자리표시 잔재 없음.")
+
+    dup_caps = [m.group(0).strip()[:60] for m in DUP_CAPTION.finditer(text)]
+    if dup_caps:
+        rep.fail(
+            f"{where}에 캡션 중복 인쇄 {len(dup_caps)}건: {dup_caps[:3]}. 번역 캡션과 원문 "
+            f"캡션이 겹쳤다 — `그림 N. <한 줄 요약>.` 한 벌만 남겨라."
+        )
+    else:
+        rep.ok(f"{where}: 캡션 중복 인쇄 없음.")
+
+    dup_secs = [m.group(0).strip()[:50] for m in DUP_SECTION_NO.finditer(text)]
+    if dup_secs:
+        rep.fail(
+            f"{where}에 섹션 번호 중복 인쇄 {len(dup_secs)}건: {dup_secs[:3]}. 번호가 두 번 "
+            f"찍혔다 — 제목 텍스트에서 중복 번호를 제거하라."
+        )
+    else:
+        rep.ok(f"{where}: 섹션 번호 중복 인쇄 없음.")
+
+    english = _untranslated_english_paragraphs(text)
+    if english:
+        rep.warn(
+            f"{where}의 본문(참고문헌 앞)에 한글 없는 영어 블록 {len(english)}건: {english[:2]}. "
+            f"부록의 영문 프롬프트·코드면 정상이나, 산문이면 완역 위반이므로 직접 확인하라."
+        )
+    else:
+        rep.ok(f"{where}: 본문에 미번역 영어 블록 없음.")
+
+    missing, uncaptioned = _missing_numbered_refs(text)
+    for kind, nos in uncaptioned:
+        rep.fail(
+            f"{where}: 본문이 {kind} {', '.join(nos)}를 참조하지만 `{kind} N.` 캡션이 "
+            f"하나도 없다. 번호 헤더를 부여하고, 해당 {kind}이 실제로 삽입됐는지 확인하라."
+        )
+    if missing:
+        detail = "; ".join(f"{kind} {', '.join(nos)}" for kind, nos in missing.items())
+        rep.fail(
+            f"{where}: 본문이 참조하지만 캡션이 없는 항목 [{detail}]. 해당 표/그림이 "
+            f"산출물에서 누락됐거나 캡션 번호가 어긋났다 — 원문과 대조해 삽입하거나 참조 번호를 고쳐라."
+        )
+    if not missing and not uncaptioned:
+        rep.ok(f"{where}: 본문이 참조하는 표/그림 번호에 대응 캡션이 모두 있다.")
+
+
 def _pdf_formula_remnant_hits(formula_text):
     """PDF에서는 전용 변환 토큰 또는 한 줄 안에서 반복된 낭독 표지만 실패로 본다."""
     hits = []
@@ -373,6 +656,8 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
         )
     else:
         rep.ok("최종 PDF: 고신뢰 기계번역 잔재 없음.")
+
+    check_source_residue(rep, txt, "최종 PDF")
 
     formula_hits = _pdf_formula_remnant_hits(_pdf_formula_text(txt))
     if formula_hits:
@@ -493,6 +778,9 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
     else:
         rep.ok("HTML: 고신뢰 기계번역 잔재 없음.")
 
+    # 2f) 원문 소스(LaTeX/마크다운/템플릿) 누수
+    check_source_residue(rep, visible_text, "HTML")
+
     # 3) <img> src 존재/비어있지 않음
     srcs = re.findall(r"<img[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", raw, re.IGNORECASE)
     n_img = len(srcs)
@@ -515,6 +803,20 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
     # 4) 표/수식 재구성
     n_table = len(re.findall(r"<table[\s>]", raw, re.IGNORECASE))
     n_equation = len(re.findall(r"<pre(?:\s|>)", raw, re.IGNORECASE))
+
+    # 4b) 표는 <table>이지만 셀에 수치가 하나도 없는 경우.
+    # CostNav 사례: 셀 값이 전부 `SEpisodeTermSLAAMCL` 같은 LaTeX 매크로 이름이라
+    # 표 구조만 남고 수치가 전부 소실됐다. 정성 표(체크마크·스펙)도 있으므로 WARN.
+    numberless = 0
+    for block in re.findall(r"<table[\s>].*?</table>", raw, re.IGNORECASE | re.DOTALL):
+        body, _ = _visible_html_text(block)
+        if not re.search(r"\d", body):
+            numberless += 1
+    if numberless:
+        rep.warn(
+            f"수치가 하나도 없는 <table> {numberless}개. 정성 비교표면 정상이나, 셀 값이 "
+            f"매크로 이름·자리표시로 치환돼 수치가 소실된 것은 아닌지 원문과 대조하라."
+        )
 
     if manifest is not None:
         n_fig_m = len(manifest.get("figures", []))

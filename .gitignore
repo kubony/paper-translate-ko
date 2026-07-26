@@ -7,3 +7,6 @@ __pycache__/
 .DS_Store
 credentials.json
 *_token.pickle
+
+# 재작업용 원본·중간 산출물 (대용량 바이너리)
+work/

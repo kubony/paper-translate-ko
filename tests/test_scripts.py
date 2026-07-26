@@ -558,5 +558,124 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertIn("애호박 절단 데모", md)
 
 
+class SourceResidueTests(unittest.TestCase):
+    """번역 원문을 LaTeX 소스·마크다운·DOM에서 뽑았을 때의 잔재 검사.
+
+    실제 산출물 15편 재검토에서 기존 검사가 통과시킨 실패들을 회귀 고정한다.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.v = load_script("validate_output")
+
+    def residue(self, text):
+        rep = self.v.Report()
+        self.v.check_source_residue(rep, text, "테스트")
+        return rep
+
+    def fails(self, rep):
+        return [msg for level, msg in rep.items if level == "FAIL"]
+
+    def warns(self, rep):
+        return [msg for level, msg in rep.items if level == "WARN"]
+
+    def test_clean_korean_body_passes_every_check(self):
+        rep = self.residue(
+            "그림 1. 시스템 개요.\n표 1. 정량 비교.\n"
+            "본 논문은 그림 1과 표 1에서 제안 기법의 성능을 보인다.\n"
+        )
+        self.assertFalse(rep.failed, msg=f"오탐: {self.fails(rep)}")
+
+    def test_backslash_stripped_latex_macro_is_failure(self):
+        # CostNav 회귀: `\noindent`가 `noindent`로 남아 LATEX_REMNANT를 빠져나갔다.
+        rep = self.residue("noindent비용 인식 로봇공학.기존 연구에서는 toprule midrule 를 쓴다.")
+        self.assertTrue(any("LaTeX 매크로 잔재" in m for m in self.fails(rep)))
+
+    def test_ordinary_korean_text_is_not_bare_latex(self):
+        rep = self.residue("이 절은 표 형식과 항목 나열을 설명한다. quadruped robot을 다룬다.")
+        self.assertFalse(any("LaTeX 매크로 잔재" in m for m in self.fails(rep)))
+
+    def test_ref_label_exposure_is_failure(self):
+        rep = self.residue("자세한 내용은 부록 sec:cost_parameters와 표 tab:baselines에 있다.")
+        self.assertTrue(any("label 참조 노출" in m for m in self.fails(rep)))
+
+    def test_markdown_table_separator_is_failure(self):
+        # SC3-Eval 회귀: 표가 조판되지 않고 마크다운 원문으로 인쇄됐다.
+        rep = self.residue("| 방법 | 점수 |\n|---|---:|\n| Ctrl-World | 0.878 |")
+        self.assertTrue(any("마크다운 표" in m for m in self.fails(rep)))
+
+    def test_caption_with_source_filename_is_failure(self):
+        # SC3-Eval 회귀: 캡션이 번역되지 않고 원본 파일명 그대로였다.
+        rep = self.residue("원문 피겨. teaser_v6.png\n그림 2. corr_v3.png")
+        self.assertTrue(any("캡션에 원본 파일명" in m for m in self.fails(rep)))
+
+    def test_template_null_residue_over_limit_is_failure(self):
+        # PI_website 회귀: 값 없는 항목이 걸러지지 않아 113건이 인쇄됐다.
+        rep = self.residue("동영상 1 - 원본 URL: 없음(null)\n" * 4)
+        self.assertTrue(any("템플릿 자리표시 잔재" in m for m in self.fails(rep)))
+
+    def test_template_null_residue_under_limit_is_warning_only(self):
+        rep = self.residue("동영상 1 - 원본 URL: 없음(null)")
+        self.assertFalse(rep.failed)
+        self.assertTrue(any("템플릿 자리표시 잔재" in m for m in self.warns(rep)))
+
+    def test_duplicated_caption_is_failure(self):
+        # HABIT 회귀: 번역 캡션과 원문 캡션이 겹쳐 인쇄됐다.
+        rep = self.residue("그림 1. 그림 1: HABIT는 60가지 작업을 다룬다.")
+        self.assertTrue(any("캡션 중복 인쇄" in m for m in self.fails(rep)))
+
+    def test_duplicated_section_number_is_failure(self):
+        rep = self.residue("1. 1 소개\n2.1 2.1 태스크 설계\n")
+        self.assertTrue(any("섹션 번호 중복" in m for m in self.fails(rep)))
+
+    def test_repeated_table_numbers_are_not_section_numbers(self):
+        # 표의 반복 수치(`53.3 53.3 8`)를 섹션 번호 중복으로 오탐하지 않는다.
+        rep = self.residue("성능 비교는 다음과 같다.\n53.3 53.3 8\n12.5 12.5 4\n")
+        self.assertFalse(any("섹션 번호 중복" in m for m in self.fails(rep)))
+
+    def test_missing_table_captions_are_failure(self):
+        # KOFFVQA 회귀: 본문이 표 1~3을 참조하나 `표 N.` 캡션이 하나도 없었다.
+        rep = self.residue(
+            "정렬된 평가 결과는 표 1에 제공된다. 표 2와 표 3은 부록에 있다.\n"
+            "그림 1. 카테고리 분포.\n그림 2. 범주별 예시.\n"
+        )
+        self.assertTrue(any("캡션이 하나도 없다" in m for m in self.fails(rep)))
+
+    def test_panel_sublabel_captions_satisfy_base_number_reference(self):
+        # act2 회귀: 캡션이 `그림 3a/3b/3c`로 쪼개져도 `그림 3` 참조는 충족된 것이다.
+        rep = self.residue(
+            "그림 1. 개요.\n그림 3a. 좌측 패널.\n그림 3b. 중앙 패널.\n"
+            "그림 3에서 보듯 성능이 향상된다.\n"
+        )
+        self.assertFalse(rep.failed, msg=f"오탐: {self.fails(rep)}")
+
+    def test_untranslated_english_prose_is_warning(self):
+        # LLM_Novel 회귀: 원문 영어 문단이 통째로 남았다.
+        rep = self.residue(
+            "본문은 한국어로 이어진다.\n\n"
+            "While the original experiment from Bai et al. used a points system for\n"
+            "successful job assignments to incentivize the participants, these incentives\n"
+            "are not necessary for the models that we have evaluated in this work here.\n"
+        )
+        self.assertTrue(any("영어 블록" in m for m in self.warns(rep)))
+
+    def test_english_table_header_is_not_flagged_as_prose(self):
+        # 표 헤더·저자 명단은 한글이 없어도 정상이므로 걸리지 않아야 한다.
+        rep = self.residue(
+            "표 1. 비교.\n표 2. 결과.\n"
+            "Method Params VLA Pt Spatial Object Goal Total Octo Model Team 93M Yes 78.9 85.2\n"
+            "Bo Ai Ali Amin Ashwin Balakrishna Greg Balke Kevin Black George Cheng Danny Driess\n"
+        )
+        self.assertFalse(any("영어 블록" in m for m in self.warns(rep)))
+
+    def test_english_after_bibliography_heading_is_ignored(self):
+        rep = self.residue(
+            "본문이다.\n참고문헌\n"
+            "Brohan et al. that this is the reference title of the paper which we cite for\n"
+            "the purposes of this work and these results are from the original authors here.\n"
+        )
+        self.assertFalse(any("영어 블록" in m for m in self.warns(rep)))
+
+
 if __name__ == "__main__":
     unittest.main()
