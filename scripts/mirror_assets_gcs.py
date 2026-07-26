@@ -91,16 +91,19 @@ def main(argv: list[str] | None = None) -> int:
     template = PUBLIC_URL if args.public else PRIVATE_URL
     existing = {} if args.dry_run else remote_sizes(args.bucket, prefix)
 
-    uploaded = skipped = pruned = 0
+    uploaded = skipped = pruned = relinked = 0
     prune_bytes = int(args.prune_over_mib * 1024 * 1024)
 
     for asset in data.get("assets", []):
         local_rel = asset.get("local")
-        if not local_rel:
+        if not local_rel or not (workdir / local_rel).exists():
+            # 이미 올리고 로컬을 정리한 자산 — 링크 형식(공개/비공개)만 갱신한다.
+            if asset.get("remote", "").startswith(f"gs://{args.bucket}/"):
+                object_path = asset["remote"].split(f"gs://{args.bucket}/", 1)[1]
+                asset["remote_url"] = template.format(bucket=args.bucket, path=object_path)
+                relinked += 1
             continue
         local = workdir / local_rel
-        if not local.exists():
-            continue
         # assets/videos/foo.mp4 → <prefix>/videos/foo.mp4
         rel = Path(local_rel)
         rel = rel.relative_to("assets") if rel.parts[0] == "assets" else rel
@@ -127,7 +130,8 @@ def main(argv: list[str] | None = None) -> int:
         manifest_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
                                  encoding="utf-8")
     print(f"\n업로드 {uploaded}개, 기존 동일 {skipped}개"
-          + (f", 로컬 정리 {pruned}개" if pruned else ""))
+          + (f", 로컬 정리 {pruned}개" if pruned else "")
+          + (f", 링크 갱신 {relinked}개" if relinked else ""))
     print(f"매니페스트: {manifest_path}")
     if not args.public:
         print("비공개 버킷 링크(storage.cloud.google.com)는 접근 권한이 있는 계정에서만 열린다.")
