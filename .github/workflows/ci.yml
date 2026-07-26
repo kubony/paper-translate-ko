@@ -21,5 +21,6 @@ jobs:
         run: |
           python3 scripts/fetch_arxiv.py >/tmp/fetch_usage.txt || test $? -eq 1
           python3 scripts/render_pdf.py >/tmp/render_usage.txt || test $? -eq 1
+          python3 scripts/fetch_web_assets.py --help >/tmp/assets_usage.txt
           uv run --quiet --with pymupdf python3 scripts/extract_figures.py >/tmp/extract_usage.txt || test $? -eq 1
           uv run --quiet --with pymupdf python3 scripts/validate_output.py >/tmp/validate_usage.txt || test $? -eq 1

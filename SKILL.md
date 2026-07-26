@@ -1,6 +1,6 @@
 ---
 name: paper-translate-ko
-description: arXiv/학술 논문 PDF를 원본 레이아웃(2단 학술 스타일, 피겨/표/수식 보존)을 유지한 한국어 완역 PDF로 변환한다. 사용자가 "논문 번역", "논문을 한글로", "translate paper", "레이아웃 유지 번역", arXiv ID/PDF를 주며 한국어 버전을 요청할 때, 혹은 논문 요약이 아닌 전문 번역이 필요할 때 반드시 이 스킬을 사용하라.
+description: arXiv/학술 논문 PDF와 기술 블로그·웹사이트를 원본 레이아웃(2단 학술 스타일, 피겨/표/수식 보존)과 원문 영상 자산을 유지한 한국어 완역 PDF로 변환한다. 사용자가 "논문 번역", "논문을 한글로", "translate paper", "레이아웃 유지 번역", "웹사이트 번역", arXiv ID/PDF/웹 URL을 주며 한국어 버전을 요청할 때, 혹은 논문 요약이 아닌 전문 번역이 필요할 때 반드시 이 스킬을 사용하라.
 ---
 
 # 논문 한국어 전문 번역 (레이아웃 보존)
@@ -29,17 +29,53 @@ AI/robotics/VLA/VLN/physical AI 논문과 기술 블로그는 추가로
 
 ## 작업 디렉토리 구조
 
-논문마다 작업 폴더 하나를 만든다(예: `<paper_id>/`):
+논문마다 작업 폴더 하나를 만든다. **폴더명만 보고 어떤 논문인지 알 수 있어야 한다** —
+`2410.01273/`처럼 id만 쓰지 말고 제목 slug를 붙인다.
+
+### 폴더명 규칙
 
 ```
-<paper_id>/
-  original.pdf                         # 원본 PDF
+<식별자>_<Title-Slug>/
+```
+
+- `식별자`: arXiv id(`2410.01273`), 학회+id, 또는 웹 출처면 `YYYY-MM-DD_<발행처>`.
+- `Title-Slug`: **원문 제목**을 하이픈으로 이은 형태. 영문 제목은 그대로,
+  대소문자 유지, 부제는 앞부분만 써도 되며 전체 60자 이내로 줄인다.
+  콜론·슬래시·따옴표 등 파일시스템에 위험한 문자는 제거한다.
+- 예시:
+  - `2410.01273_CANVAS-Commonsense-Aware-Navigation-System/`
+  - `2511.20216_CostNav-Navigation-Benchmark-Economic-Cost/`
+  - `2026-07-17_Sunday-Robotics_ACT-2-Preview-Generalizing-Reliability/`
+
+여러 산출물을 한 레포에 모을 때는 출처 성격으로 한 단계 분류한다.
+
+```
+papers/   # arXiv·학회 논문 PDF 번역
+web/      # 기업·연구소 블로그, 챌린지 페이지 등 웹 아티클 1편 번역
+sites/    # 웹사이트 전체(여러 route) 아카이브 번역
+```
+
+### 폴더 내부
+
+```
+<식별자>_<Title-Slug>/
+  README.md                            # 서지 정보·원문 링크·산출물·자산 요약
+  original.pdf                         # 원본 PDF (웹 출처면 없을 수 있음)
   metadata.json                        # (arXiv일 때) 서지 정보
   manifest.json                        # 2단계에서 작성: 그림/표/수식 목록 (검증 기준)
   figures/                             # 추출한 그림 PNG + pages/ 미리보기
+  assets/                              # 원문 미디어 (웹 출처면 필수, 아래 자산 정책 참조)
+    videos/<slug>.mp4                  #   수집한 영상·애니메이션 원본
+    videos/thumbs/<slug>.jpg           #   ffmpeg 첫 프레임 썸네일
+    images/                            #   (--include-images 시) 원문 이미지
+    videos.json                        #   자산 매니페스트 (url·local·길이·sha256)
+    ASSETS.md                          #   사람이 읽는 자산 목록
   translation.html                     # 번역 HTML (template.html 복사본)
-  <paper_id>_ko_translation_layout.pdf # 최종 산출물
+  <식별자>_ko_translation_layout.pdf   # 최종 산출물
 ```
+
+`README.md`에는 최소한 원문 제목·저자·발표처·원문 URL·번역 생성일·최종 PDF
+파일명·자산 개수를 적는다. 폴더만 열어봐도 출처를 추적할 수 있어야 한다.
 
 ## 출력 계약 (위반 시 산출물 폐기·재작업)
 
@@ -54,6 +90,56 @@ AI/robotics/VLA/VLN/physical AI 논문과 기술 블로그는 추가로
 3. **표를 이미지로 삽입 금지.** 표는 HTML `<table>`로 재구성한다(translation-rules.md 6장).
 4. **경어체·기계번역투 금지.** 문어체 평서형("~한다")으로 통일한다(translation-rules.md 3장).
 5. **요약·문단 생략 금지.** 초록~부록 전 문단을 완역한다(참고문헌만 요약 허용).
+6. **웹 출처는 영상 자산을 반드시 확보하고 본문에 링크한다.** 원문이 웹 페이지면
+   재생되는 영상·애니메이션이 논문의 그림에 해당한다. 링크만 남기면 원문이 내려갈 때
+   근거가 사라지므로 **레포에 파일로 보관**하고, 번역문의 해당 위치에 썸네일과
+   로컬 경로·원본 URL을 함께 넣는다(아래 "미디어 자산 정책").
+7. **폴더명에 논문 제목 slug를 포함한다.** id만 있는 폴더명은 계약 위반이다.
+
+## 미디어 자산 정책
+
+원문이 웹 페이지이거나, 논문이라도 영상이 있는 프로젝트 페이지를 가지고 있으면
+(`metadata.json`의 링크, 논문 표지의 project page URL) 다음을 수행한다.
+
+1. `scripts/fetch_web_assets.py`로 **영상·애니메이션 GIF를 최대한 수집**한다.
+   원문 route가 여럿이면 URL을 모두 인자로 준다.
+
+   ```bash
+   python3 scripts/fetch_web_assets.py --out <작업폴더>/assets \
+     <page_url> [<page_url> ...] [--include-images]
+   ```
+
+   - 먼저 `--dry-run`으로 개수·총용량을 확인한 뒤 본 수집을 돌린다.
+   - 헤드리스 Chrome DOM + 정적 HTML을 모두 훑어 `<video>`/`<source>`/`poster`/
+     srcset/스크립트 하드코딩 URL을 잡는다. YouTube·Vimeo·m3u8은 yt-dlp에 위임한다.
+   - 산출물: `assets/videos/*`, `assets/videos/thumbs/*.jpg`, `assets/videos.json`,
+     `assets/ASSETS.md`.
+2. 저장소에 커밋할 때 **바이너리는 Git LFS로 추적**한다. 레포 `.gitattributes`에
+   `*.mp4 *.webm *.mov *.m4v *.gif` 패턴이 등록되어 있어야 한다.
+3. 번역 HTML의 해당 위치에 **영상 카드**를 넣는다. 그림 캡션과 같은 급으로 다루고,
+   썸네일 이미지 + 한국어 캡션 + 로컬 파일 링크 + 원본 URL을 모두 표기한다
+   (`assets/example.html`의 `.video-card` 참조).
+
+   ```html
+   <figure class="video-card">
+     <a href="assets/videos/cut_zucchini_compressed-ab12cd.mp4">
+       <img src="assets/videos/thumbs/cut_zucchini_compressed-ab12cd.jpg" alt="">
+     </a>
+     <figcaption>
+       <b>영상 3.</b> 애호박 절단 — 손잡이 재파지 후 절단 재개.
+       <span class="video-links">
+         ▶ <a href="assets/videos/cut_zucchini_compressed-ab12cd.mp4">레포 사본</a>
+         · <a href="https://website.pi-asset.com/pi07/cut_zucchini_compressed.mp4">원본</a>
+       </span>
+     </figcaption>
+   </figure>
+   ```
+
+4. 수집했지만 본문에 배치할 자리가 없는 영상은 **문서 말미의 "영상 자산" 부록**에
+   표로 모아 남긴다. 수집한 자산이 번역문 어디에서도 참조되지 않는 상태로 두지 않는다.
+5. 영상 캡션은 원문 캡션이 있으면 번역하고, 없으면 `videos.json`의 `context`
+   (영상 직전 본문 텍스트)를 근거로 한 줄 요약을 직접 작성한다. 추측으로 성능
+   수치나 실험 조건을 지어내지 않는다.
 
 ## 워크플로우
 
@@ -63,6 +149,11 @@ AI/robotics/VLA/VLN/physical AI 논문과 기술 블로그는 추가로
   `original.pdf`와 `metadata.json`(제목·저자·소속·초록·comment·발표정보)을 받는다.
   버전 접미사나 abs/pdf URL을 그대로 넣어도 id가 정규화된다.
 - **로컬 PDF**면 그 파일을 `original.pdf`로 쓴다. 서지 정보는 아래 2단계에서 본문으로 파악한다.
+- **웹 아티클/웹사이트**면 원문 URL 목록을 확정한다(사이트 전체면 route를 모두 열거).
+  원문 PDF가 없으므로 2단계 파악은 페이지 본문으로 하고, 3-1단계 자산 수집이 필수다.
+
+작업 폴더 이름은 이 시점에 위 "폴더명 규칙"대로 짓는다 — 제목을 확인하기 전이라면
+임시로 만들고, 2단계에서 제목을 확인한 직후 `<식별자>_<Title-Slug>`로 이름을 고친다.
 
 ### 2. 원문 파악
 
@@ -99,6 +190,23 @@ manifest가 없으면 검증은 휴리스틱으로만 돌고 경고를 낸다.
    `uv run --quiet --with pymupdf python3 scripts/extract_figures.py crop <original.pdf> <page> <x0> <y0> <x1> <y1> <out.png>`
 4. 본문에 필요한 **모든 그림이 깨끗하게 확보될 때까지 반복**한다.
    auto는 텍스트-only 영역을 그림으로 오인하거나 일부 벡터 그림을 놓칠 수 있다 — crop이 보완책이다.
+
+### 3-1. 웹 미디어 자산 수집 (웹 출처면 필수)
+
+원문이 웹 아티클·웹사이트이거나 영상이 있는 프로젝트 페이지를 가진 논문이면
+번역 **전에** 자산을 확보한다. 번역하면서 "여기 영상이 있었다"를 사후에 복원하기는 어렵다.
+
+```bash
+# 1) 무엇이 얼마나 있는지 먼저 확인
+python3 scripts/fetch_web_assets.py --out <작업폴더>/assets --dry-run <page_url> ...
+
+# 2) 실제 수집 (여러 route는 URL을 나열, 이미지까지 필요하면 --include-images)
+python3 scripts/fetch_web_assets.py --out <작업폴더>/assets <page_url> ...
+```
+
+수집 후 `assets/videos.json`을 읽고 각 영상이 원문 어느 섹션에 붙어 있었는지
+(`context` 필드)를 파악해, 4단계 번역에서 배치 위치를 미리 정한다.
+세부 규칙은 위 "미디어 자산 정책"을 따른다.
 
 ### 4. 번역
 
@@ -155,6 +263,9 @@ manifest가 없으면 검증은 휴리스틱으로만 돌고 경고를 낸다.
 - 이미지 경로는 **상대경로**(`figures/fig-p01-01.png`)로 쓴다.
 - 넓은 표/그림은 `class="wide"` / `class="fig-wide"`로 단 전체 폭을 쓴다.
 - 티저 그림(Figure 1)은 전체 폭 그림 + 캡션 전문 번역 블록으로 넣는다.
+- 수집한 영상은 `.video-card`로 본문 해당 위치에 넣고, 배치할 자리가 없는 영상은
+  말미 "영상 자산" 부록 표에 모은다. 썸네일·로컬 경로·원본 URL을 모두 남긴다.
+  마지막에 `assets/videos.json`의 항목 수와 본문 링크 수를 대조해 누락을 확인한다.
 
 ### 6. 렌더링
 
