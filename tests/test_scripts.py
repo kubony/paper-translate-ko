@@ -68,6 +68,52 @@ class RenderPdfTests(unittest.TestCase):
                 os.environ["CHROME_BIN"] = old
 
 
+class SplitPdfForDeliveryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.splitter = load_script("split_pdf_for_delivery")
+
+    def test_split_covers_every_page_with_size_limit(self):
+        fitz = self.splitter.fitz
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source_path = root / "paper.pdf"
+            source = fitz.open()
+            for page_no in range(6):
+                page = source.new_page()
+                page.insert_text((72, 72), f"page {page_no + 1} " + ("content " * 500))
+            source.save(source_path)
+            source.close()
+
+            check = fitz.open(source_path)
+            try:
+                one_page_size = len(self.splitter.render_range(check, 0, 0))
+            finally:
+                check.close()
+            limit = one_page_size + 200
+            results = self.splitter.split_pdf(source_path, root / "parts", limit)
+
+            self.assertGreater(len(results), 1)
+            covered = []
+            for path, start, end, size in results:
+                self.assertLessEqual(size, limit)
+                self.assertTrue(path.exists())
+                covered.extend(range(start, end + 1))
+            self.assertEqual(covered, list(range(1, 7)))
+
+    def test_rejects_limit_smaller_than_one_page(self):
+        fitz = self.splitter.fitz
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source_path = root / "paper.pdf"
+            source = fitz.open()
+            source.new_page().insert_text((72, 72), "single page")
+            source.save(source_path)
+            source.close()
+            with self.assertRaises(ValueError):
+                self.splitter.split_pdf(source_path, root / "parts", 1)
+
+
 class ValidatorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

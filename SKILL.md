@@ -188,6 +188,23 @@ screen-reader/LaTeXML 수식 변환 잔재, 경어체 신호.)
 문제를 발견하면 `translation.html`을 수정하고 6→7단계를 **반복**한다.
 사용자 보고에는 검증 리포트의 종합 판정(PASS/경고 수)을 요약해 포함한다.
 
+### 8. 채팅·Discord 전달용 분할
+
+최종 PDF가 채팅 플랫폼의 첨부 한도를 넘거나 사용자가 분할 전달을 요청하면, 원본
+산출물은 그대로 보존하고 **페이지 경계 기준 PDF 조각**을 추가로 만든다. ZIP으로 묶거나
+화질을 낮춘 이미지 PDF로 바꾸지 않는다. Discord에서는 한도 변동과 업로드 overhead를
+고려해 기본 8 MiB 이하를 사용한다.
+
+```bash
+uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
+  <최종pdf> <작업폴더>/discord_parts --max-mib 8
+```
+
+각 파일명에는 part 번호와 페이지 범위가 포함된다. 생성 후 모든 part가 제한보다 작은지,
+페이지 범위가 1페이지부터 마지막 페이지까지 중복·누락 없이 이어지는지 확인하고, part를
+순서대로 모두 첨부한다. 분할본은 전달 편의를 위한 사본이며 검증 완료된 전체 PDF를
+대체하지 않는다.
+
 ## 산출물
 
 최종 PDF `<paper_id>_ko_translation_layout.pdf`가 작업 폴더에 있고, 위 검증을

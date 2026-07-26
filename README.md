@@ -88,7 +88,14 @@ python3 scripts/render_pdf.py \
 # 5. 필수 검증 게이트. PASS가 아니면 translation.html을 수정하고 4→5를 반복합니다.
 uv run --quiet --with pymupdf python3 scripts/validate_output.py \
   "$WORK" --final "$WORK/2512.00565_ko_translation_layout.pdf"
+
+# 6. Discord/채팅 첨부 한도를 넘으면 8 MiB 이하 페이지 조각으로 분할
+uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
+  "$WORK/2512.00565_ko_translation_layout.pdf" "$WORK/discord_parts" --max-mib 8
 ```
+
+분할본은 `partNN-of-NN_pages-XXX-YYY.pdf` 형식으로 생성되며, 원본 PDF는 변경하지
+않습니다. 모든 part를 페이지 순서대로 첨부하면 됩니다.
 
 ## Output quality contract
 
@@ -116,6 +123,7 @@ scripts/fetch_arxiv.py                    # arXiv PDF + metadata 다운로드
 scripts/extract_figures.py                # PDF 그림 후보 추출/수동 crop
 scripts/render_pdf.py                     # HTML → PDF 렌더링
 scripts/validate_output.py                # 출력 계약 검증 게이트
+scripts/split_pdf_for_delivery.py         # Discord/채팅용 크기 제한 PDF 분할
 assets/template.html                      # 실제 작업용 skeleton
 assets/example.html                       # 구성요소 예시 HTML
 ```
@@ -128,6 +136,7 @@ python3 scripts/fetch_arxiv.py
 python3 scripts/render_pdf.py
 uv run --quiet --with pymupdf python3 scripts/extract_figures.py
 uv run --quiet --with pymupdf python3 scripts/validate_output.py
+uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py --help
 ```
 
 ## License
