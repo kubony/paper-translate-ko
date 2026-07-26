@@ -112,6 +112,10 @@ sites/    # 웹사이트 전체(여러 route) 아카이브 번역
    - 먼저 `--dry-run`으로 개수·총용량을 확인한 뒤 본 수집을 돌린다.
    - 헤드리스 Chrome DOM + 정적 HTML을 모두 훑어 `<video>`/`<source>`/`poster`/
      srcset/스크립트 하드코딩 URL을 잡는다. YouTube·Vimeo·m3u8은 yt-dlp에 위임한다.
+   - 페이지가 영상에 붙여 둔 원문 제목(Next.js RSC payload의 `{"url":...,"title":...}`,
+     `<video title=...>`)이 있으면 `videos.json`의 `title`로 기록된다. **캡션은 이 제목을
+     번역해 쓰고**, 없을 때만 `context`를 근거로 직접 작성한다.
+   - 이미 내려받은 뒤 제목만 다시 채우려면 `--refresh-titles`를 쓴다(재다운로드 없음).
    - 산출물: `assets/videos/*`, `assets/videos/thumbs/*.jpg`, `assets/videos.json`,
      `assets/ASSETS.md`.
 2. 저장소에 커밋할 때 **바이너리는 Git LFS로 추적**한다. 레포 `.gitattributes`에
