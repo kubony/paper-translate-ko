@@ -14,7 +14,8 @@
 
 - `original.pdf`: arXiv v2 원문
 - `2602.10556_ko_translation_layout.html`: 한국어 전문 번역 HTML
-- `2602.10556_ko_translation_layout.pdf`: 한국어 전문 번역 PDF
+- `2602.10556_ko_translation_layout.pdf`: 한국어 전문 번역 PDF 원본 품질
+- `2602.10556_ko_translation_layout_delivery.pdf`: Discord 전달용 150 dpi 최적화본(텍스트·vector 보존)
 - `manifest.json`: 필수 구조 inventory
 - `source/`: arXiv e-print LaTeX 원문 및 figure
 - `figures/final/`: PDF 삽입용 figure 1–12

@@ -1,0 +1,23 @@
+# 출력 계약 검증 (모드 B, PDF 소급) — 최종: artifacts/papers/2602.10556_LAP-Language-Action-Pre-Training-Zero-shot-Cross-Embodiment-Transfer/2602.10556_ko_translation_layout_delivery.pdf
+
+
+[PASS] 페이지 수: 최종 24p / 원본 24p
+[PASS] 페이지 비율 1.00배 — 정상 범위(±30%).
+[PASS] 페이지 통 캡처 없음 — 이미지가 본문을 지배하는 페이지가 없다.
+[PASS] 최종 PDF 텍스트: 금지 문자열 없음.
+[PASS] 최종 PDF: 고신뢰 기계번역 잔재 없음.
+[PASS] 최종 PDF: 백슬래시 없는 LaTeX 매크로 잔재 없음.
+[PASS] 최종 PDF: LaTeX label 참조 노출 없음.
+[PASS] 최종 PDF: 마크다운 표 잔재 없음.
+[PASS] 최종 PDF: 캡션 파일명 노출 없음.
+[PASS] 최종 PDF: 템플릿 자리표시 잔재 없음.
+[PASS] 최종 PDF: 캡션 중복 인쇄 없음.
+[PASS] 최종 PDF: 섹션 번호 중복 인쇄 없음.
+[PASS] 최종 PDF: 본문에 미번역 영어 블록 없음.
+[PASS] 최종 PDF: 본문이 참조하는 표/그림 번호에 대응 캡션이 모두 있다.
+[PASS] 최종 PDF: screen-reader/LaTeXML 수식 변환 잔재 없음.
+[PASS] LaTeX 잔재 없음 — 수식이 변환된 상태다.
+[WARN] 인라인 인용 [n] 잔존 의심: 페이지 [17]. 규칙 7에 따라 본문 인용 번호는 제거하고 문장을 다듬어야 한다 ('∈ [0,1]' 같은 수식 구간이면 무시).
+[PASS] 문체: 본문 '습니다' 0회(≤ 15) — 경어체 신호 없음.
+------------------------------------------------------------------------
+종합 판정: PASS(경고 1건) — 위반 없음. [WARN] 항목은 확인 권장이나 완료를 막지는 않는다.
