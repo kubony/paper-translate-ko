@@ -144,6 +144,12 @@ uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
 - manifest 대비 그림/표/디스플레이 수식 누락
 - 표를 HTML `<table>`로 재구성하지 않음
 - LaTeX 잔재(`\\frac`, `\\mathbb`, `$$` 등)
+- 백슬래시가 벗겨진 LaTeX 매크로(`noindent`, `toprule`, `num[round-mode`)와 풀린 `\\ref` label
+- 마크다운 표 원문(`|---|---:|`)이 조판되지 않고 그대로 인쇄됨
+- 캡션 자리에 원본 파일명·자산 URL(`teaser_v6.png`)이 남음
+- 템플릿 자리표시 잔재(`없음(null)`, `제공되지 않음`)
+- 캡션·섹션 번호 이중 인쇄(`그림 1. 그림 1:`, `2.1 2.1 태스크 설계`)
+- 본문이 참조하는 `표 N`/`그림 N`에 대응 캡션이 없음(주 결과표 누락 등)
 - screen-reader/LaTeXML 수식 변환 잔재(`아래 첨자`, `superscript`, `textsubscript` 등)
 - 고신뢰 기계번역 잔재(`건강하게 감소`, `예측할 수 있다고 예상할 수`, `제작대를 제작` 등)
 - 본문 인라인 인용 번호 `[12]` 잔존 의심

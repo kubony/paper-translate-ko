@@ -8,6 +8,9 @@ __pycache__/
 credentials.json
 *_token.pickle
 
+# 재작업용 원본·중간 산출물 (대용량 바이너리)
+work/
+
 # 원문 영상 바이너리는 GCS에 보관한다 (SKILL.md '미디어 자산 정책').
 # 깃에는 썸네일·videos.json·captions.ko.json만 두고, 재생은 remote_url로 한다.
 artifacts/**/assets/videos/*.mp4
