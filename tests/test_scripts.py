@@ -589,6 +589,24 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertIn("Cutting a zucchini", md)
         self.assertNotIn("노이즈 섞인 DOM 텍스트", md)
 
+    def test_portable_text_caption_reads_sanity_block(self):
+        payload = (
+            '"asset":{"_ref":"image-abc123-480x360-gif"},"srcset":"abc123-480x360.gif 480w",'
+            '{"_type":"image","asset":{"_ref":"image-abc123-480x360-gif"},'
+            '"caption":[{"children":[{"text":"Opus 4.6\'s best run."},'
+            '{"text":"Classic-control performance by model."}]}]}'
+        )
+        caption = self.fwa.portable_text_caption(
+            payload, "https://cdn.sanity.io/images/x/website/abc123-480x360.gif")
+        self.assertEqual(caption, "Opus 4.6's best run. Classic-control performance by model.")
+
+    def test_portable_text_caption_returns_empty_without_caption_block(self):
+        self.assertEqual(
+            self.fwa.portable_text_caption('{"asset":"abc123-480x360"}',
+                                           "https://cdn.example.com/abc123-480x360.gif"),
+            "",
+        )
+
     def test_slugify_is_filesystem_safe_and_unique_per_url(self):
         a = self.fwa.slugify("https://cdn.example.com/a b/데모 영상.mp4")
         b = self.fwa.slugify("https://cdn.example.com/other/데모 영상.mp4")

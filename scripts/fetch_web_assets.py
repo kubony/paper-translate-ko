@@ -224,6 +224,35 @@ def extract_titles(html: str, base_url: str) -> dict[str, str]:
     return titles
 
 
+def portable_text_caption(html: str, asset_url: str, window: int = 1600) -> str:
+    """Sanity portable text로 실린 캡션을 뽑는다.
+
+    Sanity(anthropic.com 등)는 `"asset":{"_ref":"image-<hash>-480x360-gif"}` 뒤에
+    `"caption":[{...,"children":[{"text":"..."}]}]` 블록을 둔다. 자산 참조 뒤쪽
+    구간에서 caption 블록의 text 조각을 이어 붙인다.
+    """
+    text = _html.unescape(html.replace("\\/", "/").replace('\\"', '"'))
+    stem = Path(urllib.parse.urlsplit(asset_url).path).stem
+    if not stem:
+        return ""
+    # 같은 자산이 여러 번(썸네일 srcset 등) 등장하므로, caption 블록이 뒤따르는
+    # 첫 번째 참조를 쓴다.
+    start = 0
+    while True:
+        idx = text.find(stem, start)
+        if idx < 0:
+            return ""
+        start = idx + len(stem)
+        tail = text[idx: idx + window]
+        cap = tail.find('"caption"')
+        if cap < 0:
+            continue
+        pieces = re.findall(r'"text"\s*:\s*"([^"]*)"', tail[cap: cap + window])
+        caption = " ".join(piece.strip() for piece in pieces if piece.strip()).strip()
+        if caption:
+            return caption
+
+
 # ---- 페이지 로드 ---------------------------------------------------------
 def fetch_static(url: str, timeout: int = 30) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
@@ -473,8 +502,9 @@ def collect(
                     "page": page_url,
                     "context": context_for(combined, url),
                 }
-                if titles.get(url):
-                    entry["title"] = titles[url]
+                title = titles.get(url) or portable_text_caption(combined, url)
+                if title:
+                    entry["title"] = title
                 size = head_size(url)
                 if size:
                     entry["bytes"] = size
@@ -543,6 +573,10 @@ def refresh_manifest(urls: list[str], out_dir: Path) -> int:
         combined = dom + "\n" + static
         titles.update(extract_titles(combined, page_url))
         for asset in data.get("assets", []):
+            if asset["url"] not in titles:
+                caption = portable_text_caption(combined, asset["url"])
+                if caption:
+                    titles[asset["url"]] = caption
             if asset["url"] not in contexts:
                 ctx = context_for(combined, asset["url"])
                 if ctx:
