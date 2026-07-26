@@ -15,12 +15,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 47413546,
-      "local": "assets/videos/SARM2_video_compressed-e7f7c9.mp4",
       "sha256": "b7cd3dcd72e4f8afcc553e8a2916cd4eec6001b780582b5f5b4fc8dcf1c625c6",
       "duration_s": 308.52,
       "width": 1920,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/SARM2_video_compressed-e7f7c9.jpg"
+      "thumbnail": "assets/videos/thumbs/SARM2_video_compressed-e7f7c9.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/SARM2_video_compressed-e7f7c9.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/SARM2_video_compressed-e7f7c9.mp4"
     },
     {
       "kind": "video",
@@ -28,12 +29,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1478339,
-      "local": "assets/videos/episode_1772-9cd1c4.mp4",
       "sha256": "705f565107a2a6a9562b48e497c8d835aa5b856e6b3685e8c1c1a1eafe858489",
       "duration_s": 9.33,
       "width": 1500,
       "height": 1736,
-      "thumbnail": "assets/videos/thumbs/episode_1772-9cd1c4.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_1772-9cd1c4.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_1772-9cd1c4.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_1772-9cd1c4.mp4"
     },
     {
       "kind": "video",
@@ -41,12 +43,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 2067388,
-      "local": "assets/videos/episode_2025-d3087d.mp4",
       "sha256": "11e8998a7033c2f494923e797fa88b5022e8d93b5af4e7c4306d478ca5c05ba3",
       "duration_s": 14.53,
       "width": 1500,
       "height": 1736,
-      "thumbnail": "assets/videos/thumbs/episode_2025-d3087d.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_2025-d3087d.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_2025-d3087d.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_2025-d3087d.mp4"
     },
     {
       "kind": "video",
@@ -54,12 +57,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1424197,
-      "local": "assets/videos/episode_2097-666e16.mp4",
       "sha256": "2e585965d28f6d880edfa65bc8919f87f921742d836318e1c15520e36a7b1fa3",
       "duration_s": 11.4,
       "width": 1500,
       "height": 1736,
-      "thumbnail": "assets/videos/thumbs/episode_2097-666e16.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_2097-666e16.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_2097-666e16.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_2097-666e16.mp4"
     },
     {
       "kind": "video",
@@ -67,12 +71,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 718068,
-      "local": "assets/videos/episode_3046-7386b8.mp4",
       "sha256": "5c298adf3f8c67663ac0c5f60474ae40d50ba5c9b47fe419817a5f0ac15b3f58",
       "duration_s": 5.37,
       "width": 1500,
       "height": 1736,
-      "thumbnail": "assets/videos/thumbs/episode_3046-7386b8.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_3046-7386b8.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_3046-7386b8.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_3046-7386b8.mp4"
     },
     {
       "kind": "video",
@@ -80,12 +85,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 432000,
-      "local": "assets/videos/episode_001126-1060db.mp4",
       "sha256": "99ac4e7aeb1e4beb799317c761351b2dfb557bdc89a36fbb20235b36d2898e71",
       "duration_s": 9.63,
       "width": 896,
       "height": 400,
-      "thumbnail": "assets/videos/thumbs/episode_001126-1060db.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_001126-1060db.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_001126-1060db.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_001126-1060db.mp4"
     },
     {
       "kind": "video",
@@ -93,12 +99,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 261315,
-      "local": "assets/videos/episode_000495-eda109.mp4",
       "sha256": "096e98319466a521bdf2a024ca194727f0471045d874bf6ca36ec270d684fe87",
       "duration_s": 7.6,
       "width": 896,
       "height": 400,
-      "thumbnail": "assets/videos/thumbs/episode_000495-eda109.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_000495-eda109.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_000495-eda109.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_000495-eda109.mp4"
     },
     {
       "kind": "video",
@@ -106,12 +113,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 387046,
-      "local": "assets/videos/episode_002792-f9a77c.mp4",
       "sha256": "6f5daee4c3f04a7f44aa5f70888b09cbea28ef5179229a69ee9d0bcb6039ee2c",
       "duration_s": 14.0,
       "width": 896,
       "height": 400,
-      "thumbnail": "assets/videos/thumbs/episode_002792-f9a77c.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_002792-f9a77c.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_002792-f9a77c.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_002792-f9a77c.mp4"
     },
     {
       "kind": "video",
@@ -119,12 +127,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1342197,
-      "local": "assets/videos/episode_002745-a1eec8.mp4",
       "sha256": "baeb418d40b58db8cb05864e133425d62439dcaaf8be7dbad5f238c3810dfbb0",
       "duration_s": 25.7,
       "width": 896,
       "height": 400,
-      "thumbnail": "assets/videos/thumbs/episode_002745-a1eec8.jpg"
+      "thumbnail": "assets/videos/thumbs/episode_002745-a1eec8.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_002745-a1eec8.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/episode_002745-a1eec8.mp4"
     },
     {
       "kind": "video",
@@ -132,12 +141,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 44012227,
-      "local": "assets/videos/rm_rollout_fold_shorts_1-628a71.mp4",
       "sha256": "019de4c24959c32179305b4430e235001da3985ca95e7ac542eee079096dae15",
       "duration_s": 25.8,
       "width": 2520,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/rm_rollout_fold_shorts_1-628a71.jpg"
+      "thumbnail": "assets/videos/thumbs/rm_rollout_fold_shorts_1-628a71.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_fold_shorts_1-628a71.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_fold_shorts_1-628a71.mp4"
     },
     {
       "kind": "video",
@@ -145,12 +155,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 44242274,
-      "local": "assets/videos/rm_rollout_fold_shorts_2-f993fd.mp4",
       "sha256": "70c3529078737bcce01bdd4a034b28f30292a6201fd14653ed42bcbd5d2d9435",
       "duration_s": 29.25,
       "width": 2520,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/rm_rollout_fold_shorts_2-f993fd.jpg"
+      "thumbnail": "assets/videos/thumbs/rm_rollout_fold_shorts_2-f993fd.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_fold_shorts_2-f993fd.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_fold_shorts_2-f993fd.mp4"
     },
     {
       "kind": "video",
@@ -158,12 +169,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1951201,
-      "local": "assets/videos/rm_rollout_clean_wb_1-d26458.mp4",
       "sha256": "f14ba946a48e3671b8a42c75b99cc3f8c9f64267c9c45d96a982b2a44bab9d45",
       "duration_s": 17.92,
       "width": 2520,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/rm_rollout_clean_wb_1-d26458.jpg"
+      "thumbnail": "assets/videos/thumbs/rm_rollout_clean_wb_1-d26458.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_clean_wb_1-d26458.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_clean_wb_1-d26458.mp4"
     },
     {
       "kind": "video",
@@ -171,12 +183,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 2412292,
-      "local": "assets/videos/rm_rollout_clean_wb_2-e94664.mp4",
       "sha256": "2b791582acf5fe873fd4317891c37269c99d69712ecd8ca7db84282be32023df",
       "duration_s": 17.24,
       "width": 2520,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/rm_rollout_clean_wb_2-e94664.jpg"
+      "thumbnail": "assets/videos/thumbs/rm_rollout_clean_wb_2-e94664.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_clean_wb_2-e94664.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/rm_rollout_clean_wb_2-e94664.mp4"
     },
     {
       "kind": "video",
@@ -184,12 +197,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 14919717,
-      "local": "assets/videos/pick_up-947c5b.mp4",
       "sha256": "9cc96d51abfbeb9f6f7f20d8aabe2aa0606305be8f46516bcf661a6b2560ab17",
       "duration_s": 123.87,
       "width": 640,
       "height": 480,
-      "thumbnail": "assets/videos/thumbs/pick_up-947c5b.jpg"
+      "thumbnail": "assets/videos/thumbs/pick_up-947c5b.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/pick_up-947c5b.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/pick_up-947c5b.mp4"
     },
     {
       "kind": "video",
@@ -197,12 +211,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 4775876,
-      "local": "assets/videos/clean_whiteboard_slow-b86e9c.mp4",
       "sha256": "7239d5ce71e569164fe20a30832348690bd158217e1805b4a8c81c3e806401bc",
       "duration_s": 20.27,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/clean_whiteboard_slow-b86e9c.jpg"
+      "thumbnail": "assets/videos/thumbs/clean_whiteboard_slow-b86e9c.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_slow-b86e9c.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_slow-b86e9c.mp4"
     },
     {
       "kind": "video",
@@ -210,12 +225,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1311539,
-      "local": "assets/videos/clean_whiteboard_fast-b2df13.mp4",
       "sha256": "454462fbb4013f391a1501303c37c3678ab7b27e9f44efa76a7e222748385dba",
       "duration_s": 5.27,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/clean_whiteboard_fast-b2df13.jpg"
+      "thumbnail": "assets/videos/thumbs/clean_whiteboard_fast-b2df13.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_fast-b2df13.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_fast-b2df13.mp4"
     },
     {
       "kind": "video",
@@ -223,12 +239,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 2440612,
-      "local": "assets/videos/fold_shorts_flat_fail-d8f40d.mp4",
       "sha256": "d5545f65649841c728984b9de17d71f2c34438e29da96bf24373af49954c318b",
       "duration_s": 8.2,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/fold_shorts_flat_fail-d8f40d.jpg"
+      "thumbnail": "assets/videos/thumbs/fold_shorts_flat_fail-d8f40d.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_flat_fail-d8f40d.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_flat_fail-d8f40d.mp4"
     },
     {
       "kind": "video",
@@ -236,12 +253,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 1687610,
-      "local": "assets/videos/fold_shorts_flat_fast-b9a5b2.mp4",
       "sha256": "84d1ac83c678bd70ac5b63699d93bf92902db1f8e44b69bf26128fa6c518f384",
       "duration_s": 5.8,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/fold_shorts_flat_fast-b9a5b2.jpg"
+      "thumbnail": "assets/videos/thumbs/fold_shorts_flat_fast-b9a5b2.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_flat_fast-b9a5b2.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_flat_fast-b9a5b2.mp4"
     },
     {
       "kind": "video",
@@ -249,12 +267,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 45572429,
-      "local": "assets/videos/fold_shorts_full_fail-05cef3.mp4",
       "sha256": "7cb42b58edda8bdf76394564fac38a18cac471b165be1e5dd8a9afa663869f1d",
       "duration_s": 27.61,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/fold_shorts_full_fail-05cef3.jpg"
+      "thumbnail": "assets/videos/thumbs/fold_shorts_full_fail-05cef3.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_full_fail-05cef3.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_full_fail-05cef3.mp4"
     },
     {
       "kind": "video",
@@ -262,12 +281,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 4498295,
-      "local": "assets/videos/fold_shorts_full_fast_1-003f41.mp4",
       "sha256": "de0bd879b2cc4e0a5e4e6a5133af67b3edcb623e1c940135ea365eae400920cc",
       "duration_s": 14.78,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/fold_shorts_full_fast_1-003f41.jpg"
+      "thumbnail": "assets/videos/thumbs/fold_shorts_full_fast_1-003f41.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_full_fast_1-003f41.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_full_fast_1-003f41.mp4"
     },
     {
       "kind": "video",
@@ -275,12 +295,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 45464252,
-      "local": "assets/videos/clean_whiteboard_3_5x-67e746.mp4",
       "sha256": "d2e237e422de5ab3272d79417174bdc7321ac1f883da9da54daa21cd8032833c",
       "duration_s": 35.03,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/clean_whiteboard_3_5x-67e746.jpg"
+      "thumbnail": "assets/videos/thumbs/clean_whiteboard_3_5x-67e746.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_3_5x-67e746.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/clean_whiteboard_3_5x-67e746.mp4"
     },
     {
       "kind": "video",
@@ -288,12 +309,13 @@
       "page": "https://qianzhong-chen.github.io/sarm2.github.io/",
       "context": "",
       "bytes": 7843476,
-      "local": "assets/videos/fold_shorts_4_5x-54573a.mp4",
       "sha256": "62be0f4f777f988b67d81c8e5753d5370ee6ba8b842372e0c6957636ab6ee4ba",
       "duration_s": 24.21,
       "width": 1440,
       "height": 1080,
-      "thumbnail": "assets/videos/thumbs/fold_shorts_4_5x-54573a.jpg"
+      "thumbnail": "assets/videos/thumbs/fold_shorts_4_5x-54573a.jpg",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_4_5x-54573a.mp4",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/videos/fold_shorts_4_5x-54573a.mp4"
     },
     {
       "kind": "image",
@@ -309,7 +331,9 @@
       "context": "",
       "bytes": 164066,
       "local": "assets/images/lerobot-722821.png",
-      "sha256": "72ee48061c2528eb9f6a1f163622d4805476a52c813bd03f2f32e32d89afd63e"
+      "sha256": "72ee48061c2528eb9f6a1f163622d4805476a52c813bd03f2f32e32d89afd63e",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/lerobot-722821.png",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/lerobot-722821.png"
     },
     {
       "kind": "image",
@@ -318,7 +342,9 @@
       "context": "",
       "bytes": 3245,
       "local": "assets/images/xiaohongshu-f3d9a5.png",
-      "sha256": "e8b0311e0dec2141473d08b94d98c1ae43c0f2d8559a3148e4c41f3b0503ece0"
+      "sha256": "e8b0311e0dec2141473d08b94d98c1ae43c0f2d8559a3148e4c41f3b0503ece0",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/xiaohongshu-f3d9a5.png",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/xiaohongshu-f3d9a5.png"
     },
     {
       "kind": "image",
@@ -327,7 +353,9 @@
       "context": "",
       "bytes": 197890,
       "local": "assets/images/rm_plot-501cc8.png",
-      "sha256": "57c14fadee220244394f4812fc73559c0e5831194bb3fa82db43a4c6aa468c3f"
+      "sha256": "57c14fadee220244394f4812fc73559c0e5831194bb3fa82db43a4c6aa468c3f",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/rm_plot-501cc8.png",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/rm_plot-501cc8.png"
     },
     {
       "kind": "image",
@@ -336,7 +364,9 @@
       "context": "",
       "bytes": 158967,
       "local": "assets/images/framework_plot-70bfdd.png",
-      "sha256": "693231b7e9beb843d53f7bca15f544b4081842044e46961f688e61478d4f2a6f"
+      "sha256": "693231b7e9beb843d53f7bca15f544b4081842044e46961f688e61478d4f2a6f",
+      "remote": "gs://ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/framework_plot-70bfdd.png",
+      "remote_url": "https://storage.googleapis.com/ainative-paper-translate-ko-assets/paper-translate-ko/2606.10305_SARM2-Multi-Task-Stage-Aware-Reward-Modeling/images/framework_plot-70bfdd.png"
     }
   ]
 }
