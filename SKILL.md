@@ -120,6 +120,19 @@ sites/    # 웹사이트 전체(여러 route) 아카이브 번역
      `assets/ASSETS.md`.
 2. 저장소에 커밋할 때 **바이너리는 Git LFS로 추적**한다. 레포 `.gitattributes`에
    `*.mp4 *.webm *.mov *.m4v *.gif` 패턴이 등록되어 있어야 한다.
+
+   **용량이 큰 수집본은 GCS로 미러링한다.** 웹사이트 전체 아카이브는 한 건이
+   수 GB가 되어 Git LFS 무료 한도(1 GiB)를 넘긴다. 이때는 오브젝트 스토리지에
+   원본을 두고 저장소에는 매니페스트·썸네일·작은 파일만 남긴다.
+
+   ```bash
+   python3 scripts/mirror_assets_gcs.py <작업폴더> --bucket <버킷> --prune-over-mib 25
+   ```
+
+   업로드된 자산에는 `remote`(gs:// URI)와 `remote_url`(브라우저 링크)이 기록되고,
+   `--prune-over-mib`를 넘는 로컬 파일은 삭제된다(썸네일은 항상 남는다).
+   번역문에서는 로컬 경로 대신 `remote_url`을 링크하면 되고, 검증기는 둘 중
+   하나만 링크되어 있으면 통과시킨다.
 3. 번역 HTML의 해당 위치에 **영상 카드**를 넣는다. 그림 캡션과 같은 급으로 다루고,
    썸네일 이미지 + 한국어 캡션 + 로컬 파일 링크 + 원본 URL을 모두 표기한다
    (`assets/example.html`의 `.video-card` 참조).
