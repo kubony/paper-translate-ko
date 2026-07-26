@@ -1,0 +1,39 @@
+{
+  "fetched_on": "2026-07-26",
+  "pages": [
+    {
+      "url": "https://www.sunday.ai/blog/act-2-preview",
+      "rendered_with_chrome": false,
+      "videos_found": 2,
+      "images_found": 0
+    }
+  ],
+  "assets": [
+    {
+      "kind": "video",
+      "url": "https://youtu.be/d7I1wj0Gkik",
+      "page": "https://www.sunday.ai/blog/act-2-preview",
+      "context": "X7T8hp3s%2Fthumbnail.webp%3Ftime%3D0&w=3840&q=90\"/> The helpful robotics company Launching 2026 Beta Application <a class=\"underline underline-offset-[20%] hover:text-primary\" href=\"",
+      "bytes": 9745415,
+      "local": "assets/videos/d7I1wj0Gkik-794851.mp4",
+      "sha256": "c764f6f24670a1b6423fc4ac3b83a53d90504747340e570c26fabfab1c12226a",
+      "duration_s": 145.5,
+      "width": 640,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/d7I1wj0Gkik-794851.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://www.youtube.com/watch?v=a2HZyURUE_o",
+      "page": "https://www.sunday.ai/blog/act-2-preview",
+      "context": "or task-specific post-training or model selection, and model weights remained fixed throughout the reported evaluation. Every evaluation video can be seen in more detail <a class=\"underline underline-offset-[20%]\" href=\"",
+      "bytes": 460531700,
+      "local": "assets/videos/watch-3c976b.mp4",
+      "sha256": "00b23db2f0a9eac80a4b7ac45864b44dc1a804ed9a2aeb5bf09a1b25704173f1",
+      "duration_s": 9618.08,
+      "width": 640,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/watch-3c976b.jpg"
+    }
+  ]
+}

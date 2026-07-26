@@ -1,0 +1,48 @@
+{
+  "fetched_on": "2026-07-26",
+  "pages": [
+    {
+      "url": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
+      "rendered_with_chrome": true,
+      "videos_found": 2,
+      "images_found": 1
+    }
+  ],
+  "assets": [
+    {
+      "kind": "video",
+      "url": "https://www.youtube.com/embed/DmPtxXcwUDU?embed_config=%7B%22enc%22:%22AXH1ezmtfHgKH07s70o70gRaAzszlipmpsGJ-OwFt6DnOoNNZC3EDQ0zvwW-f_tCL-dSFWY86shWUBOYvK8DQ8E6zPL3coJziI4h4QEPinEAebRNeKP8YRXdLwVB8uT0kkNbSuzlnPvkQREiWWVdWnr7MsRW6JS-W8fapMUunu882gDjbO5KVnNc61N5HEZIkzYDHJT7WLsy9lsJ7IRpwr1BK-w5OvXr4za_b0Cu1f0o1quVWyHSCcSHCiL31yq6A1FkQbfdN2zRGDo7GhLu3NtB2V425Y-rDYWQhkSQMFNKIGydKlQGPGfuAQiMiJg1StsIGbna4ATKwCV_IkMihWOIEJBlmzrH4t1ncV5xGxIB_oLjE3M%3D%22%7D&amp;enablejsapi=1&amp;errorlinks=1&amp;origin=https://www.ai-meets-autonomy.com&amp;vl=1",
+      "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
+      "context": "llow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals allow-storage-access-by-user-activation\" frameborder=\"0\" aria-label=\"YouTube Video, CMU Vision-Language-Autonomy Challenge Opening Video\" src=\"",
+      "bytes": 4742050,
+      "local": "assets/videos/DmPtxXcwUDU-4b31be.mp4",
+      "sha256": "a6bc21e5927efc68942f1a91f61b2a34cea1550e04d61fe3c268f16841335121",
+      "duration_s": 66.8,
+      "width": 640,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-4b31be.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://www.youtube.com/embed/DmPtxXcwUDU?embed_config=%7B%22enc%22:%22AXH1eznGCwHm_-vr_sLvUuJO0_sfm7wXNRTG3zTi6ekjCoXXeTOGt2GB8edEyTXlXFCLdLRtXWeZG_aFztfIMEPn_EsbGThGqn5QoKwbRXslvD7KWzBxtYOH17PF8QjtTPCtADQbi5w20JTFeO8AbMctyJ6W9XnU5jmw6QASOpkhYOiQ%22%7D&amp;enablejsapi=1&amp;errorlinks=1&amp;origin=https://www.ai-meets-autonomy.com&amp;vl=1",
+      "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
+      "context": "llow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-modals allow-storage-access-by-user-activation\" frameborder=\"0\" aria-label=\"YouTube Video, CMU Vision-Language-Autonomy Challenge Opening Video\" src=\"",
+      "bytes": 4742050,
+      "local": "assets/videos/DmPtxXcwUDU-2ce43c.mp4",
+      "sha256": "a6bc21e5927efc68942f1a91f61b2a34cea1550e04d61fe3c268f16841335121",
+      "duration_s": 66.8,
+      "width": 640,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/DmPtxXcwUDU-2ce43c.jpg"
+    },
+    {
+      "kind": "image",
+      "url": "https://ssl.gstatic.com/atari/images/simple-header-blended-small.png",
+      "page": "https://www.ai-meets-autonomy.com/cmu-vln-challenge",
+      "context": ".IFuOkc:before{background-color: rgba(33,33,33,1); opacity: 0; display: block;}.O13XJf{height: 340px; padding-bottom: 60px; padding-top: 60px;}.O13XJf .IFuOkc{background-color: rgba(34,110,147,1); background-image: url(",
+      "bytes": 297036,
+      "local": "assets/images/simple-header-blended-small-bbb002.png",
+      "sha256": "630cc964d03e283699d55d2c1e10aeb9738bad380bde7ca321822e2db51c1317"
+    }
+  ]
+}

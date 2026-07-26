@@ -1,0 +1,182 @@
+{
+  "fetched_on": "2026-07-26",
+  "pages": [
+    {
+      "url": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "rendered_with_chrome": false,
+      "videos_found": 13,
+      "images_found": 0
+    }
+  ],
+  "assets": [
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/blog-hand-web.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "itizing what actually matters for real-world robot learning and industrial use: a 1:1 human form factor, highly backdrivable joints, bi-directional actuation, robustness, reliability, and sustained strength. <video src=\"",
+      "bytes": 16140001,
+      "local": "assets/videos/blog-hand-web-5f9ee0.mp4",
+      "sha256": "d6a2c7da7d5128d60f60fb40d9bfd28a4c7810a1a652e75f8bb35a9d0a8bb05d",
+      "duration_s": 103.04,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/blog-hand-web-5f9ee0.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/03-dofs.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "d fingertip tactile sensors add tangential shear-force sensing and higher spatial resolution where it matters most. The M1 is the sensor that helps inform intelligence, not just the tool that executes on it. <video src=\"",
+      "bytes": 284617,
+      "local": "assets/videos/03-dofs-cd87f8.mp4",
+      "sha256": "1410cce8ef42f5b3933dcf2df181c8f4dba62ee7be187dda7d3ddbfef1902df1",
+      "duration_s": 2.24,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/03-dofs-cd87f8.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/04-tactile.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "d fingertip tactile sensors add tangential shear-force sensing and higher spatial resolution where it matters most. The M1 is the sensor that helps inform intelligence, not just the tool that executes on it. <video src=\"",
+      "bytes": 302530,
+      "local": "assets/videos/04-tactile-7dda70.mp4",
+      "sha256": "fb7765b1ac5a1ab2fedc7f9f320b29813dd57017355fdfe87939985f60e52880",
+      "duration_s": 3.8,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/04-tactile-7dda70.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/01-finger-press.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "d fingertip tactile sensors add tangential shear-force sensing and higher spatial resolution where it matters most. The M1 is the sensor that helps inform intelligence, not just the tool that executes on it. <video src=\"",
+      "bytes": 491753,
+      "local": "assets/videos/01-finger-press-255257.mp4",
+      "sha256": "992b97a1f18ea6f05b08b76cbdafa270d3eacd3704c8c1035a926e8abaece6ec",
+      "duration_s": 5.8,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/01-finger-press-255257.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/02-put-weight-2.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "ere it matters most. The M1 is the sensor that helps inform intelligence, not just the tool that executes on it. <video src=\"",
+      "bytes": 441266,
+      "local": "assets/videos/02-put-weight-2-674bcf.mp4",
+      "sha256": "350a62fb34820c1f7ffab1843cadd9cb0f48764519af5c8951ad1b428faecde9",
+      "duration_s": 3.36,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/02-put-weight-2-674bcf.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/05-hammer.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "s intentional or not. Highly backdrivable actuation, paired with robust gearboxes, large hyperextension up to 45 degrees, high-performance tendons and strong alloy structures, lets it endure repeated impact. <video src=\"",
+      "bytes": 563542,
+      "local": "assets/videos/05-hammer-338238.mp4",
+      "sha256": "9544f2141453d6afc8ad38f10d2d91cd32c02eee1ac6778d056f7c72c57480a8",
+      "duration_s": 7.32,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/05-hammer-338238.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/06-strength.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "s intentional or not. Highly backdrivable actuation, paired with robust gearboxes, large hyperextension up to 45 degrees, high-performance tendons and strong alloy structures, lets it endure repeated impact. <video src=\"",
+      "bytes": 1164037,
+      "local": "assets/videos/06-strength-f1fa8d.mp4",
+      "sha256": "7e9e1def3fd6426b7b26ac58cac0a77e246b78f9bcc82b7144f8957813850157",
+      "duration_s": 13.0,
+      "width": 1440,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/06-strength-f1fa8d.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/07-backdrive-human.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "s intentional or not. Highly backdrivable actuation, paired with robust gearboxes, large hyperextension up to 45 degrees, high-performance tendons and strong alloy structures, lets it endure repeated impact. <video src=\"",
+      "bytes": 1077314,
+      "local": "assets/videos/07-backdrive-human-b9fb4a.mp4",
+      "sha256": "9d41f2ff7dcbcc3b46be02ecb80dd0b1b4aa63f2bb991c968eb184ba363efc32",
+      "duration_s": 5.44,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/07-backdrive-human-b9fb4a.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/08-backdrive-leaf.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "to 45 degrees, high-performance tendons and strong alloy structures, lets it endure repeated impact. <video src=\"",
+      "bytes": 339053,
+      "local": "assets/videos/08-backdrive-leaf-64c519.mp4",
+      "sha256": "8fbcfa622a370dbccccba2cc80cfb194cd8ef459686c80573ee22466938a9cb9",
+      "duration_s": 2.6,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/08-backdrive-leaf-64c519.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/blog-umimic-web.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "] text-[#202020] self-center\">15:1 Gloves Work gloves, customizable to application Cameras Global shutter, synchronized Scaling Data Beyond Teleoperation <video src=\"",
+      "bytes": 10138243,
+      "local": "assets/videos/blog-umimic-web-80b6a0.mp4",
+      "sha256": "a1eccc6bd655ad294f6dff6dc44fd2c4c0c5b6c5b386e3bde80634be2095b8ae",
+      "duration_s": 52.52,
+      "width": 1920,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/blog-umimic-web-80b6a0.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://d2304w8u5eg7y4.cloudfront.net/videos/09-umimic-kachel.mp4",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "ncy or retargeting, and perform manipulation tasks at nearly natural human speed. The resulting demonstrations are both faster to collect and more faithful to the behavior the robot is expected to reproduce. <video src=\"",
+      "bytes": 747813,
+      "local": "assets/videos/09-umimic-kachel-156a19.mp4",
+      "sha256": "e266530ef26dc7febdab9e07f9b9f0b50bd07c3713c0d8610367bed8521cef60",
+      "duration_s": 4.0,
+      "width": 1440,
+      "height": 1080,
+      "thumbnail": "assets/videos/thumbs/09-umimic-kachel-156a19.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://youtu.be/ikjPRgE8WLM",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "ioritizing what actually matters for real-world robot learning and industrial use: a 1:1 human form factor, highly backdrivable joints, bi-directional actuation, robustness, reliability, and sustained strength. <a href=\"",
+      "bytes": 3463128,
+      "local": "assets/videos/ikjPRgE8WLM-65154a.mp4",
+      "sha256": "1cbbb3f65a14f777804c302a12054370fb1d61dbf4f3f3a878eeb8ca898acced",
+      "duration_s": 103.1,
+      "width": 480,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/ikjPRgE8WLM-65154a.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://youtu.be/UJ3tRQ1YE-8",
+      "page": "https://www.mimicrobotics.com/blog/solving-dexterity-a-full-stack-approach",
+      "context": "racking-[0.04em] self-center pl-2\" style=\"font-family:var(--font-roboto-mono), monospace\">Gloves Work gloves, customizable to application Cameras Global shutter, synchronized Scaling Data Beyond Teleoperation <a href=\"",
+      "bytes": 1871044,
+      "local": "assets/videos/UJ3tRQ1YE-8-00aa5b.mp4",
+      "sha256": "18132acc3c0d51f033c98a16dd40e07a62d4270678e139862ec40d931994e008",
+      "duration_s": 52.57,
+      "width": 480,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/UJ3tRQ1YE-8-00aa5b.jpg"
+    }
+  ]
+}
