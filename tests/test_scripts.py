@@ -536,6 +536,11 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertEqual(titles["https://site.example/media/foldjeans.mp4"], "Folding jeans")
         self.assertEqual(titles["https://site.example/media/coffee.mp4"], "Making coffee")
 
+    def test_extract_titles_handles_escaped_json_in_js_string(self):
+        raw = r'\"url\":\"https://cdn.example.com/trash.mp4\",\"title\":\"Taking out the trash\"'
+        titles = self.fwa.extract_titles(raw, "https://site.example/pi07")
+        self.assertEqual(titles["https://cdn.example.com/trash.mp4"], "Taking out the trash")
+
     def test_assets_md_prefers_original_title_over_context(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "assets"

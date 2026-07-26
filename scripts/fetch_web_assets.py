@@ -171,8 +171,9 @@ def extract_titles(html: str, base_url: str) -> dict[str, str]:
 
     Next.js/React 사이트는 RSC payload에 `{"url":"....mp4","title":"Cutting a zucchini"}`
     형태로 캡션을 싣는 경우가 많다. 이 제목이 있으면 캡션을 추측하지 않아도 된다.
+    payload가 JS 문자열 안에 들어가면 따옴표가 `\"`로 이스케이프되므로 먼저 푼다.
     """
-    text = _html.unescape(html.replace("\\/", "/"))
+    text = _html.unescape(html.replace("\\/", "/").replace('\\"', '"'))
     titles: dict[str, str] = {}
     pairs = [
         r'"url"\s*:\s*"([^"]+?)"\s*,\s*"title"\s*:\s*"([^"]*?)"',
