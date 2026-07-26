@@ -557,6 +557,19 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertEqual(titles["https://site.example/media/foldjeans.mp4"], "Folding jeans")
         self.assertEqual(titles["https://site.example/media/coffee.mp4"], "Making coffee")
 
+    def test_extract_titles_accepts_description_key(self):
+        html = '{"url":"https://cdn.example.com/a.gif","description":"Rendering of an AI model"}'
+        titles = self.fwa.extract_titles(html, "https://site.example/post")
+        self.assertEqual(titles["https://cdn.example.com/a.gif"], "Rendering of an AI model")
+
+    def test_extract_stream_pages_dedupes_same_video_id(self):
+        html = (
+            '<a href="https://www.youtube.com/watch?v=DmPtxXcwUDU">a</a>'
+            '<iframe src="https://www.youtube.com/embed/DmPtxXcwUDU?rel=0"></iframe>'
+            '<a href="https://youtu.be/DmPtxXcwUDU">c</a>'
+        )
+        self.assertEqual(len(self.fwa.extract_stream_pages(html)), 1)
+
     def test_extract_titles_handles_escaped_json_in_js_string(self):
         raw = r'\"url\":\"https://cdn.example.com/trash.mp4\",\"title\":\"Taking out the trash\"'
         titles = self.fwa.extract_titles(raw, "https://site.example/pi07")
