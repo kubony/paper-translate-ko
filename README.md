@@ -82,6 +82,12 @@ python3 scripts/fetch_web_assets.py --out "$WORK/assets" https://example.com/blo
 - 번역 HTML에는 `.video-card`(썸네일 + 캡션 + 레포 사본 링크 + 원본 URL)로 넣고,
   본문에 자리가 없는 영상은 말미 "영상 자산" 부록 표에 모읍니다.
 - 바이너리는 Git LFS로 추적합니다(`.gitattributes`에 `*.mp4 *.webm *.mov *.m4v *.gif`).
+- 수 GB급 수집본은 `scripts/mirror_assets_gcs.py`로 GCS에 미러링하고, 저장소에는
+  매니페스트·썸네일·작은 파일만 남깁니다. 번역문은 `remote_url`을 링크합니다.
+
+```bash
+python3 scripts/mirror_assets_gcs.py "$WORK" --bucket my-bucket --prune-over-mib 25
+```
 - 검증기는 `assets/videos.json`이 있으면 파일 존재와 **본문 링크 여부**를 강제합니다.
 
 `manifest.json` 예시:
@@ -160,6 +166,7 @@ references/translation-rules.md           # 번역 문체/레이아웃 규칙
 references/vla-robotics-translation-glossary.md
 scripts/fetch_arxiv.py                    # arXiv PDF + metadata 다운로드
 scripts/fetch_web_assets.py               # 웹 아티클 영상/이미지 자산 수집
+scripts/mirror_assets_gcs.py              # 대용량 자산 GCS 미러링
 scripts/extract_figures.py                # PDF 그림 후보 추출/수동 crop
 scripts/render_pdf.py                     # HTML → PDF 렌더링
 scripts/validate_output.py                # 출력 계약 검증 게이트
@@ -174,6 +181,7 @@ assets/example.html                       # 구성요소 예시 HTML
 python3 -m py_compile scripts/*.py
 python3 scripts/fetch_arxiv.py
 python3 scripts/fetch_web_assets.py --help
+python3 scripts/mirror_assets_gcs.py --help
 python3 scripts/render_pdf.py
 uv run --quiet --with pymupdf python3 scripts/extract_figures.py
 uv run --quiet --with pymupdf python3 scripts/validate_output.py

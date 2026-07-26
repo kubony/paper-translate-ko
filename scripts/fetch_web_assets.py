@@ -140,6 +140,19 @@ def extract_media_urls(html: str, base_url: str, exts: tuple[str, ...]) -> list[
     return found
 
 
+def _stream_id(url: str) -> str:
+    """YouTube/Vimeo URL에서 영상 id를 뽑는다(중복 제거용)."""
+    parts = urllib.parse.urlsplit(url)
+    host = parts.netloc.lower()
+    if host.endswith("youtu.be"):
+        return parts.path.strip("/")
+    if host.endswith("youtube.com"):
+        if parts.path.startswith("/embed/"):
+            return parts.path.split("/embed/", 1)[1].strip("/")
+        return urllib.parse.parse_qs(parts.query).get("v", [""])[0]
+    return parts.path.strip("/")
+
+
 def extract_stream_pages(html: str) -> list[str]:
     """YouTube/Vimeo 단일 영상 URL을 뽑는다(yt-dlp로 내려받는 대상).
 
@@ -148,6 +161,7 @@ def extract_stream_pages(html: str) -> list[str]:
     """
     hits: list[str] = []
     seen: set[str] = set()
+    seen_ids: set[str] = set()
     non_video = ("/@", "/channel/", "/c/", "/user/", "/results")
     for raw in re.findall(r"""(?i)["'(](https?://[^"'\s)]+)["')]""", html):
         url = raw.replace("\\/", "/").rstrip("\\,.")
@@ -161,9 +175,96 @@ def extract_stream_pages(html: str) -> list[str]:
             continue
         if url in seen:
             continue
+        video_id = _stream_id(url)
+        if video_id and video_id in seen_ids:
+            continue  # 같은 영상의 다른 URL 형태 — 한 번만 받는다
         seen.add(url)
+        if video_id:
+            seen_ids.add(video_id)
         hits.append(url)
     return hits
+
+
+def decode_js_text(value: str) -> str:
+    r"""JSON/JS 문자열 이스케이프(\uXXXX, \n, \t)를 사람이 읽는 문자로 되돌린다.
+
+    RSC payload에서 뽑은 제목에는 `\u003cP0/ \u003e ALOHA folding a towel`처럼
+    이스케이프된 마크업이 섞인다. 디코드한 뒤 남는 태그는 제거한다.
+    """
+    try:
+        value = json.loads(f'"{value}"')
+    except json.JSONDecodeError:
+        value = value.replace("\\n", " ").replace("\\t", " ")
+    value = re.sub(r"<[^>]*>", "", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def extract_titles(html: str, base_url: str) -> dict[str, str]:
+    """영상 URL에 붙은 원문 제목을 뽑는다.
+
+    Next.js/React 사이트는 RSC payload에 `{"url":"....mp4","title":"Cutting a zucchini"}`
+    형태로 캡션을 싣는 경우가 많다. 이 제목이 있으면 캡션을 추측하지 않아도 된다.
+    payload가 JS 문자열 안에 들어가면 따옴표가 `\"`로 이스케이프되므로 먼저 푼다.
+    """
+    text = _html.unescape(html.replace("\\/", "/").replace('\\"', '"'))
+    titles: dict[str, str] = {}
+    # 캡션이 담기는 키는 사이트마다 다르다(title / description / caption / alt).
+    caption_keys = "title|description|caption|alt|label"
+    url_keys = "url|src|asset|video|videoUrl|source"
+    pairs = [
+        rf'"(?:{url_keys})"\s*:\s*"([^"]+?)"\s*,\s*"(?:{caption_keys})"\s*:\s*"([^"]*?)"',
+    ]
+    reversed_pairs = [
+        rf'"(?:{caption_keys})"\s*:\s*"([^"]*?)"\s*,\s*"(?:{url_keys})"\s*:\s*"([^"]+?)"',
+    ]
+    found: list[tuple[str, str]] = []
+    for pat in pairs:
+        found += re.findall(pat, text)
+    for pat in reversed_pairs:
+        found += [(u, t) for t, u in re.findall(pat, text)]
+    # <video title="..."> / aria-label
+    for attrs in re.findall(r"(?is)<video\b([^>]*)>", text):
+        src = re.search(r"""src\s*=\s*["']([^"']+)["']""", attrs)
+        label = re.search(r"""(?:title|aria-label)\s*=\s*["']([^"']+)["']""", attrs)
+        if src and label:
+            found.append((src.group(1), label.group(1)))
+
+    for url, title in found:
+        title = decode_js_text(title)
+        if not title:
+            continue
+        absolute = urllib.parse.urljoin(base_url, url.strip())
+        titles.setdefault(absolute, title)
+    return titles
+
+
+def portable_text_caption(html: str, asset_url: str, window: int = 1600) -> str:
+    """Sanity portable text로 실린 캡션을 뽑는다.
+
+    Sanity(anthropic.com 등)는 `"asset":{"_ref":"image-<hash>-480x360-gif"}` 뒤에
+    `"caption":[{...,"children":[{"text":"..."}]}]` 블록을 둔다. 자산 참조 뒤쪽
+    구간에서 caption 블록의 text 조각을 이어 붙인다.
+    """
+    text = _html.unescape(html.replace("\\/", "/").replace('\\"', '"'))
+    stem = Path(urllib.parse.urlsplit(asset_url).path).stem
+    if not stem:
+        return ""
+    # 같은 자산이 여러 번(썸네일 srcset 등) 등장하므로, caption 블록이 뒤따르는
+    # 첫 번째 참조를 쓴다.
+    start = 0
+    while True:
+        idx = text.find(stem, start)
+        if idx < 0:
+            return ""
+        start = idx + len(stem)
+        tail = text[idx: idx + window]
+        cap = tail.find('"caption"')
+        if cap < 0:
+            continue
+        pieces = re.findall(r'"text"\s*:\s*"([^"]*)"', tail[cap: cap + window])
+        caption = " ".join(piece.strip() for piece in pieces if piece.strip()).strip()
+        if caption:
+            return caption
 
 
 # ---- 페이지 로드 ---------------------------------------------------------
@@ -267,6 +368,20 @@ def download_stream(url: str, dest_stem: Path, timeout: int = 900) -> Path | Non
     return hits[0] if hits else None
 
 
+def stream_title(url: str, timeout: int = 120) -> str:
+    """YouTube/Vimeo 영상의 원문 제목을 얻는다. 캡션 근거가 된다."""
+    if not shutil.which("yt-dlp"):
+        return ""
+    cmd = ["yt-dlp", "--quiet", "--no-warnings", "--skip-download", "--print", "title", url]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    if proc.returncode != 0:
+        return ""
+    return proc.stdout.decode("utf-8", errors="replace").strip().splitlines()[0] if proc.stdout.strip() else ""
+
+
 def probe(path: Path) -> dict:
     """ffprobe로 길이·해상도를 얻는다. 없으면 빈 dict."""
     if not shutil.which("ffprobe"):
@@ -351,7 +466,7 @@ def write_assets_md(out_dir: Path, pages: list[dict], entries: list[dict]) -> Pa
             continue
         lines.append(f"## {title} ({len(group)}개)")
         lines.append("")
-        lines.append("| # | 파일 | 길이/크기 | 원문 맥락 | 원본 URL |")
+        lines.append("| # | 파일 | 원문 제목 | 길이/크기 | 원본 URL |")
         lines.append("|---|------|-----------|-----------|----------|")
         for i, entry in enumerate(group, 1):
             local = entry.get("local") or "(미보관)"
@@ -361,9 +476,9 @@ def write_assets_md(out_dir: Path, pages: list[dict], entries: list[dict]) -> Pa
                 meta.append(f"{entry['duration_s']:.0f}s")
             if entry.get("bytes"):
                 meta.append(f"{size_mb:.1f}MB")
-            context = (entry.get("context") or "").replace("|", "/")[:80]
+            label = (entry.get("title") or entry.get("context") or "").replace("|", "/")[:80]
             lines.append(
-                f"| {i} | `{local}` | {' · '.join(meta) or '-'} | {context or '-'} | {entry['url']} |"
+                f"| {i} | `{local}` | {label or '-'} | {' · '.join(meta) or '-'} | {entry['url']} |"
             )
         lines.append("")
     path = out_dir / "ASSETS.md"
@@ -391,6 +506,7 @@ def collect(
         video_urls = extract_media_urls(combined, page_url, MOTION_EXTS)
         video_urls += [u for u in extract_stream_pages(combined) if u not in video_urls]
         image_urls = extract_media_urls(combined, page_url, IMAGE_EXTS) if include_images else []
+        titles = extract_titles(combined, page_url)
         pages.append({
             "url": page_url,
             "rendered_with_chrome": bool(dom),
@@ -414,6 +530,9 @@ def collect(
                     "page": page_url,
                     "context": context_for(combined, url),
                 }
+                title = titles.get(url) or portable_text_caption(combined, url)
+                if title:
+                    entry["title"] = title
                 size = head_size(url)
                 if size:
                     entry["bytes"] = size
@@ -441,6 +560,10 @@ def collect(
                             print(f"  [skip] 스트림 다운로드 실패 — {url}")
                             continue
                         dest = got
+                        if not entry.get("title"):
+                            found_title = stream_title(url)
+                            if found_title:
+                                entry["title"] = found_title
                     else:
                         ext = Path(urllib.parse.urlsplit(url).path).suffix or (
                             ".mp4" if kind == "video" else ".bin"
@@ -468,6 +591,41 @@ def collect(
     return pages, entries
 
 
+def refresh_manifest(urls: list[str], out_dir: Path) -> int:
+    """이미 내려받은 자산의 title/context만 페이지에서 다시 읽어 갱신한다."""
+    path = out_dir / "videos.json"
+    if not path.exists():
+        print(f"[오류] videos.json 없음: {path}")
+        return 2
+    data = json.loads(path.read_text(encoding="utf-8"))
+    titles: dict[str, str] = {}
+    contexts: dict[str, str] = {}
+    for page_url in urls:
+        dom, static = page_sources(page_url)
+        combined = dom + "\n" + static
+        titles.update(extract_titles(combined, page_url))
+        for asset in data.get("assets", []):
+            if asset["url"] not in titles:
+                caption = portable_text_caption(combined, asset["url"])
+                if caption:
+                    titles[asset["url"]] = caption
+            if asset["url"] not in contexts:
+                ctx = context_for(combined, asset["url"])
+                if ctx:
+                    contexts[asset["url"]] = ctx
+    updated = 0
+    for asset in data.get("assets", []):
+        if titles.get(asset["url"]):
+            asset["title"] = titles[asset["url"]]
+            updated += 1
+        if contexts.get(asset["url"]):
+            asset["context"] = contexts[asset["url"]]
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_assets_md(out_dir, data.get("pages", []), data.get("assets", []))
+    print(f"제목 갱신 {updated}/{len(data.get('assets', []))}개 — {path}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="웹 아티클의 영상·이미지 자산을 수집해 작업 폴더에 보관한다.",
@@ -479,9 +637,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--include-images", action="store_true", help="이미지도 함께 수집")
     parser.add_argument("--no-thumbnails", action="store_true", help="영상 썸네일 생성 생략")
     parser.add_argument("--dry-run", action="store_true", help="다운로드 없이 목록만 조사")
+    parser.add_argument("--refresh-titles", action="store_true",
+                        help="다운로드 없이 기존 videos.json의 원문 제목/맥락만 갱신")
     args = parser.parse_args(argv)
 
     out_dir = Path(args.out)
+    if args.refresh_titles:
+        return refresh_manifest(args.urls, out_dir)
     pages, entries = collect(
         args.urls,
         out_dir,

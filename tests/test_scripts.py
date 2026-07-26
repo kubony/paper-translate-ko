@@ -473,6 +473,27 @@ class FolderNameAndMediaAssetTests(unittest.TestCase):
             self.validator.check_media_assets(rep, str(work), str(html_path))
         self.assertFalse(rep.failed)
 
+    def test_remote_mirrored_asset_linked_by_url_passes(self):
+        with tempfile.TemporaryDirectory() as td:
+            work = Path(td) / "2026-07-26_site_Archive"
+            (work / "assets").mkdir(parents=True)
+            (work / "assets" / "videos.json").write_text(json.dumps({
+                "assets": [{
+                    "kind": "video",
+                    "url": "https://example.com/demo.mp4",
+                    "remote": "gs://bucket/prefix/videos/demo.mp4",
+                    "remote_url": "https://storage.cloud.google.com/bucket/prefix/videos/demo.mp4",
+                    "bytes": 900_000_000,
+                }],
+            }), encoding="utf-8")
+            html_path = work / "translation.html"
+            html_path.write_text(
+                '<a href="https://storage.cloud.google.com/bucket/prefix/videos/demo.mp4">영상</a>',
+                encoding="utf-8")
+            rep = self.validator.Report()
+            self.validator.check_media_assets(rep, str(work), str(html_path))
+        self.assertFalse(rep.failed)
+
     def test_missing_asset_file_fails(self):
         with tempfile.TemporaryDirectory() as td:
             work, html_path = self._media_workdir(
@@ -524,6 +545,72 @@ class FetchWebAssetsTests(unittest.TestCase):
         self.assertIn("https://youtu.be/d7I1wj0Gkik", hits)
         self.assertIn("https://www.youtube.com/embed/a2HZyURUE_o", hits)
         self.assertFalse(any("@SundayRobotics" in u for u in hits))
+
+    def test_extract_titles_from_rsc_payload_and_video_attrs(self):
+        html = (
+            '{"url":"https://cdn.example.com/cut_zucchini.mp4","title":"Cutting a zucchini"},'
+            '{"title":"Folding jeans","url":"/media/foldjeans.mp4"}'
+            '<video src="/media/coffee.mp4" aria-label="Making coffee"></video>'
+        )
+        titles = self.fwa.extract_titles(html, "https://site.example/pi07")
+        self.assertEqual(titles["https://cdn.example.com/cut_zucchini.mp4"], "Cutting a zucchini")
+        self.assertEqual(titles["https://site.example/media/foldjeans.mp4"], "Folding jeans")
+        self.assertEqual(titles["https://site.example/media/coffee.mp4"], "Making coffee")
+
+    def test_titles_decode_escaped_markup(self):
+        html = r'{"url":"https://cdn.example.com/a.mp4","title":"\u003cP0/ \u003e ALOHA folding a towel"}'
+        titles = self.fwa.extract_titles(html, "https://site.example/blog")
+        self.assertEqual(titles["https://cdn.example.com/a.mp4"], "ALOHA folding a towel")
+
+    def test_extract_titles_accepts_description_key(self):
+        html = '{"url":"https://cdn.example.com/a.gif","description":"Rendering of an AI model"}'
+        titles = self.fwa.extract_titles(html, "https://site.example/post")
+        self.assertEqual(titles["https://cdn.example.com/a.gif"], "Rendering of an AI model")
+
+    def test_extract_stream_pages_dedupes_same_video_id(self):
+        html = (
+            '<a href="https://www.youtube.com/watch?v=DmPtxXcwUDU">a</a>'
+            '<iframe src="https://www.youtube.com/embed/DmPtxXcwUDU?rel=0"></iframe>'
+            '<a href="https://youtu.be/DmPtxXcwUDU">c</a>'
+        )
+        self.assertEqual(len(self.fwa.extract_stream_pages(html)), 1)
+
+    def test_extract_titles_handles_escaped_json_in_js_string(self):
+        raw = r'\"url\":\"https://cdn.example.com/trash.mp4\",\"title\":\"Taking out the trash\"'
+        titles = self.fwa.extract_titles(raw, "https://site.example/pi07")
+        self.assertEqual(titles["https://cdn.example.com/trash.mp4"], "Taking out the trash")
+
+    def test_assets_md_prefers_original_title_over_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "assets"
+            out.mkdir()
+            entries = [{
+                "kind": "video", "url": "https://x.example/clip.mp4",
+                "local": "assets/videos/clip.mp4", "bytes": 1024,
+                "title": "Cutting a zucchini", "context": "노이즈 섞인 DOM 텍스트",
+            }]
+            md_path = self.fwa.write_assets_md(out, [{"url": "https://x.example/post"}], entries)
+            md = md_path.read_text(encoding="utf-8")
+        self.assertIn("Cutting a zucchini", md)
+        self.assertNotIn("노이즈 섞인 DOM 텍스트", md)
+
+    def test_portable_text_caption_reads_sanity_block(self):
+        payload = (
+            '"asset":{"_ref":"image-abc123-480x360-gif"},"srcset":"abc123-480x360.gif 480w",'
+            '{"_type":"image","asset":{"_ref":"image-abc123-480x360-gif"},'
+            '"caption":[{"children":[{"text":"Opus 4.6\'s best run."},'
+            '{"text":"Classic-control performance by model."}]}]}'
+        )
+        caption = self.fwa.portable_text_caption(
+            payload, "https://cdn.sanity.io/images/x/website/abc123-480x360.gif")
+        self.assertEqual(caption, "Opus 4.6's best run. Classic-control performance by model.")
+
+    def test_portable_text_caption_returns_empty_without_caption_block(self):
+        self.assertEqual(
+            self.fwa.portable_text_caption('{"asset":"abc123-480x360"}',
+                                           "https://cdn.example.com/abc123-480x360.gif"),
+            "",
+        )
 
     def test_slugify_is_filesystem_safe_and_unique_per_url(self):
         a = self.fwa.slugify("https://cdn.example.com/a b/데모 영상.mp4")
