@@ -9,18 +9,36 @@
 [PASS] HTML: screen-reader/LaTeXML 수식 변환 잔재 없음.
 [PASS] HTML: 표시 텍스트에 LaTeX 잔재 없음.
 [PASS] HTML: 고신뢰 기계번역 잔재 없음.
+[PASS] HTML: 백슬래시 없는 LaTeX 매크로 잔재 없음.
+[PASS] HTML: LaTeX label 참조 노출 없음.
+[PASS] HTML: 마크다운 표 잔재 없음.
+[PASS] HTML: 캡션 파일명 노출 없음.
+[PASS] HTML: 템플릿 자리표시 잔재 없음.
+[PASS] HTML: 캡션 중복 인쇄 없음.
+[PASS] HTML: 섹션 번호 중복 인쇄 없음.
+[PASS] HTML: 본문에 미번역 영어 블록 없음.
+[PASS] HTML: 본문이 참조하는 표/그림 번호에 대응 캡션이 모두 있다.
 [PASS] HTML img 27개: 상대경로 파일 모두 존재하고 비어있지 않다.
 [PASS] 그림 개수: HTML img 27개 ≥ manifest figures 14개.
-[PASS] 표 개수: HTML <table> 11개 ≥ manifest tables 10개.
+[PASS] 표 개수: HTML <table> 13개 ≥ manifest tables 10개.
 [PASS] 수식 개수: HTML <pre> 9개 ≥ manifest display_equations 9개.
 [PASS] 문체: '습니다' 0회(≤ 15) — 경어체 신호 없음.
-[PASS] 미디어 자산: 26개 보관(264.3MB), 파일/원격 미러 확인.
+[PASS] 미디어 자산: 26개 보관(264.3MB), 파일/원격 미러 확인 — 원격 미러 26개.
 [PASS] 미디어 자산: 보관한 26개 모두 본문/부록에서 링크됨.
 [PASS] 페이지 수: 최종 36p / 원본 31p
 [PASS] 페이지 비율 1.16배 — 정상 범위(±30%).
 [PASS] 페이지 통 캡처 없음 — 이미지가 본문을 지배하는 페이지가 없다.
 [PASS] 최종 PDF 텍스트: 금지 문자열 없음.
 [PASS] 최종 PDF: 고신뢰 기계번역 잔재 없음.
+[PASS] 최종 PDF: 백슬래시 없는 LaTeX 매크로 잔재 없음.
+[PASS] 최종 PDF: LaTeX label 참조 노출 없음.
+[PASS] 최종 PDF: 마크다운 표 잔재 없음.
+[PASS] 최종 PDF: 캡션 파일명 노출 없음.
+[PASS] 최종 PDF: 템플릿 자리표시 잔재 없음.
+[PASS] 최종 PDF: 캡션 중복 인쇄 없음.
+[PASS] 최종 PDF: 섹션 번호 중복 인쇄 없음.
+[PASS] 최종 PDF: 본문에 미번역 영어 블록 없음.
+[PASS] 최종 PDF: 본문이 참조하는 표/그림 번호에 대응 캡션이 모두 있다.
 [PASS] 최종 PDF: screen-reader/LaTeXML 수식 변환 잔재 없음.
 [PASS] LaTeX 잔재 없음 — 수식이 변환된 상태다.
 [PASS] 인라인 인용 [n] 잔존 없음.

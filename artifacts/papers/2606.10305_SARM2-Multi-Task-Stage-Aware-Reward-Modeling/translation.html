@@ -299,6 +299,28 @@ section>h2,article h2{column-span:all;font-size:15pt;font-weight:800;margin:14px
 
     <p><strong>평가 및 분석.</strong> (i) 10개 task 전체의 held-out human demonstration과 (ii) downstream policy를 학습한 2개 task의 policy rollout에서 평가하며, MoE 구조를 갖는 모든 모델에 대해 MoE routing diagnostic을 추가로 보고한다. 전체 protocol은 부록 6.6에 제시한다. 표 1은 몇 가지 일관된 양상을 보여준다. SARM2는 두 task subset과 전체에서 가장 낮은 demonstration MSE(S1에서 0.006, S2에서 0.031, 통합 시 0.020)를 달성하며, 더 어려운 T2에서도 가장 높은 rollout classification score(ρ = 0.667)를 달성한다. 다음 네 가지 관찰 결과를 강조한다.</p>
 
+    <table class="wide" id="table-1">
+      <caption><strong>표 1: 10개 task 벤치마크의 보상 모델 평가.</strong> Demo <i>L</i>: classic(S1)·unconventional(S2) subset의 held-out demonstration에 대한 frame당 MSE와 frame 단위 micro-average. Rollout ρ ∈ [−1, 1], 자세한 내용은 6.6절 참조(T1: Folding Shorts, T2: Cleaning Whiteboard). MoE Density: sample당 최대 expert 사용률을 정규화한 값으로, 1에 가까우면 routing collapse를 뜻한다(자세한 내용은 식 (6)). 행별 최고값을 굵게 표시했다.</caption>
+      <thead>
+        <tr>
+          <th>Metrics</th><th>RW</th><th>TR</th><th>RM</th><th>RM (FT)</th>
+          <th>w/o SE</th><th>w/o MG</th><th>S1 Var.</th><th>SARM2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><th colspan="9"><i>Demo L</i> ↓</th></tr>
+        <tr><td>S1</td><td>0.026</td><td>0.090</td><td>0.067</td><td>0.032</td><td>0.025</td><td>0.010</td><td>0.010</td><td><b>0.006</b></td></tr>
+        <tr><td>S2</td><td>0.044</td><td>0.120</td><td>0.113</td><td>0.052</td><td>0.040</td><td>0.038</td><td>N/A</td><td><b>0.031</b></td></tr>
+        <tr><td>Overall</td><td>0.036</td><td>0.107</td><td>0.093</td><td>0.043</td><td>0.034</td><td>0.026</td><td>N/A</td><td><b>0.020</b></td></tr>
+        <tr class="group"><th colspan="9"><i>Rollout ρ</i> ↑</th></tr>
+        <tr><td>T1</td><td>0.167</td><td>−0.222</td><td>0.222</td><td>0.667</td><td>0.556</td><td>0.611</td><td><b>0.889</b></td><td>0.833</td></tr>
+        <tr><td>T2</td><td>0.222</td><td>−0.444</td><td>−0.111</td><td>0.000</td><td>0.556</td><td>0.333</td><td>N/A</td><td><b>0.667</b></td></tr>
+        <tr class="group"><th colspan="9"><i>MoE Density</i></th></tr>
+        <tr><td></td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>0.87</td><td>0.42</td><td>0.23</td><td>0.10</td></tr>
+      </tbody>
+    </table>
+
+
     <p><strong>(1) 범용 VLM 기반 reward model은 조밀한 value estimation에서 성능이 낮다.</strong> 강력한 semantic generalization에도 불구하고 TOPReward와 Robometer는 S1에서 SARM2보다 4–6배 높은 demo loss를 보이고 rollout classification에서도 낮은 성능을 나타내며, 이는 주로 지나치게 낙관적인 estimation에 기인한다. 시각화는 그림 7을 참조한다. 본 연구의 10-task dataset에서 Robometer를 LoRA fine-tuning하면 demo loss와 rollout score가 모두 크게 향상되어 처음부터 학습한 ReWiND에 가까워진다. 그러나 규모가 한 order 더 큼에도 불구하고(약 4B 대 약 200M parameter) 여전히 처음부터 학습한 모든 in-domain baseline보다 성능이 낮다. 이는 두 요인에 기인한다고 본다. 첫째, LoRA는 update 가능한 parameter subspace를 제한하여 세밀한 temporal pattern에 대한 adaptation을 제약한다. 둘째이자 더 근본적으로, VLM pretraining은 dense reward modeling이 요구하는 motion-level temporal discrimination이 아니라 거친 semantic alignment를 최적화한다.</p>
 
     <p><strong>(2) Stage estimation과 MMoE는 각각 유익하며 서로 상승효과를 낸다.</strong> stage estimator를 제거하면(w/o SE) demo loss가 0.020에서 0.034로 증가하고, multi-gate 설계를 제거하면(w/o MG) 0.026으로 증가한다. 전체 SARM2 모델은 두 경우보다 모두 크게 향상되며, 이는 stage-awareness와 multi-gate routing이 상보적 구조를 포착함을 보여준다. 즉, stage estimator는 task의 primitive sequence 내에서 모델의 위치를 특정하고, MMoE는 primitive-group 경계를 따라 capacity를 할당한다.</p>
@@ -318,6 +340,33 @@ section>h2,article h2{column-span:all;font-size:15pt;font-weight:800;margin:14px
 <p><strong>베이스라인.</strong> 학습 데이터 출처에 따라 두 그룹으로 구분한다. 시연 전용 그룹은 BC(π<sub>0.5</sub>에서 미세 조정한 기본 BC 정책), RA-BC(SARM<sup>2</sup>의 스텝별 보상을 사용하는 가중 BC), RL-Sparse(시연의 종단 보상 = 1인 DICE-RL), RL-Dense(SARM<sup>2</sup> 밀집 보상을 사용하는 SPIRAL)로 구성된다. 롤아웃 기반 자기 개선 방법은 모두 RL-Dense 시연 체크포인트에서 시작하며, 보상 출처만 서로 다르다. 보상 출처는 Sparse(사람이 기록한 종단 성공), RM (FT)(LoRA로 미세 조정한 Robometer의 밀집 레이블. 이 모델은 10개 과제 데이터셋과 레이블이 지정된 롤아웃 모두에서 미세 조정하며, SARM<sup>2</sup>와 정확히 동일한 절차를 사용한다), SARM<sup>2</sup> (ours)(본 연구의 밀집 레이블)이다. 알고리즘 1의 Round 3 이후 결과를 보고한다. 각 라운드에서 정책은 학습에 사용한 롤아웃을 생성한 체크포인트로 초기화하여, 보상 출처 간 공정한 온-정책 비교를 보장한다.</p>
 
 <p><strong>분석.</strong> 표 2와 그림 4는 세 가지 결과를 보여준다.</p>
+
+<table class="wide" id="table-2">
+  <caption><strong>표 2: 자기 개선 Round 3 이후의 정책 평가.</strong> 시연 전용 방법은 시연으로 학습하고, 롤아웃 기반 방법은 모두 RL-Dense 체크포인트에서 출발하되 롤아웃 episode와 보상 출처가 다르다. SR: 전체 시행 대비 성공 횟수. Avg. Prog.: 5단계 척도(부록 6.7)로 매긴 Cleaning Whiteboard 평균 점수. Prog. Gain: BC 대비 절대 진척도. 그룹 내 열별 최고값을 굵게 표시했다.</caption>
+  <thead>
+    <tr>
+      <th rowspan="2">학습 방법</th>
+      <th colspan="2">Folding Shorts (SR ↑)</th>
+      <th colspan="3">Cleaning Whiteboard</th>
+    </tr>
+    <tr>
+      <th>Flat</th><th>Crumble</th>
+      <th>SR ↑</th><th>Avg. Prog. ↑</th><th>Prog. Gain ↑</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="group"><th colspan="6"><i>시연 전용(Demo only)</i></th></tr>
+    <tr><td>BC</td><td>1/12</td><td>0/12</td><td>4/20</td><td>0.475</td><td>N/A</td></tr>
+    <tr><td>RA-BC</td><td>6/12</td><td><b>5/12</b></td><td><b>10/20</b></td><td>0.775</td><td>0.300</td></tr>
+    <tr><td>RL-Sparse</td><td>4/12</td><td>2/12</td><td>6/20</td><td>0.625</td><td>0.150</td></tr>
+    <tr><td>RL-Dense</td><td><b>7/12</b></td><td>4/12</td><td><b>10/20</b></td><td><b>0.813</b></td><td><b>0.338</b></td></tr>
+    <tr class="group"><th colspan="6"><i>롤아웃 기반(Rollout based)</i></th></tr>
+    <tr><td>Sparse</td><td>7/12</td><td>2/12</td><td>11/20</td><td>0.825</td><td>0.350</td></tr>
+    <tr><td>RM (FT)</td><td>10/12</td><td>5/12</td><td>13/20</td><td>0.888</td><td>0.413</td></tr>
+    <tr><td>SARM2 (ours)</td><td><b>12/12</b></td><td><b>8/12</b></td><td><b>18/20</b></td><td><b>0.975</b></td><td><b>0.500</b></td></tr>
+  </tbody>
+</table>
+
 
 <p><strong>(1) SPIRAL은 효과적인 오프라인 RL 백본이다.</strong> 시연 전용 학습에서 RL-Dense는 Folding-Shorts Flat에서 7/12(BC는 1/12, RL-Sparse는 4/12)를 달성하고, Cleaning Whiteboard에서는 진행도 81.3%로 10/20(RL-Sparse는 62.5%로 6/20)을 달성한다. SR에서 RA-BC와의 격차는 작지만, RL-Dense는 더 어려운 하위 과제에서 더 잘 일반화하고 정성적 관찰에서 더 부드러운 움직임을 보인다. 이는 가치 부트스트랩과 결합된 밀집 보상이 종단 희소 보상이나 보상 가중 모방보다 더 강한 최적화 신호를 제공함을 나타낸다.</p>
 
