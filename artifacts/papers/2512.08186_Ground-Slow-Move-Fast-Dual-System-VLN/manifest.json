@@ -1,0 +1,179 @@
+{
+  "paper": {
+    "arxiv_id": "2512.08186",
+    "title": "Ground Slow, Move Fast: A Dual-System Foundation Model for Generalizable Vision-and-Language Navigation",
+    "source_pdf": "original.pdf",
+    "source_tex": "source/iclr2026_conference.tex",
+    "language": "ko",
+    "translation_type": "full-text",
+    "layout": "two-column A4"
+  },
+  "inventory": {
+    "sections": 10,
+    "figures": 11,
+    "figure_assets": 14,
+    "tables": 4,
+    "display_equations": 3,
+    "references": 54
+  },
+  "sections": [
+    "초록",
+    "1. 서론",
+    "2. 관련 연구",
+    "3. 방법",
+    "4. Social Vision-and-Language Navigation Benchmark",
+    "5. 실험",
+    "6. 결론",
+    "기여 및 감사의 말",
+    "부록 A. 데이터 준비 및 학습 세부사항",
+    "부록 B. Pixel-Goal Grounding의 Attention Map 분석"
+  ],
+  "figures": [
+    {
+      "number": 1,
+      "source": "source/images/teaser.pdf",
+      "assets": [
+        "figures/assets/teaser.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 2,
+      "source": "source/images/framework.pdf",
+      "assets": [
+        "figures/assets/framework.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 3,
+      "source": "source/images/socialvln_action.pdf",
+      "assets": [
+        "figures/assets/socialvln_action.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 4,
+      "source": "source/images/socialvln.pdf",
+      "assets": [
+        "figures/assets/socialvln.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 5,
+      "source": "source/images/exp_realworld_v2.pdf",
+      "assets": [
+        "figures/assets/exp_realworld_v2.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 6,
+      "source": "source/images/qualitative_real2.pdf",
+      "assets": [
+        "figures/assets/qualitative_real2.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 7,
+      "source": "source/images/ablate_goal_v2.pdf",
+      "assets": [
+        "figures/assets/ablate_goal_v2.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 8,
+      "source": "source/images/goals.pdf",
+      "assets": [
+        "figures/assets/goals.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 9,
+      "source": "source/images/exp_ablation_data.pdf",
+      "assets": [
+        "figures/assets/exp_ablation_data.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 10,
+      "source": "source/images/corr_plot.pdf",
+      "assets": [
+        "figures/assets/corr_plot.png"
+      ],
+      "caption_translated": true
+    },
+    {
+      "number": 11,
+      "source": "source/sections/7_appendix.tex:118-134",
+      "assets": [
+        "figures/assets/attention_text1.png",
+        "figures/assets/attention_image1.png",
+        "figures/assets/attention_text2.png",
+        "figures/assets/attention_image2.png"
+      ],
+      "caption_translated": true
+    }
+  ],
+  "tables": [
+    {
+      "number": 1,
+      "source": "source/tables/vln-ce.tex",
+      "html_table": true,
+      "numeric_values_preserved": true,
+      "emphasis_preserved": true
+    },
+    {
+      "number": 2,
+      "source": "source/tables/vln-pe.tex",
+      "html_table": true,
+      "numeric_values_preserved": true,
+      "emphasis_preserved": true
+    },
+    {
+      "number": 3,
+      "source": "source/tables/social-vln.tex",
+      "html_table": true,
+      "numeric_values_preserved": true,
+      "emphasis_preserved": true
+    },
+    {
+      "number": 4,
+      "source": "source/tables/ablate_sys1.tex",
+      "html_table": true,
+      "numeric_values_preserved": true,
+      "emphasis_preserved": true
+    }
+  ],
+  "equations": [
+    {
+      "number": 1,
+      "source": "source/sections/3_method.tex:35-37",
+      "representation": "Xᵤ = αᵤ X₀ + σᵤ ε"
+    },
+    {
+      "number": 2,
+      "source": "source/sections/3_method.tex:41-43",
+      "representation": "Ẋ̂ᵤ = fθ(Xᵤ, u, Z′ ⊕ F)"
+    },
+    {
+      "number": 3,
+      "source": "source/sections/3_method.tex:47-49",
+      "representation": "L_flow = E_(u,X₀,ε) [ ‖Ẋ̂ᵤ − Ẋᵤ‖₂² ]"
+    }
+  ],
+  "checks": {
+    "full_page_screenshots_used": false,
+    "figures_are_individual_assets": true,
+    "tables_are_html": true,
+    "all_active_tex_sections_translated": true,
+    "comments_in_tex_excluded": true
+  },
+  "display_equations": 3
+}

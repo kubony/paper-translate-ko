@@ -1,0 +1,442 @@
+{
+  "arxiv_id": "2510.10274",
+  "title": "X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment Vision-Language-Action Model",
+  "title_ko": "X-VLA: Soft-Prompted Transformer 기반 확장 가능한 Cross-Embodiment Vision-Language-Action 모델",
+  "authors": [
+    "Jinliang Zheng",
+    "Jianxiong Li",
+    "Zhihao Wang",
+    "Dongxiu Liu",
+    "Xirui Kang",
+    "Yuchun Feng",
+    "Yinan Zheng",
+    "Jiayin Zou",
+    "Yilun Chen",
+    "Jia Zeng",
+    "Ya-Qin Zhang",
+    "Jiangmiao Pang",
+    "Jingjing Liu",
+    "Tai Wang",
+    "Xianyuan Zhan"
+  ],
+  "affiliations": [
+    "Institute for AI Industry Research (AIR), Tsinghua University",
+    "Shanghai AI Lab",
+    "Peking University"
+  ],
+  "venue": "preprint / technical report",
+  "published": "2025-10-11",
+  "primary_category": "cs.RO",
+  "categories": [
+    "cs.RO",
+    "cs.AI",
+    "cs.CV"
+  ],
+  "project_website": "https://thu-air-dream.github.io/X-VLA/",
+  "source_pdf": "original.pdf",
+  "source_tex": "source/main.tex",
+  "source_bbl": "source/main.bbl",
+  "output_html": "translation.html",
+  "translation_date": "2026-07-27",
+  "translation_language": "ko",
+  "translation_style": "문어체 평서형 (~한다), 기술 용어 영문 혼합 표기",
+  "page_count": 33,
+  "sections": 21,
+  "sections_detail": {
+    "main_numbered": [
+      "1. Introduction",
+      "2. Preliminary",
+      "3. Heterogeneous Soft Prompt Learning",
+      "4. X-VLA: Soft-Prompted Transformer Enhanced VLA model",
+      "5. Experiments",
+      "6. Conclusion"
+    ],
+    "front_matter": [
+      "Abstract"
+    ],
+    "appendix": [
+      "A. LLM Usage and Ethics Statement",
+      "B. Related Work",
+      "C. Architecture Design",
+      "D. More Results",
+      "E. Failure Attempts for Absorbing Heterogeneity",
+      "F. Soft-FOLD (Cloth-folding Dataset & Model)",
+      "G. Pretraining Details",
+      "H. Finetuning Details",
+      "I. Training Details For Preliminary Experiments",
+      "J. Evaluation Details in Real-World Experiments",
+      "K. Training Details of Baselines in Real-World Experiments",
+      "L. Evaluation Details on Autonomous Driving Simulation Benchmark",
+      "M. Evaluation Details on Robotics Simulation",
+      "N. Limitations and future works",
+      "O. Contributions and Acknowledgments"
+    ]
+  },
+  "subsections": 8,
+  "subsections_detail": [
+    "4.1 Architecture",
+    "4.2 Customized Training Recipe",
+    "5.1 Scaling Experiments",
+    "5.2 Adaptation Experiments",
+    "5.3 In-Depth Analysis",
+    "D.1 Alternative architectural designs",
+    "D.2 Potential to build cross-embodiment generalized policy",
+    "D.3 Data-efficient Adaptation"
+  ],
+  "subsubsections": 2,
+  "subsubsections_detail": [
+    "4.2.1 Pretraining and Finetuning Pipeline",
+    "4.2.2 Enhanced Data Processing"
+  ],
+  "figures": [
+    {
+      "no": "1",
+      "page": 1,
+      "desc": "X-VLA 개요 / soft prompt"
+    },
+    {
+      "no": "2",
+      "page": 1,
+      "desc": "이질성 처리 4가지 방법 비교"
+    },
+    {
+      "no": "3",
+      "page": 1,
+      "desc": "사전학습 혼합 데이터 레시피"
+    },
+    {
+      "no": "4",
+      "page": 1,
+      "desc": "이질성 처리 방법별 학습 곡선"
+    },
+    {
+      "no": "5",
+      "page": 1,
+      "desc": "확장(scaling) 실험"
+    },
+    {
+      "no": "6",
+      "page": 1,
+      "desc": "적응 실험 평가 설정"
+    },
+    {
+      "no": "7",
+      "page": 1,
+      "desc": "실세계 평가 결과"
+    },
+    {
+      "no": "8",
+      "page": 1,
+      "desc": "soft prompt T-SNE"
+    },
+    {
+      "no": "9",
+      "page": 1,
+      "desc": "PEFT prompt 비교"
+    },
+    {
+      "no": "10",
+      "page": 1,
+      "desc": "상세 아키텍처"
+    },
+    {
+      "no": "11",
+      "page": 1,
+      "desc": "Soft-Fold 데이터셋"
+    },
+    {
+      "no": "12",
+      "page": 1,
+      "desc": "접기 진행 과정"
+    },
+    {
+      "no": "13",
+      "page": 1,
+      "desc": "WidowX pick-and-place 과제"
+    },
+    {
+      "no": "14",
+      "page": 1,
+      "desc": "실세계 하드웨어 설정"
+    }
+  ],
+  "figures_detail": [
+    {
+      "n": 1,
+      "asset": "figures/assets/intro_small.png",
+      "label": "fig:intro",
+      "topic": "X-VLA 개요 / soft prompt"
+    },
+    {
+      "n": 2,
+      "asset": "figures/assets/compare_with_others.png",
+      "label": "fig:compare_intro",
+      "topic": "이질성 처리 4가지 방법 비교"
+    },
+    {
+      "n": 3,
+      "asset": "figures/assets/data_mixture.png",
+      "label": "fig:data",
+      "topic": "사전학습 혼합 데이터 레시피"
+    },
+    {
+      "n": 4,
+      "asset": "figures/assets/line_plot_scaling_steps.png",
+      "label": "fig:compare_curve",
+      "topic": "이질성 처리 방법별 학습 곡선"
+    },
+    {
+      "n": 5,
+      "asset": "figures/assets/scaling.png",
+      "label": "fig:scaling_exp",
+      "topic": "확장(scaling) 실험"
+    },
+    {
+      "n": 6,
+      "asset": "figures/assets/all_bench.png",
+      "label": "fig:all_bench",
+      "topic": "적응 실험 평가 설정"
+    },
+    {
+      "n": 7,
+      "asset": "figures/assets/real_exp.png",
+      "label": "fig:real_exp",
+      "topic": "실세계 평가 결과"
+    },
+    {
+      "n": 8,
+      "asset": "figures/assets/tsne.png",
+      "label": "fig:in_depth",
+      "topic": "soft prompt T-SNE"
+    },
+    {
+      "n": 9,
+      "asset": "figures/assets/prompt_comparison.png",
+      "label": "fig:compare_prompt",
+      "topic": "PEFT prompt 비교"
+    },
+    {
+      "n": 10,
+      "asset": "figures/assets/archi.png",
+      "label": "fig:architecture",
+      "topic": "상세 아키텍처"
+    },
+    {
+      "n": 11,
+      "asset": "figures/assets/softfold.png",
+      "label": "fig:softfold",
+      "topic": "Soft-Fold 데이터셋"
+    },
+    {
+      "n": 12,
+      "asset": "figures/assets/fold.png",
+      "label": "fig:fold",
+      "topic": "접기 진행 과정"
+    },
+    {
+      "n": 13,
+      "asset": "figures/assets/widowx_tasks.png",
+      "label": "fig:widowx_tasks",
+      "topic": "WidowX pick-and-place 과제"
+    },
+    {
+      "n": 14,
+      "asset": "figures/assets/all_setup.png",
+      "label": "fig:real-world",
+      "topic": "실세계 하드웨어 설정"
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "page": 1,
+      "desc": "구성요소 ablation 경로 (Val Error / Acc)"
+    },
+    {
+      "no": "2",
+      "page": 1,
+      "desc": "시뮬레이션 벤치마크 특화 vs 범용 모델 비교 (15열)"
+    },
+    {
+      "no": "3",
+      "page": 1,
+      "desc": "PEFT 성능 비교 (π0 vs Ours-Lora)"
+    },
+    {
+      "no": "4",
+      "page": 1,
+      "desc": "backbone 아키텍처별 검증 오차"
+    },
+    {
+      "no": "5",
+      "page": 1,
+      "desc": "다중 embodiment 공동 적응"
+    },
+    {
+      "no": "6",
+      "page": 1,
+      "desc": "데이터 효율적 적응 (50 vs 10 demos)"
+    },
+    {
+      "no": "7",
+      "page": 1,
+      "desc": "사전학습 하이퍼파라미터"
+    },
+    {
+      "no": "8",
+      "page": 1,
+      "desc": "데이터 소스 샘플링 가중치"
+    },
+    {
+      "no": "9",
+      "page": 1,
+      "desc": "벤치마크별 finetuning 하이퍼파라미터"
+    },
+    {
+      "no": "10",
+      "page": 1,
+      "desc": "도메인별 언어 prompt 템플릿"
+    },
+    {
+      "no": "11",
+      "page": 1,
+      "desc": "NAVSIM 상세 결과"
+    },
+    {
+      "no": "12",
+      "page": 1,
+      "desc": "Simpler 상세 결과"
+    },
+    {
+      "no": "13",
+      "page": 1,
+      "desc": "Libero 상세 결과"
+    },
+    {
+      "no": "14",
+      "page": 1,
+      "desc": "Calvin 상세 결과"
+    },
+    {
+      "no": "15",
+      "page": 1,
+      "desc": "VLABench 상세 결과"
+    },
+    {
+      "no": "16",
+      "page": 1,
+      "desc": "RoboTwin-2.0 상세 결과 (50개 과제)"
+    }
+  ],
+  "tables_detail": [
+    {
+      "n": 1,
+      "topic": "구성요소 ablation 경로 (Val Error / Acc)"
+    },
+    {
+      "n": 2,
+      "topic": "시뮬레이션 벤치마크 특화 vs 범용 모델 비교 (15열)"
+    },
+    {
+      "n": 3,
+      "topic": "PEFT 성능 비교 (π0 vs Ours-Lora)"
+    },
+    {
+      "n": 4,
+      "topic": "backbone 아키텍처별 검증 오차"
+    },
+    {
+      "n": 5,
+      "topic": "다중 embodiment 공동 적응"
+    },
+    {
+      "n": 6,
+      "topic": "데이터 효율적 적응 (50 vs 10 demos)"
+    },
+    {
+      "n": 7,
+      "topic": "사전학습 하이퍼파라미터"
+    },
+    {
+      "n": 8,
+      "topic": "데이터 소스 샘플링 가중치"
+    },
+    {
+      "n": 9,
+      "topic": "벤치마크별 finetuning 하이퍼파라미터"
+    },
+    {
+      "n": 10,
+      "topic": "도메인별 언어 prompt 템플릿"
+    },
+    {
+      "n": 11,
+      "topic": "NAVSIM 상세 결과"
+    },
+    {
+      "n": 12,
+      "topic": "Simpler 상세 결과"
+    },
+    {
+      "n": 13,
+      "topic": "Libero 상세 결과"
+    },
+    {
+      "n": 14,
+      "topic": "Calvin 상세 결과"
+    },
+    {
+      "n": 15,
+      "topic": "VLABench 상세 결과"
+    },
+    {
+      "n": 16,
+      "topic": "RoboTwin-2.0 상세 결과 (50개 과제)"
+    }
+  ],
+  "display_equations": 6,
+  "display_equations_detail": [
+    "(1) 데이터셋 D = {tau_j}, tau_j = {(o_n, a_n)}",
+    "(2) L_BC(theta) behavior cloning 손실",
+    "(3) Euler 갱신 A^{t+dt} = A^t + v_theta*dt",
+    "(4) flow-matching 손실 L^FM_BC",
+    "(5) 보간 경로 A^t = (1-t)A^0 + tA",
+    "(6) soft prompt 매핑 p_i ≈ Phi(h_i), Phi: H -> R^k"
+  ],
+  "reference_count": 95,
+  "benchmarks": [
+    "Libero",
+    "Simpler",
+    "VLABench",
+    "RoboTwin-2.0",
+    "Calvin",
+    "NAVSIM"
+  ],
+  "real_world_embodiments": [
+    "WidowX",
+    "AgileX",
+    "AIRBOT"
+  ],
+  "pretraining_data_sources": [
+    "AGIBOT",
+    "Droid",
+    "RoboMind"
+  ],
+  "completeness_checks": {
+    "abstract_translated": true,
+    "all_main_sections_translated": true,
+    "all_appendix_sections_translated": true,
+    "acknowledgments_translated": true,
+    "all_figures_individual_assets": true,
+    "figures_use_relative_paths": true,
+    "all_tables_as_html_tables": true,
+    "table_values_preserved_verbatim": true,
+    "table_emphasis_preserved": true,
+    "all_display_equations_included": true,
+    "equation_numbers_preserved": true,
+    "all_95_references_listed": true,
+    "no_summarization": true,
+    "two_column_layout": true,
+    "standalone_html": true
+  }
+}

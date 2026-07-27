@@ -1,0 +1,65 @@
+{
+  "arxiv_id": "2512.08186",
+  "title": "Ground Slow, Move Fast: A Dual-System Foundation Model for Generalizable Vision-and-Language Navigation",
+  "authors": [
+    {
+      "name": "Meng Wei",
+      "affiliation": ""
+    },
+    {
+      "name": "Chenyang Wan",
+      "affiliation": ""
+    },
+    {
+      "name": "Jiaqi Peng",
+      "affiliation": ""
+    },
+    {
+      "name": "Xiqian Yu",
+      "affiliation": ""
+    },
+    {
+      "name": "Yuqiang Yang",
+      "affiliation": ""
+    },
+    {
+      "name": "Delin Feng",
+      "affiliation": ""
+    },
+    {
+      "name": "Wenzhe Cai",
+      "affiliation": ""
+    },
+    {
+      "name": "Chenming Zhu",
+      "affiliation": ""
+    },
+    {
+      "name": "Tai Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "Jiangmiao Pang",
+      "affiliation": ""
+    },
+    {
+      "name": "Xihui Liu",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "While recent large vision-language models (VLMs) have improved generalization in vision-language navigation (VLN), existing methods typically rely on end-to-end pipelines that map vision-language inputs directly to short-horizon discrete actions. Such designs often produce fragmented motions, incur high latency, and struggle with real-world challenges like dynamic obstacle avoidance. We propose DualVLN, the first dual-system VLN foundation model that synergistically integrates high-level reasoning with low-level action execution. System 2, a VLM-based global planner, \"grounds slowly\" by predicting mid-term waypoint goals via image-grounded reasoning. System 1, a lightweight, multi-modal conditioning Diffusion Transformer policy, \"moves fast\" by leveraging both explicit pixel goals and latent features from System 2 to generate smooth and accurate trajectories. The dual-system design enables robust real-time control and adaptive local decision-making in complex, dynamic environments. By decoupling training, the VLM retains its generalization, while System 1 achieves interpretable and effective local navigation. DualVLN outperforms prior methods across all VLN benchmarks and real-world experiments demonstrate robust long-horizon planning and real-time adaptability in dynamic environments.",
+  "comment": "",
+  "journal_ref": "",
+  "primary_category": "cs.RO",
+  "categories": [
+    "cs.RO"
+  ],
+  "published": "2025-12-09T02:29:36Z",
+  "updated": "2025-12-09T02:29:36Z",
+  "abs_url": "https://arxiv.org/abs/2512.08186",
+  "pdf_url": "https://arxiv.org/pdf/2512.08186",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2512.08186v1",
+    "pdf": "https://arxiv.org/pdf/2512.08186v1"
+  }
+}

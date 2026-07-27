@@ -1,0 +1,281 @@
+{
+  "arxiv_id": "2505.06111",
+  "title": "UniVLA: Learning to Act Anywhere with Task-centric Latent Actions",
+  "title_ko": "UniVLA: 어디서나 행동하기 — task-centric latent action을 통한 학습",
+  "authors": [
+    "Qingwen Bu",
+    "Yanting Yang",
+    "Jisong Cai",
+    "Shenyuan Gao",
+    "Guanghui Ren",
+    "Maoqing Yao",
+    "Ping Luo",
+    "Hongyang Li"
+  ],
+  "affiliations": [
+    "The University of Hong Kong",
+    "OpenDriveLab",
+    "AgiBot"
+  ],
+  "venue": "arXiv preprint",
+  "primary_category": "cs.RO",
+  "source_pdf": "original.pdf",
+  "source_tex": "source/paper_submission_main.tex",
+  "source_bbl": "source/paper_submission_main.bbl",
+  "output_html": "translation.html",
+  "translation_date": "2026-07-27",
+  "translation_language": "ko",
+  "translation_style": "문어체 평서형 (~한다), 핵심 기술 용어 영문 혼합 표기",
+  "page_count": 18,
+  "main_numbered_sections": 6,
+  "main_sections_detail": [
+    "1. Introduction",
+    "2. Related Work",
+    "3. Methodology",
+    "4. Evaluations",
+    "5. Conclusion",
+    "6. Limitations and Future Work"
+  ],
+  "front_matter": [
+    "Abstract"
+  ],
+  "back_matter": [
+    "Acknowledgment",
+    "References"
+  ],
+  "appendix_sections": 3,
+  "appendix_detail": [
+    "A. Implementation Details",
+    "B. Additional Results",
+    "C. Real-world Robots"
+  ],
+  "source_subsections": 12,
+  "source_subsubsections": 9,
+  "figures": [
+    {
+      "no": "1",
+      "page": 1,
+      "desc": "UniVLA 개요"
+    },
+    {
+      "no": "2",
+      "page": 1,
+      "desc": "task-centric latent action learning"
+    },
+    {
+      "no": "3",
+      "page": 1,
+      "desc": "generalist policy architecture"
+    },
+    {
+      "no": "4",
+      "page": 1,
+      "desc": "실제 로봇 실험"
+    },
+    {
+      "no": "5",
+      "page": 1,
+      "desc": "R2R 내비게이션 결과"
+    },
+    {
+      "no": "6",
+      "page": 1,
+      "desc": "LIBERO task 설정"
+    },
+    {
+      "no": "7",
+      "page": 1,
+      "desc": "일반화 평가 설정"
+    },
+    {
+      "no": "8",
+      "page": 1,
+      "desc": "latent action 분석"
+    },
+    {
+      "no": "9",
+      "page": 1,
+      "desc": "데이터 확장성"
+    },
+    {
+      "no": "10",
+      "page": 1,
+      "desc": "데이터 효율"
+    },
+    {
+      "no": "A-1",
+      "page": 1,
+      "desc": "추가 latent action 분석"
+    },
+    {
+      "no": "A-2",
+      "page": 1,
+      "desc": "task-centric attention 분석"
+    }
+  ],
+  "figures_detail": [
+    {
+      "n": "1",
+      "asset": "figures/assets/univla-teaser_new.png",
+      "topic": "UniVLA 개요"
+    },
+    {
+      "n": "2",
+      "asset": "figures/assets/lam_v3.png",
+      "topic": "task-centric latent action learning"
+    },
+    {
+      "n": "3",
+      "asset": "figures/assets/post-train_v1.png",
+      "topic": "generalist policy architecture"
+    },
+    {
+      "n": "4",
+      "asset": "figures/assets/real-world-exp.png",
+      "topic": "실제 로봇 실험"
+    },
+    {
+      "n": "5",
+      "asset": "figures/assets/navi_result_v2.png",
+      "topic": "R2R 내비게이션 결과"
+    },
+    {
+      "n": "6",
+      "asset": "figures/assets/libero-intro.png",
+      "topic": "LIBERO task 설정"
+    },
+    {
+      "n": "7",
+      "asset": "figures/assets/realworld-gen.png",
+      "topic": "일반화 평가 설정"
+    },
+    {
+      "n": "8",
+      "asset": "figures/assets/latent_action_vis.png",
+      "topic": "latent action 분석"
+    },
+    {
+      "n": "9",
+      "asset": "figures/assets/scale_data_v2.png",
+      "topic": "데이터 확장성"
+    },
+    {
+      "n": "10",
+      "asset": "figures/assets/data_efficiency_v2.png",
+      "topic": "데이터 효율"
+    },
+    {
+      "n": "A-1",
+      "asset": "figures/assets/latent_action_vis_2.png",
+      "topic": "추가 latent action 분석"
+    },
+    {
+      "n": "A-2",
+      "asset": "figures/assets/task-centric_analysis.png",
+      "topic": "task-centric attention 분석"
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "page": 1,
+      "desc": "LIBERO 네 suite 결과"
+    },
+    {
+      "no": "2",
+      "page": 1,
+      "desc": "실제 환경 일반화 평가"
+    },
+    {
+      "no": "3",
+      "page": 1,
+      "desc": "latent action 유형별 LIBERO"
+    },
+    {
+      "no": "4",
+      "page": 1,
+      "desc": "decoder 설계 ablation"
+    },
+    {
+      "no": "5",
+      "page": 1,
+      "desc": "history action ablation"
+    },
+    {
+      "no": "6",
+      "page": 1,
+      "desc": "training dataset mixture"
+    },
+    {
+      "no": "7",
+      "page": 1,
+      "desc": "CALVIN ABC→D"
+    },
+    {
+      "no": "8",
+      "page": 1,
+      "desc": "SimplerEnv"
+    },
+    {
+      "no": "9",
+      "page": 1,
+      "desc": "실제 로봇 task score"
+    },
+    {
+      "no": "10",
+      "page": 1,
+      "desc": "실제 로봇 상세 결과"
+    },
+    {
+      "no": "11",
+      "page": 1,
+      "desc": "action decoder architecture"
+    }
+  ],
+  "tables_detail": [
+    "LIBERO 네 suite 결과",
+    "실제 환경 일반화 평가",
+    "latent action 유형별 LIBERO",
+    "decoder 설계 ablation",
+    "history action ablation",
+    "training dataset mixture",
+    "CALVIN ABC→D",
+    "SimplerEnv",
+    "실제 로봇 task score",
+    "실제 로봇 상세 결과",
+    "action decoder architecture"
+  ],
+  "display_equations": 4,
+  "display_equations_detail": [
+    "Stage 1 task-irrelevant latent action encode/decode",
+    "Stage 2 task-centric latent action encode/decode",
+    "next-latent-action objective",
+    "visual/action attention pooling"
+  ],
+  "reference_count": 99,
+  "benchmarks": [
+    "LIBERO",
+    "CALVIN",
+    "SimplerEnv",
+    "R2R / VLN-CE"
+  ],
+  "completeness_checks": {
+    "source_tex_lines_checked": 1444,
+    "pdf_pages_checked": 18,
+    "abstract_translated": true,
+    "all_main_sections_translated": true,
+    "conclusion_translated": true,
+    "limitations_translated": true,
+    "all_appendix_sections_translated": true,
+    "acknowledgment_translated": true,
+    "all_figures_individual_assets": true,
+    "figures_use_relative_paths": true,
+    "all_tables_as_html_tables": true,
+    "table_values_preserved_verbatim": true,
+    "table_emphasis_preserved": true,
+    "all_display_equations_included": true,
+    "all_99_references_listed": true,
+    "two_column_layout": true,
+    "no_full_page_captures": true
+  }
+}
