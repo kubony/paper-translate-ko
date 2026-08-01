@@ -3,9 +3,21 @@
 ## 산출물
 
 - `translation.html` — 초록부터 본문, 결론, 기여/감사, 전체 부록까지 수록한 2단 A4 한국어 전문 번역
+- `2512.08186_ko_translation_layout_v2.pdf` — 교정 2판 고해상도 PDF
+- `2512.08186_ko_translation_layout_v2_delivery.pdf` — Discord 전달용 교정 2판 PDF
 - `manifest.json` — section, figure, table, display equation inventory와 원문 source 대응표
 - `figures/assets/*.png` — 원문 `source/images/*.pdf`에서 개별 변환한 figure 자산 14개
 - `original.pdf` — 대조에 사용한 원문 PDF(17쪽)
+
+## 교정 2판 — 2026-08-01
+
+사용자 검토를 반영해 3.1절을 원문 의미 슬롯에 맞춰 다시 번역했다.
+
+- `self-directed view adjustment`를 camera 방향과 pixel-goal 출력 사이의 반복적 선택 과정으로 명시했다.
+- `informative perspectives`의 직역인 “정보성 높은 관점”을 “목표를 판별하기에 적합한 시야”로 수정했다.
+- `farthest pixel goal grounding`을 현재 시야에서 확인 가능한 trajectory point 가운데 agent로부터 가장 먼 point를 예측하는 문제로 풀어 썼다.
+- depth와 camera–point distance의 비교가 occlusion 판정에 사용된다는 인과관계를 명시했다.
+- Backbone 표기를 `Qwen2.5-VL`로 통일하되 원 논문이 사용한 모델 버전은 변경하지 않았다.
 
 ## 번역 기준
 

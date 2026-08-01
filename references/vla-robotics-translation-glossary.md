@@ -81,3 +81,9 @@ Use this reference whenever translating AI robotics, VLA, VLN, embodied AI, robo
 - Translate `Ground Slow, Move Fast` as a title in English, but explain as System 2가 천천히 grounding하고 System 1이 빠르게 trajectory를 생성하는 구조.
 - `System 2`: VLM-based global planner; predicts mid-term waypoint / pixel goal via image-grounded reasoning.
 - `System 1`: lightweight multimodal conditioning Diffusion Transformer policy; generates smooth trajectories in real time from explicit pixel goal + latent features.
+- `self-directed view adjustment` → **자율적 시야 조정**. 모델이 camera 방향을 먼저 바꿀지, 현재 frame에서 pixel goal을 예측할지를 반복적으로 선택한다는 동작을 풀어 쓴다. 단순히 “view를 조절한다”로 두지 않는다.
+- `informative perspective/viewpoint` → **목표 지점을 판별하기에 적합한 시야/관측 시점**. “정보성 높은 관점”, “까다로운 viewpoint를 처리한다” 같은 직역투를 금지한다.
+- `history`가 RGB frame sequence를 뜻하면 **이전 관측 이력** 또는 **이전 RGB frame들**로 옮긴다. “history를 관측한다”라고 쓰지 않는다.
+- `farthest pixel goal grounding`은 막연히 “가장 먼 Pixel Goal Grounding”으로 옮기지 않는다. DualVLN에서는 **현재 시야에서 확인 가능한 trajectory point 가운데 agent로부터 가장 먼 point를 pixel goal로 예측하는 방식**임을 제목 또는 첫 문장에서 풀어 쓴다.
+- Visibility/depth 문장은 역할을 명시한다: `distance > depth value`인 trajectory point는 **다른 표면 뒤에 가려진 것으로 판정해 제외한다**. `visibility를 측정한다`, `occluded로 보고 제거한다`처럼 의미가 흐린 혼합문을 피한다.
+- Backbone 명칭은 문서 전체에서 **Qwen2.5-VL**로 표준화하되, 원 논문이 사용한 모델 버전을 최신 Qwen 계열 모델로 임의 교체하지 않는다.
