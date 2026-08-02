@@ -14,7 +14,12 @@
 사용자 교정에 따라 앞선 "한국어 분석 + 영문 원문 부록" 판본을 최종본으로 사용하지 않는다. 아래 판본은 **Official review 4개, 저자 답변 9개, meta-review 1개의 모든 문자열 field를 한국어로 완역**했다.
 
 - HTML: `translation_full_ko.html`
-- PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO.pdf`
+- Canonical PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO.pdf`
+- Discord/mobile viewer compatibility PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_VIEWER_COMPAT.pdf`
+  - Chrome/Skia의 다수 Type 3 한글 subset font를 vector outline으로 변환한 표시 호환판
+  - 15쪽·OpenReview annotation 14개·마지막 3쪽 독립 Poppler 렌더 및 확대 QA PASS
+  - SHA-256: `04b563c4af0f9c059221c0050e03d6726666ea6137ceca4ca26210c6bf59b2d5`
+  - 글자 선택·검색은 canonical PDF를 사용한다.
 - Audited translations:
   - `translations/reviews_ko_audited.json`
   - `translations/rebuttals_a_ko_audited.json`

@@ -1,0 +1,21 @@
+{
+  "artifact": "ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_VIEWER_COMPAT.pdf",
+  "author": "제니 (Jennie)",
+  "purpose": "Discord 및 일부 모바일 PDF preview의 뒤쪽 Type 3 font page 백지 렌더링 회피",
+  "source_sha256": "44f2e0b331cb1dd570b256eeca198c3fea8e3b6d7170fa86a88a66c6e965315f",
+  "compat_sha256": "04b563c4af0f9c059221c0050e03d6726666ea6137ceca4ca26210c6bf59b2d5",
+  "bytes": 5268778,
+  "pages": 15,
+  "a4_pages": 15,
+  "output_fonts": 0,
+  "openreview_link_annotations": 14,
+  "independent_renderers": ["Poppler pdftoppm", "PyMuPDF"],
+  "all_pages_rasterized": true,
+  "last_three_pages": {
+    "13": {"content": "Reviewer EsMj 답변", "nonwhite_pixels_at_120dpi": 498116, "visual_qa": "PASS"},
+    "14": {"content": "Reviewer GZFu 답변", "nonwhite_pixels_at_120dpi": 248552, "visual_qa": "PASS"},
+    "15": {"content": "Meta-review 및 수집·완전성 한계", "nonwhite_pixels_at_120dpi": 231574, "visual_qa": "PASS"}
+  },
+  "known_tradeoff": "문자를 vector outline으로 변환했으므로 텍스트 선택·검색은 canonical PDF를 사용한다.",
+  "result": "PASS"
+}

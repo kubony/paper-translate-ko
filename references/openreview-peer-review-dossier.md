@@ -159,7 +159,14 @@ separator 회귀도 검사하고 canonical `render_pdf.py`로 출력한다.
 6. 가능하면 Android/iOS 기본 PDF viewer 또는 그와 유사한 실제 viewer 배율에서도 표지와
    spanning-heavy page를 확인한다. browser screenshot과 rasterized PDF 둘 중 하나만 통과한 것은
    완료가 아니다.
-7. raw Markdown 표, fixed footer 겹침, separator 관통/분절이 하나라도 발견되면
+7. Chrome/Skia PDF의 한글이 다수의 embedded Type 3 subset font로 기록되면 PyMuPDF·Poppler에서는
+   정상이어도 Discord/일부 모바일 preview가 뒤쪽 page를 백지로 표시할 수 있다. 실제 PDF의
+   page별 text/drawing count와 독립 renderer 결과가 정상인데 viewer에서만 blank라면 콘텐츠를
+   삭제하지 않는다. Ghostscript `pdfwrite -dNoOutputFonts -dPreserveAnnots=true`로 글자를 vector
+   outline으로 바꾼 별도 `*_VIEWER_COMPAT.pdf`를 만들고, 원본은 검색·선택 가능한 canonical
+   artifact로 보존한다. 호환본은 page 수, annotation 수, 전 page raster, 특히 신고된 마지막 page를
+   다시 검사하고 텍스트 선택이 제한됨을 밝힌다.
+8. raw Markdown 표, fixed footer 겹침, separator 관통/분절이 하나라도 발견되면
    수정→재렌더→**전 페이지** 기계/시각 QA를 처음부터 반복한다.
 
 최종 보고에는 page 수, byte size, SHA-256, note count/type breakdown, blank/oob 결과와 QA PASS를 적고 PDF 자체를 첨부한다. 의미 있는 복구·검증 작업은 작성자 이름과 함께 Outline `Sessions`에도 기록한다.
