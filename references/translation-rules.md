@@ -166,6 +166,8 @@ knowledge` 같은 한정 표현은 "우리가 아는 한"처럼 보존하고, �
 - **6열 이상이거나 셀 텍스트가 긴 표는 반드시 `class="wide"`**로 단 전체 폭에 배치한다.
   좁은 단에 넣으면 셀 겹침·세로 토큰 덤프로 붕괴한다.
 - 표 제목은 섹션형 헤더로: `표 N. <내용 요약>` (원본 캡션 요약 번역).
+- **`table.wide`의 제목도 반드시 같은 전체 폭 formatting context에 둔다.** 예를 들어 `h3.section`을 쓰면 CSS에 `.doc-title, h2.section, h3.section { column-span: all; }`처럼 H3까지 명시한다. `class="section"`만 붙이고 selector를 `h2.section`으로 한정하면 Chrome의 multicol print에서 제목 마지막 단어가 반대쪽 column으로 찢어질 수 있다.
+- 전체 contact sheet뿐 아니라 wide table이 있는 page를 120–150 dpi로 별도 확대해 제목이 한 덩어리로 유지되는지 확인한다.
 - 헤더 행은 회색 배경, 셀 좌우 정렬은 원본을 따른다. 열 이름(Method, Top-1 등)은 원형 유지.
 
 ## 7. 인용과 참고문헌

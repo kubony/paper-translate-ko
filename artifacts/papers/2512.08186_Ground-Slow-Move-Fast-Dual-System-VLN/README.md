@@ -36,7 +36,8 @@
 - HTML structure: figure 11, image asset 14, table 4, display equation 3, heading 구조 보존
 - 페이지: 원문 17쪽, 3판 16쪽(validator 정상 범위)
 - 전체 16쪽 contact-sheet 시각 QA: **PASS**
-- delivery PDF p2·p7·p16 압축 후 시각 QA: **PASS**
+- 사용자 제보로 발견한 Chrome multicol의 wide-table H3 제목 분할을 수정했다. `h3.section`에도 `column-span: all`을 적용하고 표 1~4 제목과 p12를 150 dpi로 재검증했다.
+- delivery PDF p2·p7·p9·p12·p16 압축 후 시각 QA: **PASS**
 
 ## 번역 기준
 
@@ -64,9 +65,9 @@
 
 ## SHA-256
 
-- 고해상도 PDF: `d37493875ff90ea5ef2482196d6024b5258c46c8b1f0cce32cb63df99ea550f1`
-- delivery PDF: `7bebf94c5ec48262f918c1534191304c9dc9123c402b7b9246af566803a1d4ac`
-- HTML: `e18c000fdede7aee8c5f0fdd66b07eabda2526cfbdac577af13b307c768749e9`
+- 고해상도 PDF: `fe9131b3f8ae1f3d82243960d16dd69a0da538965c1fec55b8721d6a083ae14d`
+- delivery PDF: `6f7193be4ddac840b53fd2c85e6e991b2831eda53f788c09867a44f23fc2f3fa`
+- HTML: `0604dbfe9e1064f5cc500d51965c2fa5954a2418e9018f5425e40a1fcda61b2c`
 
 ## 열람
 

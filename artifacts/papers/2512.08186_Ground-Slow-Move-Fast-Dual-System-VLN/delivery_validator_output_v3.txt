@@ -1,4 +1,4 @@
-# 출력 계약 검증 (모드 B, PDF 소급) — 최종: artifacts/papers/2512.08186_Ground-Slow-Move-Fast-Dual-System-VLN/2512.08186_ko_translation_v3_delivery.pdf
+# 출력 계약 검증 (모드 B, PDF 소급) — 최종: 2512.08186_ko_translation_v3_delivery.pdf
 
 
 [PASS] 페이지 수: 최종 16p / 원본 17p
