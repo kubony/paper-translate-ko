@@ -44,6 +44,7 @@
   },
   "links": 14,
   "layout_regression": {
+    "raster_dpi": 151.2,
     "active_column_rules": 0,
     "fixed_offset_cover_separators": 0,
     "visual_pages_reviewed": 15,
