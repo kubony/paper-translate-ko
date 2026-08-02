@@ -144,6 +144,7 @@ knowledge` 같은 한정 표현은 "우리가 아는 한"처럼 보존하고, �
 - `while`, `however`, `but`의 기대와 관찰 결과를 한 한국어 문장에 억지로 묶은 문장
 - 영어 관계절의 선행사가 한국어에서 다른 명사로 이동한 문장
 - 문장이 "~함에 따라" 같은 연결어로 끝나 후속 명제가 누락된 경우
+- 원문에서 model objective 설명과 optimizer·learning rate·batch size·step 수가 별도 문단이면 번역에서도 문단을 보존한다. 개념적 결론 뒤에 AdamW 같은 hyperparameter를 한 문단으로 이어 붙이지 말고, 필요하면 **`학습 설정.`** label을 둔 별도 문단으로 분리한다.
 
 ## 5. 피겨(그림)
 
