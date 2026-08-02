@@ -1,0 +1,374 @@
+{
+  "arxiv_id": "2604.15483",
+  "title": "$π_{0.7}$: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities",
+  "authors": [
+    {
+      "name": "Physical Intelligence",
+      "affiliation": ""
+    },
+    {
+      "name": "Bo Ai",
+      "affiliation": ""
+    },
+    {
+      "name": "Ali Amin",
+      "affiliation": ""
+    },
+    {
+      "name": "Raichelle Aniceto",
+      "affiliation": ""
+    },
+    {
+      "name": "Ashwin Balakrishna",
+      "affiliation": ""
+    },
+    {
+      "name": "Greg Balke",
+      "affiliation": ""
+    },
+    {
+      "name": "Kevin Black",
+      "affiliation": ""
+    },
+    {
+      "name": "George Bokinsky",
+      "affiliation": ""
+    },
+    {
+      "name": "Shihao Cao",
+      "affiliation": ""
+    },
+    {
+      "name": "Thomas Charbonnier",
+      "affiliation": ""
+    },
+    {
+      "name": "Vedant Choudhary",
+      "affiliation": ""
+    },
+    {
+      "name": "Foster Collins",
+      "affiliation": ""
+    },
+    {
+      "name": "Ken Conley",
+      "affiliation": ""
+    },
+    {
+      "name": "Grace Connors",
+      "affiliation": ""
+    },
+    {
+      "name": "James Darpinian",
+      "affiliation": ""
+    },
+    {
+      "name": "Karan Dhabalia",
+      "affiliation": ""
+    },
+    {
+      "name": "Maitrayee Dhaka",
+      "affiliation": ""
+    },
+    {
+      "name": "Jared DiCarlo",
+      "affiliation": ""
+    },
+    {
+      "name": "Danny Driess",
+      "affiliation": ""
+    },
+    {
+      "name": "Michael Equi",
+      "affiliation": ""
+    },
+    {
+      "name": "Adnan Esmail",
+      "affiliation": ""
+    },
+    {
+      "name": "Yunhao Fang",
+      "affiliation": ""
+    },
+    {
+      "name": "Chelsea Finn",
+      "affiliation": ""
+    },
+    {
+      "name": "Catherine Glossop",
+      "affiliation": ""
+    },
+    {
+      "name": "Thomas Godden",
+      "affiliation": ""
+    },
+    {
+      "name": "Ivan Goryachev",
+      "affiliation": ""
+    },
+    {
+      "name": "Lachlan Groom",
+      "affiliation": ""
+    },
+    {
+      "name": "Haroun Habeeb",
+      "affiliation": ""
+    },
+    {
+      "name": "Hunter Hancock",
+      "affiliation": ""
+    },
+    {
+      "name": "Karol Hausman",
+      "affiliation": ""
+    },
+    {
+      "name": "Gashon Hussein",
+      "affiliation": ""
+    },
+    {
+      "name": "Victor Hwang",
+      "affiliation": ""
+    },
+    {
+      "name": "Brian Ichter",
+      "affiliation": ""
+    },
+    {
+      "name": "Connor Jacobsen",
+      "affiliation": ""
+    },
+    {
+      "name": "Szymon Jakubczak",
+      "affiliation": ""
+    },
+    {
+      "name": "Rowan Jen",
+      "affiliation": ""
+    },
+    {
+      "name": "Tim Jones",
+      "affiliation": ""
+    },
+    {
+      "name": "Gregg Kammerer",
+      "affiliation": ""
+    },
+    {
+      "name": "Ben Katz",
+      "affiliation": ""
+    },
+    {
+      "name": "Liyiming Ke",
+      "affiliation": ""
+    },
+    {
+      "name": "Mairbek Khadikov",
+      "affiliation": ""
+    },
+    {
+      "name": "Chandra Kuchi",
+      "affiliation": ""
+    },
+    {
+      "name": "Marinda Lamb",
+      "affiliation": ""
+    },
+    {
+      "name": "Devin LeBlanc",
+      "affiliation": ""
+    },
+    {
+      "name": "Brendon LeCount",
+      "affiliation": ""
+    },
+    {
+      "name": "Sergey Levine",
+      "affiliation": ""
+    },
+    {
+      "name": "Xinyu Li",
+      "affiliation": ""
+    },
+    {
+      "name": "Adrian Li-Bell",
+      "affiliation": ""
+    },
+    {
+      "name": "Vladislav Lialin",
+      "affiliation": ""
+    },
+    {
+      "name": "Zhonglin Liang",
+      "affiliation": ""
+    },
+    {
+      "name": "Wallace Lim",
+      "affiliation": ""
+    },
+    {
+      "name": "Yao Lu",
+      "affiliation": ""
+    },
+    {
+      "name": "Enyu Luo",
+      "affiliation": ""
+    },
+    {
+      "name": "Vishnu Mano",
+      "affiliation": ""
+    },
+    {
+      "name": "Nandan Marwaha",
+      "affiliation": ""
+    },
+    {
+      "name": "Aikys Mongush",
+      "affiliation": ""
+    },
+    {
+      "name": "Liam Murphy",
+      "affiliation": ""
+    },
+    {
+      "name": "Suraj Nair",
+      "affiliation": ""
+    },
+    {
+      "name": "Tyler Patterson",
+      "affiliation": ""
+    },
+    {
+      "name": "Karl Pertsch",
+      "affiliation": ""
+    },
+    {
+      "name": "Allen Z. Ren",
+      "affiliation": ""
+    },
+    {
+      "name": "Gavin Schelske",
+      "affiliation": ""
+    },
+    {
+      "name": "Charvi Sharma",
+      "affiliation": ""
+    },
+    {
+      "name": "Baifeng Shi",
+      "affiliation": ""
+    },
+    {
+      "name": "Lucy Xiaoyang Shi",
+      "affiliation": ""
+    },
+    {
+      "name": "Laura Smith",
+      "affiliation": ""
+    },
+    {
+      "name": "Jost Tobias Springenberg",
+      "affiliation": ""
+    },
+    {
+      "name": "Kyle Stachowicz",
+      "affiliation": ""
+    },
+    {
+      "name": "Will Stoeckle",
+      "affiliation": ""
+    },
+    {
+      "name": "Jiaming Tang",
+      "affiliation": ""
+    },
+    {
+      "name": "Jimmy Tanner",
+      "affiliation": ""
+    },
+    {
+      "name": "Shalom Tekeste",
+      "affiliation": ""
+    },
+    {
+      "name": "Marcel Torne",
+      "affiliation": ""
+    },
+    {
+      "name": "Kyle Vedder",
+      "affiliation": ""
+    },
+    {
+      "name": "Quan Vuong",
+      "affiliation": ""
+    },
+    {
+      "name": "Anna Walling",
+      "affiliation": ""
+    },
+    {
+      "name": "Haohuan Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "Jason Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "XuDong Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "Chris Whalen",
+      "affiliation": ""
+    },
+    {
+      "name": "Samuel Whitmore",
+      "affiliation": ""
+    },
+    {
+      "name": "Blake Williams",
+      "affiliation": ""
+    },
+    {
+      "name": "Charles Xu",
+      "affiliation": ""
+    },
+    {
+      "name": "Sukwon Yoo",
+      "affiliation": ""
+    },
+    {
+      "name": "Lili Yu",
+      "affiliation": ""
+    },
+    {
+      "name": "Wuming Zhang",
+      "affiliation": ""
+    },
+    {
+      "name": "Zhuoyang Zhang",
+      "affiliation": ""
+    },
+    {
+      "name": "Ury Zhilinsky",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "We present a new robotic foundation model, called $π_{0.7}$, that can enable strong out-of-the-box performance in a wide range of scenarios. $π_{0.7}$ can follow diverse language instructions in unseen environments, including multi-stage tasks with various kitchen appliances, provide zero-shot cross-embodiment generalization, for example enabling a robot to fold laundry without seeing the task before, and perform challenging tasks such as operating an espresso machine out of the box at a level of performance that matches much more specialized RL-finetuned models. The main idea behind $π_{0.7}$ is to use diverse context conditioning during training. This conditioning information, contained in the prompt, makes it possible to steer the model precisely to perform many tasks with different strategies. It is conditioned not just on a language command that describes what it should do, but on additional multimodal information that also describes the manner or strategy in which it should do it, including metadata about task performance and subgoal images. This enables $π_{0.7}$ to use very diverse data, including demonstrations, potentially suboptimal (autonomous) data including failures, and data from non-robot sources. Our experiments evaluate $π_{0.7}$ across numerous tasks with multiple robot platforms, on tasks that require speed and dexterity, language following, and compositional task generalization.",
+  "comment": "Website: https://www.pi.website/blog/pi07",
+  "journal_ref": "",
+  "primary_category": "cs.LG",
+  "categories": [
+    "cs.LG",
+    "cs.RO"
+  ],
+  "published": "2026-04-16T19:18:07Z",
+  "updated": "2026-04-24T23:18:28Z",
+  "abs_url": "https://arxiv.org/abs/2604.15483",
+  "pdf_url": "https://arxiv.org/pdf/2604.15483",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2604.15483v2",
+    "pdf": "https://arxiv.org/pdf/2604.15483v2"
+  }
+}

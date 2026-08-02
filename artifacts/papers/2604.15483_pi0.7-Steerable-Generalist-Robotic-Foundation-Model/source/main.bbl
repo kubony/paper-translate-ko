@@ -1,0 +1,573 @@
+\begin{thebibliography}{112}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Brohan et~al.(2022)Brohan, Brown, Carbajal, Chebotar, Dabis, Finn, Gopalakrishnan, Hausman, Herzog, Hsu, et~al.]{brohan2022rt}
+Anthony Brohan, Noah Brown, Justice Carbajal, Yevgen Chebotar, Joseph Dabis, Chelsea Finn, Keerthana Gopalakrishnan, Karol Hausman, Alex Herzog, Jasmine Hsu, et~al.
+\newblock Rt-1: Robotics transformer for real-world control at scale.
+\newblock \emph{arXiv preprint arXiv:2212.06817}, 2022.
+
+\bibitem[Reed et~al.(2022)Reed, {\.Z}o{\l}na, Parisotto, et~al.]{reed2022gato}
+Scott Reed, Konrad {\.Z}o{\l}na, Emilio Parisotto, et~al.
+\newblock A generalist agent.
+\newblock \emph{Transactions on Machine Learning Research (TMLR)}, 2022.
+
+\bibitem[Team et~al.(2024)Team, Ghosh, Walke, Pertsch, Black, Mees, Dasari, Hejna, Kreiman, Xu, et~al.]{team2024octo}
+Octo~Model Team, Dibya Ghosh, Homer Walke, Karl Pertsch, Kevin Black, Oier Mees, Sudeep Dasari, Joey Hejna, Tobias Kreiman, Charles Xu, et~al.
+\newblock Octo: An open-source generalist robot policy.
+\newblock \emph{arXiv preprint arXiv:2405.12213}, 2024.
+
+\bibitem[Liu et~al.(2025)Liu, Wu, Li, Tan, Chen, Wang, Xu, Su, and Zhu]{liu2024rdt1b}
+Songming Liu, Lingxuan Wu, Bangguo Li, Hengkai Tan, Huayu Chen, Zhengyi Wang, Ke~Xu, Hang Su, and Jun Zhu.
+\newblock Rdt-1b: a diffusion foundation model for bimanual manipulation.
+\newblock \emph{International Conference on Learning Representations (ICLR)}, 2025.
+
+\bibitem[Wang et~al.(2024)Wang, Chen, Zhao, and He]{wang2024hpt}
+Lirui Wang, Xinlei Chen, Jialiang Zhao, and Kaiming He.
+\newblock Scaling proprioceptive-visual learning with heterogeneous pre-trained transformers.
+\newblock In \emph{Neurips}, 2024.
+
+\bibitem[Team et~al.(2025{\natexlab{a}})Team, Barreiros, Beaulieu, Bhat, Cory, Cousineau, Dai, Fang, Hashimoto, Irshad, Itkina, Kuppuswamy, Lee, Liu, McConachie, McMahon, Nishimura, Phillips-Grafflin, Richter, Shah, Srinivasan, Wulfe, Xu, Zhang, Alspach, Angeles, Arora, Guizilini, Castro, Chen, Chu, Creasey, Curtis, Denitto, Dixon, Dusel, Ferreira, Goncalves, Gould, Guoy, Gupta, Han, Hatch, Hathaway, Henry, Hochsztein, Horgan, Iwase, Jackson, Karamcheti, Keh, Masterjohn, Mercat, Miller, Mitiguy, Nguyen, Nimmer, Noguchi, Ong, Onol, Pfannenstiehl, Poyner, Rocha, Richardson, Rodriguez, Seale, Sherman, Smith-Jones, Tago, Tokmakov, Tran, Hoorick, Vasiljevic, Zakharov, Zolotas, Ambrus, Fetzer-Borelli, Burchfiel, Kress-Gazit, Feng, Ford, and Tedrake]{lbmtri2025}
+TRI~LBM Team, Jose Barreiros, Andrew Beaulieu, Aditya Bhat, Rick Cory, Eric Cousineau, Hongkai Dai, Ching-Hsin Fang, Kunimatsu Hashimoto, Muhammad~Zubair Irshad, Masha Itkina, Naveen Kuppuswamy, Kuan-Hui Lee, Katherine Liu, Dale McConachie, Ian McMahon, Haruki Nishimura, Calder Phillips-Grafflin, Charles Richter, Paarth Shah, Krishnan Srinivasan, Blake Wulfe, Chen Xu, Mengchao Zhang, Alex Alspach, Maya Angeles, Kushal Arora, Vitor~Campagnolo Guizilini, Alejandro Castro, Dian Chen, Ting-Sheng Chu, Sam Creasey, Sean Curtis, Richard Denitto, Emma Dixon, Eric Dusel, Matthew Ferreira, Aimee Goncalves, Grant Gould, Damrong Guoy, Swati Gupta, Xuchen Han, Kyle Hatch, Brendan Hathaway, Allison Henry, Hillel Hochsztein, Phoebe Horgan, Shun Iwase, Donovon Jackson, Siddharth Karamcheti, Sedrick Keh, Joseph Masterjohn, Jean Mercat, Patrick Miller, Paul Mitiguy, Tony Nguyen, Jeremy Nimmer, Yuki Noguchi, Reko Ong, Aykut Onol, Owen Pfannenstiehl, Richard Poyner, Leticia Priebe~Mendes Rocha, Gordon Richardson, Christopher
+  Rodriguez, Derick Seale, Michael Sherman, Mariah Smith-Jones, David Tago, Pavel Tokmakov, Matthew Tran, Basile~Van Hoorick, Igor Vasiljevic, Sergey Zakharov, Mark Zolotas, Rares Ambrus, Kerri Fetzer-Borelli, Benjamin Burchfiel, Hadas Kress-Gazit, Siyuan Feng, Stacie Ford, and Russ Tedrake.
+\newblock A careful examination of large behavior models for multitask dexterous manipulation, 2025{\natexlab{a}}.
+\newblock URL \url{https://arxiv.org/abs/2507.05331}.
+
+\bibitem[Zitkovich et~al.(2023)Zitkovich, Yu, Xu, Xu, Xiao, Xia, Wu, Wohlhart, Welker, Wahid, et~al.]{rt22023arxiv}
+Brianna Zitkovich, Tianhe Yu, Sichun Xu, Peng Xu, Ted Xiao, Fei Xia, Jialin Wu, Paul Wohlhart, Stefan Welker, Ayzaan Wahid, et~al.
+\newblock Rt-2: Vision-language-action models transfer web knowledge to robotic control.
+\newblock In \emph{Conference on Robot Learning}, pages 2165--2183. PMLR, 2023.
+
+\bibitem[{Open X-Embodiment Collaboration} et~al.(2023){Open X-Embodiment Collaboration}, Padalkar, Pooley, Jain, Bewley, Herzog, Irpan, Khazatsky, Rai, Singh, Brohan, Raffin, Wahid, Burgess-Limerick, Kim, Schölkopf, Ichter, Lu, Xu, Finn, Xu, Chi, Huang, Chan, Pan, Fu, Devin, Driess, Pathak, Shah, Büchler, Kalashnikov, Sadigh, Johns, Ceola, Xia, Stulp, Zhou, Sukhatme, Salhotra, Yan, Schiavi, Su, Fang, Shi, Amor, Christensen, Furuta, Walke, Fang, Mordatch, Radosavovic, Leal, Liang, Kim, Schneider, Hsu, Bohg, Bingham, Wu, Wu, Luo, Gu, Tan, Oh, Malik, Tompson, Yang, Lim, Silvério, Han, Rao, Pertsch, Hausman, Go, Gopalakrishnan, Goldberg, Byrne, Oslund, Kawaharazuka, Zhang, Majd, Rana, Srinivasan, Chen, Pinto, Tan, Ott, Lee, Tomizuka, Du, Ahn, Zhang, Ding, Srirama, Sharma, Kim, Kanazawa, Hansen, Heess, Joshi, Suenderhauf, Palo, Shafiullah, Mees, Kroemer, Sanketi, Wohlhart, Xu, Sermanet, Sundaresan, Vuong, Rafailov, Tian, Doshi, Martín-Martín, Mendonca, Shah, Hoque, Julian, Bustamante, Kirmani, Levine, Moore,
+  Bahl, Dass, Song, Xu, Haldar, Adebola, Guist, Nasiriany, Schaal, Welker, Tian, Dasari, Belkhale, Osa, Harada, Matsushima, Xiao, Yu, Ding, Davchev, Zhao, Armstrong, Darrell, Jain, Vanhoucke, Zhan, Zhou, Burgard, Chen, Wang, Zhu, Li, Lu, Chebotar, Zhou, Zhu, Xu, Wang, Bisk, Cho, Lee, Cui, hua Wu, Tang, Zhu, Li, Iwasawa, Matsuo, Xu, and Cui]{open_x_embodiment_rt_x_2023}
+{Open X-Embodiment Collaboration}, Abhishek Padalkar, Acorn Pooley, Ajinkya Jain, Alex Bewley, Alex Herzog, Alex Irpan, Alexander Khazatsky, Anant Rai, Anikait Singh, Anthony Brohan, Antonin Raffin, Ayzaan Wahid, Ben Burgess-Limerick, Beomjoon Kim, Bernhard Schölkopf, Brian Ichter, Cewu Lu, Charles Xu, Chelsea Finn, Chenfeng Xu, Cheng Chi, Chenguang Huang, Christine Chan, Chuer Pan, Chuyuan Fu, Coline Devin, Danny Driess, Deepak Pathak, Dhruv Shah, Dieter Büchler, Dmitry Kalashnikov, Dorsa Sadigh, Edward Johns, Federico Ceola, Fei Xia, Freek Stulp, Gaoyue Zhou, Gaurav~S. Sukhatme, Gautam Salhotra, Ge~Yan, Giulio Schiavi, Hao Su, Hao-Shu Fang, Haochen Shi, Heni~Ben Amor, Henrik~I Christensen, Hiroki Furuta, Homer Walke, Hongjie Fang, Igor Mordatch, Ilija Radosavovic, Isabel Leal, Jacky Liang, Jaehyung Kim, Jan Schneider, Jasmine Hsu, Jeannette Bohg, Jeffrey Bingham, Jiajun Wu, Jialin Wu, Jianlan Luo, Jiayuan Gu, Jie Tan, Jihoon Oh, Jitendra Malik, Jonathan Tompson, Jonathan Yang, Joseph~J. Lim, João
+  Silvério, Junhyek Han, Kanishka Rao, Karl Pertsch, Karol Hausman, Keegan Go, Keerthana Gopalakrishnan, Ken Goldberg, Kendra Byrne, Kenneth Oslund, Kento Kawaharazuka, Kevin Zhang, Keyvan Majd, Krishan Rana, Krishnan Srinivasan, Lawrence~Yunliang Chen, Lerrel Pinto, Liam Tan, Lionel Ott, Lisa Lee, Masayoshi Tomizuka, Maximilian Du, Michael Ahn, Mingtong Zhang, Mingyu Ding, Mohan~Kumar Srirama, Mohit Sharma, Moo~Jin Kim, Naoaki Kanazawa, Nicklas Hansen, Nicolas Heess, Nikhil~J Joshi, Niko Suenderhauf, Norman~Di Palo, Nur Muhammad~Mahi Shafiullah, Oier Mees, Oliver Kroemer, Pannag~R Sanketi, Paul Wohlhart, Peng Xu, Pierre Sermanet, Priya Sundaresan, Quan Vuong, Rafael Rafailov, Ran Tian, Ria Doshi, Roberto Martín-Martín, Russell Mendonca, Rutav Shah, Ryan Hoque, Ryan Julian, Samuel Bustamante, Sean Kirmani, Sergey Levine, Sherry Moore, Shikhar Bahl, Shivin Dass, Shuran Song, Sichun Xu, Siddhant Haldar, Simeon Adebola, Simon Guist, Soroush Nasiriany, Stefan Schaal, Stefan Welker, Stephen Tian, Sudeep Dasari,
+  Suneel Belkhale, Takayuki Osa, Tatsuya Harada, Tatsuya Matsushima, Ted Xiao, Tianhe Yu, Tianli Ding, Todor Davchev, Tony~Z. Zhao, Travis Armstrong, Trevor Darrell, Vidhi Jain, Vincent Vanhoucke, Wei Zhan, Wenxuan Zhou, Wolfram Burgard, Xi~Chen, Xiaolong Wang, Xinghao Zhu, Xuanlin Li, Yao Lu, Yevgen Chebotar, Yifan Zhou, Yifeng Zhu, Ying Xu, Yixuan Wang, Yonatan Bisk, Yoonyoung Cho, Youngwoon Lee, Yuchen Cui, Yueh hua Wu, Yujin Tang, Yuke Zhu, Yunzhu Li, Yusuke Iwasawa, Yutaka Matsuo, Zhuo Xu, and Zichen~Jeff Cui.
+\newblock Open {X-E}mbodiment: Robotic learning datasets and {RT-X} models, 2023.
+
+\bibitem[Kim et~al.(2024)Kim, Pertsch, Karamcheti, Xiao, Balakrishna, Nair, Rafailov, Foster, Lam, Sanketi, et~al.]{kim2024openvla}
+Moo~Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted Xiao, Ashwin Balakrishna, Suraj Nair, Rafael Rafailov, Ethan Foster, Grace Lam, Pannag Sanketi, et~al.
+\newblock Openvla: An open-source vision-language-action model.
+\newblock \emph{arXiv preprint arXiv:2406.09246}, 2024.
+
+\bibitem[Black et~al.(2024)Black, Brown, Driess, Esmail, Equi, Finn, Fusai, Groom, Hausman, Ichter, Jakubczak, Jones, Ke, Levine, Li-Bell, Mothukuri, Nair, Pertsch, Shi, Tanner, Vuong, Walling, Wang, and Zhilinsky]{black2024pi_0}
+Kevin Black, Noah Brown, Danny Driess, Adnan Esmail, Michael Equi, Chelsea Finn, Niccolo Fusai, Lachy Groom, Karol Hausman, Brian Ichter, Szymon Jakubczak, Tim Jones, Liyiming Ke, Sergey Levine, Adrian Li-Bell, Mohith Mothukuri, Suraj Nair, Karl Pertsch, Lucy~Xiaoyang Shi, James Tanner, Quan Vuong, Anna Walling, Haohuan Wang, and Ury Zhilinsky.
+\newblock $\pi_0$: A vision-language-action flow model for general robot control.
+\newblock \emph{arXiv preprint arXiv:2410.24164}, 2024.
+
+\bibitem[Wen et~al.(2024)Wen, Zhu, Li, Zhu, Wu, Xu, Liu, Cheng, Shen, Peng, Feng, and Tang]{wen2024tinyvlafastdataefficientvisionlanguageaction}
+Junjie Wen, Yichen Zhu, Jinming Li, Minjie Zhu, Kun Wu, Zhiyuan Xu, Ning Liu, Ran Cheng, Chaomin Shen, Yaxin Peng, Feifei Feng, and Jian Tang.
+\newblock Tinyvla: Towards fast, data-efficient vision-language-action models for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2409.12514}, 2024.
+
+\bibitem[Zhen et~al.(2024)Zhen, Qiu, Chen, Yang, Yan, Du, Hong, and Gan]{zhen20243dvla}
+Haoyu Zhen, Xiaowen Qiu, Peihao Chen, Jincheng Yang, Xin Yan, Yilun Du, Yining Hong, and Chuang Gan.
+\newblock 3d-vla: 3d vision-language-action generative world model.
+\newblock \emph{arXiv preprint arXiv:2403.09631}, 2024.
+
+\bibitem[Team et~al.(2025{\natexlab{b}})Team, Abeyruwan, Ainslie, Alayrac, Arenas, Armstrong, Balakrishna, Baruch, Bauza, Blokzijl, et~al.]{geminirobotics2025}
+Gemini~Robotics Team, Saminda Abeyruwan, Joshua Ainslie, Jean-Baptiste Alayrac, Montserrat~Gonzalez Arenas, Travis Armstrong, Ashwin Balakrishna, Robert Baruch, Maria Bauza, Michiel Blokzijl, et~al.
+\newblock Gemini robotics: Bringing ai into the physical world.
+\newblock \emph{arXiv preprint arXiv:2503.20020}, 2025{\natexlab{b}}.
+
+\bibitem[Black et~al.(2025{\natexlab{a}})Black, Brown, Darpinian, Dhabalia, Driess, Esmail, Equi, Finn, Fusai, Galliker, et~al.]{black2025pi05}
+Kevin Black, Noah Brown, James Darpinian, Karan Dhabalia, Danny Driess, Adnan Esmail, Michael~Robert Equi, Chelsea Finn, Niccolo Fusai, Manuel~Y Galliker, et~al.
+\newblock $\pi_{0.5}$: a vision-language-action model with open-world generalization.
+\newblock In \emph{9th Annual Conference on Robot Learning}, 2025{\natexlab{a}}.
+
+\bibitem[Zheng et~al.(2025)Zheng, Li, Wang, Liu, Kang, Feng, Zheng, Zou, Chen, Zeng, et~al.]{zheng2025x}
+Jinliang Zheng, Jianxiong Li, Zhihao Wang, Dongxiu Liu, Xirui Kang, Yuchun Feng, Yinan Zheng, Jiayin Zou, Yilun Chen, Jia Zeng, et~al.
+\newblock X-vla: Soft-prompted transformer as scalable cross-embodiment vision-language-action model.
+\newblock \emph{arXiv preprint arXiv:2510.10274}, 2025.
+
+\bibitem[Jiang et~al.(2025)Jiang, Yuan, Liu, Lu, Cui, Liu, Cheng, Gao, Xu, and Zhao]{jiang2025galaxea}
+Tao Jiang, Tianyuan Yuan, Yicheng Liu, Chenhao Lu, Jianning Cui, Xiao Liu, Shuiqi Cheng, Jiyang Gao, Huazhe Xu, and Hang Zhao.
+\newblock Galaxea open-world dataset and g0 dual-system vla model.
+\newblock \emph{arXiv preprint arXiv:2509.00576}, 2025.
+
+\bibitem[Li et~al.(2024{\natexlab{a}})Li, Liu, Zhang, Yu, Xu, Wu, Cheang, Jing, Zhang, Liu, Li, and Kong]{li2024roboflamingo}
+Xinghang Li, Minghuan Liu, Hanbo Zhang, Cunjun Yu, Jie Xu, Hongtao Wu, Chilam Cheang, Ya~Jing, Weinan Zhang, Huaping Liu, Hang Li, and Tao Kong.
+\newblock Vision-language foundation models as effective robot imitators.
+\newblock \emph{International Conference on Learning Representations (ICLR)}, 2024{\natexlab{a}}.
+
+\bibitem[Li et~al.(2024{\natexlab{b}})Li, Liang, Wang, Luo, Chen, Liao, Wei, Deng, Xu, Zhang, et~al.]{li2024cogact}
+Qixiu Li, Yaobo Liang, Zeyu Wang, Lin Luo, Xi~Chen, Mozheng Liao, Fangyun Wei, Yu~Deng, Sicheng Xu, Yizhong Zhang, et~al.
+\newblock Cogact: A foundational vision-language-action model for synergizing cognition and action in robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2411.19650}, 2024{\natexlab{b}}.
+
+\bibitem[Qu et~al.(2025)Qu, Song, Chen, Yao, Ye, Ding, Wang, Gu, Zhao, Wang, and Li]{qu2025spatialvla}
+Delin Qu, Haoming Song, Qizhi Chen, Yuanqi Yao, Xinyi Ye, Yan Ding, Zhigang Wang, JiaYuan Gu, Bin Zhao, Dong Wang, and Xuelong Li.
+\newblock Spatialvla: Exploring spatial representations for visual-language-action model.
+\newblock \emph{Robotics: Science and Systems (RSS)}, 2025.
+
+\bibitem[Bjorck et~al.(2025)]{bjorck2025groot}
+Johan Bjorck et~al.
+\newblock Gr00t n1: An open foundation model for generalist humanoid robots.
+\newblock \emph{arXiv preprint arXiv:2503.14734}, 2025.
+
+\bibitem[Zawalski et~al.(2024)Zawalski, Chen, Pertsch, Mees, Finn, and Levine]{zawalski2024ecot}
+Micha{\l} Zawalski, William Chen, Karl Pertsch, Oier Mees, Chelsea Finn, and Sergey Levine.
+\newblock Robotic control via embodied chain-of-thought reasoning.
+\newblock \emph{arXiv preprint arXiv:2407.08693}, 2024.
+
+\bibitem[{AgiBot-World-Contributors} et~al.(2025){AgiBot-World-Contributors}, Bu, Cai, Chen, et~al.]{agibotworld2025}
+{AgiBot-World-Contributors}, Qingwen Bu, Jisong Cai, Li~Chen, et~al.
+\newblock Agibot world colosseo: A large-scale manipulation platform for scalable and intelligent embodied systems.
+\newblock \emph{arXiv preprint arXiv:2503.06669}, 2025.
+
+\bibitem[Zhou et~al.(2025)Zhou, Zhu, Zhu, Wen, Liu, Xu, Meng, Cheng, Peng, Shen, and Xu]{zhou2025chatvla}
+Zhongyi Zhou, Yichen Zhu, Minjie Zhu, Junjie Wen, Ning Liu, Zhiyuan Xu, Weibin Meng, Ran Cheng, Yaxin Peng, Chaomin Shen, and Yi~Xu.
+\newblock Chatvla: Unified multimodal understanding and robot control with vision-language-action model.
+\newblock \emph{arXiv preprint arXiv:2502.14420}, 2025.
+
+\bibitem[Kim et~al.(2026)Kim, Gao, Lin, Lin, Ge, Lam, Liang, Song, Liu, Finn, and Gu]{kim2025cosmospolicy}
+Moo~Jin Kim, Yihuai Gao, Tsung-Yi Lin, Yen-Chen Lin, Yunhao Ge, Grace Lam, Percy Liang, Shuran Song, Ming-Yu Liu, Chelsea Finn, and Jinwei Gu.
+\newblock Cosmos policy: Fine-tuning video models for visuomotor control and planning.
+\newblock In \emph{International Conference on Learning Representations (ICLR)}, 2026.
+
+\bibitem[Pai et~al.(2025)Pai, Achenbach, Montesinos, Forrai, Mees, and Nava]{mimicvideo}
+Jonas Pai, Liam Achenbach, Victoriano Montesinos, Benedek Forrai, Oier Mees, and Elvis Nava.
+\newblock mimic-video: Video-action models for generalizable robot control beyond vlas, 2025.
+\newblock URL \url{https://arxiv.org/abs/2512.15692}.
+
+\bibitem[Ye et~al.(2026)Ye, Ge, Zheng, Gao, Yu, Kurian, Indupuru, Tan, Zhu, Xiang, et~al.]{ye2026dreamzero}
+Seonghyeon Ye, Yunhao Ge, Kaiyuan Zheng, Shenyuan Gao, Sihyun Yu, George Kurian, Suneel Indupuru, You~Liang Tan, Chuning Zhu, Jiannan Xiang, et~al.
+\newblock World action models are zero-shot policies.
+\newblock \emph{arXiv preprint arXiv:2602.15922}, 2026.
+
+\bibitem[Wu et~al.(2024)Wu, Jing, Cheang, Chen, Xu, Li, Liu, Li, and Kong]{wu2024gr1}
+Hongtao Wu, Ya~Jing, Chilam Cheang, Guangzeng Chen, Jiafeng Xu, Xinghang Li, Minghuan Liu, Hang Li, and Tao Kong.
+\newblock Unleashing large-scale video generative pre-training for visual robot manipulation.
+\newblock \emph{International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Cheang et~al.(2024)Cheang, Chen, Jing, Kong, Li, Li, Liu, Wu, Xu, Yang, Zhang, and Zhu]{cheang2024gr2}
+Chi-Lam Cheang, Guangzeng Chen, Ya~Jing, Tao Kong, Hang Li, Yifeng Li, Yuxiao Liu, Hongtao Wu, Jiafeng Xu, Yichu Yang, Hanbo Zhang, and Minzhao Zhu.
+\newblock Gr-2: A generative video-language-action model with web-scale knowledge for robot manipulation.
+\newblock \emph{arXiv preprint arXiv:2410.06158}, 2024.
+
+\bibitem[Zheng et~al.(2024)Zheng, Liang, Huang, Gao, Daum{\'e}~III, Kolobov, Huang, and Yang]{zheng2024tracevla}
+Ruijie Zheng, Yongyuan Liang, Shuaiyi Huang, Jianfeng Gao, Hal Daum{\'e}~III, Andrey Kolobov, Furong Huang, and Jianwei Yang.
+\newblock Tracevla: Visual trace prompting enhances spatial-temporal awareness for generalist robotic policies.
+\newblock \emph{arXiv preprint arXiv:2412.10345}, 2024.
+
+\bibitem[Sridhar et~al.(2025)Sridhar, Pan, Sharma, and Finn]{sridhar2025memer}
+Ajay Sridhar, Jennifer Pan, Satvik Sharma, and Chelsea Finn.
+\newblock Memer: Scaling up memory for robot control via experience retrieval.
+\newblock \emph{arXiv preprint arXiv:2510.20328}, 2025.
+
+\bibitem[Shi et~al.(2025{\natexlab{a}})Shi, Xie, Liu, Sun, Liu, Wang, Zhou, Fan, Zhang, and Huang]{shi2025memoryvla}
+Hao Shi, Bin Xie, Yingfei Liu, Lin Sun, Fengrong Liu, Tiancai Wang, Erjin Zhou, Haoqiang Fan, Xiangyu Zhang, and Gao Huang.
+\newblock Memoryvla: Perceptual-cognitive memory in vision-language-action models for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2508.19236}, 2025{\natexlab{a}}.
+
+\bibitem[Lin et~al.(2025{\natexlab{a}})Lin, Nai, Hu, You, Zhao, and Gao]{lin2025onetwovla}
+Fanqi Lin, Ruiqian Nai, Yingdong Hu, Jiacheng You, Junming Zhao, and Yang Gao.
+\newblock Onetwovla: A unified vision-language-action model with adaptive reasoning.
+\newblock \emph{arXiv preprint arXiv:2505.11917}, 2025{\natexlab{a}}.
+
+\bibitem[Fang et~al.(2025)Fang, Grotz, Pumacay, Wang, Fox, Krishna, and Duan]{fang2025sam2act}
+Haoquan Fang, Markus Grotz, Wilbert Pumacay, Yi~Ru Wang, Dieter Fox, Ranjay Krishna, and Jiafei Duan.
+\newblock Sam2act: Integrating visual foundation model with a memory architecture for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2501.18564}, 2025.
+
+\bibitem[Li et~al.(2025{\natexlab{a}})Li, Yang, Chen, Tian, Yang, Chen, Wang, Wang, Zhao, Lin, et~al.]{li2025cronusvla}
+Hao Li, Shuai Yang, Yilun Chen, Yang Tian, Xiaoda Yang, Xinyi Chen, Hanqing Wang, Tai Wang, Feng Zhao, Dahua Lin, et~al.
+\newblock Cronusvla: Transferring latent motion across time for multi-frame prediction in manipulation.
+\newblock \emph{arXiv preprint arXiv:2506.19816}, 2025{\natexlab{a}}.
+
+\bibitem[Zhang et~al.(2025)Zhang, Xu, Yang, Yue, Lin, Gao, Wang, and Zhao]{zhang2025ta}
+Zongzheng Zhang, Haobo Xu, Zhuo Yang, Chenghao Yue, Zehao Lin, Huan-ang Gao, Ziwei Wang, and Hao Zhao.
+\newblock Ta-vla: Elucidating the design space of torque-aware vision-language-action models.
+\newblock \emph{arXiv preprint arXiv:2509.07962}, 2025.
+
+\bibitem[Jang et~al.(2025)Jang, Yu, Kwon, Jeon, Seo, and Shin]{jang2025contextvla}
+Huiwon Jang, Sihyun Yu, Heeseung Kwon, Hojin Jeon, Younggyo Seo, and Jinwoo Shin.
+\newblock Contextvla: Vision-language-action model with amortized multi-frame context.
+\newblock \emph{arXiv preprint arXiv:2510.04246}, 2025.
+
+\bibitem[Torne et~al.(2026)Torne, Pertsch, Walke, Vedder, Nair, Ichter, Ren, Wang, Tang, Stachowicz, et~al.]{torne2026mem}
+Marcel Torne, Karl Pertsch, Homer Walke, Kyle Vedder, Suraj Nair, Brian Ichter, Allen~Z Ren, Haohuan Wang, Jiaming Tang, Kyle Stachowicz, et~al.
+\newblock Mem: Multi-scale embodied memory for vision language action models.
+\newblock \emph{arXiv preprint arXiv:2603.03596}, 2026.
+
+\bibitem[Ahn et~al.(2022)Ahn, Brohan, Brown, Chebotar, et~al.]{ahn2022saycan}
+Michael Ahn, Anthony Brohan, Noah Brown, Yevgen Chebotar, et~al.
+\newblock Do as i can, not as i say: Grounding language in robotic affordances.
+\newblock \emph{Conference on Robot Learning (CoRL)}, 2022.
+
+\bibitem[Liang et~al.(2023)Liang, Huang, Xia, Xu, Hausman, Ichter, Florence, and Zeng]{liang2023codepolicies}
+Jacky Liang, Wenlong Huang, Fei Xia, Peng Xu, Karol Hausman, Brian Ichter, Pete Florence, and Andy Zeng.
+\newblock Code as policies: Language model programs for embodied control.
+\newblock \emph{IEEE International Conference on Robotics and Automation (ICRA)}, 2023.
+
+\bibitem[Shi et~al.(2025{\natexlab{b}})Shi, Ichter, Equi, Ke, Pertsch, Vuong, Tanner, Walling, Wang, Fusai, et~al.]{shi2025hi}
+Lucy~Xiaoyang Shi, Brian Ichter, Michael Equi, Liyiming Ke, Karl Pertsch, Quan Vuong, James Tanner, Anna Walling, Haohuan Wang, Niccolo Fusai, et~al.
+\newblock Hi robot: Open-ended instruction following with hierarchical vision-language-action models.
+\newblock \emph{arXiv preprint arXiv:2502.19417}, 2025{\natexlab{b}}.
+
+\bibitem[Zhao et~al.(2025)Zhao, Lu, Kim, Fu, Zhang, Wu, Li, Ma, Han, Finn, et~al.]{zhao2025cot}
+Qingqing Zhao, Yao Lu, Moo~Jin Kim, Zipeng Fu, Zhuoyang Zhang, Yecheng Wu, Zhaoshuo Li, Qianli Ma, Song Han, Chelsea Finn, et~al.
+\newblock Cot-vla: Visual chain-of-thought reasoning for vision-language-action models.
+\newblock \emph{Computer Vision and Pattern Recognition (CVPR)}, 2025.
+
+\bibitem[Team(2025{\natexlab{a}})]{pi06model}
+Physical~Intelligence Team.
+\newblock $\pi_{0.6}$ model card, 2025{\natexlab{a}}.
+
+\bibitem[Ye et~al.(2024)Ye, Jang, Jeon, Joo, Yang, Peng, Mandlekar, Tan, Chao, Lin, et~al.]{ye2024latent}
+Seonghyeon Ye, Joel Jang, Byeongguk Jeon, Sejune Joo, Jianwei Yang, Baolin Peng, Ajay Mandlekar, Reuben Tan, Yu-Wei Chao, Bill~Yuchen Lin, et~al.
+\newblock Latent action pretraining from videos.
+\newblock \emph{arXiv preprint arXiv:2410.11758}, 2024.
+
+\bibitem[Lin et~al.(2025{\natexlab{b}})Lin, Lian, Yu, Yang, Wu, Miao, Jin, Shi, Huang, Cheng, and Chen]{lin2025physbrainhumanegocentricdata}
+Xiaopeng Lin, Shijie Lian, Bin Yu, Ruoqi Yang, Changti Wu, Yuzhuo Miao, Yurun Jin, Yukun Shi, Cong Huang, Bojun Cheng, and Kai Chen.
+\newblock Physbrain: Human egocentric data as a bridge from vision language models to physical intelligence, 2025{\natexlab{b}}.
+\newblock URL \url{https://arxiv.org/abs/2512.16793}.
+
+\bibitem[Kareer et~al.(2025{\natexlab{a}})Kareer, Pertsch, Darpinian, Hoffman, Xu, Levine, Finn, and Nair]{kareer2025emergence}
+Simar Kareer, Karl Pertsch, James Darpinian, Judy Hoffman, Danfei Xu, Sergey Levine, Chelsea Finn, and Suraj Nair.
+\newblock Emergence of human to robot transfer in vision-language-action models.
+\newblock \emph{arXiv preprint arXiv:2512.22414}, 2025{\natexlab{a}}.
+
+\bibitem[Li et~al.(2025{\natexlab{b}})Li, Gao, Wang, and Fu]{li2025latbotdistillinguniversallatent}
+Zuolei Li, Xingyu Gao, Xiaofan Wang, and Jianlong Fu.
+\newblock Latbot: Distilling universal latent actions for vision-language-action models, 2025{\natexlab{b}}.
+\newblock URL \url{https://arxiv.org/abs/2511.23034}.
+
+\bibitem[Yang et~al.(2025)Yang, Yu, Wu, Yan, Li, Cheng, Zou, Fang, Cheng, Qiu, Yin, Liu, Han, Lu, and Wang]{yang2025egovlalearningvisionlanguageactionmodels}
+Ruihan Yang, Qinxi Yu, Yecheng Wu, Rui Yan, Borui Li, An-Chieh Cheng, Xueyan Zou, Yunhao Fang, Xuxin Cheng, Ri-Zhao Qiu, Hongxu Yin, Sifei Liu, Song Han, Yao Lu, and Xiaolong Wang.
+\newblock Egovla: Learning vision-language-action models from egocentric human videos, 2025.
+\newblock URL \url{https://arxiv.org/abs/2507.12440}.
+
+\bibitem[Luo et~al.(2026)Luo, Wang, Zhang, Zheng, Xi, Xu, Xu, Yuan, Zhang, Wang, Feng, and Lu]{luo2026beingh05scalinghumancentricrobot}
+Hao Luo, Ye~Wang, Wanpeng Zhang, Sipeng Zheng, Ziheng Xi, Chaoyi Xu, Haiweng Xu, Haoqi Yuan, Chi Zhang, Yiqing Wang, Yicheng Feng, and Zongqing Lu.
+\newblock Being-h0.5: Scaling human-centric robot learning for cross-embodiment generalization, 2026.
+\newblock URL \url{https://arxiv.org/abs/2601.12993}.
+
+\bibitem[Zhang et~al.(2026{\natexlab{a}})Zhang, Wang, Gao, Su, Dai, Zhou, Lu, and Tang]{zhang2026clapcontrastivelatentaction}
+Chubin Zhang, Jianan Wang, Zifeng Gao, Yue Su, Tianru Dai, Cai Zhou, Jiwen Lu, and Yansong Tang.
+\newblock Clap: Contrastive latent action pretraining for learning vision-language-action models from human videos, 2026{\natexlab{a}}.
+\newblock URL \url{https://arxiv.org/abs/2601.04061}.
+
+\bibitem[Team(2025{\natexlab{b}})]{pistar06}
+Physical~Intelligence Team.
+\newblock $\pi^\star_{0.6}$: a vla that learns from experience.
+\newblock \emph{arXiv preprint arXiv:2511.14759}, 2025{\natexlab{b}}.
+
+\bibitem[Xu et~al.(2024)Xu, Li, Luo, and Levine]{xu2024rldg}
+Charles Xu, Qiyang Li, Jianlan Luo, and Sergey Levine.
+\newblock Rldg: Robotic generalist policy distillation via reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2412.09858}, 2024.
+
+\bibitem[Xiao et~al.(2025)Xiao, Lin, Peng, Xue, He, Xie, Hu, Wu, Luo, Fan, et~al.]{xiao2025self}
+Wenli Xiao, Haotian Lin, Andy Peng, Haoru Xue, Tairan He, Yuqi Xie, Fengyuan Hu, Jimmy Wu, Zhengyi Luo, Linxi Fan, et~al.
+\newblock Self-improving vision-language-action models with data generation via residual rl.
+\newblock \emph{arXiv preprint arXiv:2511.00091}, 2025.
+
+\bibitem[Nair et~al.(2023)Nair, Rajeswaran, Kumar, Finn, and Gupta]{nair2023r3m}
+Suraj Nair, Aravind Rajeswaran, Vikash Kumar, Chelsea Finn, and Abhinav Gupta.
+\newblock R3m: A universal visual representation for robot manipulation.
+\newblock In \emph{Conference on Robot Learning}, pages 892--909. PMLR, 2023.
+
+\bibitem[Ma et~al.(2022)Ma, Sodhani, Jayaraman, Bastani, Kumar, and Zhang]{ma2022vip}
+Yecheng~Jason Ma, Shagun Sodhani, Dinesh Jayaraman, Osbert Bastani, Vikash Kumar, and Amy Zhang.
+\newblock Vip: Towards universal visual reward and representation via value-implicit pre-training.
+\newblock In \emph{The Eleventh International Conference on Learning Representations}, 2022.
+
+\bibitem[Xiao et~al.(2022)Xiao, Radosavovic, Darrell, and Malik]{xiao2022masked}
+Tete Xiao, Ilija Radosavovic, Trevor Darrell, and Jitendra Malik.
+\newblock Masked visual pre-training for motor control.
+\newblock \emph{arXiv preprint arXiv:2203.06173}, 2022.
+
+\bibitem[Bhateja et~al.(2023)Bhateja, Guo, Ghosh, Singh, Tomar, Vuong, Chebotar, Levine, and Kumar]{bhateja2023robotic}
+Chethan Bhateja, Derek Guo, Dibya Ghosh, Anikait Singh, Manan Tomar, Quan Vuong, Yevgen Chebotar, Sergey Levine, and Aviral Kumar.
+\newblock Robotic offline rl from internet videos via value-function pre-training.
+\newblock \emph{arXiv preprint arXiv:2309.13041}, 2023.
+
+\bibitem[Zhou et~al.(2021)Zhou, Aytar, and Bousmalis]{zhou2021manipulator}
+Yuxiang Zhou, Yusuf Aytar, and Konstantinos Bousmalis.
+\newblock Manipulator-independent representations for visual imitation.
+\newblock \emph{arXiv preprint arXiv:2103.09016}, 2021.
+
+\bibitem[Bharadhwaj et~al.(2023{\natexlab{a}})Bharadhwaj, Gupta, and Tulsiani]{bharadhwaj2023visual}
+Homanga Bharadhwaj, Abhinav Gupta, and Shubham Tulsiani.
+\newblock Visual affordance prediction for guiding robot exploration.
+\newblock \emph{arXiv preprint arXiv:2305.17783}, 2023{\natexlab{a}}.
+
+\bibitem[Chen et~al.(2026)Chen, Dong, Wu, Wang, Jangir, Niu, Ye, Bharadhwaj, Erickson, and Ichnowski]{chen2026dexterous}
+Hongyi Chen, Tony Dong, Tiancheng Wu, Liquan Wang, Yash Jangir, Yaru Niu, Yufei Ye, Homanga Bharadhwaj, Zackory Erickson, and Jeffrey Ichnowski.
+\newblock Dexterous manipulation policies from rgb human videos via 3d hand-object trajectory reconstruction.
+\newblock \emph{arXiv preprint arXiv:2602.09013}, 2026.
+
+\bibitem[Shaw et~al.(2023)Shaw, Bahl, and Pathak]{shaw2023videodex}
+Kenneth Shaw, Shikhar Bahl, and Deepak Pathak.
+\newblock Videodex: Learning dexterity from internet videos.
+\newblock In \emph{Conference on Robot Learning}, pages 654--665. PMLR, 2023.
+
+\bibitem[Bharadhwaj et~al.(2023{\natexlab{b}})Bharadhwaj, Gupta, Tulsiani, and Kumar]{bharadhwaj2023zero}
+Homanga Bharadhwaj, Abhinav Gupta, Shubham Tulsiani, and Vikash Kumar.
+\newblock Zero-shot robot manipulation from passive human videos.
+\newblock \emph{arXiv preprint arXiv:2302.02011}, 2023{\natexlab{b}}.
+
+\bibitem[Bahl et~al.(2022)Bahl, Gupta, and Pathak]{bahl2022human}
+Shikhar Bahl, Abhinav Gupta, and Deepak Pathak.
+\newblock Human-to-robot imitation in the wild.
+\newblock \emph{arXiv preprint arXiv:2207.09450}, 2022.
+
+\bibitem[Bahl et~al.(2023)Bahl, Mendonca, Chen, Jain, and Pathak]{bahl2023affordances}
+Shikhar Bahl, Russell Mendonca, Lili Chen, Unnat Jain, and Deepak Pathak.
+\newblock Affordances from human videos as a versatile representation for robotics.
+\newblock In \emph{CVPR}, 2023.
+
+\bibitem[Kareer et~al.(2025{\natexlab{b}})Kareer, Patel, Punamiya, Mathur, Cheng, Wang, Hoffman, and Xu]{kareer2025egomimic}
+Simar Kareer, Dhruv Patel, Ryan Punamiya, Pranay Mathur, Shuo Cheng, Chen Wang, Judy Hoffman, and Danfei Xu.
+\newblock Egomimic: Scaling imitation learning via egocentric video.
+\newblock In \emph{2025 IEEE International Conference on Robotics and Automation (ICRA)}, pages 13226--13233. IEEE, 2025{\natexlab{b}}.
+
+\bibitem[Shi et~al.(2025{\natexlab{c}})Shi, Liu, Zeng, Ai, Hong, and Su]{shi2025learning}
+Liangzhi Shi, Yulin Liu, Lingqi Zeng, Bo~Ai, Zhengdong Hong, and Hao Su.
+\newblock Learning adaptive dexterous grasping from single demonstrations.
+\newblock In \emph{2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, pages 9456--9463. IEEE, 2025{\natexlab{c}}.
+
+\bibitem[Bharadhwaj et~al.(2024)Bharadhwaj, Mottaghi, Gupta, and Tulsiani]{bharadhwaj2024track2act}
+Homanga Bharadhwaj, Roozbeh Mottaghi, Abhinav Gupta, and Shubham Tulsiani.
+\newblock Track2act: Predicting point tracks from internet videos enables generalizable robot manipulation.
+\newblock In \emph{European Conference on Computer Vision}, pages 306--324. Springer, 2024.
+
+\bibitem[Vecerik et~al.(2024)Vecerik, Doersch, Yang, Davchev, Aytar, Zhou, Hadsell, Agapito, and Scholz]{vecerik2024robotap}
+Mel Vecerik, Carl Doersch, Yi~Yang, Todor Davchev, Yusuf Aytar, Guangyao Zhou, Raia Hadsell, Lourdes Agapito, and Jon Scholz.
+\newblock Robotap: Tracking arbitrary points for few-shot visual imitation.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 5397--5403. IEEE, 2024.
+
+\bibitem[Wen et~al.(2023)Wen, Lin, So, Chen, Dou, Gao, and Abbeel]{wen2023any}
+Chuan Wen, Xingyu Lin, John So, Kai Chen, Qi~Dou, Yang Gao, and Pieter Abbeel.
+\newblock Any-point trajectory modeling for policy learning.
+\newblock \emph{arXiv preprint arXiv:2401.00025}, 2023.
+
+\bibitem[Gu et~al.(2024)Gu, Kirmani, Wohlhart, Lu, et~al.]{gu2024rttrajectory}
+Jiayuan Gu, Sean Kirmani, Paul Wohlhart, Yao Lu, et~al.
+\newblock Rt-trajectory: Robotic task generalization via hindsight trajectory sketches.
+\newblock \emph{International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Kapelyukh et~al.(2023)Kapelyukh, Vosylius, and Johns]{kapelyukh2023dall}
+Ivan Kapelyukh, Vitalis Vosylius, and Edward Johns.
+\newblock Dall-e-bot: Introducing web-scale diffusion models to robotics.
+\newblock \emph{IEEE Robotics and Automation Letters}, 8\penalty0 (7):\penalty0 3956--3963, 2023.
+
+\bibitem[Mandi et~al.(2022)Mandi, Bharadhwaj, Moens, Song, Rajeswaran, and Kumar]{mandi2022cacti}
+Zhao Mandi, Homanga Bharadhwaj, Vincent Moens, Shuran Song, Aravind Rajeswaran, and Vikash Kumar.
+\newblock Cacti: A framework for scalable multi-task multi-scene visual imitation learning.
+\newblock \emph{arXiv preprint arXiv:2212.05711}, 2022.
+
+\bibitem[Chen et~al.(2023)Chen, Kiami, Gupta, and Kumar]{chen2023genaug}
+Zoey Chen, Sho Kiami, Abhishek Gupta, and Vikash Kumar.
+\newblock Genaug: Retargeting behaviors to unseen situations via generative augmentation.
+\newblock \emph{arXiv preprint arXiv:2302.06671}, 2023.
+
+\bibitem[Yu et~al.(2023)Yu, Xiao, Stone, Tompson, Brohan, Wang, Singh, Tan, Peralta, Ichter, et~al.]{yu2023scaling}
+Tianhe Yu, Ted Xiao, Austin Stone, Jonathan Tompson, Anthony Brohan, Su~Wang, Jaspiar Singh, Clayton Tan, Jodilyn Peralta, Brian Ichter, et~al.
+\newblock Scaling robot learning with semantically imagined experience.
+\newblock \emph{arXiv preprint arXiv:2302.11550}, 2023.
+
+\bibitem[Stone et~al.(2023)Stone, Xiao, Lu, Gopalakrishnan, Lee, Vuong, Wohlhart, Zitkovich, Xia, Finn, et~al.]{stone2023open}
+Austin Stone, Ted Xiao, Yao Lu, Keerthana Gopalakrishnan, Kuang-Huei Lee, Quan Vuong, Paul Wohlhart, Brianna Zitkovich, Fei Xia, Chelsea Finn, et~al.
+\newblock Open-world object manipulation using pre-trained vision-language models.
+\newblock \emph{arXiv preprint arXiv:2303.00905}, 2023.
+
+\bibitem[Driess et~al.(2023)Driess, Xia, Sajjadi, et~al.]{driess2023palme}
+Danny Driess, Fei Xia, Mehdi~S.M. Sajjadi, et~al.
+\newblock Palm-e: An embodied multimodal language model.
+\newblock \emph{International Conference on Machine Learning (ICML)}, 2023.
+
+\bibitem[Jiang et~al.(2023)Jiang, Gupta, Zhang, Wang, Dou, Chen, Fei-Fei, Anandkumar, Zhu, and Fan]{jiang2023vima}
+Yunfan Jiang, Agrim Gupta, Zichen Zhang, Guanzhi Wang, Yongqiang Dou, Yanjun Chen, Li~Fei-Fei, Anima Anandkumar, Yuke Zhu, and Linxi Fan.
+\newblock Vima: General robot manipulation with multimodal prompts.
+\newblock \emph{International Conference on Machine Learning (ICML)}, 2023.
+
+\bibitem[Collaboration et~al.(2023)Collaboration, Padalkar, Pooley, Jain, Bewley, Herzog, Irpan, Khazatsky, Rai, Singh, et~al.]{collaboration2023open}
+OX-Embodiment Collaboration, A~Padalkar, A~Pooley, A~Jain, A~Bewley, A~Herzog, A~Irpan, A~Khazatsky, A~Rai, A~Singh, et~al.
+\newblock {Open X-Embodiment}: Robotic learning datasets and {RT-X} models.
+\newblock \emph{arXiv preprint arXiv:2310.08864}, 1\penalty0 (2), 2023.
+
+\bibitem[Yang et~al.(2026)Yang, Finn, and Sadigh]{yang2026data}
+Jonathan Yang, Chelsea Finn, and Dorsa Sadigh.
+\newblock Data analogies enable efficient cross-embodiment transfer.
+\newblock \emph{arXiv preprint arXiv:2603.06450}, 2026.
+
+\bibitem[Doshi et~al.(2024)Doshi, Walke, Mees, Dasari, and Levine]{Doshi24-crossformer}
+Ria Doshi, Homer Walke, Oier Mees, Sudeep Dasari, and Sergey Levine.
+\newblock Scaling cross-embodied learning: One policy for manipulation, navigation, locomotion and aviation.
+\newblock In \emph{Conference on Robot Learning}, 2024.
+
+\bibitem[Yang et~al.(2024)Yang, Glossop, Bhorkar, Shah, Vuong, Finn, Sadigh, and Levine]{yang2024pushing}
+Jonathan Yang, Catherine Glossop, Arjun Bhorkar, Dhruv Shah, Quan Vuong, Chelsea Finn, Dorsa Sadigh, and Sergey Levine.
+\newblock Pushing the limits of cross-embodiment learning for manipulation and navigation.
+\newblock \emph{arXiv preprint arXiv:2402.19432}, 2024.
+
+\bibitem[Zha et~al.(2026)Zha, Hancock, Zhang, Yin, Huang, Shah, Ren, and Majumdar]{zha2026lap}
+Lihan Zha, Asher~J Hancock, Mingtong Zhang, Tenny Yin, Yixuan Huang, Dhruv Shah, Allen~Z Ren, and Anirudha Majumdar.
+\newblock Lap: Language-action pre-training enables zero-shot cross-embodiment transfer.
+\newblock \emph{arXiv preprint arXiv:2602.10556}, 2026.
+
+\bibitem[Grover et~al.(2025)Grover, Gopalkrishnan, Ai, Christensen, Su, and Li]{grover2025enhancing}
+Shresth Grover, Akshay Gopalkrishnan, Bo~Ai, Henrik~I Christensen, Hao Su, and Xuanlin Li.
+\newblock Enhancing generalization in vision-language-action models by preserving pretrained representations.
+\newblock \emph{arXiv preprint arXiv:2509.11417}, 2025.
+
+\bibitem[Ai et~al.(2025)Ai, Dai, Bohlinger, Li, Mu, Wu, Fay, Christensen, Peters, and Su]{ai2025towards}
+Bo~Ai, Liu Dai, Nico Bohlinger, Dichen Li, Tongzhou Mu, Zhanxin Wu, K~Fay, Henrik~I Christensen, Jan Peters, and Hao Su.
+\newblock Towards embodiment scaling laws in robot locomotion.
+\newblock \emph{Conference on Robot Learning (CoRL)}, 2025.
+
+\bibitem[He et~al.(2025)He, Ai, Mu, Liu, Wan, Fu, Du, Christensen, and Su]{he2025scaling}
+Zihao He, Bo~Ai, Tongzhou Mu, Yulin Liu, Weikang Wan, Jiawei Fu, Yilun Du, Henrik~I Christensen, and Hao Su.
+\newblock Scaling cross-embodiment world models for dexterous manipulation.
+\newblock \emph{arXiv preprint arXiv:2511.01177}, 2025.
+
+\bibitem[Chi et~al.(2024)Chi, Xu, Pan, Cousineau, Burchfiel, Feng, Tedrake, and Song]{chi2024universal}
+Cheng Chi, Zhenjia Xu, Chuer Pan, Eric Cousineau, Benjamin Burchfiel, Siyuan Feng, Russ Tedrake, and Shuran Song.
+\newblock Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots.
+\newblock In \emph{Proceedings of Robotics: Science and Systems (RSS)}, 2024.
+
+\bibitem[Young et~al.(2021)Young, Gandhi, Tulsiani, Gupta, Abbeel, and Pinto]{young2021visual}
+Sarah Young, Dhiraj Gandhi, Shubham Tulsiani, Abhinav Gupta, Pieter Abbeel, and Lerrel Pinto.
+\newblock Visual imitation made easy.
+\newblock In \emph{Conference on Robot learning}, pages 1992--2005. PMLR, 2021.
+
+\bibitem[Pathak et~al.(2018)Pathak, Mahmoudieh, Luo, Agrawal, Chen, Shentu, Shelhamer, Malik, Efros, and Darrell]{pathak2018zero}
+Deepak Pathak, Parsa Mahmoudieh, Guanghao Luo, Pulkit Agrawal, Dian Chen, Yide Shentu, Evan Shelhamer, Jitendra Malik, Alexei~A Efros, and Trevor Darrell.
+\newblock Zero-shot visual imitation.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and pattern recognition workshops}, pages 2050--2053, 2018.
+
+\bibitem[Chebotar et~al.(2021)Chebotar, Hausman, Lu, Xiao, Kalashnikov, Varley, Irpan, Eysenbach, Julian, Finn, et~al.]{chebotar2021actionable}
+Yevgen Chebotar, Karol Hausman, Yao Lu, Ted Xiao, Dmitry Kalashnikov, Jacob Varley, Alex Irpan, Benjamin Eysenbach, Ryan~C Julian, Chelsea Finn, et~al.
+\newblock Actionable models: Unsupervised offline reinforcement learning of robotic skills.
+\newblock In \emph{International Conference on Machine Learning}, pages 1518--1528. PMLR, 2021.
+
+\bibitem[Bousmalis et~al.(2023)Bousmalis, Vezzani, Rao, Devin, Lee, Bauza, Davchev, Zhou, Gupta, Raju, et~al.]{bousmalis2023robocat}
+Konstantinos Bousmalis, Giulia Vezzani, Dushyant Rao, Coline Devin, Alex~X Lee, Maria Bauza, Todor Davchev, Yuxiang Zhou, Agrim Gupta, Akhil Raju, et~al.
+\newblock Robocat: A self-improving foundation agent for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2306.11706}, 2023.
+
+\bibitem[Myers et~al.(2023)Myers, He, Fang, Walke, Hansen-Estruch, Cheng, Jalobeanu, Kolobov, Dragan, and Levine]{myers2023grif}
+Vivek Myers, Andre He, Kuan Fang, Homer Walke, Philippe Hansen-Estruch, Ching-An Cheng, Mihai Jalobeanu, Andrey Kolobov, Anca Dragan, and Sergey Levine.
+\newblock Goal representations for instruction following: A semi-supervised language interface to control.
+\newblock \emph{Conference on Robot Learning (CoRL)}, 2023.
+
+\bibitem[Nair et~al.(2018)Nair, Pong, Dalal, Bahl, Lin, and Levine]{nair2018visual}
+Ashvin~V Nair, Vitchyr Pong, Murtaza Dalal, Shikhar Bahl, Steven Lin, and Sergey Levine.
+\newblock Visual reinforcement learning with imagined goals.
+\newblock \emph{Advances in neural information processing systems}, 31, 2018.
+
+\bibitem[Nair and Finn(2020)]{nair2020hierarchical}
+Suraj Nair and Chelsea Finn.
+\newblock Hierarchical foresight: Self-supervised learning of long-horizon tasks via visual subgoal generation.
+\newblock In \emph{International Conference on Learning Representations}, 2020.
+
+\bibitem[Black et~al.(2023)Black, Nakamoto, Atreya, Walke, Finn, Kumar, and Levine]{black2023zero}
+Kevin Black, Mitsuhiko Nakamoto, Pranav Atreya, Homer Walke, Chelsea Finn, Aviral Kumar, and Sergey Levine.
+\newblock Zero-shot robotic manipulation with pretrained image-editing diffusion models.
+\newblock \emph{arXiv preprint arXiv:2310.10639}, 2023.
+
+\bibitem[Ko et~al.(2024)Ko, Mao, Du, Sun, and Tenenbaum]{ko2024learning}
+Po-Chen Ko, Jiayuan Mao, Yilun Du, Shao-Hua Sun, and Joshua~B Tenenbaum.
+\newblock Learning to act from actionless videos through dense correspondences.
+\newblock In \emph{The Twelfth International Conference on Learning Representations}, 2024.
+
+\bibitem[Kim et~al.(2025)Kim, Kang, Kang, Cho, Kim, and Lee]{kim2025uniskill}
+Hanjung Kim, Jaehyun Kang, Hyolim Kang, Meedeum Cho, Seon~Joo Kim, and Youngwoon Lee.
+\newblock Uniskill: Imitating human videos via cross-embodiment skill representations.
+\newblock In \emph{Conference on Robot Learning}, pages 4269--4294. PMLR, 2025.
+
+\bibitem[Liang et~al.(2025{\natexlab{a}})Liang, Liu, Ozguroglu, Sudhakar, Dave, Tokmakov, Song, and Vondrick]{liang2025dreamitate}
+Junbang Liang, Ruoshi Liu, Ege Ozguroglu, Sruthi Sudhakar, Achal Dave, Pavel Tokmakov, Shuran Song, and Carl Vondrick.
+\newblock Dreamitate: Real-world visuomotor policy learning via video generation.
+\newblock In \emph{Conference on Robot Learning}, pages 3943--3960. PMLR, 2025{\natexlab{a}}.
+
+\bibitem[Zhang et~al.(2026{\natexlab{b}})Zhang, Yang, Hu, Huang, Hou, Sun, Lu, and Han]{zhang2026foreact}
+Zhuoyang Zhang, Shang Yang, Qinghao Hu, Luke~J Huang, James Hou, Yufei Sun, Yao Lu, and Song Han.
+\newblock Foreact: Steering your vla with efficient visual foresight planning.
+\newblock \emph{arXiv preprint arXiv:2602.12322}, 2026{\natexlab{b}}.
+
+\bibitem[Du et~al.(2024)Du, Yang, Florence, Xia, Wahid, Ichter, Sermanet, Yu, Abbeel, Tenenbaum, Kaelbling, Zeng, and Tompson]{du2024vlp}
+Yilun Du, Mengjiao Yang, Pete Florence, Fei Xia, Ayzaan Wahid, Brian Ichter, Pierre Sermanet, Tianhe Yu, Pieter Abbeel, Joshua~B. Tenenbaum, Leslie Kaelbling, Andy Zeng, and Jonathan Tompson.
+\newblock Video language planning.
+\newblock \emph{International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem[Liang et~al.(2025{\natexlab{b}})Liang, Tokmakov, Liu, Sudhakar, Shah, Ambrus, and Vondrick]{liang2025video}
+Junbang Liang, Pavel Tokmakov, Ruoshi Liu, Sruthi Sudhakar, Paarth Shah, Rares Ambrus, and Carl Vondrick.
+\newblock Video generators are robot policies.
+\newblock \emph{arXiv preprint arXiv:2508.00795}, 2025{\natexlab{b}}.
+
+\bibitem[Yuan et~al.(2026)Yuan, Dong, Liu, and Zhao]{yuan2026fast}
+Tianyuan Yuan, Zibin Dong, Yicheng Liu, and Hang Zhao.
+\newblock Fast-wam: Do world action models need test-time future imagination?
+\newblock \emph{arXiv preprint arXiv:2603.16666}, 2026.
+
+\bibitem[Du et~al.(2023)Du, Yang, Dai, Dai, Nachum, Tenenbaum, Schuurmans, and Abbeel]{du2023unipi}
+Yilun Du, Mengjiao Yang, Bo~Dai, Hanjun Dai, Ofir Nachum, Joshua~B. Tenenbaum, Dale Schuurmans, and Pieter Abbeel.
+\newblock Learning universal policies via text-guided video generation.
+\newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2023.
+
+\bibitem[Lipman et~al.(2022)Lipman, Chen, Ben-Hamu, Nickel, and Le]{lipman2022flow}
+Yaron Lipman, Ricky~TQ Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
+\newblock Flow matching for generative modeling.
+\newblock \emph{arXiv preprint arXiv:2210.02747}, 2022.
+
+\bibitem[Driess et~al.(2025)Driess, Springenberg, Ichter, Yu, Li-Bell, Pertsch, Ren, Walke, Vuong, Shi, et~al.]{driess2025knowledge}
+Danny Driess, Jost~Tobias Springenberg, Brian Ichter, Lili Yu, Adrian Li-Bell, Karl Pertsch, Allen~Z Ren, Homer Walke, Quan Vuong, Lucy~Xiaoyang Shi, et~al.
+\newblock Knowledge insulating vision-language-action models: Train fast, run fast, generalize better.
+\newblock In \emph{Proceedings of the 37th Conference on Neural Information Processing Systems (NeurIPS)}, 2025.
+
+\bibitem[Pertsch et~al.(2025)Pertsch, Stachowicz, Ichter, Driess, Nair, Vuong, Mees, Finn, and Levine]{pertsch2025fast}
+Karl Pertsch, Kyle Stachowicz, Brian Ichter, Danny Driess, Suraj Nair, Quan Vuong, Oier Mees, Chelsea Finn, and Sergey Levine.
+\newblock {FAST}: Efficient action tokenization for vision-language-action models.
+\newblock \emph{Robotics: Science and Systems}, 2025.
+
+\bibitem[Deng et~al.(2025)Deng, Zhu, Li, Gou, Li, Wang, Zhong, Yu, Nie, Song, et~al.]{deng2025emerging}
+Chaorui Deng, Deyao Zhu, Kunchang Li, Chenhui Gou, Feng Li, Zeyu Wang, Shu Zhong, Weihao Yu, Xiaonan Nie, Ziang Song, et~al.
+\newblock Emerging properties in unified multimodal pretraining.
+\newblock \emph{arXiv preprint arXiv:2505.14683}, 2025.
+
+\bibitem[Team et~al.(2025{\natexlab{c}})Team, Kamath, Ferret, Pathak, Vieillard, Merhej, Perrin, Matejovicova, Ramé, Rivière, Rouillard, Mesnard, Cideron, bastien Grill, Ramos, Yvinec, Casbon, Pot, Penchev, Liu, Visin, Kenealy, Beyer, Zhai, Tsitsulin, Busa-Fekete, Feng, Sachdeva, Coleman, Gao, Mustafa, Barr, Parisotto, Tian, Eyal, Cherry, Peter, Sinopalnikov, Bhupatiraju, Agarwal, Kazemi, Malkin, Kumar, Vilar, Brusilovsky, Luo, Steiner, Friesen, Sharma, Sharma, Gilady, Goedeckemeyer, Saade, Feng, Kolesnikov, Bendebury, Abdagic, Vadi, György, Pinto, Das, Bapna, Miech, Yang, Paterson, Shenoy, Chakrabarti, Piot, Wu, Shahriari, Petrini, Chen, Lan, Choquette-Choo, Carey, Brick, Deutsch, Eisenbud, Cattle, Cheng, Paparas, Sreepathihalli, Reid, Tran, Zelle, Noland, Huizenga, Kharitonov, Liu, Amirkhanyan, Cameron, Hashemi, Klimczak-Plucińska, Singh, Mehta, Lehri, Hazimeh, Ballantyne, Szpektor, Nardini, Pouget-Abadie, Chan, Stanton, Wieting, Lai, Orbay, Fernandez, Newlan, yeong Ji, Singh, Black, Yu, Hui,
+  Vodrahalli, Greff, Qiu, Valentine, Coelho, Ritter, Hoffman, Watson, Chaturvedi, Moynihan, Ma, Babar, Noy, Byrd, Roy, Momchev, Chauhan, Sachdeva, Bunyan, Botarda, Caron, Rubenstein, Culliton, Schmid, Sessa, Xu, Stanczyk, Tafti, Shivanna, Wu, Pan, Rokni, Willoughby, Vallu, Mullins, Jerome, Smoot, Girgin, Iqbal, Reddy, Sheth, Põder, Bhatnagar, Panyam, Eiger, Zhang, Liu, Yacovone, Liechty, Kalra, Evci, Misra, Roseberry, Feinberg, Kolesnikov, Han, Kwon, Chen, Chow, Zhu, Wei, Egyed, Cotruta, Giang, Kirk, Rao, Black, Babar, Lo, Moreira, Martins, Sanseviero, Gonzalez, Gleicher, Warkentin, Mirrokni, Senter, Collins, Barral, Ghahramani, Hadsell, Matias, Sculley, Petrov, Fiedel, Shazeer, Vinyals, Dean, Hassabis, Kavukcuoglu, Farabet, Buchatskaya, Alayrac, Anil, Dmitry, Lepikhin, Borgeaud, Bachem, Joulin, Andreev, Hardin, Dadashi, and Hussenot]{gemmateam2025gemma3technicalreport}
+Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, Louis Rouillard, Thomas Mesnard, Geoffrey Cideron, Jean bastien Grill, Sabela Ramos, Edouard Yvinec, Michelle Casbon, Etienne Pot, Ivo Penchev, Gaël Liu, Francesco Visin, Kathleen Kenealy, Lucas Beyer, Xiaohai Zhai, Anton Tsitsulin, Robert Busa-Fekete, Alex Feng, Noveen Sachdeva, Benjamin Coleman, Yi~Gao, Basil Mustafa, Iain Barr, Emilio Parisotto, David Tian, Matan Eyal, Colin Cherry, Jan-Thorsten Peter, Danila Sinopalnikov, Surya Bhupatiraju, Rishabh Agarwal, Mehran Kazemi, Dan Malkin, Ravin Kumar, David Vilar, Idan Brusilovsky, Jiaming Luo, Andreas Steiner, Abe Friesen, Abhanshu Sharma, Abheesht Sharma, Adi~Mayrav Gilady, Adrian Goedeckemeyer, Alaa Saade, Alex Feng, Alexander Kolesnikov, Alexei Bendebury, Alvin Abdagic, Amit Vadi, András György, André~Susano Pinto, Anil Das, Ankur Bapna, Antoine Miech, Antoine Yang, Antonia Paterson, Ashish
+  Shenoy, Ayan Chakrabarti, Bilal Piot, Bo~Wu, Bobak Shahriari, Bryce Petrini, Charlie Chen, Charline~Le Lan, Christopher~A. Choquette-Choo, CJ~Carey, Cormac Brick, Daniel Deutsch, Danielle Eisenbud, Dee Cattle, Derek Cheng, Dimitris Paparas, Divyashree~Shivakumar Sreepathihalli, Doug Reid, Dustin Tran, Dustin Zelle, Eric Noland, Erwin Huizenga, Eugene Kharitonov, Frederick Liu, Gagik Amirkhanyan, Glenn Cameron, Hadi Hashemi, Hanna Klimczak-Plucińska, Harman Singh, Harsh Mehta, Harshal~Tushar Lehri, Hussein Hazimeh, Ian Ballantyne, Idan Szpektor, Ivan Nardini, Jean Pouget-Abadie, Jetha Chan, Joe Stanton, John Wieting, Jonathan Lai, Jordi Orbay, Joseph Fernandez, Josh Newlan, Ju~yeong Ji, Jyotinder Singh, Kat Black, Kathy Yu, Kevin Hui, Kiran Vodrahalli, Klaus Greff, Linhai Qiu, Marcella Valentine, Marina Coelho, Marvin Ritter, Matt Hoffman, Matthew Watson, Mayank Chaturvedi, Michael Moynihan, Min Ma, Nabila Babar, Natasha Noy, Nathan Byrd, Nick Roy, Nikola Momchev, Nilay Chauhan, Noveen Sachdeva, Oskar
+  Bunyan, Pankil Botarda, Paul Caron, Paul~Kishan Rubenstein, Phil Culliton, Philipp Schmid, Pier~Giuseppe Sessa, Pingmei Xu, Piotr Stanczyk, Pouya Tafti, Rakesh Shivanna, Renjie Wu, Renke Pan, Reza Rokni, Rob Willoughby, Rohith Vallu, Ryan Mullins, Sammy Jerome, Sara Smoot, Sertan Girgin, Shariq Iqbal, Shashir Reddy, Shruti Sheth, Siim Põder, Sijal Bhatnagar, Sindhu~Raghuram Panyam, Sivan Eiger, Susan Zhang, Tianqi Liu, Trevor Yacovone, Tyler Liechty, Uday Kalra, Utku Evci, Vedant Misra, Vincent Roseberry, Vlad Feinberg, Vlad Kolesnikov, Woohyun Han, Woosuk Kwon, Xi~Chen, Yinlam Chow, Yuvein Zhu, Zichuan Wei, Zoltan Egyed, Victor Cotruta, Minh Giang, Phoebe Kirk, Anand Rao, Kat Black, Nabila Babar, Jessica Lo, Erica Moreira, Luiz~Gustavo Martins, Omar Sanseviero, Lucas Gonzalez, Zach Gleicher, Tris Warkentin, Vahab Mirrokni, Evan Senter, Eli Collins, Joelle Barral, Zoubin Ghahramani, Raia Hadsell, Yossi Matias, D.~Sculley, Slav Petrov, Noah Fiedel, Noam Shazeer, Oriol Vinyals, Jeff Dean, Demis Hassabis,
+  Koray Kavukcuoglu, Clement Farabet, Elena Buchatskaya, Jean-Baptiste Alayrac, Rohan Anil, Dmitry, Lepikhin, Sebastian Borgeaud, Olivier Bachem, Armand Joulin, Alek Andreev, Cassidy Hardin, Robert Dadashi, and Léonard Hussenot.
+\newblock Gemma 3 technical report, 2025{\natexlab{c}}.
+
+\bibitem[Black et~al.(2025{\natexlab{b}})Black, Galliker, and Levine]{black2025real}
+Kevin Black, Manuel~Y Galliker, and Sergey Levine.
+\newblock Real-time execution of action chunking flow policies.
+\newblock \emph{arXiv preprint arXiv:2506.07339}, 2025{\natexlab{b}}.
+
+\bibitem[Black et~al.(2025{\natexlab{c}})Black, Ren, Equi, and Levine]{black2025ttrtc}
+Kevin Black, Allen~Z Ren, Michael Equi, and Sergey Levine.
+\newblock Training-time action conditioning for efficient real-time chunking.
+\newblock \emph{arXiv preprint arXiv:2512.05964}, 2025{\natexlab{c}}.
+
+\bibitem[Ho and Salimans(2022)]{ho2022cfg}
+Jonathan Ho and Tim Salimans.
+\newblock Classifier-free diffusion guidance.
+\newblock \emph{arXiv preprint arXiv:2207.12598}, 2022.
+
+\bibitem[Hejna et~al.(2025)Hejna, Mirchandani, Balakrishna, Xie, Wahid, Tompson, Sanketi, Shah, Devin, and Sadigh]{hejna2025robot}
+Joey Hejna, Suvir Mirchandani, Ashwin Balakrishna, Annie Xie, Ayzaan Wahid, Jonathan Tompson, Pannag Sanketi, Dhruv Shah, Coline Devin, and Dorsa Sadigh.
+\newblock Robot data curation with mutual information estimators.
+\newblock \emph{arXiv preprint arXiv:2502.08623}, 2025.
+
+\bibitem[Li et~al.(2025{\natexlab{c}})Li, Ma, Xu, Cui, Cui, Han, Huang, Kong, Liu, Niu, et~al.]{li2025gr}
+Yunfei Li, Xiao Ma, Jiafeng Xu, Yu~Cui, Zhongren Cui, Zhigang Han, Liqun Huang, Tao Kong, Yuxiao Liu, Hao Niu, et~al.
+\newblock Gr-rl: Going dexterous and precise for long-horizon robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2512.01801}, 2025{\natexlab{c}}.
+
+\bibitem[Zhang et~al.(2024)Zhang, Wei, Huang, Zhang, Zhu, and Chen]{zhang2024sageattention}
+Jintao Zhang, Jia Wei, Haofeng Huang, Pengle Zhang, Jun Zhu, and Jianfei Chen.
+\newblock Sageattention: Accurate 8-bit attention for plug-and-play inference acceleration.
+\newblock \emph{arXiv preprint arXiv:2410.02367}, 2024.
+
+\end{thebibliography}

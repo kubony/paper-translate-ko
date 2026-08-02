@@ -1,0 +1,85 @@
+{
+  "paper": {
+    "arxiv_id": "2604.15483v2",
+    "title": "π₀.₇: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities",
+    "source_pdf": "original.pdf",
+    "source_tex": "source/main.tex",
+    "project_page": "https://www.pi.website/blog/pi07",
+    "language": "ko",
+    "translation_type": "full-text",
+    "layout": "two-column A4",
+    "translator_editor": "제니"
+  },
+  "inventory": {
+    "sections": 15,
+    "figures": 22,
+    "figure_assets": 22,
+    "tables": 0,
+    "display_equations": 3,
+    "algorithms": 1,
+    "references": 112,
+    "project_videos": 26
+  },
+  "sections": [
+    "초록",
+    "1. 서론",
+    "2. 관련 연구",
+    "3. Flow 기반 Vision-Language-Action 모델",
+    "4. 개요",
+    "5. Prompt 다양화",
+    "6. π0.7 모델과 학습 레시피",
+    "7. Runtime에서 π0.7 prompting",
+    "8. 로봇 시스템 세부 사항",
+    "9. 실험 평가",
+    "10. 논의",
+    "감사의 말",
+    "부록: 기여",
+    "부록: Attention pattern 및 world model 학습",
+    "부록: Inference·cross-embodiment·과제 rubric"
+  ],
+  "figures": [
+    {"number": 1, "source_page": 1, "source": "source/compressed_images_final/fig1.pdf", "assets": ["figures_source/fig1.png"], "caption_translated": true},
+    {"number": 2, "source_page": 4, "source": "source/compressed_images_final/model_architecture.pdf", "assets": ["figures_source/model_architecture.png"], "caption_translated": true},
+    {"number": 3, "source_page": 6, "source": "source/compressed_images_final/prompts_v4.pdf", "assets": ["figures_source/prompts_v4.png"], "caption_translated": true},
+    {"number": 4, "source_page": 7, "source": "source/compressed_images_final/pi07robots_v5.pdf", "assets": ["figures_source/pi07robots_v5.png"], "caption_translated": true},
+    {"number": 5, "source_page": 8, "source": "source/compressed_images_final/full_film_strip.pdf", "assets": ["figures_source/full_film_strip.png"], "caption_translated": true},
+    {"number": 6, "source_page": 9, "source": "source/compressed_images_final/distillation_results.pdf", "assets": ["figures_source/distillation_results.png"], "caption_translated": true},
+    {"number": 7, "source_page": 9, "source": "source/compressed_images_final/distillation_ablations.pdf", "assets": ["figures_source/distillation_ablations.png"], "caption_translated": true},
+    {"number": 8, "source_page": 10, "source": "source/compressed_images_final/history.pdf", "assets": ["figures_source/history.png"], "caption_translated": true},
+    {"number": 9, "source_page": 11, "source": "source/compressed_images_final/instruction_following.pdf", "assets": ["figures_source/instruction_following.png"], "caption_translated": true},
+    {"number": 10, "source_page": 11, "source": "source/compressed_images_final/instruction_generalization.pdf", "assets": ["figures_source/instruction_generalization.png"], "caption_translated": true},
+    {"number": 11, "source_page": 11, "source": "source/compressed_images_final/compositional_generalization.pdf", "assets": ["figures_source/compositional_generalization.png"], "caption_translated": true},
+    {"number": 12, "source_page": 12, "source": "source/compressed_images_final/cross_embodiment.pdf", "assets": ["figures_source/cross_embodiment.png"], "caption_translated": true},
+    {"number": 13, "source_page": 12, "source": "source/compressed_images_final/human_vs_policy.pdf", "assets": ["figures_source/human_vs_policy.png"], "caption_translated": true},
+    {"number": 14, "source_page": 13, "source": "source/compressed_images_final/airfryer_film_strip.pdf", "assets": ["figures_source/airfryer_film_strip.png"], "caption_translated": true},
+    {"number": 15, "source_page": 13, "source": "source/compressed_images_final/long_horizon_task_generalization.pdf", "assets": ["figures_source/long_horizon_task_generalization.png"], "caption_translated": true},
+    {"number": 16, "source_page": 13, "source": "source/compressed_images_final/coaching.pdf", "assets": ["figures_source/coaching.png"], "caption_translated": true},
+    {"number": 17, "source_page": 13, "source": "source/compressed_images_final/task_generalization.pdf", "assets": ["figures_source/task_generalization.png"], "caption_translated": true},
+    {"number": 18, "source_page": 14, "source": "source/compressed_images_final/generalization_and_conditioning_full.pdf", "assets": ["figures_source/generalization_and_conditioning_full.png"], "caption_translated": true},
+    {"number": 19, "source_page": 22, "source": "source/compressed_images_final/attention_masks.pdf", "assets": ["figures_source/attention_masks.png"], "caption_translated": true},
+    {"number": 20, "source_page": 23, "source": "source/compressed_images_final/xemb_joint_vs_ee.pdf", "assets": ["figures_source/xemb_joint_vs_ee.png"], "caption_translated": true},
+    {"number": 21, "source_page": 23, "source": "source/compressed_images_final/operator_experience_hours.pdf", "assets": ["figures_source/operator_experience_hours.png"], "caption_translated": true},
+    {"number": 22, "source_page": 23, "source": "source/compressed_images_final/human_vs_pi07.pdf", "assets": ["figures_source/human_vs_pi07.png"], "caption_translated": true}
+  ],
+  "tables": [],
+  "equations": [
+    {"number": 1, "source": "source/main.tex:241-244", "representation": "max_θ E_D[log π_θ(a | o, C)]"},
+    {"number": 2, "source": "source/main.tex:284-287", "representation": "max_ψ E_Dg[L_CFM(g*, gψ(o, l, m))]"},
+    {"number": 3, "source": "source/main.tex:394-397", "representation": "classifier-free guidance vector-field combination"}
+  ],
+  "algorithms": [
+    {"number": 1, "source": "source/main.tex:403-424", "translated": true, "html_table": true}
+  ],
+  "checks": {
+    "full_page_screenshots_used": false,
+    "figures_are_individual_source_native_assets": true,
+    "tables_are_html": true,
+    "all_active_tex_sections_translated": true,
+    "comments_in_tex_excluded": true,
+    "project_media_archived": true,
+    "project_video_count": 26,
+    "visual_qa_contact_sheet": "qa_contact_sheet.jpg",
+    "validation": "PASS"
+  },
+  "display_equations": 3
+}
