@@ -1,0 +1,94 @@
+{
+  "pdf": "/home/inkeun/tools/paper-translate-ko/artifacts/papers/ICLR2026-GK4rznYwhn_DualVLN-OpenReview-Peer-Review-Dossier/ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO.pdf",
+  "sha256": "44f2e0b331cb1dd570b256eeca198c3fea8e3b6d7170fa86a88a66c6e965315f",
+  "bytes": 1045961,
+  "pages": 15,
+  "a4_pages": 15,
+  "blank_pages": [],
+  "out_of_bounds_blocks": [],
+  "note_ids_present": {
+    "owkWXdMYqX": 3,
+    "cGm4ePmZms": 3,
+    "UaoMmYZOA2": 7,
+    "CE9elpUkqQ": 3,
+    "PO0sZejOgM": 2,
+    "iDkT81BkJU": 2,
+    "Y8IFPe6uFo": 2,
+    "QCoJEOrOu8": 2,
+    "giBp3AXwEw": 2,
+    "E4p0JB67iZ": 2,
+    "8EOTRsXIrJ": 2,
+    "gGJhC9UT7S": 2,
+    "GV3br8fXO5": 2,
+    "WDsSgHhua9": 2
+  },
+  "markers": {
+    "한국어 완역본": 2,
+    "Official review 4": 2,
+    "Author rebuttal 9": 1,
+    "Meta-review 1": 1,
+    "Accept (Poster)": 2,
+    "ICLR 2026 Poster": 2,
+    "Official Review — Reviewer GZFu 한국어 완역": 2,
+    "Reviewer r9jt에 대한 응답 (5/5)": 0,
+    "Meta-review — Area Chair g8At 한국어 완역": 2,
+    "제니 (Jennie)": 1,
+    "file:///": 0,
+    "Verifying your browser": 0,
+    "[truncated]": 0,
+    "TODO": 0,
+    "FIXME": 0,
+    "```": 0,
+    "| --- |": 0,
+    "###": 0
+  },
+  "links": 14,
+  "layout_regression": {
+    "active_column_rules": 0,
+    "fixed_offset_cover_separators": 0,
+    "visual_pages_reviewed": 15,
+    "title_crossing_rules": 0,
+    "gutter_vertical_fragments": 0,
+    "duplicate_major_first_note_borders": 0
+  },
+  "page_text_chars": [
+    470,
+    1760,
+    2932,
+    3421,
+    3261,
+    2368,
+    2250,
+    2256,
+    3272,
+    3282,
+    2702,
+    2616,
+    3234,
+    3114,
+    2691
+  ],
+  "translation_entities": {
+    "notes": 14,
+    "fields": 41
+  },
+  "source_fidelity": {
+    "field_checks": 41,
+    "table_rows_source": 15,
+    "code_fences_source": 20,
+    "english_line_flags": [
+      {
+        "id": "Y8IFPe6uFo",
+        "field": "comment",
+        "line": 7,
+        "text": "[1] Shentu, Yide, et al. \"From llms to actions: Latent codes as bridges in hierarchical robot control.\""
+      },
+      {
+        "id": "Y8IFPe6uFo",
+        "field": "comment",
+        "line": 10,
+        "text": "[2] ByungOk Han, Jaehong Kim, and Jinhyeok Jang. A dual process vla: Efficient robotic manipulation"
+      }
+    ]
+  }
+}

@@ -23,6 +23,14 @@ benchmark-vs-training 구분, optimizer 문단 경계, multicol 조판 회귀를
 `VLA`, `foundation model`, `policy`, `action`, `pixel goal`, `latent goal`, `embodiment`,
 `cross-embodiment`, `dexterous manipulation` 등은 과번역하지 말고 혼합 표기를 유지한다.
 
+OpenReview의 review·rebuttal·meta-review를 “한글 논문 완역본처럼” PDF로 요청하면 논문
+번역본을 재전달하지 말고 peer-review dossier로 처리한다. **`완역`이 포함된 요청은 형식만
+논문처럼 만들라는 뜻으로 축소하지 않는다.** 별도 bilingual/original appendix 요청이 없는 한
+모든 문자열 field를 한국어로 완역하고 exact English 원문은 JSON/companion source로 별도
+보존한다. 한국어 요약 + 영문 원문 부록은 완역 납품으로 인정하지 않는다. 공개 thread 복구,
+field-level fidelity audit, Markdown 정규화, separator-safe A4 2단 조판과 전 페이지 QA는
+`references/openreview-peer-review-dossier.md`를 따른다.
+
 ## 도구 실행 규약
 
 - Python 스크립트 중 `extract_figures.py`는 pymupdf가 필요하다. 시스템 pip는

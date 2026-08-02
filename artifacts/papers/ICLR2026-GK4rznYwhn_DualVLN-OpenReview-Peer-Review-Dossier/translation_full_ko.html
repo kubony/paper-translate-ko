@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>DualVLN OpenReview 심사 기록 한국어 완역본</title><style>
+@page{size:A4;margin:14mm 13mm 16mm 13mm}*{box-sizing:border-box}html{font-size:9.1pt}body{margin:0;color:#17202a;background:#fff;font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.54;text-rendering:optimizeLegibility}a{color:#124f9f;text-decoration:none;overflow-wrap:anywhere}p{margin:.35em 0 .72em;text-align:justify;orphans:3;widows:3}.cover{height:267mm;page-break-after:always;display:flex;flex-direction:column;justify-content:space-between;padding:12mm 11mm 9mm 15mm;border-left:8px solid #153f76;position:relative}.cover:after{content:none}.cover-kicker{font-size:10pt;font-weight:700;color:#31577f;letter-spacing:.07em;text-transform:uppercase}.cover h1{margin:30mm 0 6mm;padding-bottom:5mm;border-bottom:2px solid #153f76;font-size:27pt;line-height:1.13;letter-spacing:-.035em;color:#102b4c}.cover .en-title{font-family:Georgia,serif;font-size:14pt;line-height:1.35;font-weight:700;margin-top:20mm;color:#263b52}.cover .subtitle{font-size:15pt;color:#31577f;font-weight:700;margin-top:8mm}.cover-grid{display:grid;grid-template-columns:32mm 1fr;gap:2.2mm 4mm;margin-top:18mm;border-top:1px solid #a9b8c8;padding-top:8mm;font-size:10pt}.cover-grid dt{font-weight:700;color:#4c6278}.cover-grid dd{margin:0}.cover-foot{border-top:1px solid #a9b8c8;padding-top:5mm;font-size:8.2pt;color:#526476}.paper-body{column-count:2;column-gap:7.5mm;column-rule:none}h2{column-span:all;margin:1.3em 0 .65em;padding:.42em 0 .28em;border-top:1.4px solid #163f73;border-bottom:.5px solid #a7b7ca;color:#163f73;font-size:15pt;line-height:1.22;break-after:avoid}h3{font-size:11.4pt;line-height:1.3;color:#173f70;margin:1.05em 0 .35em;break-after:avoid}h3.note-title{column-span:all;border-top:1px solid #8da4bd;padding-top:.55em;margin-top:1.55em;font-size:12.2pt}h2+.note>h3.note-title{border-top:0;padding-top:0;margin-top:.45em}h4{font-size:9.7pt;color:#344d68;margin:.9em 0 .24em;break-after:avoid}ul,ol{margin:.3em 0 .72em;padding-left:1.5em}li{margin:.12em 0}.source-note,.note-meta{column-span:all}.source-note{background:#f1f5fa;border-left:3px solid #3974b8;padding:2.8mm 3.4mm;margin:3mm 0 5mm;color:#26394e}.note-meta{background:#f6f7f9;border:1px solid #d4dae1;padding:2.2mm 2.8mm;margin:1.5mm 0 3.2mm;font-size:7.4pt;line-height:1.45;overflow-wrap:anywhere}.note{margin-bottom:.6em}.translated-field{margin-bottom:.7em}code{font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;background:#eef1f5;padding:.05em .23em;border-radius:2px;font-size:.88em;overflow-wrap:anywhere;word-break:break-word}pre{font-family:"DejaVu Sans Mono","Noto Sans Mono",monospace;background:#f4f6f8;border:1px solid #d6dce3;padding:2.6mm;font-size:6.6pt;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;break-inside:auto;margin:.5em 0 .8em}h2.section,.section,table.wide,.wide{column-span:all}table,table.wide{column-span:all;width:100%;border-collapse:collapse;margin:3mm 0 5mm;font-size:7.3pt;line-height:1.32;break-inside:avoid}th,td{border:.45pt solid #aeb8c4;padding:1.4mm 1.6mm;vertical-align:top;overflow-wrap:anywhere}th{background:#e7edf4;color:#173852;font-weight:700}tr:nth-child(even) td{background:#fafbfd}.score-table th,.score-table td{text-align:center}hr{column-span:all;border:0;border-top:1px solid #aeb8c4;margin:5mm 0}@media screen{body{max-width:210mm;margin:0 auto;background:#e9edf2}.cover,.paper-body{background:#fff}.paper-body{padding:14mm 13mm 16mm}}
+</style></head><body><section class="cover"><div><div class="cover-kicker">ICLR 2026 · OpenReview Peer-Review Dossier</div><h1>DualVLN<br/>공개 심사 기록<br/>한국어 완역본</h1><div class="en-title">Ground Slow, Move Fast: A Dual-System Foundation Model for Generalizable Vision-Language Navigation</div><div class="subtitle">Official review · 저자 답변 · Meta-review 전문 완역</div><dl class="cover-grid"><dt>Forum</dt><dd>GK4rznYwhn · Submission 8310</dd><dt>결과</dt><dd>Accept (Poster) · ICLR 2026 Poster</dd><dt>완역 범위</dt><dd>Official review 4 · Author rebuttal 9 · Meta-review 1</dd><dt>작성자</dt><dd>제니 (Jennie)</dd><dt>생성일</dt><dd>2026-08-02</dd></dl></div><div class="cover-foot">요약이 아닌 심사 기록 원문 전체의 한국어 완역본이다. 원문 paragraph·표·code·수치와 note metadata를 보존하고 A4 2단 학술 문서로 조판했다.</div></section><main class="paper-body">
+<h2 class="section">1. 완역 범위와 판정</h2>
+<p>이 문서는 OpenReview forum <code>GK4rznYwhn</code>에서 복구한 공개 심사 기록 가운데 <b>Official review 4개, 저자 답변 9개, meta-review 1개</b>의 모든 문자열 본문을 한국어로 완역한 판본이다. 요약본이 아니며 원문 field와 paragraph, 목록, 표, code block, 수치, URL을 보존했다. Submission note는 심사 원문이 아니므로 번역 대상에서 제외하고 서지 metadata만 표지와 inventory에 사용했다.</p>
+<div class="source-note"><b>번역 원칙.</b> 모델명·benchmark·dataset·metric·수치·URL은 원형을 유지했다. VLN/VLA 제어 용어인 policy, action, pixel goal, latent goal, grounding, trajectory는 과번역하지 않고 혼합 표기를 사용했다. 번역자의 구현 해석이나 비평은 심사 원문 완역에 삽입하지 않았다.</div>
+<table class="score-table wide"><thead><tr><th>Reviewer</th><th>Rating</th><th>Confidence</th><th>Soundness</th><th>Presentation</th><th>Contribution</th></tr></thead><tbody><tr><td>GZFu</td><td>8</td><td>4</td><td>3</td><td>4</td><td>3</td></tr><tr><td>EsMj</td><td>4</td><td>4</td><td>3</td><td>1</td><td>3</td></tr><tr><td>r9jt</td><td>4</td><td>5</td><td>2</td><td>3</td><td>3</td></tr><tr><td>8eJ9</td><td>8</td><td>4</td><td>4</td><td>2</td><td>4</td></tr></tbody></table>
+<h2 class="section">2. 심사 기록 inventory</h2>
+<table class="wide"><thead><tr><th>#</th><th>Note ID</th><th>유형</th><th>한국어 제목</th></tr></thead><tbody><tr><td>1</td><td><code>owkWXdMYqX</code></td><td>Official review</td><td>Official Review — Reviewer GZFu 한국어 완역</td></tr><tr><td>2</td><td><code>cGm4ePmZms</code></td><td>Official review</td><td>Official Review — Reviewer EsMj 한국어 완역</td></tr><tr><td>3</td><td><code>UaoMmYZOA2</code></td><td>Official review</td><td>Official Review — Reviewer r9jt 한국어 완역</td></tr><tr><td>4</td><td><code>CE9elpUkqQ</code></td><td>Official review</td><td>Official Review — Reviewer 8eJ9 한국어 완역</td></tr><tr><td>5</td><td><code>PO0sZejOgM</code></td><td>Author response</td><td>일반 답변: 두 system 훈련을 위한 ground-truth 데이터 수집 과정 및 구현 세부사항</td></tr><tr><td>6</td><td><code>iDkT81BkJU</code></td><td>Author response</td><td>Reviewer 8eJ9에 대한 답변</td></tr><tr><td>7</td><td><code>Y8IFPe6uFo</code></td><td>Author response</td><td>Reviewer r9jt에 대한 답변 (1/5)</td></tr><tr><td>8</td><td><code>QCoJEOrOu8</code></td><td>Author response</td><td>Reviewer r9jt에 대한 답변 (2/5)</td></tr><tr><td>9</td><td><code>giBp3AXwEw</code></td><td>Author response</td><td>Reviewer r9jt에 대한 답변 (3/5)</td></tr><tr><td>10</td><td><code>E4p0JB67iZ</code></td><td>Author response</td><td>Reviewer r9jt에 대한 답변 (4/5)</td></tr><tr><td>11</td><td><code>8EOTRsXIrJ</code></td><td>Author response</td><td>Reviewer r9jt에 대한 답변 (5/5)</td></tr><tr><td>12</td><td><code>gGJhC9UT7S</code></td><td>Author response</td><td>Reviewer EsMj에 대한 답변</td></tr><tr><td>13</td><td><code>GV3br8fXO5</code></td><td>Author response</td><td>Reviewer GZFu에 대한 답변</td></tr><tr><td>14</td><td><code>WDsSgHhua9</code></td><td>Meta-review</td><td>Meta-review — Area Chair g8At 한국어 완역</td></tr></tbody></table>
+<h2 class="section">3. Official review 한국어 완역</h2>
+<section class="note" data-kind="review" data-note-id="owkWXdMYqX"><h3 class="note-title">Official Review — Reviewer GZFu 한국어 완역</h3><div class="note-meta"><b>Note ID</b> owkWXdMYqX · <b>유형</b> review · <b>서명</b> Reviewer_GZFu · <b>작성</b> 2025-10-26 06:36 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/>Soundness 3 · Presentation 4 · Contribution 3 · Rating 8 · Confidence 4<br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=owkWXdMYqX">OpenReview 원문 note 열기</a></div><h4 data-field="summary">요약</h4><div class="translated-field" data-field-body="summary"><p>본 논문은 vision-language navigation(VLN)을 위한 이중 시스템 파운데이션 모델인 DualVLN을 제시한다. 제안한 아키텍처는 느린 전역 추론과 빠른 로컬 제어를 분리한다. QwenVL-2.5(7B)를 기반으로 구축한 System 2는 저주파 image-grounded reasoning을 수행하고, pixel goal grounding과 latent goal 표현을 통해 중기 waypoint를 예측한다. 경량 diffusion transformer policy인 System 1은 이러한 goal과 고주파 RGB 입력을 condition으로 받아 매끄러운 실시간 trajectory를 생성한다.
+이 비동기 slow–fast 설계는 고수준 추론과 민첩한 로컬 제어를 모두 가능하게 한다. DualVLN은 VLN-CE 및 VLN-PE benchmark에서 state-of-the-art 결과를 달성하며, 여러 로봇 embodiment에 걸쳐 강력한 실제 환경 일반화 성능을 보인다. 저자들은 사회적 인식과 동적 장애물 회피를 평가하는 새로운 benchmark인 Social-VLN도 제안한다.</p></div><h4 data-field="strengths">강점</h4><div class="translated-field" data-field-body="strengths"><ol>
+<li>전역 추론과 실시간 제어를 정교하게 분리하여 VLN의 latency와 단절된 움직임이라는 핵심 과제를 해결하는 참신한 이중 시스템 설계이다.</li>
+<li>Pixel goal grounding은 동기가 명확하고 기술적으로 타당한 중간 표현으로, 해석 가능한 supervision을 제공하고 semantic grounding을 개선한다.</li>
+<li>강력한 실증 결과: DualVLN은 VLN-CE, VLN-PE 및 실제 로봇 실험에서 기존 VLM 기반 baseline과 diffusion-policy baseline을 일관되게 능가한다.</li>
+<li>새로운 Social-VLN benchmark, ablation study, cross-embodiment 실제 환경 test를 포함한 포괄적인 평가를 통해 강건성과 확장성을 입증한다.</li>
+</ol></div><h4 data-field="weaknesses">약점</h4><div class="translated-field" data-field-body="weaknesses"><ol>
+<li>본 논문은 DualVLN을 추론–행동 파운데이션 모델로 규정하지만, 추론 구성요소는 대부분 암묵적이다. System 2는 명시적인 다단계 추론이나 해석 가능한 추론이 아니라 spatial grounding과 waypoint 예측을 수행하므로, ‘파운데이션 수준 추론’이라는 주장은 다소 과장되어 있다.</li>
+<li>주요 참신성은 이중 시스템 및 비동기 아키텍처에 있으며, 이는 잘 설계되었지만 점진적인 개선이다. 유사한 slow–fast 패러다임이 StreamVLN, Helix, Hi-Robot에 등장한 바 있으므로, 본 논문은 시스템 통합을 넘어 어떤 새로운 학습 원리를 도입하는지 명확히 설명할 수 있다.</li>
+<li>Social-VLN benchmark는 가치가 있지만 분석이 간략하다. 더 심층적인 정량적 또는 행동 분석이 제시된다면, 주장하는 일반화 성능과 실용적 중요성을 더 잘 뒷받침할 수 있을 것이다.</li>
+</ol></div><h4 data-field="questions">질문</h4><div class="translated-field" data-field-body="questions"><p>저자들은 System 2가 pixel goal을 grounding하는 방식을 보여주는 정성적 분석이나 시각화(예: attention map 또는 reasoning trace)를 제공할 수 있는가?</p></div><h4 data-field="code_of_conduct">행동강령 준수</h4><div class="translated-field" data-field-body="code_of_conduct"><p>예</p></div></section><section class="note" data-kind="review" data-note-id="cGm4ePmZms"><h3 class="note-title">Official Review — Reviewer EsMj 한국어 완역</h3><div class="note-meta"><b>Note ID</b> cGm4ePmZms · <b>유형</b> review · <b>서명</b> Reviewer_EsMj · <b>작성</b> 2025-10-28 17:39 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/>Soundness 3 · Presentation 1 · Contribution 3 · Rating 4 · Confidence 4<br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=cGm4ePmZms">OpenReview 원문 note 열기</a></div><h4 data-field="summary">요약</h4><div class="translated-field" data-field-body="summary"><p>본 논문은 System 2와 System 1으로 구성된 VLN용 이중 시스템 프레임워크(DualVLN)를 제안한다. 저자들은 이 프레임워크가 VLM의 강력한 추론 능력과 diffusion policy의 빠른 추론 속도를 활용할 수 있다고 설명한다. 구현은 포괄적으로 기술되어 있지만 일부 개념은 명확성이 부족하다. DualVLN은 VLN-CE, R2R, RxR 및 제안한 Social-VLN benchmark를 포함한 여러 benchmark에서 평가된다. Benchmark test와 실제 환경 실험의 결과는 모두 DualVLN의 효과를 입증한다.</p></div><h4 data-field="strengths">강점</h4><div class="translated-field" data-field-body="strengths"><ul>
+<li>이중 시스템 설계는 잘 구성된 것으로 보이며, 결과는 DualVLN이 높은 성공률과 빠른 실행 속도를 모두 달성함을 보여준다. </li>
+<li>DualVLN은 합성 환경과 실제 환경 모두에서 광범위하게 평가되었다. </li>
+<li>제안한 Social-VLN benchmark는 더 현실적인 VLN 환경을 제공함으로써 연구 커뮤니티에 도움이 될 수 있다.</li>
+</ul></div><h4 data-field="weaknesses">약점</h4><div class="translated-field" data-field-body="weaknesses"><p>본 논문의 주요 약점은 많은 진술과 설명이 불명확하거나 혼란스럽다는 점이다:
+ - L173은 "self-directed view adjustment capabilities"를 언급하지만, 이 능력을 어떻게 구현하는지에 관한 세부 사항은 제공하지 않는다. VLA 모델들이 이 능력을 갖도록 어떻게 훈련되는지, 또는 추론 중에 이 능력을 어떻게 활용하는지가 여전히 불명확하다.
+- L83은 System 1과 System 2의 훈련이 분리되어 있다고 기술한다. 이는 Figure 2의 "Trajectories Query"가 QwenVL 내부에서 어떻게 학습되는지에 관한 의문을 제기한다. 구체적으로 latent trajectory에는 어떤 supervision signal을 사용하는가?
+- L425는 누락된 것으로 보이는 "Table X"를 참조한다. 이 표는 pixel goal 예측의 효과를 평가하는 데 매우 중요한 것으로 보인다.
+-  Pixel goal의 형식이 명시되어 있지 않다. Special token으로 표현하는가, 아니면 단순한 좌표 text로 표현하는가?</p></div><h4 data-field="questions">질문</h4><div class="translated-field" data-field-body="questions"><ul>
+<li>자세한 우려 사항은 ‘약점’ 절을 참조한다.</li>
+<li>합성 환경과 실제 환경 모두에서 pixel goal을 시각화하면 독자가 이 개념을 더 잘 이해하는 데 도움이 될 것이다.</li>
+<li>로봇을 기준으로 한 waypoint를 직접 예측하는 대신 pixel goal을 사용하는 근거가 필요하다. Waypoint가 더 직관적으로 보일 수 있다.</li>
+</ul>
+<p>저자들이 이러한 우려를 해소한다면 점수를 올릴 의향이 있다.</p></div><h4 data-field="code_of_conduct">행동강령 준수</h4><div class="translated-field" data-field-body="code_of_conduct"><p>예</p></div></section><section class="note" data-kind="review" data-note-id="UaoMmYZOA2"><h3 class="note-title">Official Review — Reviewer r9jt 한국어 완역</h3><div class="note-meta"><b>Note ID</b> UaoMmYZOA2 · <b>유형</b> review · <b>서명</b> Reviewer_r9jt · <b>작성</b> 2025-11-02 03:34 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/>Soundness 2 · Presentation 3 · Contribution 3 · Rating 4 · Confidence 5<br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=UaoMmYZOA2">OpenReview 원문 note 열기</a></div><h4 data-field="summary">요약</h4><div class="translated-field" data-field-body="summary"><p>본 논문은 <strong>vision-language navigation(VLN)을 위한 이중 시스템 파운데이션 모델</strong>인 <strong>DualVLN</strong>을 제안한다. 핵심 통찰은 slow–fast 계층적 아키텍처에서 고수준 semantic reasoning(System 2)을 저수준 제어(System 1)와 분리하는 것이다.
+System 2(“Ground Slow”)는 <strong>pixel-goal grounding</strong>과 <strong>self-directed view adjustment</strong>를 통해 중기 waypoint planning을 수행하는 <strong>7B-parameter vision-language model(VLM)</strong>이다.
+System 1(“Move Fast”)은 System 2의 명시적 pixel goal과 latent feature를 모두 condition으로 사용하는 <strong>multi-modal diffusion transformer policy</strong>로, 고주파(30 Hz) trajectory 생성과 동적 장애물 회피를 가능하게 한다.</p>
+<p>본 논문은 동적이고 사람과 유사한 장애물이 있는 환경에서 navigation을 시험하기 위한 새로운 <strong>Social-VLN benchmark</strong>를 도입하고, <strong>VLN-CE</strong>, <strong>VLN-PE</strong> 및 실제 로봇 플랫폼(바퀴형, quadruped, humanoid)에 걸쳐 DualVLN을 광범위하게 평가한다.
+DualVLN은 VLN-CE와 VLN-PE에서 새로운 state-of-the-art 성능을 달성하며, 실시간 적응성과 강력한 cross-embodiment 일반화 성능을 입증한다.</p></div><h4 data-field="strengths">강점</h4><div class="translated-field" data-field-body="strengths"><p><strong>1. 명확하고 참신한 아키텍처 개념 – 이중 시스템 Slow/Fast 설계:</strong>
+느리고 숙고하는 VLM planner를 빠른 diffusion 기반 controller와 분리하는 것은 end-to-end VLN 모델의 latency 및 단절 문제를 해결하는 정교하고 동기가 명확한 방안이다.
+“Ground Slow, Move Fast” 원리는 개념적으로 직관적이고 기술적 근거가 있으며, symbolic reasoning과 reactive control 사이를 연결한다.</p>
+<p><strong>2. 탄탄한 방법론적 설계와 구현:</strong>
+<strong>pixel-goal grounding</strong>과 <strong>learnable query를 통한 latent-goal 추출</strong>의 정식화는 참신하다.
+System 1의 <strong>flow-matching diffusion objective</strong>(Eqns 1–3)와 <strong>multi-modal conditioning pipeline</strong>(Q-Former + ViT + DiT)은 명확하게 설명되어 있고 재현 가능하다.
+비동기 추론 pipeline(System 2는 2 Hz, System 1은 30 Hz)은 엔지니어링 성숙도와 실시간 실행 가능성을 보여준다.</p>
+<p><strong>3. 포괄적인 실증 평가:</strong>
+DualVLN은 <strong>R2R-CE</strong>와 <strong>RxR-CE</strong>의 unseen split(SR ↑ 64.3%, SPL ↑ 58.5%) 모두에서 모든 기존 방법, 특히 <strong>StreamVLN</strong>과 <strong>NaVILA</strong>를 능가하며, 물리적 동역학(VLN-PE)이 적용된 조건에서도 우위를 유지한다.
+세 가지 로봇 플랫폼에 걸친 zero-shot 실제 환경 test는 강력한 sim-to-real transfer를 입증한다.</p>
+<p><strong>4. Social-VLN Benchmark 도입:</strong>
+VLN을 humanoid agent가 존재하는 동적 환경으로 확장한 것은 의미 있는 기여이다. 제안한 <strong>Human Collision Rate(HCR)</strong> metric은 사회적 안전과 trajectory 복구에 관한 새로운 관점을 제공한다.</p>
+<p><strong>5. 세심한 Ablation과 분석:</strong>
+Ablation study(Figure 6, Table 4)는 pixel goal과 latent goal을 각각 제거했을 때 뚜렷한 성능 하락이 나타남을 보여주며 두 goal의 역할을 효과적으로 분해한다.
+System 1의 <strong>data-scaling analysis</strong>는 데이터 효율성에 관한 통찰을 제공하며, 훈련 데이터의 ≈ 10%에서 성능이 거의 포화됨을 보여준다.</p>
+<p><strong>6. 강력한 실제 환경 검증:</strong>
+TurtleBot 4, Unitree Go2 및 G1에서의 결과는 상세한 정성적 분석(Figure 5)과 함께 강건한 transfer와 낮은 navigation error를 확인한다.
+이 정도 수준의 실제 로봇 평가를 제공하는 VLN 논문은 드물다.</p>
+<p><strong>7. 글쓰기와 명확성:</strong>
+논문은 명확하게 구성되어 있으며, 고품질 figure(Figures 1–2, 5–7)를 통해 이중 시스템 workflow와 결과를 직관적으로 전달한다.</p></div><h4 data-field="weaknesses">약점</h4><div class="translated-field" data-field-body="weaknesses"><p><strong>1. 개념적 참신성이 약하고 피상적이다.</strong>
+“이중 시스템” 프레이밍(slow = planner, fast = controller)은 hierarchical RL, slow–fast control 및 modular VLA 모델에 관한 기존 연구(예: Helix 2025, Hi-Robot 2025, RoboPoint 2025)에서 광범위하게 탐구되었다. 본 논문은 새로운 알고리즘적 통찰을 도입하기보다는 통상적인 high-level planner + low-level policy pipeline을 새로운 용어(“Ground Slow, Move Fast”)로 대체로 <em>재포장</em>한다. 이 설계는 근본적인 기여라기보다 서사적 프레이밍에 가깝게 느껴진다.</p>
+<p><strong>2. 이론적 통찰이 제한적이다:</strong>
+프레임워크는 매력적인 “fast–slow” 이중 시스템 설계를 제시하지만, VLM의 latent-goal conditioning이 DiT 기반 controller 내부의 표현을 어떻게 안정화하거나 정렬하는지에 관한 이론적 근거를 충분히 제공하지 않는다. Perception과 action을 연결하는 수단으로 latent query를 사용하는 동기는 원칙에 근거한 것이 아니라 heuristic에 머문다. 예를 들어 latent conditioning이 안정성, credit assignment 또는 planning coherence를 어떻게 개선하는지에 관한 더 형식적인 분석을 제시한다면 본 연구의 이론적 토대가 상당히 강화될 것이다.</p>
+<p>더 나아가 본 논문이 다루는 핵심 문제는 modular VLN 시스템의 offline–online 훈련 격차로 보인다. 이는 ETPNav가 DuET을, ScaleVLN이 HAMT를, 그리고 GridMM 및 BEVBert 등이 waypoint model과 online finetuning을 통해 각자의 방법을 연속 환경에 연결하는 방식과 유사하다. LLM(planner)과 controller(executor)를 분리한 뒤 후자를 error correction을 위해 finetuning하면 downstream 성능이 개선된다는 사실은 놀랍지 않다. 그러나 이 설계는 더 근본적인 한계도 드러낸다. “fast” 시스템과 “slow” 시스템은 공유 latent goal을 향해 공동으로 planning하지 않는다. 대신 fast 시스템은 계층적으로 일관된 planner라기보다 주로 slow 시스템의 오류를 보정하는 장치로 기능한다. 이는 hierarchical reasoning에 관한 인지적 유추라는 주장을 훼손하고 이중 시스템 프레이밍의 참신성을 약화한다.</p>
+<p><strong>3. 시스템 불일치에 관한 논의가 누락되었다.</strong>
+System 2는 <strong>명시적 pixel goal</strong>을 예측하는 반면 System 1은 <strong>latent goal</strong>을 입력으로 사용한다. 본 논문은 다음 사항을 설명하지 않는다:</p>
+<ul>
+<li>pixel goal을 직접 사용하는 것보다 latent goal이 바람직한 이유</li>
+<li>pixel-goal grounding이 얼마나 일관되고 정확한지</li>
+<li>System 1이 latent embedding으로부터 실제로 이점을 얻는 이유</li>
+</ul>
+<p>L428-L431이 이를 설명하려 하지만 설득력이 크게 부족하다. 내가 보기에 Figure 6과 Table 4의 결과는 online 추론 중 대규모 시스템의 offline 훈련 격차를 보완할 필요가 있음을 보여준다. Diffusion policy는 action space를 연속 trajectory로 변환하고 최적이 아닌 pixel goal을 대신 latent goal을 사용해 교정함으로써 이러한 불일치를 보완할 수 있다. 그러나 본 논문에는 이러한 가설을 뒷받침하는 증거가 없다. LLM + iPlanner/DP가 열등한 이유나 System 2가 어떤 오류를 교정하는지에 관한 error analysis도 없다.</p>
+<p><strong>4. 데이터 생성 및 훈련 Pipeline의 명확성:</strong>
+<strong>System 2 훈련 데이터</strong>, 3D에서 2D pixel goal로의 projection, <strong>view-adjustment supervision</strong>에 관한 세부 설명이 다소 압축되어 있다.
+데이터셋 크기와 sample 생성률 등을 더 투명하게 공개하면 재현성에 도움이 될 것이다.</p>
+<p><strong>5. “Fast” 시스템에 대한 실질적 정당화가 부족하다.</strong>
+System 1이 반드시 30 Hz로 작동해야 한다는 주장은 latency 또는 성능 ablation으로 뒷받침되지 않는다. 실험은 개선된 결과를 보여주지만, 그러한 향상이 <em>비동기성</em> 자체에서 비롯된다는 점은 입증하지 못한다. 빠른 controller가 최적이 아닌 pixel goal을 교정하거나 보완한다는 증거도 제시되지 않는다.</p>
+<p><strong>6. 점진적인 실증적 개선.</strong>
+VLN-CE/VLN-PE 수치가 baseline을 약간 앞서기는 하지만 그 차이는 크지 않으며, 제안한 이중 시스템 설계보다 더 큰 모델 용량(7B QwenVL backbone)이나 훈련 데이터에서 쉽게 비롯되었을 수도 있다.</p>
+<p><strong>7. 분석과 해석 가능성이 제한적이다.</strong>
+중간 goal에 대한 진단적 평가도, latent feature의 시각화도, 이중 표현이 추론을 개선하는 이유에 관한 논의도 없다. Social-VLN benchmark는 새롭기는 하지만 아키텍처의 기여를 분리해 보여주지 못하고 단지 또 하나의 testbed를 제공할 뿐이다.</p>
+<p><strong>8. 잠재적인 계산 비용 및 접근성 우려:</strong>
+System 1은 경량이지만 System 2는 7B VLM(QwenVL-2.5)을 사용하므로 접근성이 제한될 수 있다.
+추론 비용, 더 작은 모델로의 확장 가능성 또는 오픈소스 공개 준비에 관한 논의가 있으면 유익할 것이다.</p></div><h4 data-field="questions">질문</h4><div class="translated-field" data-field-body="questions"><ol>
+<li>명시적 pixel goal이 이미 공간적 의도를 encode한다면 <strong>latent goal</strong>이 도대체 왜 필요한가?</li>
+<li>System 1은 VLM의 latent state로부터 어떻게 이점을 얻는가? Feature alignment 또는 ablation을 제시할 수 있는가?</li>
+<li>표준 동기식 추론이 아니라 <strong>“빠른” 30 Hz controller</strong>가 필요하다는 점을 어떤 실증적 증거가 뒷받침하는가?</li>
+<li><strong>비동기 설계</strong>가 단순히 더 작은 local policy를 사용하는 것보다 더 크게 기여함을 보여주는 분석이 있는가?</li>
+<li><strong>System 2 → System 1 Coupling:</strong> 빠른 추론 중 latent goal이 오래된 상태가 될 때 시간적 불일치를 어떻게 처리하는가? 마지막 frame을 사용하는 것 외에 재동기화 또는 보간 전략이 있는가?</li>
+<li><strong>Self-Directed View Adjustment:</strong> View-adjustment policy는 label이 있는 action을 이용한 supervised learning으로 훈련하는가, 아니면 coverage gain으로부터 얻는 reinforcement를 통해 훈련하는가?</li>
+<li><strong>Benchmark Generalization:</strong> Social-VLN agent는 여러 moving agent와 동시에 상호작용할 수 있는가, 아니면 단일 humanoid trajectory와만 상호작용할 수 있는가?</li>
+<li><strong>Failure Modes:</strong> 동적 장면에서 흔히 나타나는 실패 사례(예: 진동, 멈춤 행동)는 무엇인가?</li>
+<li><strong>Scalability:</strong> System 2를 재훈련하지 않고 System 1을 3D point-cloud 입력 또는 depth channel로 확장할 수 있는가?</li>
+<li><strong>Resource Footprint:</strong> 배포 시 navigation cycle당 평균 end-to-end 추론 latency와 GPU memory footprint는 얼마인가?</li>
+</ol></div><h4 data-field="code_of_conduct">행동강령 준수</h4><div class="translated-field" data-field-body="code_of_conduct"><p>예</p></div></section><section class="note" data-kind="review" data-note-id="CE9elpUkqQ"><h3 class="note-title">Official Review — Reviewer 8eJ9 한국어 완역</h3><div class="note-meta"><b>Note ID</b> CE9elpUkqQ · <b>유형</b> review · <b>서명</b> Reviewer_8eJ9 · <b>작성</b> 2025-11-02 12:58 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/>Soundness 4 · Presentation 2 · Contribution 4 · Rating 8 · Confidence 4<br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=CE9elpUkqQ">OpenReview 원문 note 열기</a></div><h4 data-field="summary">요약</h4><div class="translated-field" data-field-body="summary"><p>본 논문은 vision-language navigation(VLN) 과제를 위한 DualVLN이라는 이중 시스템 프레임워크를 제안한다. DualVLN은 Qwen2.5-VL을 System 2로 사용하여 시각 관측과 언어 instruction을 encode하고, 현재 관측을 기반으로 pixel-level goal을 예측한다. 또한 System 2는 System 1과의 상호작용을 강화하기 위해 learnable latent query를 도입한다.
+System 1은 short-horizon, 고주파, collision-free trajectory를 생성하도록 설계된 diffusion 기반 모델이다. System 2는 먼저 pixel-goal grounding 과제로 훈련된 후 VLN 데이터셋에서 finetuning되며, System 1은 flow matching을 사용하여 훈련된다.
+R2R-CE, RxR-CE, VLN-PE 및 Social-VLN을 포함한 여러 benchmark에서 광범위한 실험을 수행한다. DualVLN은 이 모든 benchmark에서 state-of-the-art 성능을 달성하며, 실제 환경 실험 역시 기존 baseline보다 강력한 성능을 보임을 추가로 입증한다.</p></div><h4 data-field="strengths">강점</h4><div class="translated-field" data-field-body="strengths"><ol>
+<li>제안한 이중 시스템 프레임워크는 VLN 과제에 참신하며, joint optimization을 허용하면서 high-level planning과 low-level control을 분리하여 처리하는 유망한 접근을 제공한다.</li>
+<li>여러 benchmark에서 거둔 강력한 성능은 DualVLN의 뛰어난 역량과 더 큰 데이터셋을 통해 효과적으로 scale할 잠재력을 보여준다.</li>
+<li>이중 시스템 설계는 제어 주파수를 크게 향상하며, 이는 실제 환경 배포에 매우 중요하다.</li>
+<li>바퀴형, humanoid 및 quadruped 로봇에서 수행한 실제 환경 실험은 DualVLN의 강력한 cross-embodiment 일반화 능력을 더욱 부각한다.</li>
+</ol></div><h4 data-field="weaknesses">약점</h4><div class="translated-field" data-field-body="weaknesses"><ol>
+<li>저자들은 두 시스템 훈련에 사용한 ground-truth 데이터 수집 과정에 관한 세부 사항을 추가로 제공해야 한다.</li>
+<li>특히 pixel-goal grounding 구성요소와 self-directed view adjustment mechanism에 관한 방법론적 세부 사항을 더 포함해야 한다.</li>
+<li>Self-directed view adjustment module의 기여와 효과를 더 잘 이해할 수 있도록 ablation study와 추가 분석을 제공해야 한다.</li>
+</ol></div><h4 data-field="questions">질문</h4><div class="translated-field" data-field-body="questions"><ol>
+<li>Trajectory를 2D 관측에 projection할 때 agent 위치에서의 visibility를 어떻게 측정하는가? 저자들은 pixel-grounding 훈련 sample을 생성하는 절차를 자세히 설명할 필요가 있다.</li>
+<li>저자들은 self-directed view adjustment module의 설계에 관해, 이 능력을 훈련하는 방식과 전반적인 효과를 포함하여 더 자세히 설명해야 한다.</li>
+<li>Ablation study 절의 Line 425는 논문에 존재하지 않는 Table X를 참조한다. 실제로 Figure 6은 서로 다른 goal 표현의 역할을 보여주지만 본문 어디에서도 인용되지 않는다. 일관성과 가독성을 높이기 위해 저자들은 이 부분을 명확히 설명하고 수정할 필요가 있다.</li>
+</ol></div><h4 data-field="code_of_conduct">행동강령 준수</h4><div class="translated-field" data-field-body="code_of_conduct"><p>예</p></div></section>
+<h2 class="section">4. 저자 답변 한국어 완역</h2>
+<section class="note" data-kind="comment" data-note-id="PO0sZejOgM"><h3 class="note-title">일반 답변: 두 system 훈련을 위한 ground-truth 데이터 수집 과정 및 구현 세부사항</h3><div class="note-meta"><b>Note ID</b> PO0sZejOgM · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 18:45 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=PO0sZejOgM">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><p><em>모든 데이터, 구현 코드, 모델 checkpoint를 조만간 GitHub와 HuggingFace에 공개할 것을 약속한다.</em></p>
+<p>다음 내용을 <strong>확장된 부록(page 14 이후)</strong>에 추가했다.</p>
+<h2>System 2의 데이터 준비 및 훈련</h2>
+<p>이산 action sequence를 System 2용 훈련 데이터 세 유형, 즉 <strong>자율적 시야 조정</strong>, <strong>pixel-goal grounding</strong>, <strong>stop</strong>으로 변환한다.  </p>
+<h3>이산 Ground Truth Action Set</h3>
+<ul>
+<li><code>0</code>: STOP  </li>
+<li><code>1</code>: 앞으로 25 cm 이동  </li>
+<li><code>2</code>: 왼쪽으로 15° 회전  </li>
+<li><code>3</code>: 오른쪽으로 15° 회전  </li>
+</ul>
+<p>VLN-CE trajectory 데이터의 action sequence 예시:<br/>
+[3, 3, 3, 3, 3, 3, 3, 1, 1, 2, 1, 1, 3, 1, 1, 1, 0]</p>
+<p>사용자 prompt template:</p>
+<pre><code class="language-text">User: 당신은 자율 navigation assistant이다. 당신의 임무는 &lt;instruction&gt;하는 것이다.
+경로를 벗어나지 않으려면 다음에는 어디로 가야 하는가? 이미지에서 다음 waypoint의 좌표를 출력하라.
+임무를 성공적으로 완료했으면 STOP을 출력하라.
+다음은 이전 관측 이력이다: &lt;history&gt;.
+</code></pre>
+<hr/>
+<h3>1. 자율적 시야 조정</h3>
+<ul>
+<li>미래 trajectory를 현재 관측에 projection할 수 없는 timestep에서는(예: 연속된 회전 action이 있는 timestep 0), 모델이 pixel goal 대신 앞으로 수행할 회전 action sequence를 예측한다.  </li>
+<li>예시(timestep 0, 다음 네 action이 회전):  </li>
+</ul>
+<pre><code class="language-text">&lt;template&gt;
+User: 현재 관측은 &lt;observation 0&gt;이다
+Assistant: → → → →  (3333에 해당)
+</code></pre>
+<ul>
+<li>미래의 연속 회전 action을 최대 4개까지 예측한다.  </li>
+<li>이후 timestep에서도 미래 trajectory를 여전히 projection할 수 없으면(예: timestep 4), 모델은 회전 action을 계속 예측한다:</li>
+</ul>
+<pre><code class="language-text">&lt;template&gt;
+User: 현재 관측은 &lt;observation 4&gt;이다
+Assistant: → → →  (333에 해당)
+</code></pre>
+<hr/>
+<h3>2. Pixel-Goal Grounding</h3>
+<ul>
+<li>미래 trajectory의 waypoint를 하나 이상 현재 관측에 projection할 수 있는 timestep의 데이터는 pixel-goal grounding 훈련에 사용한다.  </li>
+<li>target pixel goal은 <strong>현재 관측에 projection하는 데 성공한 waypoint 중 가장 먼 waypoint의 pixel 위치</strong>로 선택한다.  </li>
+<li>예시:  </li>
+</ul>
+<pre><code class="language-text">&lt;template&gt;
+User: &lt;observation t&gt;
+Assistant: ↓  # 모델은 먼저 “다음 pixel goal이 시야 안에 있음”을 뜻하는 ↓를 예측한다
+User: &lt;t에서의 “아래 보기” 관측&gt;  (선택 사항: goal을 더 잘 보기 위해 아래를 보는 action 수행)
+Assistant: (234, 447)  # action chunk [1,1,2,1,1,3,1,1]의 마지막 waypoint를 projection해 얻은 pixel goal
+</code></pre>
+<ul>
+<li>VLN-CE에서 로봇 높이는 125 cm이다. “아래 보기” action을 추가하면 pixel-goal grounding 성능이 향상된다.  </li>
+<li>Go2 로봇(60 cm)을 사용한 실제 환경 실험에서는 camera 높이가 더 낮아 “아래 보기” action의 중요성이 낮으므로 이를 생략한다.</li>
+</ul>
+<h3>3. Stop</h3>
+<pre><code class="language-text">&lt;template&gt;
+User: &lt;observation t&gt;
+Assistant: STOP   # 마지막 step에서 모델은 임무 완료를 나타내기 위해 STOP을 출력한다.
+</code></pre>
+<h3>4. 훈련</h3>
+<ul>
+<li>Stage 1 — QwenVL SFT(view adjustment, pixel goal, stop)</li>
+<li>vision 및 language context에 따라 QwenVL이 회전 action sequence, 좌표 text, stop 중 하나를 자율적으로 출력하도록 finetuning한다.</li>
+<li>hyperparameter:<ul>
+<li>Optimizer: AdamW</li>
+<li>LR: 2e-5 (full finetuning)</li>
+<li>Batch size: 128</li>
+<li>Total steps: 14k</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<h2>System 1의 데이터 준비 및 훈련</h2>
+<h3>1. 이산 Action Waypoint의 Smoothing 및 Resampling</h3>
+<ul>
+<li>projection된 각 action chunk에 대응하는 이산 waypoint를 변환해 더 부드러운 trajectory waypoint를 생성한다.  </li>
+<li>예를 들어 <code>[1,1,2,1,1,3,1,1]</code>에 대응하는 이산 action pose 8개로 이루어진 <code>[[x, y],...]</code> 목록을 32개의 부드러운 trajectory waypoint로 interpolation한다.</li>
+</ul>
+<h3>2. 훈련</h3>
+<ul>
+<li>Stage 2 — QwenVL Prompt-Tuning 및 System 1 훈련</li>
+<li>pixel-goal grounding sample만 Stage 2로 전달하여 trajectory supervision에 사용한다.</li>
+<li>Stage 1 이후에는 QwenVL weight를 고정한다. Stage 2에서는 다음 두 module만 훈련한다.<ul>
+<li>Latent query(<code>[TRAJ]</code> token 위치에 삽입되는 learnable embedding): 고정된 QwenVL에서 latent goal representation을 추출한다.</li>
+<li>DiT 기반 diffusion policy(System 1): latent goal을 condition으로 사용해 부드러운 trajectory waypoint를 생성한다.</li>
+</ul>
+</li>
+<li>hyperparameter:<ul>
+<li>Optimizer: AdamW</li>
+<li>LR: 1e-4</li>
+<li>Batch size: 128</li>
+<li>Total steps: 15k</li>
+</ul>
+</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="iDkT81BkJU"><h3 class="note-title">Reviewer 8eJ9에 대한 답변</h3><div class="note-meta"><b>Note ID</b> iDkT81BkJU · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 18:52 KST · <b>Reply to</b> CE9elpUkqQ · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=iDkT81BkJU">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>1. ❓W1&amp;W2: 두 system 훈련에 사용한 ground-truth 데이터 수집 과정에 관한 추가 세부사항. 특히 pixel-goal grounding component와 자율적 시야 조정 mechanism에 관한 방법론적 세부사항을 더 포함해야 한다.</h3>
+<ul>
+<li>먼저 일반 답변을 참조하라.</li>
+<li>또한 navigation 과정에서 자율적 시야 조정과 pixel-goal grounding mechanism이 어떻게 협력해 작동하는지 전체 과정을 시각적으로 보여주기 위해 supplementary material에 여러 demo video를 포함했다.</li>
+</ul>
+<h3>2. ❓W3 &amp; Q2: 자율적 시야 조정 module에 대한 ablation study 및 추가 분석.</h3>
+<ul>
+<li>pixel-goal grounding만 사용해도 회전 action을 부분적으로 유도할 수 있지만, 미래 trajectory의 각도 변화가 크지 않아 현재 관측에 projection할 수 있을 때만 작동한다. 이 제약으로 인해 pixel goal 데이터와 회전 데이터 모두에서 상당 부분이 훈련에서 제외되고, 데이터 분포가 심하게 불균형해진다.  </li>
+<li>그 결과 모델은 현재 보이는 navigable area 안에서만 이동하는 경향을 보이고, 특히 instruction에 "turn around" 같은 명령이 포함될 때 시야를 효과적으로 조정하지 못한다. 결과는 다음 표와 같다(모델은 R2R-CE 및 RxR-CE 데이터만으로 훈련했다):</li>
+</ul>
+<table class="wide">
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">SR (%)</th>
+<th style="text-align: left;">SPL (%)</th>
+<th style="text-align: left;">OS (%)</th>
+<th style="text-align: left;">NE (m)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Pixel-Goal Only</td>
+<td style="text-align: left;">20.7</td>
+<td style="text-align: left;">19.6</td>
+<td style="text-align: left;">22.9</td>
+<td style="text-align: left;">9.01</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pixel-Goal + Self-Directed View Adj.</td>
+<td style="text-align: left;"><strong>49.2</strong></td>
+<td style="text-align: left;"><strong>45.1</strong></td>
+<td style="text-align: left;"><strong>57.9</strong></td>
+<td style="text-align: left;"><strong>5.29</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>3. ❓Q1: trajectory를 2D 관측에 projection할 때 agent 위치에서의 visibility를 어떻게 측정하는가?</h3>
+<ul>
+<li>구체적으로 trajectory를 projection할 때 depth map과 camera–point 거리를 함께 사용하여 어떤 point가 현재 시야의 보이는 영역에 속하는지 식별한다. 거리가 대응하는 depth 값을 초과하는 trajectory point는 다른 표면에 가려진 것으로 처리하여 제외한다.</li>
+</ul>
+<h3>4. ❓Q3: ablation study section(Line 425)이 존재하지 않는 Table X를 참조한다.</h3>
+<ul>
+<li>이를 지적해 주어 감사한다. 수정 원고에서 잘못된 참조를 고쳤다. 이제 이 ablation study section은 서로 다른 goal representation의 역할을 보여주는 <strong>업데이트된 버전의 Figure 7</strong>을 올바르게 참조한다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="Y8IFPe6uFo"><h3 class="note-title">Reviewer r9jt에 대한 답변 (1/5)</h3><div class="note-meta"><b>Note ID</b> Y8IFPe6uFo · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 18:57 KST · <b>Reply to</b> UaoMmYZOA2 · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=Y8IFPe6uFo">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>1. ❓W1: 개념적 novelty가 약하고 피상적이다.</h3>
+<h4>🔍 Dual-system(slow-fast) VLA와 Modular VLA의 차이에 관한 설명.</h4>
+<ul>
+<li>Dual-system VLA는 LCB[1], DP-VLA[2], Helix 등의 연구에서 볼 수 있듯이 robotic manipulation 분야에서 처음 제안되었다. 이 paradigm에서 slow system의 역할은 Large VLM을 사용해 instruction과 video context를 정보가 풍부한 latent goal representation으로 encoding하는 것이다. <strong>이 latent feature는 fast system과 end-to-end로 함께 훈련되므로 어떠한 explicit symbolic subgoal에도 대응하지 않는다.</strong></li>
+<li>반대로 modular VLA 접근법은 VLM을 오직 open-ended instruction을 <strong>explicit symbolic goal</strong>로 parsing하는 데 사용한다(예: Hello Robot은 “pick up/place the object” 같은 language subgoal을 예측하고, RoboPoint는 최종 affordance point를 예측한다). 이후 Pi0 같은 별도의 policy model이 이를 실행한다. 이러한 symbolic decomposition은 <strong>추가적인 hand-designed interface</strong>를 도입하므로 <strong>더 취약한</strong> 경향이 있다. 성능이 <strong>중간 symbolic parsing의 정확성과 완전성</strong>에 크게 좌우되기 때문이다.</li>
+<li>실증적으로 dual-system VLA는 modular VLA보다 일관되게 우수한 성능을 보인다. language, history video, current observation으로부터 공동 학습된 latent goal이 설계된 symbolic goal보다 더 풍부하고 미묘한 context 정보를 포착하기 때문이다.</li>
+</ul>
+<p>[1] Shentu, Yide, et al. "From llms to actions: Latent codes as bridges in hierarchical robot control."
+             2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). IEEE, 2024.</p>
+<p>[2] ByungOk Han, Jaehong Kim, and Jinhyeok Jang. A dual process vla: Efficient robotic manipulation
+             leveraging vlm. In Conference on Robot Learning (CoRL), 2024.</p>
+<h4>🔍 “dual-system” 자체가 새로운 framing이 아니라는 우려에 관하여:</h4>
+<ul>
+<li>우리는 dual-system framing 자체의 novelty를 주장하지 않는다. 우리의 동기는 vision–language input을 short-horizon action으로 직접 mapping하는 기존 end-to-end VLA model(7B)이 실제 로봇에서 부자연스러운 motion, 높은 latency, 낮은 generalization 등 명확한 약점을 보인다는 데 있다. 이는 바로 dual-system 접근법으로 완화할 수 있는 문제들이다.</li>
+<li>또한 기존 dual-system VLA manipulation method는 보통 latent하며 해석할 수 없는 intermediate goal을 사용해 두 system을 모두 end-to-end로 훈련한다. 이러한 설정에서 System 2(VLM)는 System 1의 low-level action space에서 전달되는 gradient를 통해 업데이트되며, 이는 흔히 <strong>catastrophic forgetting을 일으키고 VLM의 generalization을 약화한다.</strong></li>
+<li>반면 우리는 (1) <strong>finetuning gap을 줄이는</strong> explicit pixel-grounded intermediate goal을 도입하고, (2) DualVLN의 progressive two-stage training을 통해 일반화 가능한 pixel-goal grounding과 강력한 latent representation의 parameter-efficient finetuning을 활용한 견고한 trajectory prediction을 모두 달성한다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="QCoJEOrOu8"><h3 class="note-title">Reviewer r9jt에 대한 답변 (2/5)</h3><div class="note-meta"><b>Note ID</b> QCoJEOrOu8 · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:08 KST · <b>Reply to</b> UaoMmYZOA2 · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=QCoJEOrOu8">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>2. ❓W2: 제한적인 이론적 통찰</h3>
+<h4>🔍 perception과 action을 연결하는 bridge로 latent query를 사용하는 동기.</h4>
+<ul>
+<li>현재 state-of-the-art VLA model은 end-to-end(예: Pi0)이든 dual-system(예: Helix)이든 동일한 핵심 원리를 공유한다. 즉, large VLM을 활용해 visual context와 language instruction을 action model을 유도하는 latent representation으로 encoding한다. VLM의 강점은 high-level planner 역할을 하는 text output에만 있는 것이 아니라 pretrained multi-modal representation에 있다.</li>
+<li>DualVLN pipeline도 이 원리를 따른다:</li>
+</ul>
+<pre><code class="language-text">instruction + history video + current RGB
+                ↓
+               VLM
+                ↓
+암묵적 multi-modal goal representation
+        ↙                 ↘
+   llm head            System 1
+         ↓                  ↓
+  2D pixel goal    world-coordinate trajectory
+</code></pre>
+<p>DualVLN은 먼저 VLM을 finetuning하여 pixel goal을 grounding한 다음, trajectory를 예측하도록 end-to-end joint training을 수행하는 progressive training paradigm을 채택한다.</p>
+<p>Latent query는 LoRA와 취지가 유사한 parameter-efficient adaptation module로 기능하며, VLM의 embedding space를 왜곡하지 않으면서 VLM latent representation을 finetuning한다.</p>
+<p>중요한 점은 이것이 VLM이 instruction, history, current observation을 System 1이 실행 가능한 action으로 변환하는 정보가 풍부한 goal representation으로 encoding한다는 전체 원리를 바꾸지 않는다는 것이다.</p>
+<h4>🔍 "LLM(planner)과 controller(executor)를 분리한 다음 후자를 error correction을 위해 finetuning하면 downstream performance가 향상되는 것은 당연하다. fast system은 계층적으로 일관된 planner라기보다 slow system을 위한 error-corrective compensator로 주로 기능한다."라는 우려에 관하여</h4>
+<ul>
+<li>두 target은 서로 다른 차원에서 navigation goal을 설명한다:<ul>
+<li>Pixel goal은 depth, scale, obstacle-avoidance 정보를 버리고 2D image plane의 endpoint만 지정한다.</li>
+<li>Trajectory는 로봇의 world-coordinate frame에서 obstacle을 고려한 완전한 navigable path를 정의한다.</li>
+</ul>
+</li>
+<li>두 target의 학습 난이도는 점진적으로 높아진다. DualVLN도 <strong>자연스럽게 계층적으로 일관된 planner를 만들어 내는</strong> progressive training paradigm을 채택한다. Stage 1은 추상적인 2D supervision으로 강력한 representation foundation을 구축하고, Stage 2는 parameter-efficient finetuning을 통해 이를 더 어려운 obstacle-aware trajectory prediction에 맞게 adaptation한다. 간단히 비유하면, vision 분야에서 먼저 image classification으로 vision backbone을 pretraining한 뒤 object detection의 bounding-box regression에 맞게 finetuning하는 일반적인 관행과 같다.</li>
+<li>fast system은 slow system의 오류를 교정하는 것이 아니라, slow system을 바탕으로 obstacle-aware world-coordinate trajectory를 생성한다.</li>
+</ul>
+<h4>🔍 “fast” system과 “slow” system은 shared latent goal을 향해 공동으로 계획하지 않는다.</h4>
+<ul>
+<li>fast system과 slow system이 <strong>shared latent goal을 향해 공동으로 계획한다</strong>는 점을 분명히 하고자 한다.</li>
+<li><strong>업데이트된 논문 버전의 L511-528</strong>에 Pixel Goal과 Trajectory의 일관성에 관한 ablation 분석을 추가했다. trajectory prediction이 pixel goal의 강한 유도를 받는지 확인하기 위해, 예측된 trajectory point를 image plane에 projection하여 둘의 일관성을 분석한다. VLN-CE benchmark에서 성공률이 서로 다른 DualVLN model들로부터 무작위 sample 1000개를 사용해 두 metric, 즉 projection된 trajectory와 pixel goal 사이의 pixel 거리 및 둘 사이의 평균 angular deviation을 계산한다. <strong>Figure 11에서 보듯이</strong>, point 대부분이 plot의 왼쪽 아래 영역에 집중되어 있으며, 이는 trajectory가 pixel goal을 향하고 pixel goal 인근 영역에 도달함을 나타낸다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="giBp3AXwEw"><h3 class="note-title">Reviewer r9jt에 대한 답변 (3/5)</h3><div class="note-meta"><b>Note ID</b> giBp3AXwEw · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:27 KST · <b>Reply to</b> UaoMmYZOA2 · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=giBp3AXwEw">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>3. ❓W3: System Mismatch에 관한 논의가 없다.</h3>
+<h4>🔍 pixel goal을 직접 사용하는 것보다 latent goal이 바람직한 이유는 무엇인가? System 1은 latent embedding으로부터 실제로 어떤 이점을 얻는가?라는 우려에 관하여</h4>
+<ul>
+<li>이미지 위의 explicit pixel goal은 직관적이고 사람이 해석하기 쉬우며, 사람은 추가 정보 없이도 정확한 point까지 navigation할 수 있다. 그러나 model 훈련에서는 그렇지 않다. map-based method이든 iPlanner나 NavDP 같은 end-to-end PointNav policy이든 기존 local planner는 depth와 localization에 크게 의존하며(RGB는 흔히 버려진다), 둘 중 하나라도 부정확하면 성능이 급격히 하락한다.</li>
+<li>따라서 pixel-goal grounding은 VLM이 navigation task를 사람과 비슷하게 이해하도록 돕는 auxiliary task로만 기능한다. obstacle-aware trajectory를 생성하고 실시간 관측을 처리하여 asynchronous trajectory를 업데이트하는 능력을 갖추려면 VLM representation을 추가로 end-to-end finetuning해야 한다.</li>
+<li>이를 검증하기 위해 pipeline을 다음과 같이 수정한다:</li>
+</ul>
+<pre><code class="language-text">instruction + history + current RGB           current RGB + pixel goal heatmap
+               ↓                                            ↓
+              VLM                                       System 1
+               ↓                                            ↓
+          pixel goal                              world-coordinate trajectory
+</code></pre>
+<ul>
+<li>RGB image와 pixel goal heatmap을 처리하기 위해 별도의 pixel goal encoder(ViT)를 추가한다. 예상대로 성능이 크게 저하되었으며, 이는 강력한 multi-modal context encoder 없이 순수한 visual pixel-goal navigation을 수행하기 어렵다는 점을 확인해 준다.</li>
+</ul>
+<table class="wide">
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">SR (%)</th>
+<th style="text-align: left;">SPL (%)</th>
+<th style="text-align: left;">OS (%)</th>
+<th style="text-align: left;">NE (m)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">System2+pixel goal nav policy</td>
+<td style="text-align: left;">56.4</td>
+<td style="text-align: left;">48.9</td>
+<td style="text-align: left;">66.4</td>
+<td style="text-align: left;">4.88</td>
+</tr>
+<tr>
+<td style="text-align: left;">DualVLN</td>
+<td style="text-align: left;"><strong>64.3</strong></td>
+<td style="text-align: left;"><strong>58.5</strong></td>
+<td style="text-align: left;"><strong>70.7</strong></td>
+<td style="text-align: left;"><strong>4.05</strong></td>
+</tr>
+</tbody>
+</table>
+<h4>🔍 pixel-goal grounding은 얼마나 일관적이거나 정확한가.</h4>
+<ul>
+<li>Pixel-goal grounding은 엄격하게 정의되었거나 유일하게 올바른 target으로 supervision되지 않는다. 한 timestep에서 모두 “올바른” pixel goal을 나타낼 수 있는 pixel 위치의 범위가 존재한다. 따라서 단순한 heuristic rule, 즉 현재 이미지에서 보이는 trajectory point 중 가장 먼 point를 사용한다.</li>
+<li>Navigation은 본질적으로 sequential decision process이며, 시야 조정 action, pixel-goal grounding, trajectory prediction의 상호작용에 의해 형성된다. agent의 시야는 계속 변하고 prediction error는 누적되며 visibility도 시간에 따라 달라진다. 따라서 평가 중 모든 timestep에 대해 명확히 정의된 “ground-truth pixel goal”이 존재하지 않는다.</li>
+<li>중요한 점은 예측된 trajectory가 pixel-goal grounding output과 강한 상관관계를 보임을 이미 입증했다는 것이다. 이는 pixel-goal grounding의 품질이 navigation metric에 직접 반영된다는 뜻이다.</li>
+</ul>
+<h4>🔍 LLM + iPlanner/DP가 더 낮은 성능을 보이는 이유와 System 1이 어떤 오류를 교정하는지에 관한 error analysis가 없다.</h4>
+<ul>
+<li><strong>업데이트된 논문 버전의 L483-498</strong>에서 LLM + iPlanner/DP가 더 낮은 성능을 보이는 이유와 System 1이 어떤 오류를 교정하는지 설명했다. simulation 및 실제 환경 실험 분석 모두에서 System 1은 강력한 vision-based obstacle-avoidance behavior를 보인다. 이로 인해 System 1은 올바른 방향을 가리키지만 goal을 obstacle 가까이나 그 위에 둘 수 있는 작은 pixel-goal regression error를 적극적으로 교정한다기보다, 그러한 오류에 강건하다. 중요한 점은 이러한 강건성이 크거나 의미적으로 잘못된 pixel goal에는 적용되지 않는다는 것이다. <strong>Figure 8</strong>에서 이러한 behavior를 보여주는 정성 분석을 제시한다.</li>
+<li>반대로 point-goal navigation은 pixel goal을 world-coordinate point로 직접 projection하므로 작은 visual prediction error에도 매우 민감하다. 사소한 pixel 편차도 실제 공간에서는 큰 displacement로 이어질 수 있으므로, localization에 의존하는 point-goal policy(예: iPlanner, NavDP)는 System 1보다 강건성이 낮고 DualVLN보다 성능도 떨어진다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="E4p0JB67iZ"><h3 class="note-title">Reviewer r9jt에 대한 답변 (4/5)</h3><div class="note-meta"><b>Note ID</b> E4p0JB67iZ · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:29 KST · <b>Reply to</b> UaoMmYZOA2 · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=E4p0JB67iZ">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>5. ❓W5&amp;Q3&amp;Q4&amp;Q5: ‘Fast’ System에 대한 실질적 정당화 부족.</h3>
+<h4>🔍 System 1이 30 Hz로 작동해야 한다는 주장은 latency 또는 성능 ablation으로 뒷받침되지 않는다. 실험은 개선된 결과를 보여주지만, 비동기성 자체가 이러한 향상을 가져온다는 점은 입증하지 못한다. 표준 동기식 inference가 아니라 ‘fast’ 30 Hz controller가 필요하다는 점을 어떤 실증적 근거가 뒷받침하는가?</h4>
+<ul>
+<li>System 1이 높은 주파수(30 Hz)로 작동하기를 기대하는 이유는 navigation metric만 개선하기 위해서가 아니라 dynamic scene에서 실시간 action을 생성하기 위해서이다. </li>
+<li>예를 들어 예측할 수 없이 움직이는 보행자가 있는 붐비는 복도에서 System 1은 변화하는 환경을 실시간으로 인식하고 충돌을 피하기 위해 속도와 진행 방향을 조정해야 하며, 작은 지연조차 부딪힘이나 급정지로 이어질 수 있다. </li>
+<li>System 1(40M)이 System 2(7B)와 동기식으로 작동한다면, trajectory를 업데이트할 때마다 7B VLM이 훨씬 느린 pixel goal update를 수행해야 한다. 실제로 아래와 같이 static scene(VLN-CE)에서는 비동기식 inference와 동기식 inference의 성능이 유사하다:</li>
+</ul>
+<table class="wide">
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">SR (%)</th>
+<th style="text-align: left;">SPL (%)</th>
+<th style="text-align: left;">OS (%)</th>
+<th style="text-align: left;">NE (m)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">DualVLN-sync</td>
+<td style="text-align: left;">64.1</td>
+<td style="text-align: left;">58.0</td>
+<td style="text-align: left;">70.7</td>
+<td style="text-align: left;">4.11</td>
+</tr>
+<tr>
+<td style="text-align: left;">DualVLN-async</td>
+<td style="text-align: left;"><strong>64.3</strong></td>
+<td style="text-align: left;"><strong>58.5</strong></td>
+<td style="text-align: left;"><strong>70.7</strong></td>
+<td style="text-align: left;"><strong>4.05</strong></td>
+</tr>
+</tbody>
+</table>
+<h4>🔍 비동기식 설계가 단순히 더 작은 local policy를 사용하는 것보다 더 크게 기여하는 이유는 무엇인가?</h4>
+<ul>
+<li>비동기식 inference는 DualVLN에만 국한되지 않으며, goal update 주파수가 trajectory update 주파수보다 낮기만 하면 된다. 표 4에서 iPlanner와 NavDP 같은 다른 local policy를 사용하는 방식도 비동기식이다. </li>
+<li>그러나 7B VLM backbone을 사용하는 기존 end-to-end VLA 모델은 planning과 control이 하나의 forward pass를 공유하는 single-system 설계를 채택하므로 비동기식 inference가 불가능하다. 앞서 논의했듯이 DualVLN은 end-to-end training과 dual-system architecture 모두의 이점을 얻으며, depth, odometry 또는 explicit pixel goal에 의존하지 않고도 더 큰 유연성과 강건성을 달성한다.</li>
+</ul>
+<h4>🔍 fast inference 중 latent goal이 오래된 정보가 되었을 때 시간적 불일치는 어떻게 처리하는가?</h4>
+<ul>
+<li>System 1은 시점 <code>t</code>의 latent goal과 그에 대응하는 observation을 시점 <code>t + k</code>의 실시간 observation과 함께 받는다. 그런 다음 현재 상태(<code>t + k</code>)에서 이전에 생성된 goal을 향하는 trajectory를 예측한다. </li>
+<li>훈련 중 모델은 goal과 observation이 의도적으로 서로 다른 시점에 놓인 이러한 형태의 비동기 tuple을 광범위하게 접한다. 따라서 latent query와 System 1은 모두 이러한 시간적 불일치에 강건해지도록 학습한다.</li>
+</ul>
+<h3>6. ❓W6: 점진적인 실증 성능 개선</h3>
+<h4>🔍 성능 격차가 크지 않으며, 제안한 dual-system 설계보다 더 큰 모델 용량(7B QwenVL backbone)이나 훈련 데이터에서 쉽게 비롯되었을 수 있다.</h4>
+<ul>
+<li>모든 baseline VLA 모델도 7B VLM backbone을 사용한다. 즉, NaVid(Zhang et al., 2024), MapNav(Zhang et al., 2025b), NaVILA(Cheng et al., 2025), UniNaVid(Zhang et al., 2025a), StreamVLN(Wei et al., 2025)도 마찬가지이다. DualVLN은 동일한 training data recipe를 사용하면서도 SOTA 모델인 StreamVLN보다 Success Rate(SR)는 절대값으로 7.4%, Success weighted by Path Length(SPL)는 절대값으로 6.6% 향상됐다.</li>
+</ul>
+<h3>7. ❓W7: 제한적인 분석과 해석 가능성.</h3>
+<h4>🔍 intermediate goal에 대한 진단적 평가, latent feature 시각화, dual representation이 reasoning을 개선하는 이유에 관한 논의가 없다.</h4>
+<ul>
+<li>현재로서는 이 우려에 답했다고 본다. </li>
+</ul>
+<h4>🔍 Social-VLN benchmark는 새롭지만 architecture의 기여를 분리해 보여주지 못하며, 단지 또 하나의 testbed를 제공할 뿐이다.</h4>
+<ul>
+<li>Social-VLN benchmark는 비동기식 dual-system 설계의 구체적인 장점을 부각한다. 움직이는 보행자가 있는 dynamic scenario에서 fast–slow 계층 구조를 통해 System 1은 local change에 지속적으로 반응하고, System 2는 high-level guidance를 제공한다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="8EOTRsXIrJ"><h3 class="note-title">Reviewer r9jt에 대한 답변 (5/5)</h3><div class="note-meta"><b>Note ID</b> 8EOTRsXIrJ · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:31 KST · <b>Reply to</b> UaoMmYZOA2 · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=8EOTRsXIrJ">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>8. ❓W8&amp;Q10: 잠재적인 compute 및 접근성 우려.</h3>
+<h4>🔍 System 2는 7B VLM(QwenVL-2.5)을 사용하므로 접근성이 제한될 수 있다. inference cost, 더 작은 모델로의 확장 가능성 또는 open-source 공개 준비 상태에 관한 논의가 유익할 것이다.</h4>
+<ul>
+<li>5.2절(실제 환경 실험 설정)에서 inference cost를 이미 보고했다. 7B VLM은 규모와 관계없이 어떤 모델로든 교체할 수 있다. 일반적으로 더 큰 모델이 더 좋은 성능을 내지만, baseline과 공정하게 비교하기 위해 7B를 사용했다. </li>
+<li>NaVid, UniNaVid, NaVILA, StreamVLN 등 현재의 VLA 모델 대부분은 open-source이다. 우리도 이 관행을 따라 조만간 Hugging Face에 모델을 공개할 계획이다.</li>
+</ul>
+<h3>9. ❓Q7: Social-VLN agent는 움직이는 agent 여러 명과 동시에 상호작용할 수 있는가, 아니면 humanoid 한 명의 trajectory와만 상호작용할 수 있는가?</h3>
+<ul>
+<li>그렇다. <strong>229–244행의 그림 3</strong>을 참조하라. 이 그림은 다중 인간 동시 조우(Simultaneous Multi-Human Encounter)와 같은 전형적인 robot–humanoid 상호작용을 보여준다.</li>
+</ul>
+<h3>10. ❓Q8: dynamic scene에서 흔한 실패 사례는 무엇인가?</h3>
+<ul>
+<li>일반적으로 실패는 다음 상황에 집중되는 경향이 있다:</li>
+<li>예기치 않은 근거리 조우: 사람이 가까운 거리의 occluded area에서 갑자기 나타나면 robot이 신속하게 반응하지 못하는 경우가 많다. 전형적인 사례는 모퉁이나 복도 교차점에서의 예기치 않은 조우이며, 이때 지각적으로 대비할 여지가 부족해 충돌로 이어진다. </li>
+<li>붐비는 다중 보행자 scenario: 여러 사람이 동시에 나타나는 밀집 환경에서는 robot의 obstacle avoidance 능력이 감당할 수 있는 범위를 넘어선다. 집단 움직임을 예측하고 사회적 규범을 준수하는 경로를 계획하는 작업의 복잡성 때문에 navigation이 자주 실패한다. </li>
+<li>좁은 공간에서의 제약된 navigation: 출입구나 비좁은 복도 같은 한정된 영역에서는 robot이 선제적으로 trajectory를 조정하는 능력이 크게 제한된다. 이러한 공간적 제약은 사람이 한 명뿐이어도 충돌 위험을 상당히 높인다.</li>
+</ul>
+<h3>11. ❓Q9: System 2를 재훈련하지 않고 System 1을 3D point-cloud input이나 depth channel로 확장할 수 있는가?</h3>
+<ul>
+<li>parameter-efficient tuning을 사용하는 System 2의 latent-query 설계 덕분에, System 1은 System 2를 재훈련하지 않고도 독립적으로 강화할 수 있으며, 동시에 System 2의 강력한 goal representation을 계속 활용하고 이에 적응할 수 있다. 따라서 3D point cloud나 depth channel 같은 추가 input을 유연하게 통합하여 local planner의 obstacle avoidance 및 goal 도달 능력을 더 개선할 수 있다.</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="gGJhC9UT7S"><h3 class="note-title">Reviewer EsMj에 대한 답변</h3><div class="note-meta"><b>Note ID</b> gGJhC9UT7S · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:40 KST · <b>Reply to</b> cGm4ePmZms · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=gGJhC9UT7S">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><p>수정본에서는 방법을 더 명확히 설명하기 위해 <strong>확장된 부록(14페이지 이후)</strong>과 <strong>시연 영상</strong>을 포함한 새로운 supplementary material을 추가했다.</p>
+<h3>1. ❓W1&amp;Q2: VLA 모델이 ‘자율적 시야 조정 능력’을 갖도록 훈련하는 방법. synthetic environment와 real-world environment 모두에서 pixel goal 시각화 제공.</h3>
+<ul>
+<li>먼저 General Response를 참조하라.</li>
+<li>새로운 supplemental video에서 view-adjustment action, pixel-goal grounding, trajectory prediction이 상호작용하는 과정을 시각화해 보여준다.</li>
+</ul>
+<h3>2. ❓W2: 그림 2의 ‘Trajectories Query’는 QwenVL 내부에서 어떻게 학습되는가? latent trajectory에는 어떤 supervision signal을 사용하는가?</h3>
+<ul>
+<li>pixel-goal grounding data sample의 text sequence 끝에 특수 token <code>&lt;TRAJ&gt;</code> 4개를 추가한다:</li>
+</ul>
+<pre><code class="language-text">User: &lt;시점 t의 observation&gt;
+Assistant: ↓
+User: &lt;시점 t의 아래를 본 observation&gt;
+Assistant: (234, 447)
+&lt;TRAJ&gt;&lt;TRAJ&gt;&lt;TRAJ&gt;&lt;TRAJ&gt;
+</code></pre>
+<pre><code>Pseudo-code:
+</code></pre>
+<pre><code class="language-python"># input token embedding
+inputs_embeds = QwenVLModel.embed_tokens(input_ids)
+
+# TRAJ token index 찾기
+traj_token_idx = (input_ids == TRAJ_TOKEN_INDEX)
+
+# embedding을 latent query로 교체
+inputs_embeds[traj_token_idx] = latent_queries
+
+# QwenVL을 통한 forward pass
+hidden_states = QwenVLModel.forward(
+    inputs_embeds,
+    position_ids=position_ids,
+    attention_mask=attention_mask
+)
+
+# TRAJ token에 대응하는 latent representation 추출
+pixel_goal_latents = hidden_states[-1][:, -N_QUERY:, :]
+
+x = Trajectory_Encoder(gt_rel_pose_list) # waypoint 32개의 relative pose
+# DiT 기반 diffusion policy에 latent goal 사용
+noise_pred = DiT(x, timestep, pixel_goal_latents)
+</code></pre>
+<ul>
+<li>이 훈련 단계에서는 latent query와 DiT module만 업데이트한다. latent query는 smoothing된 미래 trajectory waypoint 32개를 예측하는 System 1의 target으로부터 supervision을 받는다. 따라서 latent query는 VLM의 hidden state에 encoding된 추상적인 goal과 context를 통합해 전달하는 동시에 QwenVL의 원래 embedding space를 보존하고 end-to-end fine-tuning 중 catastrophic forgetting을 방지한다.</li>
+</ul>
+<h3>3. ❓W3: L425가 존재하지 않는 ‘Table X’를 참조한다.</h3>
+<ul>
+<li>이를 지적해 주어 감사한다. 수정 원고에서 잘못된 참조를 고쳤다. 이 ablation study 절은 이제 서로 다른 goal representation의 역할을 보여주는 그림 7을 올바르게 참조한다.</li>
+</ul>
+<h3>4. ❓W4: pixel goal의 형식이 명시되어 있지 않다. 특수 token으로 표현하는가, 아니면 단순한 coordinate text로 표현하는가?</h3>
+<ul>
+<li>QwenVL2.5 pretrained model은 이미 뛰어난 visual grounding 능력을 갖추고 있다. 예를 들어 Stephen Curry와 LeBron James의 사진을 주면 다음과 같다.</li>
+</ul>
+<pre><code class="language-text">User: 농구 선수를 식별하고 머리와 손의 key point를 검출해 point 형식으로 반환하라. primary label은 선수 이름이고, secondary label에는 left hand, right hand, head가 포함된다.
+
+Qwen2.5-VL:  [{"point_2d": ["394", "105"], "label": "LeBron James", "label2": "head"},     {"point_2d": ["876", "131"], "label": "Stephen Curry", "label2": "head"},     {"point_2d": ["100", "614"], "label": "LeBron James", "label2": "right hand"},     {"point_2d": ["460", "507"], "label": "LeBron James", "label2": "left hand"},     {"point_2d": ["784", "660"], "label": "Stephen Curry", "label2": "left hand"},     {"point_2d": ["945", "507"], "label": "Stephen Curry", "label2": "right hand"}]
+</code></pre>
+<ul>
+<li>VLN task에서의 grounding 성능은 제한적이지만, 이 예시는 grounded pixel location을 대상으로 reasoning하는 능력이 있음을 보여준다. VLM의 generalization ability를 온전히 활용하기 위해, pixel goal을 특수 token이 아니라 단순한 coordinate text로 표현한다. </li>
+</ul>
+<h3>5. ❓Q3: robot을 기준으로 한 waypoint를 직접 예측하지 않고 pixel goal을 사용하는 근거.</h3>
+<ul>
+<li>
+<p>주된 근거는 비교적 적은 양의 embodied data로 VLM을 fine-tuning할 때 out-of-domain shift와 catastrophic forgetting을 최소화하는 것이다. VLM은 2D image data에서는 강력한 능력을 보이지만 실제 3D space에 대한 이해는 제한적이다.</p>
+</li>
+<li>
+<p>예를 들어 QwenVL은 image 속 object를 정확히 grounding할 수 있지만, object의 크기(m 단위)나 현재 viewpoint를 기준으로 한 물리적 좌표 같은 속성을 물으면 성능이 좋지 않다. 이러한 질문에 답하려면 egocentric coordinate system도 이해해야 한다. System 2가 3D space의 point goal을 직접 예측하도록 fine-tuning하면 training scene에 overfitting되기 쉬울 뿐 아니라 예측 자체도 극도로 어렵기 때문에, 결과 성능도 좋지 않을 가능성이 크다. </p>
+</li>
+<li>
+<p>특히 VSI-Bench 같은 benchmark에서 보듯이, community는 VLM의 spatial intelligence 평가에 점점 더 관심을 기울이고 있다. VLM이 강력한 spatial reasoning을 보여주게 되면 실제 환경의 waypoint를 직접 예측하는 것도 가능해질 것으로 본다.</p>
+</li>
+</ul></div></section><section class="note" data-kind="comment" data-note-id="GV3br8fXO5"><h3 class="note-title">Reviewer GZFu에 대한 답변</h3><div class="note-meta"><b>Note ID</b> GV3br8fXO5 · <b>유형</b> comment · <b>서명</b> Authors · <b>작성</b> 2025-11-21 19:42 KST · <b>Reply to</b> owkWXdMYqX · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=GV3br8fXO5">OpenReview 원문 note 열기</a></div><h4 data-field="comment">저자 답변 전문</h4><div class="translated-field" data-field-body="comment"><h3>1. ❓W1: System 2는 explicit multi-step reasoning이나 해석 가능한 reasoning이 아니라 spatial grounding과 waypoint prediction을 수행한다.</h3>
+<ul>
+<li>dual-system framework의 궁극적인 목표는 RGB input만으로 world-coordinate waypoint를 예측하는 것이며, 이는 2D VLM에 매우 어려운 과제이다. dual-system 설계를 사용하고 먼저 2D pixel goal을 예측함으로써 모델은 goal position에 기반한 초기 reasoning을 형성할 수 있으며, 이를 통해 task를 효과적으로 분해하고 난도를 낮춘다. 이 단계는 high-level language-based reasoning을 통합하기 전에 매우 중요하다. </li>
+<li>향후 연구에서는 해석 가능성과 성능을 더 개선하기 위해 핵심 단계, 특히 매우 인간다운 자율적 시야 조정 능력에 더 explicit한 reasoning을 포함하도록 이 framework를 확장할 계획이다.</li>
+</ul>
+<h3>2. ❓W2: StreamVLN, Helix, Hi-Robot에도 유사한 slow–fast paradigm이 등장했다. 이 논문은 system integration을 넘어 어떤 새로운 learning principle을 도입하는지 명확히 설명할 수 있다.</h3>
+<ul>
+<li>StreamVLN은 single-system 접근법이다. single-system VLA framework에서 inference 속도를 높이기 위해 sliding-window KV cache를 활용하지만, 각 action prediction에는 여전히 7B VLM을 통한 forward pass가 필요하다. 이와 달리 dual-system framework에서 System 1은 footprint가 훨씬 작고(parameter 100M에 불과함) 여러 action을 한 번에 출력할 수 있다. 동일한 action-step interval을 고려하더라도 우리 framework는 StreamVLN보다 1.6× 높은 inference frequency를 달성하며, 이는 상당한 효율 개선을 보여준다.  </li>
+<li>Hi-Robot은 slow–fast dual-system VLA가 아니다. 이 모델의 high-level planner는 open-ended instruction을 해석해 language command를 생성한다(예: ‘칩, Oreo, 음료를 좀 가져다줄 수 있는가?’를 1. 주황색 칩 봉지를 집는다, 2. 칩 봉지를 바구니에 넣는다, 3. Oreo를 집는다, 4. Oreo를 바구니에 넣는다와 같은 단계로 분해함). 그러나 실제 action 실행은 Pi0(&gt;3B parameters) 같은 강력한 VLA 모델에 전적으로 의존한다. 중요한 점은 진정한 slow–fast dual-system 설계와 달리 high-level planner와 VLA 모델 사이에 병렬 작동이나 상호 feedback이 없다는 것이다.</li>
+<li>Helix도 dual-system VLA이지만, explicit intermediate goal 없이 latent feature를 사용해 두 system을 모두 end-to-end로 훈련한다. 이 설정에서는 System 1이 출력하는 out-of-domain low-level action에서 역전파된 gradient를 통해 System 2(VLM)를 업데이트한다. 이러한 VLM의 end-to-end fine-tuning은 catastrophic forgetting을 일으켜 VLM의 generalization ability를 저하하고 sim-to-real gap을 넓힐 수 있다. Stage 1의 System 2 training에서 pixel-goal supervision을 생략하는 실험도 수행했으며(그림 6, ‘w/o Sys.2 Train’), 성능 저하를 관찰했다. VLN은 System 2가 더 강력한 reasoning을 수행하고 장기간의 scene-level memory를 유지해야 하는 long-horizon task이며, 이는 manipulation task보다 훨씬 더 까다롭다.</li>
+</ul>
+<h3>3. ❓W3: Social-VLN benchmark는 가치가 있지만 분석이 간략하다.</h3>
+<ul>
+<li>통찰력 있는 의견에 감사한다. Section 4에 추가 분석을 반영했다. 향후 연구를 지원하고 community의 더 깊이 있는 탐구를 촉진하기 위해 benchmark code와 data도 공개할 예정이다.</li>
+</ul>
+<h3>4. ❓W4: System 2가 pixel goal을 grounding하는 과정을 보여주는 정성적 분석이나 시각화가 있는가?</h3>
+<ul>
+<li>내용을 더 설명하기 쉽게 만드는 이러한 정성적 분석에 관한 귀중한 제안에 감사한다.
+수정 논문에는 QwenVL attention-map 분석을 포함해 System 2가 pixel goal을 grounding하는 과정에 관한 정성적 분석과 시각화를 추가했다. 자세한 시각화와 논의는 부록 B절(14페이지 이후)을 참조하라.</li>
+</ul></div></section>
+<h2 class="section">5. Meta-review 한국어 완역</h2>
+<section class="note" data-kind="meta" data-note-id="WDsSgHhua9"><h3 class="note-title">Meta-review — Area Chair g8At 한국어 완역</h3><div class="note-meta"><b>Note ID</b> WDsSgHhua9 · <b>유형</b> meta · <b>서명</b> Area_Chair_g8At · <b>작성</b> 2026-01-12 01:38 KST · <b>Reply to</b> GK4rznYwhn · <b>Version</b> 2 · <b>License</b> CC BY 4.0<br/><br/><a href="https://openreview.net/forum?id=GK4rznYwhn¬eId=WDsSgHhua9">OpenReview 원문 note 열기</a></div><h4 data-field="summary">요약</h4><div class="translated-field" data-field-body="summary"><p>이 논문은 high-level VLM이 reasoning과 planning을 수행하고 low-level diffusion model이 trajectory를 출력하는 dual-system architecture(다른 영역의 VLA와 유사함)를 제안한다. reviewer들은 여러 중요한 우려를 제기했다. Reviewer 8eJ9는 trajectory projection과 자율적 시야 조정에 대한 세부 설명이 부족하다고 언급했으며, 다른 reviewer들도 이 우려를 공유했다. Reviewer r9jt는 광범위한 질문과 우려를 제기했다. 그중 중요한 지적은 최근 VLA에서 dual-architecture 방식이 흔하며, 이 논문은 그러한 연구를 특정 영역(VLN)에 적용한 것에 가깝다는 점이다. 또한 이 reviewer는 latent-goal conditioning이 diffusion 기반 모델 내부의 representation을 어떻게, 그리고 왜 개선할 수 있는지, 두 system을 분리하는 것이 joint training의 부재를 어떻게 극복할 수 있는지, 두 module 사이의 output/input 불일치를 어떻게 극복하는지에 관한 원칙적인 논의가 부족하다고 지적했다. 이와 관련한 유의미한 분석이 부족하다는 지적이다. Reviewer EsMj는 앞선 우려 중 다수를 공유했으며, GZFu는 논문이 ‘reasoning’을 언급하지만 오늘날 LLM과 MLLM에서 흔한 inference-time-compute 방식의 reasoning은 없다고 언급했다.</p></div><h4 data-field="reviewer_concerns">Reviewer 우려 사항</h4><div class="translated-field" data-field-body="reviewer_concerns"><p>논문에서 부족했던 일부 세부 사항에 관한 우려는 더 많은 설명과 ablation study(예: 자율적 시야 조정 module에 대한 연구)를 추가함으로써 해소됐다. 다른 분석 및 명확화 관련 질문에도 답했다. 그러나 기존 dual-system 방식(Helix, Gr00t 등)과의 관계 속에서 이 연구의 위치를 설명한 답변은 설득력이 부족하다. 저자들은 주로 기존 방식의 end-to-end latent training(중간에 해석 가능한 무언가를 두는 방식과 대비됨)을 공격하며 ‘VLM의 이러한 end-to-end fine-tuning은 catastrophic forgetting을 일으켜 VLM의 generalization ability를 저하하고 sim-to-real gap을 넓힐 수 있다.’라고 주장한다. 그러나 이러한 주장은 충분히 뒷받침되지 않았으며, 강력한 데이터로 뒷받침된 것은 분명 아니다. 저자들이 pixel-goal supervision을 생략한 ablation을 수행하기는 했지만, 이 결과는 주장한 catastrophic forgetting, generalization 저하 또는 sim-to-real gap 증가를 구체적으로 보여주지 않는다. 전반적으로 기존 dual architecture와의 강력한 비교가 필요하다. 적어도 제안한 architecture의 더 강한 variation(그중 일부는 manipulation task용으로 개발된 기존 VLA와 더 밀접하게 정렬됨)을 제시하고 이러한 주장 각각에 대한 근거를 제공해야 한다.</p></div><h4 data-field="reviewer_scores">Reviewer 점수에 관한 판단</h4><div class="translated-field" data-field-body="reviewer_scores"><p>Reviewer 8eJ9와 GZFu는 높은 점수를 주었으며(더 오를 가능성은 낮음), Reviewer EsMj는 점수를 올릴 수 있다고 언급했다. 질문의 성격과 rebuttal의 세부 내용을 고려하면 이를 의심할 이유는 없다고 본다. Reviewer r9jt는 많은 우려와 질문을 제기했다. rebuttal이 요청된 세부 사항 중 일부를 다루기는 했지만, 분석 및 해석 가능성 관련 질문 중 일부에는 충분히 답하지 못했다. 또한 위에서 언급했듯이 기존 연구와의 관계 속에서 이 연구의 위치를 설명하는 질문에도 분명 강력하게 답하지 못했다. 따라서 이 reviewer가 점수를 올리거나(또는 내릴) 것으로 보지 않는다. </p>
+<p>전반적으로 이 논문의 기여는 다소 borderline이다. 그러나 rebuttal에서 제시한 일부 세부 사항과 분석은 논문을 개선했으며, 전체 점수는 긍정적이다.</p></div></section>
+<h2 class="section">6. 수집 및 완전성 한계</h2>
+<p>일반 forum UI와 <code>/notes?forum=</code>은 OpenReview challenge에 막혔다. 공개 <code>https://api2.openreview.net/notes/search</code>에서 논문명, reviewer alias, 고유 용어를 검색하고 note의 <code>id</code> 또는 <code>forum</code>이 정확히 <code>GK4rznYwhn</code>인 결과만 채택했다. Reviewer 4명 전원, 연결된 저자 답변, meta-review, 독립 ICLR 2026 dataset의 score와 Poster 결과가 일치한다. CAPTCHA 자동화나 인증 우회는 수행하지 않았다.</p>
+<p>별도의 공개 Decision note는 검색되지 않았다. 최종 결과는 submission venue <code>ICLR 2026 Poster</code>, 독립 dataset의 <code>Accept (Poster)</code>, 사용자 screenshot으로 교차 검증했다.</p>
+</main></body></html>
