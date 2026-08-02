@@ -87,3 +87,20 @@ Use this reference whenever translating AI robotics, VLA, VLN, embodied AI, robo
 - `farthest pixel goal grounding`은 막연히 “가장 먼 Pixel Goal Grounding”으로 옮기지 않는다. DualVLN에서는 **현재 시야에서 확인 가능한 trajectory point 가운데 agent로부터 가장 먼 point를 pixel goal로 예측하는 방식**임을 제목 또는 첫 문장에서 풀어 쓴다.
 - Visibility/depth 문장은 역할을 명시한다: `distance > depth value`인 trajectory point는 **다른 표면 뒤에 가려진 것으로 판정해 제외한다**. `visibility를 측정한다`, `occluded로 보고 제거한다`처럼 의미가 흐린 혼합문을 피한다.
 - Backbone 명칭은 문서 전체에서 **Qwen2.5-VL**로 표준화하되, 원 논문이 사용한 모델 버전을 최신 Qwen 계열 모델로 임의 교체하지 않는다.
+
+### DualVLN visual-token and temporal-context rules
+
+- `DepthAnythingV2-Small backbone`은 모듈 경계를 분해해 번역한다. 공개 경로가 `.pretrained` DINOv2 trunk의 patch feature만 사용하고 depth decoder를 호출하지 않으면 **DepthAnythingV2의 DINOv2 visual trunk**라고 쓰며, “System 1이 depth map을 생성·입력한다”고 쓰지 않는다. Simulator depth를 이용한 offline pixel-goal label filtering과도 별개다.
+- `global token`을 세 의미로 분리한다: (1) DINOv2 CLS/global token, (2) System 2 VLM의 전체 context token, (3) patch 간 global self-attention. 공개 코드가 `return_class_token=False` 또는 `x_norm_patchtokens`를 쓰면 (1)은 제외된다. System 1이 latent query만 받으면 (2) 전체도 직접 보지 않는다. 반면 MemoryEncoder가 flattened anchor/current patch sequence를 처리하면 (3)은 수행한다.
+- `fuse across two time steps`는 이미지를 픽셀 평균하거나 겹친다는 뜻이 아니다. **plan-anchor와 current patch token이 self-attention으로 서로 참고해 시간 변화와 camera 간 관계가 반영된 feature를 만든다**고 풀어 쓴다.
+- `Q-Former compresses to 32 tokens`는 원본 patch 32개를 선택한다는 뜻이 아니다. **32개의 learned query가 fused memory 전체를 cross-attention해 weighted mixture로 32개의 새 요약 token을 합성한다**고 설명한다. Q-Former의 32 visual token과 DiT의 32-step trajectory/action horizon은 숫자만 같고 일대일 대응하지 않는다.
+- `high-frequency visual conditioning`은 영상의 공간적 고주파 성분이 아니라 **System 1의 빠른 실행 주기로 최신 RGB에서 갱신되는 condition**을 뜻한다. 느리게 갱신되는 System 2 latent와 대비해 번역한다.
+- 두 시점 입력은 누적 history가 아니다. 각 fast-policy 호출은 **고정된 plan-anchor RGB + 해당 tick의 최신 current RGB**를 사용하며, 이전 System-1 tick의 current frame은 별도 recurrent/cache 경로가 확인되지 않는 한 입력에 누적되지 않는다. System 2가 replan하면 당시 최신 RGB가 새 anchor가 된다.
+- Attention 설명이 필요한 번역 메모에서는 `Query=찾는 정보`, `Key=검색 표지`, `Value=가져올 내용`, `softmax=각 score를 합이 1인 mixing weight로 변환`으로 설명한다. Attention weight를 물체 존재 확률이나 인과적 중요도로 단정하지 않는다.
+
+### Social-VLN benchmark/evaluation rules
+
+- `agents do not block the path entirely`에서 `agents`는 문맥상 navigation robot이 아니라 배치된 **dynamic humanoid/pedestrian agents**다. “agent가 길을 막지 않는다”로 모호하게 옮기지 말고 **humanoid가 통로를 영구적으로 봉쇄하지 않도록 episode를 검수했다**고 명시한다.
+- Benchmark curation과 training-data generation을 분리한다. 평가는 R2R-CE episode의 ground-truth route 주변에 Habitat 3.0 humanoid를 전략적으로 배치해 실제 조우를 늘리고, 물리적으로 해결 불가능한 완전 폐색 episode를 배제한다. 별도의 763K training pipeline은 human-mask threshold가 넘을 때 modified A*로 collision-free demonstration을 생성한다.
+- Figure 3의 interaction 유형은 정성적 scenario inventory이지 각 패널별 독립 metric이 아니다. 정면 접근, 통과할 틈을 기다림, 양보, 다중 humanoid 동시 조우, 교차 지점 조우에서 목적지 도달과 안전 회피를 함께 시험한다고 풀어 쓴다.
+- HCR은 SR/SPL과 별도로 dynamic pedestrian collision을 수량화한다. 원문이 분모, contact threshold, episode-level/step-level 집계를 정의하지 않으면 임의의 공식을 확정하지 말고 **문맥상 사람 충돌 episode 비율로 읽히지만 구현 정의가 부족하다**고 재현성 한계를 남긴다.
