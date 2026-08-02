@@ -15,6 +15,10 @@ description: arXiv/학술 논문 PDF와 기술 블로그·웹사이트를 원본
 
 AI/robotics/VLA/VLN/physical AI 논문과 기술 블로그는 추가로
 `references/vla-robotics-translation-glossary.md`를 읽고 그 용어집을 우선 적용한다.
+VLA/VLN 논문의 architecture·modality·학습 단계·benchmark를 해석하거나 기존 번역을
+전면 교정할 때는 `references/dualvln-translation-lessons-learned.md`도 반드시 읽는다.
+이 reference는 source/code/interpretation 분리, temporal input, depth provenance,
+benchmark-vs-training 구분, optimizer 문단 경계, multicol 조판 회귀를 실제 실패 사례로 설명한다.
 특히 `frontier model`은 **프론티어 모델**이며 절대 “개척 모델”로 번역하지 않는다.
 `VLA`, `foundation model`, `policy`, `action`, `pixel goal`, `latent goal`, `embodiment`,
 `cross-embodiment`, `dexterous manipulation` 등은 과번역하지 말고 혼합 표기를 유지한다.
@@ -279,6 +283,11 @@ python3 scripts/fetch_web_assets.py --out <작업폴더>/assets <page_url> ...
 - 표지 값(제목/저자/학회/arXiv/생성일)을 채운다. 생성일은 오늘 날짜.
 - 이미지 경로는 **상대경로**(`figures/fig-p01-01.png`)로 쓴다.
 - 넓은 표/그림은 `class="wide"` / `class="fig-wide"`로 단 전체 폭을 쓴다.
+- 넓은 표의 제목도 같은 full-width context에 둔다. `h3 class="section"`을 쓰면 CSS selector가
+  `.doc-title, h2.section, h3.section { column-span: all; }`처럼 H3까지 포함해야 한다.
+- 렌더 전에 `python3 scripts/check_multicol_layout.py <작업폴더>/translation.html`을 실행한다.
+  `h3.section`·`table.wide`·`figure.fig-wide`의 span rule이 빠지면 수정 전까지 렌더하지 않는다.
+- wide element가 있는 모든 page는 120–150 dpi로 확대 QA하고, 압축 delivery PDF에서도 반복한다.
 - 티저 그림(Figure 1)은 전체 폭 그림 + 캡션 전문 번역 블록으로 넣는다.
 - 수집한 영상은 `.video-card`로 본문 해당 위치에 넣고, 배치할 자리가 없는 영상은
   말미 "영상 자산" 부록 표에 모은다. 썸네일·로컬 경로·원본 URL을 모두 남긴다.
@@ -332,6 +341,13 @@ uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
 페이지 범위가 1페이지부터 마지막 페이지까지 중복·누락 없이 이어지는지 확인하고, part를
 순서대로 모두 첨부한다. 분할본은 전달 편의를 위한 사본이며 검증 완료된 전체 PDF를
 대체하지 않는다.
+
+## 재사용 lesson learned
+
+- VLA/VLN architecture·modality·temporal context·training/evaluation 분리와 Chrome multicol 회귀 사례:
+  `references/dualvln-translation-lessons-learned.md`
+- Static multicol preflight:
+  `python3 scripts/check_multicol_layout.py <작업폴더>/translation.html`
 
 ## 산출물
 
