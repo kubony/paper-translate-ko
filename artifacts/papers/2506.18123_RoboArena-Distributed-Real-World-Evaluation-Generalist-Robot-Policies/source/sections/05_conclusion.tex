@@ -1,0 +1,15 @@
+\section{Discussion}
+\label{sec:conclusion} 
+\vspace{-1em}
+We introduced \Acronym{}, a distributed framework for evaluating generalist robot policies. We have shown that by aggregating evaluations across a decentralized network of evaluators, each running pairwise policy comparisons on many different tasks and scenes, \Acronym{} can generate more accurate policy performance rankings than conventional, centralized evaluation approaches, while retaining high evaluation sample efficiency. We have also introduced prototype tools for LLM-assisted analysis of the evaluation results. We will open-source our \Acronym{} evaluation framework and give other researchers access for contributing policies and evaluations, in an effort to make evaluations of generalist robot policies more comparable.
+
+\section{Limitations}
+\label{sec:limitations}
+
+\textbf{Cross-embodiment.} While \Acronym{} is a general approach for robot evaluation, the experimental evaluations in this paper have focused on the DROID platform~\citep{khazatsky2024droid}, since it was well-suited for developing our evaluation framework. However, there is a growing interest in developing \emph{cross-embodiment} policies, that can not only operate across many scenes and tasks, but also across robot embodiments. Future work should investigate how \Acronym{} can be extended to diverse robot embodiments and still support policies that may only be evaluatable on specific embodiments.
+
+\textbf{Controlled experimentation.} The design of \Acronym{}, which is focused on decentralized evaluation without restrictions on tasks or scenes, makes it challenging to perform experiments that only vary \emph{a single} condition at a time (e.g. only camera angle, or only object position). As such, \Acronym{} is complementary to targeted, smaller-scale evaluations that focus on individual axes of generalization~\citep{gao2025taxonomy}. %
+
+\textbf{Adversarial evaluators.} While \Acronym{}'s distributed, double-blind evaluation scheme gives it an inherent robustness against individual influencing, we have not investigated its robustness to intentionally adversarial evaluators that try to temper with evaluation results, for example by providing random preference ratings or intentionally misleading language feedback. Future work should investigate how distributed robot evaluation approaches can be hardened against such tampering.
+
+\textbf{Over-optimization and Gotthart's Law.} A common wisdom is that a measure, e.g., for model performance, ceases to be a good measure when it becomes a target. This potential for over-optimization, also known as Gotthart's law, is innate to any measure, and has recently been shown to also impact crowd-sourced evaluations~\citep{theregister2025llamacheating}, even if they may inherently be more robust to such over-optimization than static benchmarks. While in robotics, the current (limited) performance of policies makes such over-optimization less likely, future work should critically examine whether evaluations with approaches like \Acronym{} remain well-correlated with perceived real-world policy performance.

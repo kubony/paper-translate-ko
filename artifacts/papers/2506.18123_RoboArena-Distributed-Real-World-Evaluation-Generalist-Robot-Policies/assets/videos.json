@@ -1,0 +1,26 @@
+{
+  "fetched_on": "2026-08-02",
+  "pages": [
+    {
+      "url": "https://robo-arena.github.io/",
+      "rendered_with_chrome": true,
+      "videos_found": 1,
+      "images_found": 0
+    }
+  ],
+  "assets": [
+    {
+      "kind": "video",
+      "url": "https://robo-arena.github.io/assets/sim_eval-fGTRF_dn.mp4",
+      "page": "https://robo-arena.github.io/",
+      "context": "",
+      "bytes": 889517,
+      "local": "assets/videos/sim_eval-fGTRF_dn-c4b42d.mp4",
+      "sha256": "8b6d06ac5b16545be8dca5f02561ffc27e23e1f7e5b4b80e189cee730a188118",
+      "duration_s": 7.23,
+      "width": 1280,
+      "height": 720,
+      "thumbnail": "assets/videos/thumbs/sim_eval-fGTRF_dn-c4b42d.jpg"
+    }
+  ]
+}

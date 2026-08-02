@@ -1,0 +1,55 @@
+\section{The DROID-\Acronym{} Evaluation System}
+\label{app:droid_eval_system}
+
+We instantiate \Acronym{} in a prototype evaluation system on the DROID robot platform~\citep{khazatsky2024droid}, which consists of a Franka Panda 7DoF robot arm, a Robotiq 2F-85 parallel-jaw gripper, a ZED-mini stereo wrist camera and one or multiple external ZED~2 stereo cameras (see~\cref{fig:droid_platform}). We choose the DROID platform since it offers multiple attractive properties:
+\begin{itemize}
+    \item The Panda arm provides sufficient dexterity to perform a wide range of manipulation tasks across varied real-world environments.  
+    \item The robot is mounted on a height-adjustable, mobile table, which enables rapid reconfiguration of scenes and camera viewpoints.  
+    \item Most importantly, the platform is associated with the open-source DROID dataset~\citep{khazatsky2024droid}, a large-scale, real-world dataset that supports training of \emph{generalizable} robot policies.
+    \item Finally, DROID setups are already deployed across multiple academic institutions worldwide, which is key to enabling distributed evaluation at scale.
+\end{itemize}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \vspace{-0.5cm}
+    \includegraphics[width=\linewidth]{figures/droid_setup.pdf}
+    \caption{The DROID robot setup, which we use for the DROID-\Acronym{} evaluation system. Reproduced with permission from \citet{khazatsky2024droid}.
+    }
+    \label{fig:droid_platform}
+    \vspace{-1cm}
+\end{wrapfigure}
+We note that, while DROID is a convenient platform to develop a prototype distributed robot evaluation, the \Acronym{} evaluation approach readily extends to other robot embodiments and potentially even to evaluating cross-embodiment policies~\citep{open_x_embodiment_rt_x_2023} across platforms. The remainder of this section, we provide details on our evaluation system design (\cref{app:system_design}) and outline safety considerations and incentive mechanisms that support open participation from the broader robotics community (\cref{sec:open_sourcing}).
+
+\subsection{\Acronym{} System Design}
+\label{app:system_design}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/roboarena_system.pdf}
+    \caption{The DROID-\Acronym{} system consists of a pool of remotely hosted policy servers, a pool of distributed evaluator ``clients'' with real robot setups, a database for storing evaluation results, and a central evaluation management server that orchestrates communication, aggregates the evaluation results, and computes a policy ranking.
+    }
+    \label{fig:system_overview}
+\end{figure}
+
+
+We design a system for performing decentralized evaluation over a potentially large pool of policies, with a pool of evaluators that may span many different locations, countries, or even continents. Our system has four core components: policy inference servers, evaluation clients, an evaluation database, and a central evaluation server (see \cref{fig:system_overview}).
+
+\textbf{Policy inference servers~~~} We host all policies in our pool on remote servers, instead of running them ``on-premise'' at the robot evaluation station. This has multiple benefits: \emph{effective resource utilization} since multiple evaluators can share the same policy server, a \emph{lightweight evaluation client} since no inference compute needs to be provided client-side, which lowers the barrier for contributing evaluations, and \emph{user-side control} over policy servers since we assume users host their own policies when submitting them for evaluation, which ensures that policies are run correctly, equipped with sufficient inference compute, and proprietary models can be evaluated without sharing model weights. Remote hosting may, however, introduce additional latency during policy inference, but in practice we found this to be negligible for the static manipulation tasks on which we typically evaluate DROID policies.
+We acknowledge that future versions of \Acronym{} evaluations may need to support (at least partially) local inference to enable evaluation of more dynamic tasks.
+
+\textbf{Evaluation clients~~~} We provide a client-side script that guides users through the evaluation protocol outlined in \cref{sec:eval_procedure}. It handles communication with the central evaluation server and the policy inference servers. Since no client-side inference compute is required, this script can be run on any computer that is connected to the Internet and the DROID robot.
+
+\textbf{Evaluation database~~~} This database hosts all evaluation results: instructions, scores and preference, natural language feedback, and the rollout videos. Information is uploaded by the clients.
+
+\textbf{Central evaluation server~~~} We host a central evaluation server that assigns policies to evaluators, and keeps track of newly registered or deprecated policies in the policy pool and automatically cancels evaluations after a timeout, e.g., if evaluation clients crashed or lost network connection. %
+
+
+\subsection{Open-Sourcing \Acronym{}: Interfaces, Safety and Incentives}
+\label{sec:open_sourcing}
+
+Our goal in designing the DROID-\Acronym{} is to provide it as a resource to the robotics community, to which anyone can submit policies and contribute evaluations. Importantly, DROID-\Acronym{} can enable researchers without access to a physical robot to train and evaluate real-world generalist robot policies -- now all required resources are open-source: diverse, real-robot datasets~\citep{walke2023bridgedata, open_x_embodiment_rt_x_2023, khazatsky2024droid, contributors2025agibotworld}, scalable modeling frameworks~\citep{octo_2023, kim2024openvla, ren2023openpizero, pi2025openpi, bjorck2025gr00t}, and DROID-\Acronym{} real-robot evaluations. 
+
+
+Making the DROID-\Acronym{} easy to use, safe, and self-sustaining requires a few additional elements. First, we make it easy to browse all performed evaluations and view existing policy leaderboards on our website. We plan to publish separate leaderboards for ``all policies'' and ``open-source policies''; the latter are trained only on publicly available datasets, and provide weight access and details for how to reproduce training. Additionally, we design multiple \textbf{safety layers} to prevent policies from damaging robot evaluation hardware: first, we test that any newly submitted policy server complies with the expected input and output formats. Then we run said policy in a ``test environment'' across a few different scenes and tasks with a specifically trained evaluator that is able to quickly intervene if a policy runs the danger of acting unsafely and damaging the robot (akin to a test driver for autonomous vehicles). Only after a policy passed these tests, we add it to the general pool and distribute it to evaluators.
+
+Finally, to make the DROID-\Acronym{} self-sufficient in the long term, we implement an \textbf{``evaluation credit'' system}, that balances evaluation supply and demand: for every pairwise policy evaluation that an evaluator runs, they receive a credit, which they can use to request an equal number of pairwise comparisons between their own policies and other policies from the pool. This way, evaluation effort for any individual is comparable to running evaluations for just their own policy on their own setup, but by agreeing to evaluate others' policies through the decentralized benchmarking system, they effectively get a much broader evaluation coverage for the same effort. To support participation of researchers without access to a physical robot (and thus without the ability to contribute evaluations themselves), multiple institutions agreed to ``sponsor'' a base budget of evaluations that will be distributed among all users ``free of charge''. 

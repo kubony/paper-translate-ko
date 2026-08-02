@@ -1,0 +1,108 @@
+<section id="sec-contributions">
+  <h2>기여</h2>
+  <p><strong>RoboArena 시스템 설계 및 구현</strong>: Pranav Atreya, Karl Pertsch, Tony Lee</p>
+  <p><strong>실험 설계 및 분석</strong>: Pranav Atreya, Karl Pertsch, Tony Lee</p>
+  <p><strong>policy 평가</strong>: Pranav Atreya, Tony Lee, Moo Jin Kim, Karl Pertsch, Arhan Jain, Artur Kuramshin, Cyrus Neary, Edward Hu, Kanav Arora, Kirsty Ellis, Luca Macesanu, Matthew Leonard, Meedeum Cho, Ozgur Aslan, Shivin Dass, Jie Wang, William Reger, Xingfang Yuan</p>
+  <p><strong>시뮬레이션 평가 환경</strong>: Arhan Jain, Karl Pertsch, Xuning Yang, Clemens Eppner, Fabio Ramos, Jonathan Tremblay</p>
+  <p><strong>논문 집필</strong>: Karl Pertsch, Pranav Atreya, Tony Lee</p>
+  <p><strong>프로젝트 조정</strong>: Karl Pertsch, Pranav Atreya</p>
+  <p><strong>자문</strong>: Sergey Levine, Chelsea Finn, Percy Liang, Abhishek Gupta, Dinesh Jayaraman, Glen Berseth, Kostas Daniilidis, Roberto Martin-Martin, Youngwoon Lee</p>
+</section>
+
+<section id="app-ranking-model">
+  <h2>Policy 순위 산정 EM 절차</h2>
+  <p>여기에서는 <a href="#sec-policy-ranking">policy 순위 산정 절</a>에서 소개한, 저자들이 제안하는 policy 순위 산정 알고리즘의 추가 세부 사항을 제시한다. 먼저 그 기저의 확률 모형을 설명하고 필요한 모든 gradient와 Hessian을 유도한 다음, 완전한 EM 의사코드를 제시한다. 이어서 부분 성공 정보가 존재할 때 이를 함께 사용하도록 알고리즘을 쉽게 수정하는 방법을 보이고, 논문에서 논의한 다른 순위 산정 절차의 기반 알고리즘을 개괄한 뒤, 모든 hyperparameter를 열거한다.</p>
+
+  <section id="app-model-definition">
+    <h3>모형 정의</h3>
+
+    <h4>관측 데이터</h4>
+    <p><span class="math">N</span>개의 고정된 policy 집합을 가정한다.</p>
+    <pre class="equation" data-eq="A-1">Π = {π₁, π₂, …, π_N}.</pre>
+    <p>평가자는 A/B 시행에서 policy들을 비교한다. 시행 <span class="math">n</span>에서는 어떤 잠재 과제에 관해 policy <span class="math">π_(i_n)</span>과 <span class="math">π_(j_n)</span>을 맞붙이고 다음 결과를 보고한다.</p>
+    <pre class="equation" data-eq="A-2">y_n ∈ {0, 1, 2},
+0 = 패배,  1 = 무승부,  2 = 승리,
+n = 1, …, M.</pre>
+    <p>(이는 무승부를 허용하지 않았던 <a href="#sec-policy-ranking">policy 순위 산정 절</a>에서 설명한 모형을 일반화한 것이다.) 총 <span class="math">M</span>개의 관측값을 모두 다음과 같이 모은다.</p>
+    <pre class="equation" data-eq="A-3">D_p = {(i_n, j_n, y_n)}_(n=1)^M.</pre>
+    <p>어느 시점에도 실제 “과제” 식별자가 관측된다고 가정하지 않는다. 그 대신 서로 다른 난이도 수준을 포착하는 소수의 잠재 “과제 bucket”을 추론한다.</p>
+
+    <h4>잠재 과제와 mixture weight</h4>
+    <p>서로 다른 평가 조건을 모형화하기 위해, 각 시행은 관측되지 않은 상태로 <span class="math">T</span>개의 난이도 범주, 즉 “bucket” 중 하나에 속한다고 가정한다. 이 bucket들에 다음과 같은 이산 prior를 둔다.</p>
+    <pre class="equation" data-eq="A-4">ν = (ν₁, …, ν_T),
+ν_t ≥ 0,  Σ_(t=1)^T ν_t = 1.</pre>
+    <p>따라서 어떠한 데이터도 보기 전에 임의의 시행이 bucket <span class="math">t</span>를 사용할 확률은 <span class="math">ν_t</span>이다.</p>
+
+    <h4>Policy별 및 bucket별 parameter</h4>
+    <p>각 policy <span class="math">π_p</span>에는 전역 “log-ability” parameter <span class="math">θ_p</span>가 있다. 또한 각 policy는 특정 bucket에서 더 우수하거나 더 저조한 성능을 보일 수 있으므로, bucket <span class="math">t</span>에서 policy <span class="math">p</span>에 적용되는 offset <span class="math">ψ_(p,t)</span>를 도입한다. 이 offset은 서로 다른 과제에서 두 policy가 서로에 대해 상이한 성능을 보일 수 있도록 하는 역할을 한다. 이 offset을 도입한 동기는 <a href="#sec-policy-ranking">policy 순위 산정 절</a>에서 더 자세히 논의한다. 마지막으로 각 bucket <span class="math">t</span>에는 기본 난이도 <span class="math">τ_t</span>가 있다. 이를 한데 모으면 다음과 같다.</p>
+    <pre class="equation" data-eq="A-5">θ = (θ₁, …, θ_N),
+ψ = {ψ_(p,t)}_(p=1..N, t=1..T),
+τ = (τ₁, …, τ_T).</pre>
+    <p>직관적으로 <span class="math">θ_p</span>는 policy의 전반적인 강도를 포착하고, <span class="math">τ_t</span>는 bucket 난이도를 포착하며, <span class="math">ψ_(p,t)</span>는 각 bucket 안에서 policy별 용이성 또는 난이도 조정을 모형화한다.</p>
+
+    <h4>무승부 모형 parameter</h4>
+    <p>Davidson 확장을 통해 무승부를 허용하며, 승리와 패배에 대한 무승부 확률의 상대적 크기를 조정하는 단일 scalar <span class="math">ν_tie ∈ (0, 1)</span>를 도입한다.</p>
+
+    <h4>Link function과 조건부 likelihood</h4>
+    <p>시행 <span class="math">n</span>과 가정한 bucket <span class="math">t</span>가 주어지면 각 policy의 log-odds를 다음과 같이 계산한다.</p>
+    <pre class="equation" data-eq="A-6">z_(i_n,t) = θ_(i_n) + ψ_(i_n,t) − τ_t,
+z_(j_n,t) = θ_(j_n) + ψ_(j_n,t) − τ_t.</pre>
+    <p>이를 logistic sigmoid <span class="math">σ(z) = 1/(1 + e^(−z))</span>에 통과시킨다. 이는 저자들이 구현한 <em>link function</em>으로, link function은 일반적으로 선형 predictor, 여기서는 log-odds를 확률로 mapping한다. 그 결과는 다음과 같다.</p>
+    <pre class="equation" data-eq="A-7">q_(i_n,t) = σ(z_(i_n,t)),
+q_(j_n,t) = σ(z_(j_n,t)).</pre>
+    <p>“독립 해결” 가정 아래에서, policy <span class="math">i_n</span>은 확률 <span class="math">q_(i_n,t)</span>로 과제를 “해결”하고 <span class="math">j_n</span>은 확률 <span class="math">q_(j_n,t)</span>로 과제를 “해결”하며, <span class="math">t</span>가 주어졌을 때 두 사건은 독립이다. 데이터셋이 policy <span class="math">i</span>와 <span class="math">j</span> 사이의 선호를 나타내기는 하지만, 실제로 과제에서 policy <span class="math">i</span>의 성능은 policy <span class="math">j</span>의 성능과 독립이므로 이 “독립 해결” 가정은 자연스럽다. 따라서 다음이 성립한다.</p>
+    <pre class="equation" data-eq="A-8">P(y_n = 2 | t) = q_(i_n,t) (1 − q_(j_n,t)),
+P(y_n = 0 | t) = (1 − q_(i_n,t)) q_(j_n,t).</pre>
+    <pre class="equation" data-eq="A-9">P(y_n = 1 | t)
+  = 2 ν_tie √[q_(i_n,t)(1 − q_(i_n,t)) q_(j_n,t)(1 − q_(j_n,t))].</pre>
+    <p>여기에서도 Bradley-Terry 모형의 Davidson 확장을 적용한다. <span class="math">t</span>는 잠재 변수이므로 bucket에 대해 marginalize한다.</p>
+    <pre class="equation" data-eq="A-10">P(y_n) = Σ_(t=1)^T ν_t P(y_n | t).</pre>
+    <p>이로써 모형 정의가 완료된다.</p>
+  </section>
+
+  <section id="app-grad-hess">
+    <h3>Gradient 및 Hessian 유도</h3>
+    <p>아래에서는 clipped-Newton M-step에 필요한 모든 1차 및 2차 derivative를 유도한다. 먼저 기대 complete-data objective를 작성한 다음, 각 parameter block의 gradient와 Hessian을 전개한다.</p>
+
+    <h4>기대 complete-data objective</h4>
+    <p>전체 parameter 집합을 <span class="math">Θ = (θ, ψ, τ, ν, ν_tie)</span>로 나타낸다. E-step에서는 다음 responsibility를 계산한다.</p>
+    <pre class="equation" data-eq="A-11">γ_(n,t)
+  = P(t | y_n; Θ_old)
+  = [ν_t P(y_n | t; Θ_old)] / [Σ_(u=1)^T ν_u P(y_n | u; Θ_old)].</pre>
+    <p>L2 penalty <span class="math">λ_θ, λ_ψ</span>를 포함한 기대 complete-data log-likelihood는 다음과 같다.</p>
+    <pre class="equation" data-eq="A-12">Q(Θ)
+  = Σ_(n=1)^M Σ_(t=1)^T γ_(n,t) [log ν_t + log P(y_n | t)]
+    − (λ_θ/2) Σ_(p=1)^N θ_p²
+    − (λ_ψ/2) Σ_(p=1)^N Σ_(t=1)^T ψ_(p,t)².</pre>
+
+    <h4>θ_p에 대한 gradient</h4>
+    <p>policy <span class="math">p</span>가 등장하는 시행만 기여한다. <span class="math">I_p = {n : i_n = p}</span>, <span class="math">J_p = {n : j_n = p}</span>라고 하자. 그러면 다음과 같다.</p>
+    <pre class="equation" data-eq="A-13">∂Q/∂θ_p
+  = Σ_(n∈I_p) Σ_(t=1)^T γ_(n,t) [∂/∂z_(i_n,t)] log P(y_n | t)
+    − Σ_(n∈J_p) Σ_(t=1)^T γ_(n,t) [∂/∂z_(j_n,t)] log P(y_n | t)
+    − λ_θ θ_p.</pre>
+    <p>예를 들어 <span class="math">y_n = 2</span>, 즉 “승리”인 경우 다음을 얻는다.</p>
+    <pre class="equation" data-eq="A-14">[∂/∂z_(i,t)] log P(y_n = 2 | t) = 1 − σ(z_(i,t)),
+[∂/∂z_(j,t)] log P(y_n = 2 | t) = −σ(z_(j,t)).</pre>
+    <p>패배 또는 무승부인 경우에도 이와 유사한 표현을 얻는다.</p>
+
+    <h4>θ_p에 대한 Hessian</h4>
+    <p>2차 derivative에는 logistic variance의 음수가 누적된다.</p>
+    <pre class="equation" data-eq="A-15">∂²Q/∂θ_p²
+  = −Σ_(n∈I_p) Σ_t γ_(n,t) σ(z_(i,t))(1 − σ(z_(i,t)))
+    −Σ_(n∈J_p) Σ_t γ_(n,t) σ(z_(j,t))(1 − σ(z_(j,t)))
+    − λ_θ.</pre>
+
+    <h4>ψ_(p,t)에 대한 gradient/Hessian</h4>
+    <p>각 <span class="math">ψ_(p,t)</span>는 <span class="math">θ_p</span>와 정확히 같은 방식으로 들어가지만 bucket <span class="math">t</span>에 대해서만 들어간다.</p>
+    <pre class="equation" data-eq="A-16">∂Q/∂ψ_(p,t)
+  = Σ_(n:i_n=p) γ_(n,t) (∂log P/∂z_(i_n,t))
+    − Σ_(n:j_n=p) γ_(n,t) (∂log P/∂z_(j_n,t))
+    − λ_ψ ψ_(p,t).</pre>
+    <pre class="equation" data-eq="A-17">∂²Q/∂ψ_(p,t)²
+  = −Σ_(n:i_n=p) γ_(n,t) σ(z_(i,t))(1 − σ(z_(i,t)))
+    −Σ_(n:j_n=p) γ_(n,t) σ(z_(j,t))(1 − σ(z_(j,t)))
+    − λ_ψ.</pre>
+
+    <h4>τ_t에 대한 gradient/Hessian</h4>
+    <p><span class="math">τ_t</span>는 <span class="math">i</span>와 <span class="math">j</span> 모두에 음의 부호로 들어가므로,</p>

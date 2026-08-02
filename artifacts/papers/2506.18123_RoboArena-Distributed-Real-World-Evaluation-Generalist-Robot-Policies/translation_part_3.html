@@ -1,0 +1,247 @@
+<!-- SOURCE: source/sections/06_appendix.tex lines 339-637; source/main.bbl lines 1-376 -->
+<section id="app-detailed-eval-breakdown">
+  <h2>평가 데이터 세부 내역</h2>
+  <p>여기서는 RoboArena가 수집한 평가 데이터를 상세히 제시하며, 그 다양성과 규모를 강조한다. 저자들이 아는 한, 지금까지 RoboArena로 수행한 평가는 현재까지 이루어진 generalist policy 평가 가운데 가장 포괄적이다.</p>
+  <p>그림 10의 위쪽은 task command를 구성하는 <em>동사</em>의 다양성을 보여 주고, 아래쪽은 평가 episode에서 상호작용하는 광범위한 object class를 보여 준다. generalist policy의 성능을 generalist로서 적절히 평가하려면 다양한 task로 policy를 질의해야 하므로, generalist policy 평가는 특히 많은 데이터를 요구한다. 실제로 그림 10은 RoboArena 평가 절차가 task command와 object에 필요한 다양성을 제공함을 보여 준다.</p>
+  <p>마찬가지로 그림 11은 평가가 수행된 scene 집합 측면에서 RoboArena 평가의 다양성을 나타낸다. 제시한 environment는 전체 평가 episode 풀에서 무작위로 표본 추출하였다.</p>
+  <!-- FIGURE 10: 위: 수집된 평가 데이터에서 task command에 가장 흔히 사용된 동사와 그 빈도를 나타낸 막대그래프이다. task command에는 “뚜껑 벗기기”, “플러그 뽑기”, “찾기”, “먼지 털기” 등을 포함한 다양한 instruction이 나타난다. 아래: 상호작용하도록 지시된 object category의 다양성을 주요 object type별로 묶어 시각화한다. -->
+  <!-- FIGURE 11: RoboArena는 분산형이라는 특성과 task 표준화를 지양한다는 점 때문에 environment가 다양하다. 여기서는 참여 기관의 network 전반에서 RoboArena에 사용한 32개 표본 environment를 제시한다. evaluator에게 다양성을 확대하도록 권장했으며, 그 결과 environment의 이질성이 뚜렷하게 나타난다. robot의 물리적 위치가 같을 때조차 조명, camera viewpoint, 식탁보, object를 흔히 크게 변경했는데, 정확한 scene과 task를 표준화할 필요가 없다는 사실이 이를 다시 한번 용이하게 했다. -->
+</section>
+
+<section id="app-comp-over-progress">
+  <h2>Policy 선호 label의 미묘한 차이</h2>
+  <p>RoboArena 평가 framework에 참여하는 evaluator는 지정된 task에 관한 각 rollout의 부분 성공 정도를 대략 추정하고, 결정적으로 같은 task에서 policy A와 B 중 어느 쪽을 더 선호했는지를 명시하는 preference label도 제공한다. 여기서 설명하듯 이 preference feedback에는 partial success feedback에 담긴 것보다 훨씬 많은 정보가 포함될 수 있다. 구체적으로 표 3은 <em>policy A와 B의 partial success feedback이 같았지만</em> evaluator가 A 또는 B 중 한쪽에 명확한 선호를 표시한 몇 가지 예를 보여 준다.</p>
+  <table>
+    <caption>표 3. A와 B의 partial success feedback이 동일한 A/B 쌍에 관한 preference feedback의 예로, 이진 partial-success score 이상의 정보를 보여 준다.</caption>
+    <thead><tr><th>Session ID</th><th>선호 Policy</th><th>장문 feedback</th></tr></thead>
+    <tbody>
+      <tr><td>748</td><td>A</td><td>두 policy 모두 천을 드라이버 위에 놓지는 못하지만, policy A는 천을 바나나 가까이에 놓는 반면 policy B는 어느 object에도 가까이 다가가지 못한 것으로 보인다.</td></tr>
+      <tr><td>674</td><td>B</td><td>두 policy 모두 전체 task를 완료했지만 policy B는 첫 시도에 완료했다. 처음 grasp하여 들어 올린 뒤 policy A는 마우스를 너무 일찍 떨어뜨린 것으로 보인다. 이후 다시 집어 더 멀리 옮겼다.</td></tr>
+      <tr><td>660</td><td>B</td><td>Policy B는 처음에는 장거리 이동을 주저했지만, 나중에는 효과적이고 빠른 motion으로 전환했다. 한편 policy A도 task에 성공했으나 더 굼뜬 motion을 보였다.</td></tr>
+      <tr><td>649</td><td>A</td><td>A와 B 모두 컵을 미는 대신 집었고, 이후 둘 다 컵을 테이블 위에 놓았다. 컵을 놓은 뒤 A는 시작 pose로 돌아갔지만 B는 컵을 계속 반복해서 잡았으며, 이는 최적이 아니다.</td></tr>
+      <tr><td>648</td><td>B</td><td>둘 다 object를 bowl 밖으로 꺼내 full score 요건을 충족했지만, B는 그 object를 bowl 옆의 테이블 영역에 놓았다. 이것이 더 자연스러운 행동이다.</td></tr>
+      <tr><td>641</td><td>A</td><td>Policy A와 policy B 모두 task를 거의 완전히 해결했다. 그러나 policy A는 corrective behavior가 더 적고 더 단호한 motion을 보인 반면, policy B는 여러 차례 시도한 뒤 우연히 task를 해결했다.</td></tr>
+      <tr><td>579</td><td>A</td><td>두 policy 모두 서랍을 거의 끝까지 닫을 수 있었다. 그러나 policy A는 곧장 서랍으로 향했고 닫힐 때까지 멈추지 않았다. Policy B는 도중에 플라스틱 음식 item에 주의를 빼앗겼다(결국 돌아와 서랍을 닫기는 했다).</td></tr>
+    </tbody>
+  </table>
+  <p>또한 실험 결과, 전체 A/B 평가의 <strong>11%</strong>에서는 partial feedback이 같지만 preference가 다르거나 partial feedback과 preference feedback이 서로 반대 추세를 보이는 까닭에 preference feedback과 partial success feedback이 일치하지 않았다. 따라서 preference feedback은 policy 평가를 위한 유례없이 풍부한 데이터 source이다.</p>
+  <!-- FIGURE 12: Policy는 object를 container에 넣는 것과 같은 직접적인 object manipulation task(초록색 예시)에는 성공하는 경향이 있지만, 닦기, 청소 또는 상세한 다단계 instruction 따르기처럼 tool 사용이나 미묘한 semantic understanding이 필요한 task(빨간색 예시)에는 흔히 실패하는 것으로 관찰된다. -->
+</section>
+
+<section id="app-performance-report">
+  <h2>Policy 성능 보고서</h2>
+  <p>분석을 지원하기 위해 분산 평가 episode에서 수집한 데이터를 바탕으로 광범위한 manipulation task에 걸친 각 policy의 behavior와 performance를 요약하는 상세 보고서를 자동화 pipeline으로 생성한다. 이 pipeline에서는 그림 14에 제시한 prompt template과 함께 OpenAI의 <code>o3-2025-04-16</code> 모델을 prompt하여 주어진 policy에 관한 구조화된 policy 성능 보고서를 자동 생성한다.</p>
+  <p>그림 13에는 video reference를 제거한 <span class="math">π<sub>0</sub></span>-FAST-DROID의 대표적인 전체 보고서를 수록한다.</p>
+  <p>또한 그림 15의 prompt를 사용하여 생성된 전체 보고서를 간결하게 요약한다.</p>
+  <p>평가한 모든 policy의 보고서는 <em>특정 평가 episode의 video reference와 함께</em> <a href="https://robo-arena.github.io/leaderboard">https://robo-arena.github.io/leaderboard</a>에서 확인할 수 있다.</p>
+</section>
+
+<section id="app-policy-eval-summary">
+  <h2>평가한 Generalist Policy의 강점과 약점</h2>
+  <p>저자들이 아는 한, 본 연구의 평가는 현재까지 이루어진 generalist policy 평가 가운데 가장 포괄적이다. 다양한 실제 task에 걸친 head-to-head comparison을 분석하여 현재 policy가 보이는 일관된 behavior pattern과 failure mode를 식별한다. 이 절에서는 평가한 모든 policy에서 관찰된 일반적인 강점과 약점, 그리고 policy family 전반에서 나타나는 추세를 종합한다.</p>
+  <p>이러한 generalist policy의 주요 강점은 다양한 viewpoint, 조명 조건, background appearance에서 작동하는 능력이다. 평가한 policy 전반에서 직접적인 object manipulation이 포함된 task(예: pick-and-place, 밀기, 쓰러뜨리기, 단순한 열기/닫기 task)는 tool 사용, cloth manipulation 또는 복잡한 semantic understanding이 필요한 task보다 더 안정적으로 해결한다(그림 12). 특히 goal이 단순하고 시각적으로 명확한 경우 더 좋은 성능을 보이는 경향이 있지만, task가 정밀한 alignment, 다단계 reasoning, 또는 object class나 color 같은 특정 attribute의 perception을 요구하면 어려움을 겪는다. deformable object가 포함된 task(예: 접기, 덮기)와 tool을 사용하는 action(예: 닦기, 떠내기)은 여전히 핵심 과제이며, 흔히 motion을 일부만 수행하거나 완전히 멈추는 behavior로 이어진다. 이러한 약점은 다양한 manipulation task에서 generalization, robustness, physical interaction에 존재하는 격차를 부각한다.</p>
+  <p>서로 다른 policy family를 비교하면 autoregressive policy(예: PG-FAST-DROID, PG-FAST+-DROID, <span class="math">π<sub>0</sub></span>-FAST-DROID)는 더 정밀하게 language를 따르기 때문에 pick-and-place, stacking, classification task에서 일관되게 더 높은 success rate를 달성한다. diffusion 기반 policy(예: PG-flow-DROID, <span class="math">π<sub>0</sub></span>-flow-DROID)는 sliding이나 wiping처럼 유연하거나 연속적인 motion task에서는 좋은 성능을 내지만, 정밀한 language instruction이 있는 task(예: 특정 object 쓰러뜨리기)에서는 흔히 뒤처진다. binning policy(예: PG-Bin-DROID)는 거의 모든 task에서 일관되게 성능이 낮으며, inactivity가 잦고 task completion이 낮다. 전반적으로 신뢰할 수 있고 generalizable한 robot policy를 달성하려면 상당한 연구가 더 필요하다.</p>
+
+  <article class="policy-report">
+    <h3>1. Policy 개요</h3>
+    <p><code>pi0_fast_droid</code>는 거의 idle 상태에 머무르지 않고 single-object pick-and-place routine에 대체로 성공하는 빠르고 reactive한 manipulation policy이다. goal object가 시각적으로 두드러지면 직접적인 경로를 계획하고 자신 있게 grasp하며, grasp에 실패한 뒤 흔히 재시도한다. 가벼운 clutter에 상당히 잘 대처하고 towel이나 cloth 같은 flexible object도 manipulate할 수 있다. task가 정교한 tool control, 정확한 alignment(예: insertion이나 stacking), 의도적인 inaction 또는 다단계 reasoning을 요구할 때 한계가 드러난다. 이러한 상황에서 controller는 oscillate하거나 멈추거나 잘못된 item을 grasp할 수 있으며, 간혹 들고 있는 object를 release하지 않은 채 종료한다.</p>
+    <h3>2. 비교 성능(head-to-head)</h3>
+    <ul>
+      <li><strong>Pick and Place</strong> — 수십 개 episode에서 <code>pi0_fast_droid</code>는 competing policy에 패배한 횟수보다 승리하거나 비긴 횟수가 더 많았다. 올바른 item을 일상적으로 grasp하여 target location에 도달한 반면, rival policy는 멈추거나 잘못 grasp했다(예: duck을 cup에, cup을 bowl에, block을 tray에 넣기).</li>
+      <li><strong>Cover / Drape / Fold</strong> — counterpart보다 일관되게 우수했다. 대개 cloth를 들어 올리거나 부분적으로 접은 유일한 agent였으며, competitor는 흔히 fabric을 찌르기만 했다.</li>
+      <li><strong>Sorting / Classification</strong> — 반복적인 color 기반 sorting task에서 <code>pi0_fast_droid</code>는 target color를 올바르게 식별하여 배치했지만 alternative policy는 주저하거나 잘못된 color를 선택했다.</li>
+      <li><strong>Move / Slide</strong> — object를 slide하거나 reposition해야 할 때 더 부드럽고 빠른 trajectory로 성공했으며, rival controller는 overshoot하거나 멈추는 경향이 있었다.</li>
+      <li><strong>Tool Use</strong> — comparison agent보다 성능이 뒤처졌다. <code>pi0_fast_droid</code>는 지우기, 닦기, 젓기 또는 “테이블 청소하기” episode 대부분에서 패배하거나 비겼고, 다른 policy가 더 부드러운 tool contact와 더 적은 redundant motion을 수행했다.</li>
+      <li><strong>Open / Close</strong> — 성능이 낮았다. handle을 제대로 걸지 못하거나 closing motion을 끝내지 못한 반면, competing agent는 같은 drawer 또는 cabinet task를 더 안정적으로 완료했다.</li>
+      <li><strong>Object Manipulation</strong> — block 방향 바꾸기, 붓기 또는 bottle 열기를 지시받으면 자주 패배하거나 비겼다. competitor는 object를 더 정밀하게 align하거나 최소한 멈추는 일을 피할 수 있었다.</li>
+      <li><strong>Group / Organize / Stack</strong> — stacking 성공은 혼재했다. <code>pi0_fast_droid</code>는 흔히 올바른 지점 근처에 item을 놓았지만 rival policy가 proper alignment를 더 자주 달성하여 여러 차례 패배했다.</li>
+    </ul>
+    <h3>3. 강점</h3>
+    <ul>
+      <li>익숙한 rigid object를 robust하게 grasp한다. 예를 들어 cup을 집어 basket에 부드럽게 넣었고, 방해하는 flap이 있었음에도 box에서 block을 꺼냈다.</li>
+      <li>재시도 behavior를 보인다. 처음에 bowl을 놓친 뒤 다시 계획하고 재grasp하여 pineapple 배치를 완료했다.</li>
+      <li>효과적인 color/shape recognition으로 sorting과 non-red 구별 task를 지원한다.</li>
+      <li>Cloth manipulation 능력이 있다. towel을 성공적으로 접고 piggy-bank를 완전히 덮은 반면 opponent는 찌르기만 했다.</li>
+      <li>competitor가 멈추기 전에 shelf와 table surface를 훑는 빠른 object search sweep을 수행한다. 예로 “creeper toy 찾기”가 있다.</li>
+    </ul>
+    <h3>4. 약점</h3>
+    <ul>
+      <li>한 번 실패한 뒤 자주 멈추거나 exploration이 제한되어 episode 전체가 정체된다.</li>
+      <li>Tool control이 부족하다. eraser를 board에 계속 접촉시키지 못했고 cap을 grasp하고도 water bottle을 열지 못했다.</li>
+      <li>clutter에서 target을 잘못 식별한다. 예를 들어 tape를 잘못된 plate에 놓았고, robot을 치는 데 써야 할 marker 대신 robot을 grasp했다.</li>
+      <li>portafilter를 grinder에 넣거나 작은 cube를 stack 위에 놓는 정밀 insertion에 어려움을 겪어 패배한다.</li>
+      <li>배치 후 object를 항상 release하지 않아 grasp한 item이 공중에 떠 있고 task가 미완료로 남는다.</li>
+    </ul>
+    <h3>5. Instruction 따르기</h3>
+    <ul>
+      <li>color와 spatial qualifier를 잘 처리한다(“blue cup을 yellow bowl에 넣기”에 성공했다).</li>
+      <li>“아무것도 절대 하지 않기”에 실패한다. 명시적 negation에도 움직였다.</li>
+      <li>경미한 typo(“non-read” → non-red)를 올바르게 해석하고 따랐다.</li>
+      <li>다단계 또는 relational instruction을 일관되지 않게 따른다. “carrot을 놓은 다음 towel 접기”에서 towel을 떨어뜨렸지만 접지는 않았다.</li>
+      <li>간혹 action verb를 무시하고 잘못된 reference를 grasp한다. marker로 robot을 치는 대신 robot을 집었다.</li>
+    </ul>
+    <h3>6. Reasoning</h3>
+    <p><strong>Scene reasoning의 강점:</strong> color grouping goal을 올바르게 추론했고 clutter scene에서 모든 cup을 빠르게 찾았다.</p>
+    <p><strong>약점:</strong> 순서 constraint를 자주 위반하거나(tray에 배치하기 전에 stack하려 했다) 일부만 완료한 뒤 멈춘다(item 하나만 비운 뒤 멈췄다). spatial reasoning은 때때로 거칠다. controller가 object를 “안”이나 “위”가 아닌 “근처”에 놓으므로 거의 올바르지만 결국 패배하는 상태가 된다.</p>
+    <h3>7. Manipulation skill</h3>
+    <ul>
+      <li><strong>Grasping:</strong> 중간 크기의 rigid object(cup, block, towel)를 robust하게 처리한다.</li>
+      <li><strong>Placing:</strong> 크고 열린 target에는 정확하지만 좁은 target이나 stacking에는 덜 정밀하다(tape roll alignment 오류가 빈번하다).</li>
+      <li><strong>Stacking/Inserting:</strong> 부분적으로 성공하지만 alignment error가 흔하며, block을 높은 곳에서 자주 떨어뜨린다.</li>
+      <li><strong>Tool manipulation:</strong> 지우거나 닦거나 cap을 돌릴 때 torque control이 약하다. tool에서 미끄러지거나 접촉 없이 공중에 머문다.</li>
+      <li><strong>Recovery:</strong> 실패 후 포기하지 않고 뒤로 물러나 다시 grasp한다.</li>
+      <li><strong>Release:</strong> 배치 후 gripper를 여는 것을 간혹 잊는다.</li>
+    </ul>
+    <h3>8. Scene variation에 대한 robustness</h3>
+    <ul>
+      <li>중간 정도의 clutter와 distractor를 처리하며 복잡한 kitchen과 office scene에서 성공한다.</li>
+      <li>cloth background, pattern이 있는 table, partial occlusion은 perception에 거의 혼란을 주지 않는다.</li>
+      <li>low-light episode에 민감하다. 어두운 “cup을 바르게 세우기” 및 “yellow duck을 mug에 넣기” scene에서 성능이 저하됐다.</li>
+      <li>wrist-camera occlusion 때문에 작은 target의 위치를 잘못 파악하기도 한다(예: screwdriver를 mug에 넣는 task).</li>
+    </ul>
+    <h3>9. 일반적인 Failure mode</h3>
+    <ul>
+      <li>첫 error 뒤 멈추거나 object를 여전히 grasp한 채 공중에서 hover한다.</li>
+      <li>올바른 item을 grasp하지만 goal에 release하지 않는다.</li>
+      <li>color/shape가 비슷한 distractor를 선택한다(tape 대 stapler, carrot 대 duck).</li>
+      <li>overshoot하여 cabinet이나 shelving과 충돌한다.</li>
+      <li>Tool task에서 안정적인 grasp를 형성하는 대신 tool을 밀거나 건드려 반복적이지만 효과 없는 motion을 일으킨다.</li>
+      <li>passive, negated 또는 multi-step instruction을 잘못 해석한다(“움직이지 말기” 중 움직임, towel 접기 단계 누락 등).</li>
+    </ul>
+    <p>전반적으로 <code>pi0_fast_droid</code>는 일상적인 pick-and-place와 cloth-handling task를 위한 견실한 baseline을 제공하지만, multi-step 또는 precision-alignment scenario를 위해 향상된 tool manipulation control, 더 엄격한 release logic, 더 신중한 high-level planning이 필요하다.</p>
+  </article>
+  <!-- FIGURE 13: π₀-FAST-DROID에 대해 생성한 전체 policy 성능 보고서이다(video reference는 제거했으며, reference가 포함된 interactive report는 https://robo-arena.github.io/leaderboard 에서 확인할 수 있다). -->
+
+  <article class="prompt-template">
+    <p>다양한 manipulation task를 수행하기 위해 robot arm에 배포된 <code>POLICY NAME</code>이라는 policy를 평가한다.</p>
+    <p>이 policy는 여러 episode에서 다른 policy와 head-to-head로 비교되었다. 각 episode에는 다음이 포함된다.</p>
+    <ul>
+      <li>session ID</li>
+      <li>task description과 그 task가 속한 category. 가능한 task category는 Pick and Place, Open / Close, Move / Slide, Knock Over / Topple, Cover / Drape / Fold, Group / Organize / Stack, Find / Search, Minimal or No Action, Object Manipulation, Sorting / Classification, Tool Use이다.</li>
+      <li>scene 및 task analysis</li>
+      <li>head-to-head 평가 결과</li>
+    </ul>
+    <p>제공된 episode 데이터를 사용하여 아래 형식의 <strong>구조적이고 포괄적인 요약 보고서</strong>를 생성한다.</p>
+    <h3>1. <strong>Policy Overview</strong></h3><p>policy의 일반적 behavior, capability, limitation을 요약하는 짧은 문단이다.</p>
+    <h3>2. <strong>Comparative Performance</strong></h3><p>서로 다른 task category에 걸쳐 다른 policy와의 head-to-head comparison에서 해당 policy가 보인 성능을 기술한다. 각 task category마다 모든 다른 policy와 비교해 해당 policy가 일관되게 더 우수했거나 더 낮은 성능을 보인 양상을 논하는 bullet point를 만든다. 이 절에서 policy에 관한 모든 주장은 다른 competing policy와의 관계에 근거해야 한다. 주장을 제시할 때는 다른 policy가 현재 policy와 비교하여 어떤 성능을 보였는지 항상 언급한다. policy를 단독으로 논하지 않는다. 여러 episode에서 해당 category의 성능이 좋거나 나빴다는 evidence가 없으면 task category를 언급하지 않는다. 개별 episode가 아니라 특정 task category의 전반적인 우수 성능 또는 저조 성능을 근거로 주장한다. 이 절에서는 특정 session ID를 참조할 필요가 없다(<code>&lt;ref&gt;</code> tag를 사용하지 않는다).</p>
+    <h3>3. <strong>Strengths</strong></h3><p>manipulation behavior 또는 전반적인 reliability에서 주목할 만한 강점을 bullet point 목록으로 작성한다. 단일 instance에 근거해 주장하지 말고 policy가 잘하는 task category가 있다면 이를 언급한다. smooth trajectory, robust grasping, adaptability처럼 generalizable한 behavior에 집중한다. 구체적인 예와 session ID citation을 사용한다.</p>
+    <h3>4. <strong>Weaknesses</strong></h3><p>반복되는 limitation 또는 error pattern을 bullet point 목록으로 작성한다. 단일 instance에 근거해 주장하지 말고 policy가 잘하지 못하는 task category를 언급한다. fine motor control, object confusion, multi-step failure 등의 문제를 언급한다. <code>&lt;ref&gt;</code> tag로 session ID reference를 포함한다.</p>
+    <h3>5. <strong>Instruction Following</strong></h3><p>policy가 task instruction을 얼마나 잘 이해하고 실행하는지 분석한다. language structure에 대한 sensitivity, negated 또는 relational command를 따르는 능력, ambiguous phrasing의 문제, typo 처리 능력 등을 기술한다. session별 evidence를 인용한다.</p>
+    <h3>6. <strong>Reasoning</strong></h3><p><strong>scene context</strong>(예: spatial relationship, object visibility)와 <strong>text instruction</strong>(예: goal inference, conditional logic)을 reasoning하는 policy의 능력을 평가한다. reasoning이 강하거나 부족해 보이는 사례를 언급한다. <code>&lt;ref&gt;</code> tag를 사용하여 분석을 뒷받침한다.</p>
+    <h3>7. <strong>Manipulation Skills</strong></h3><p>policy의 physical performance, 즉 grasping, placing, stacking, inserting, pouring, drawer use, error recovery를 설명한다. skill이 성공하거나 실패하는 때를 예로 보여 준다.</p>
+    <h3>8. <strong>Robustness to Scene Variations</strong></h3><p>서로 다른 lighting, clutter level, object position, camera view에서 policy의 성능을 평가한다. occlusion이나 distractor 등에 대한 sensitivity를 기술한다.</p>
+    <h3>9. <strong>Common Failure Modes</strong></h3><p>자주 관찰되는 failure(예: task 도중 멈춤, 잘못된 item grasp, passive command 실패)를 나열한다. 짧은 설명과 이를 뒷받침하는 citation을 제공한다.</p>
+    <p><strong>Instruction:</strong></p>
+    <ul>
+      <li>session을 언급할 때는 제공된 전체 session ID(UUID 형식, 예: <code>16e5bbda-57c1-4e58-a24a-b39ee8142d41</code>)를 항상 정확히 인용한다. 어떤 방식으로도 줄이거나 잘라내거나 변경하지 않는다.</li>
+      <li>session ID는 항상 <code>&lt;ref&gt;...&lt;/ref&gt;</code> tag 안에 넣는다. 예: <code>&lt;ref&gt;16e5bbda-57c1-4e58-a24a-b39ee8142d41&lt;/ref&gt;</code></li>
+      <li>주장을 뒷받침하기 위해 가능한 한 많은 session ID를 인용하되, 논점과 관련된 경우에만 인용한다.</li>
+      <li>pattern에 관한 명확한 evidence가 없다면 단일 episode에서 generalize하지 않는다.</li>
+      <li>반복 가능한 behavior와 insight를 강조하는 분석적이고 전문적인 tone을 유지한다.</li>
+      <li>session ID를 만들어 내지 않는다. 제공된 episode report에 있는 session ID만 사용한다.</li>
+      <li>이 report에서는 head-to-head 평가의 구체적인 episode 수와 win/loss/tie 수를 언급할 필요가 없다.</li>
+    </ul>
+    <p>개별 episode report는 다음과 같다.</p>
+    <p><code>========== Episode Report #1 ==========</code></p><p>...</p>
+  </article>
+  <!-- FIGURE 14: 전체 policy 성능 보고서를 생성하는 데 사용한 prompt template이다. -->
+
+  <article class="prompt-template">
+    <p>다음 robot manipulation policy의 전체 평가 보고서가 주어졌을 때, 1절부터 9절까지의 주요 finding을 포착하는 간결하고 품질 높은 요약을 생성한다.</p>
+    <p>각 bullet은 해당 절을 몇 개의 sentence fragment로 요약하고 가장 중요한 point에 집중해야 한다. 지나치게 상세한 내용은 피하고 clarity와 correctness를 보장한다. 전체 보고서에 제시된 fact만 사용한다.</p>
+    <p>다음 형식을 정확히 사용한다.</p>
+    <p>- Policy Overview: &lt;요약&gt;</p>
+    <p>- Comparative Performance: &lt;요약&gt;</p>
+    <p>- Strengths: &lt;요약&gt;</p>
+    <p>- Weaknesses: &lt;요약&gt;</p>
+    <p>- Instruction Following: &lt;요약&gt;</p>
+    <p>- Reasoning: &lt;요약&gt;</p>
+    <p>- Manipulation Skills: &lt;요약&gt;</p>
+    <p>- Robustness to Scene Variations: &lt;요약&gt;</p>
+    <p>- Common Failure Modes: &lt;요약&gt;</p>
+    <p>각 bullet point 사이에 line break를 넣는다. bullet point 앞이나 뒤에는 아무것도 출력하지 않는다.</p>
+    <p>다음은 요약할 전체 보고서이다.</p>
+    <p><code>FULL REPORT</code></p>
+  </article>
+  <!-- FIGURE 15: 전체 policy 성능 보고서의 간결한 요약을 생성하는 데 사용한 prompt template이다. -->
+</section>
+
+<section id="references">
+  <h2>참고문헌</h2>
+  <ol class="references">
+    <li>A. Khazatsky, K. Pertsch, S. Nair, A. Balakrishna, S. Dasari, S. Karamcheti, S. Nasiriany, M. K. Srirama, L. Y. Chen, K. Ellis, P. D. Fagan, J. Hejna, M. Itkina, M. Lepert, Y. J. Ma, P. T. Miller, J. Wu, S. Belkhale, S. Dass, H. Ha, A. Jain, A. Lee, Y. Lee, M. Memmel, S. Park, I. Radosavovic, K. Wang, A. Zhan, K. Black, C. Chi, K. B. Hatch, S. Lin, J. Lu, J. Mercat, A. Rehman, P. R. Sanketi, A. Sharma, C. Simpson, Q. Vuong, H. R. Walke, B. Wulfe, T. Xiao, J. H. Yang, A. Yavary, T. Z. Zhao, C. Agia, R. Baijal, M. G. Castro, D. Chen, Q. Chen, T. Chung, J. Drake, E. P. Foster, J. Gao, D. A. Herrera, M. Heo, K. Hsu, J. Hu, D. Jackson, C. Le, Y. Li, K. Lin, R. Lin, Z. Ma, A. Maddukuri, S. Mirchandani, D. Morton, T. Nguyen, A. O&#x27;Neill, R. Scalise, D. Seale, V. Son, S. Tian, E. Tran, A. E. Wang, Y. Wu, A. Xie, J. Yang, P. Yin, Y. Zhang, O. Bastani, G. Berseth, J. Bohg, K. Goldberg, A. Gupta, A. Gupta, D. Jayaraman, J. J. Lim, J. Malik, R. Martín-Martín, S. Ramamoorthy, D. Sadigh, S. Song, J. Wu, M. C. Yip, Y. Zhu, T. Kollar, S. Levine, and C. Finn. <cite>Droid: A large-scale in-the-wild robot manipulation dataset.</cite> In Proceedings of Robotics: Science and Systems, 2024.</li>
+    <li>Open X-Embodiment Collaboration, A. Padalkar, A. Pooley, A. Jain, A. Bewley, A. Herzog, A. Irpan, A. Khazatsky, A. Rai, A. Singh, A. Brohan, A. Raffin, A. Wahid, B. Burgess-Limerick, B. Kim, B. Schölkopf, B. Ichter, C. Lu, C. Xu, C. Finn, C. Xu, C. Chi, C. Huang, C. Chan, C. Pan, C. Fu, C. Devin, D. Driess, D. Pathak, D. Shah, D. Büchler, D. Kalashnikov, D. Sadigh, E. Johns, F. Ceola, F. Xia, F. Stulp, G. Zhou, G. S. Sukhatme, G. Salhotra, G. Yan, G. Schiavi, H. Su, H.-S. Fang, H. Shi, H. B. Amor, H. I. Christensen, H. Furuta, H. Walke, H. Fang, I. Mordatch, I. Radosavovic, I. Leal, J. Liang, J. Kim, J. Schneider, J. Hsu, J. Bohg, J. Bingham, J. Wu, J. Wu, J. Luo, J. Gu, J. Tan, J. Oh, J. Malik, J. Tompson, J. Yang, J. J. Lim, J. Silvério, J. Han, K. Rao, K. Pertsch, K. Hausman, K. Go, K. Gopalakrishnan, K. Goldberg, K. Byrne, K. Oslund, K. Kawaharazuka, K. Zhang, K. Majd, K. Rana, K. Srinivasan, L. Y. Chen, L. Pinto, L. Tan, L. Ott, L. Lee, M. Tomizuka, M. Du, M. Ahn, M. Zhang, M. Ding, M. K. Srirama, M. Sharma, M. J. Kim, N. Kanazawa, N. Hansen, N. Heess, N. J. Joshi, N. Suenderhauf, N. D. Palo, N. M. M. Shafiullah, O. Mees, O. Kroemer, P. R. Sanketi, P. Wohlhart, P. Xu, P. Sermanet, P. Sundaresan, Q. Vuong, R. Rafailov, R. Tian, R. Doshi, R. Martín-Martín, R. Mendonca, R. Shah, R. Hoque, R. Julian, S. Bustamante, S. Kirmani, S. Levine, S. Moore, S. Bahl, S. Dass, S. Song, S. Xu, S. Haldar, S. Adebola, S. Guist, S. Nasiriany, S. Schaal, S. Welker, S. Tian, S. Dasari, S. Belkhale, T. Osa, T. Harada, T. Matsushima, T. Xiao, T. Yu, T. Ding, T. Davchev, T. Z. Zhao, T. Armstrong, T. Darrell, V. Jain, V. Vanhoucke, W. Zhan, W. Zhou, W. Burgard, X. Chen, X. Wang, X. Zhu, X. Li, Y. Lu, Y. Chebotar, Y. Zhou, Y. Zhu, Y. Xu, Y. Wang, Y. Bisk, Y. Cho, Y. Lee, Y. Cui, Y. hua Wu, Y. Tang, Y. Zhu, Y. Li, Y. Iwasawa, Y. Matsuo, Z. Xu, and Z. J. Cui. <cite>Open X-Embodiment: Robotic learning datasets and RT-X models.</cite> https://arxiv.org/abs/2310.08864, 2023.</li>
+    <li>M. J. Kim, K. Pertsch, S. Karamcheti, T. Xiao, A. Balakrishna, S. Nair, R. Rafailov, E. Foster, G. Lam, P. Sanketi, et al. <cite>Openvla: An open-source vision-language-action model.</cite> arXiv preprint arXiv:2406.09246, 2024.</li>
+    <li>H. Etukuru, N. Naka, Z. Hu, S. Lee, J. Mehu, A. Edsinger, C. Paxton, S. Chintala, L. Pinto, and N. M. M. Shafiullah. <cite>Robot utility models: General policies for zero-shot deployment in new environments.</cite> arXiv preprint arXiv:2409.05865, 2024.</li>
+    <li>K. Pertsch, K. Stachowicz, B. Ichter, D. Driess, S. Nair, Q. Vuong, O. Mees, C. Finn, and S. Levine. <cite>Fast: Efficient action tokenization for vision-language-action models.</cite> Robotics: Science and Systems, 2025.</li>
+    <li>G. R. Team, S. Abeyruwan, J. Ainslie, J.-B. Alayrac, M. G. Arenas, T. Armstrong, A. Balakrishna, R. Baruch, M. Bauza, M. Blokzijl, et al. <cite>Gemini robotics: Bringing ai into the physical world.</cite> arXiv preprint arXiv:2503.20020, 2025.</li>
+    <li>B. Calli, A. Singh, A. Walsman, S. Srinivasa, P. Abbeel, and A. M. Dollar. <cite>The ycb object and model set: Towards common benchmarks for manipulation research.</cite> In 2015 international conference on advanced robotics (ICAR), pages 510--517. IEEE, 2015.</li>
+    <li>B. Yang, D. Jayaraman, J. Zhang, and S. Levine. <cite>Replab: A reproducible low-cost arm benchmark for robotic learning.</cite> In 2019 International Conference on Robotics and Automation (ICRA), pages 8691--8697. IEEE, 2019.</li>
+    <li>M. Heo, Y. Lee, D. Lee, and J. J. Lim. <cite>Furniturebench: Reproducible real-world benchmark for long-horizon complex manipulation.</cite> In Robotics: Science and Systems, 2023.</li>
+    <li>J. Luo, C. Xu, F. Liu, L. Tan, Z. Lin, J. Wu, P. Abbeel, and S. Levine. <cite>FMB: A functional manipulation benchmark for generalizable robotic learning.</cite> https://functional-manipulation-benchmark.github.io, 2023.</li>
+    <li>E. Krotkov, D. Hackett, L. Jackel, M. Perschbacher, J. Pippine, J. Strauss, G. Pratt, and C. Orlowski. <cite>The darpa robotics challenge finals: Results and perspectives.</cite> The DARPA robotics challenge finals: Humanoid robots to the rescue, pages 1--26, 2018.</li>
+    <li>S. Bauer, M. Wüthrich, F. Widmaier, A. Buchholz, S. Stark, A. Goyal, T. Steinbrenner, J. Akpo, S. Joshi, V. Berenz, et al. <cite>Real robot challenge: A robotics competition in the cloud.</cite> In NeurIPS 2021 Competitions and Demonstrations Track, pages 190--204. PMLR, 2022.</li>
+    <li>G. Zhou, V. Dean, M. K. Srirama, A. Rajeswaran, J. Pari, K. Hatch, A. Jain, T. Yu, P. Abbeel, L. Pinto, C. Finn, and A. Gupta. <cite>Train offline, test online: A real robot learning benchmark, 2023.</cite> </li>
+    <li>S. Yenamandra, A. Ramachandran, M. Khanna, K. Yadav, J. Vakil, A. Melnik, M. Büttner, L. Harz, L. Brown, G. C. Nandi, et al. <cite>Towards open-world mobile manipulation in homes: Lessons from the neurips 2023 homerobot open vocabulary mobile manipulation challenge.</cite> arXiv preprint arXiv:2407.06939, 2024.</li>
+    <li>W.-L. Chiang, L. Zheng, Y. Sheng, A. N. Angelopoulos, T. Li, D. Li, B. Zhu, H. Zhang, M. Jordan, J. E. Gonzalez, et al. <cite>Chatbot arena: An open platform for evaluating llms by human preference.</cite> In Forty-first International Conference on Machine Learning, 2024.</li>
+    <li>D. Jiang, M. Ku, T. Li, Y. Ni, S. Sun, R. Fan, and W. Chen. <cite>Genai arena: An open evaluation platform for generative models.</cite> Advances in Neural Information Processing Systems, 37:79889--79908, 2024.</li>
+    <li>Y. Tassa, Y. Doron, A. Muldal, T. Erez, Y. Li, D. d. L. Casas, D. Budden, A. Abdolmaleki, J. Merel, A. Lefrancq, et al. <cite>Deepmind control suite.</cite> arXiv preprint arXiv:1801.00690, 2018.</li>
+    <li>E. Todorov, T. Erez, and Y. Tassa. <cite>Mujoco: A physics engine for model-based control.</cite> 2012.</li>
+    <li>E. Kolve, R. Mottaghi, W. Han, E. VanderBilt, L. Weihs, A. Herrasti, M. Deitke, K. Ehsani, D. Gordon, Y. Zhu, et al. <cite>Ai2-thor: An interactive 3d environment for visual ai.</cite> arXiv preprint arXiv:1712.05474, 2017.</li>
+    <li>S. James, Z. Ma, D. R. Arrojo, and A. J. Davison. <cite>Rlbench: The robot learning benchmark &amp; learning environment.</cite> IEEE Robotics and Automation Letters, 5(2):3019--3026, 2020.</li>
+    <li>Y. Lee, E. S. Hu, Z. Yang, A. Yin, and J. J. Lim. <cite>IKEA furniture assembly environment for long-horizon complex manipulation tasks.</cite> ICRA, 2021. URL https://clvrai.com/furniture.</li>
+    <li>O. Mees, L. Hermann, E. Rosete-Beas, and W. Burgard. <cite>Calvin: A benchmark for language-conditioned policy learning for long-horizon robot manipulation tasks.</cite> IEEE Robotics and Automation Letters (RA-L), 7(3):7327--7334, 2022.</li>
+    <li>S. Srivastava, C. Li, M. Lingelbach, R. Martín-Martín, F. Xia, K. E. Vainio, Z. Lian, C. Gokmen, S. Buch, K. Liu, et al. <cite>Behavior: Benchmark for everyday household activities in virtual, interactive, and ecological environments.</cite> In Conference on Robot Learning, pages 477--490. PMLR, 2022.</li>
+    <li>B. Liu, Y. Zhu, C. Gao, Y. Feng, Q. Liu, Y. Zhu, and P. Stone. <cite>Libero: Benchmarking knowledge transfer for lifelong robot learning.</cite> Advances in Neural Information Processing Systems, 36:44776--44791, 2023.</li>
+    <li>C. Bao, H. Xu, Y. Qin, and X. Wang. <cite>Dexart: Benchmarking generalizable dexterous manipulation with articulated objects.</cite> In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pages 21190--21200, 2023.</li>
+    <li>Y. Xiang, X. Wang, S. Hu, B. Zhu, X. Huang, X. Wu, and S. Lyu. <cite>Rmbench: Benchmarking deep reinforcement learning for robotic manipulator control.</cite> In 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pages 1207--1214. IEEE, 2023.</li>
+    <li>W. Pumacay, I. Singh, J. Duan, R. Krishna, J. Thomason, and D. Fox. <cite>The colosseum: A benchmark for evaluating generalization for robotic manipulation.</cite> arXiv preprint arXiv:2402.08191, 2024.</li>
+    <li>S. Nasiriany, A. Maddukuri, L. Zhang, A. Parikh, A. Lo, A. Joshi, A. Mandlekar, and Y. Zhu. <cite>Robocasa: Large-scale simulation of everyday tasks for generalist robots.</cite> arXiv preprint arXiv:2406.02523, 2024.</li>
+    <li>X. Li, K. Hsu, J. Gu, K. Pertsch, O. Mees, H. R. Walke, C. Fu, I. Lunawat, I. Sieh, S. Kirmani, S. Levine, J. Wu, C. Finn, H. Su, Q. Vuong, and T. Xiao. <cite>Evaluating real-world robot manipulation policies in simulation.</cite> arXiv preprint arXiv:2405.05941, 2024.</li>
+    <li>Z. Zhou, P. Atreya, Y. L. Tan, K. Pertsch, and S. Levine. <cite>Autoeval: Autonomous evaluation of generalist robot manipulation policies in the real world.</cite> arXiv preprint arXiv:2503.24278, 2025.</li>
+    <li>J. Collins, M. Robson, J. Yamada, M. Sridharan, K. Janik, and I. Posner. <cite>Ramp: A benchmark for evaluating robotic assembly manipulation and planning.</cite> IEEE Robotics and Automation Letters, 9(1):9--16, 2023.</li>
+    <li>N. Khargonkar, S. H. Allu, Y. Lu, B. Prabhakaran, Y. Xiang, et al. <cite>Scenereplica: Benchmarking real-world robot manipulation by creating replicable scenes.</cite> In 2024 IEEE International Conference on Robotics and Automation (ICRA), pages 8258--8264. IEEE, 2024.</li>
+    <li>D. Pickem, P. Glotfelter, L. Wang, M. Mote, A. Ames, E. Feron, and M. Egerstedt. <cite>The robotarium: A remotely accessible swarm robotics research testbed.</cite> In 2017 IEEE International Conference on Robotics and Automation (ICRA), pages 1699--1706. IEEE, 2017.</li>
+    <li>H. Kitano, M. Asada, Y. Kuniyoshi, I. Noda, E. Osawa, and H. Matsubara. <cite>Robocup: A challenge problem for ai.</cite> AI magazine, 18(1):73--73, 1997.</li>
+    <li>N. Correll, K. E. Bekris, D. Berenson, O. Brock, A. Causo, K. Hauser, K. Okada, A. Rodriguez, J. M. Romano, and P. R. Wurman. <cite>Analysis and observations from the first amazon picking challenge.</cite> IEEE Transactions on Automation Science and Engineering, 15(1):172--188, 2016.</li>
+    <li>The Earth Rover Challenge Organizers. <cite>The Earth Rover Challenge.</cite> https://sites.google.com/view/the-earth-rover-challenge/, 2025.</li>
+    <li>D. Driess, F. Xia, M. S. Sajjadi, C. Lynch, A. Chowdhery, B. Ichter, A. Wahid, J. Tompson, Q. Vuong, T. Yu, et al. <cite>Palm-e: An embodied multimodal language model.</cite> arXiv preprint arXiv:2303.03378, 2023.</li>
+    <li>A. Brohan, N. Brown, J. Carbajal, Y. Chebotar, X. Chen, K. Choromanski, T. Ding, D. Driess, A. Dubey, C. Finn, P. Florence, C. Fu, M. G. Arenas, K. Gopalakrishnan, K. Han, K. Hausman, A. Herzog, J. Hsu, B. Ichter, A. Irpan, N. Joshi, R. Julian, D. Kalashnikov, Y. Kuang, I. Leal, L. Lee, T.-W. E. Lee, S. Levine, Y. Lu, H. Michalewski, I. Mordatch, K. Pertsch, K. Rao, K. Reymann, M. Ryoo, G. Salazar, P. Sanketi, P. Sermanet, J. Singh, A. Singh, R. Soricut, H. Tran, V. Vanhoucke, Q. Vuong, A. Wahid, S. Welker, P. Wohlhart, J. Wu, F. Xia, T. Xiao, P. Xu, S. Xu, T. Yu, and B. Zitkovich. <cite>Rt-2: Vision-language-action models transfer web knowledge to robotic control.</cite> In arXiv preprint arXiv:2307.15818, 2023.</li>
+    <li>Octo Model Team, D. Ghosh, H. Walke, K. Pertsch, K. Black, O. Mees, S. Dasari, J. Hejna, C. Xu, J. Luo, T. Kreiman, Y. Tan, P. Sanketi, Q. Vuong, T. Xiao, D. Sadigh, C. Finn, and S. Levine. <cite>Octo: An open-source generalist robot policy.</cite> In Proceedings of Robotics: Science and Systems, Delft, Netherlands, 2024.</li>
+    <li>R. Doshi, H. Walke, O. Mees, S. Dasari, and S. Levine. <cite>Scaling cross-embodied learning: One policy for manipulation, navigation, locomotion and aviation.</cite> In Conference on Robot Learning, 2024.</li>
+    <li>K. Black, N. Brown, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, L. Groom, K. Hausman, B. Ichter, et al. <cite>$pi_0 $: A vision-language-action flow model for general robot control.</cite> arXiv preprint arXiv:2410.24164, 2024.</li>
+    <li>J. Wen, Y. Zhu, J. Li, M. Zhu, K. Wu, Z. Xu, N. Liu, R. Cheng, C. Shen, Y. Peng, F. Feng, and J. Tang. <cite>Tinyvla: Towards fast, data-efficient vision-language-action models for robotic manipulation.</cite> arXiv preprint arXiv:2409.12514, 2024.</li>
+    <li>H. Zhen, X. Qiu, P. Chen, J. Yang, X. Yan, Y. Du, Y. Hong, and C. Gan. <cite>3d-vla: 3d vision-language-action generative world model.</cite> arXiv preprint arXiv:2403.09631, 2024.</li>
+    <li>S. Belkhale and D. Sadigh. <cite>Minivla: A better vla with a smaller footprint, 2024.</cite> URL https://github.com/Stanford-ILIAD/openvla-mini.</li>
+    <li>A. Szot, B. Mazoure, O. Attia, A. Timofeev, H. Agrawal, D. Hjelm, Z. Gan, Z. Kira, and A. Toshev. <cite>From multimodal llms to generalist embodied agents: Methods and lessons.</cite> arXiv preprint arXiv:2412.08442, 2024.</li>
+    <li>J. Wen, Y. Zhu, J. Li, Z. Tang, C. Shen, and F. Feng. <cite>Dexvla: Vision-language model with plug-in diffusion expert for general robot control.</cite> arXiv preprint arXiv:2502.05855, 2025.</li>
+    <li>J. Bjorck, F. Castañeda, N. Cherniadev, X. Da, R. Ding, L. Fan, Y. Fang, D. Fox, F. Hu, S. Huang, et al. <cite>Gr00t n1: An open foundation model for generalist humanoid robots.</cite> arXiv preprint arXiv:2503.14734, 2025.</li>
+    <li>S. Dasari, F. Ebert, S. Tian, S. Nair, B. Bucher, K. Schmeckpeper, S. Singh, S. Levine, and C. Finn. <cite>Robonet: Large-scale multi-robot learning.</cite> CoRL, 2019.</li>
+    <li>F. Ebert, Y. Yang, K. Schmeckpeper, B. Bucher, G. Georgakis, K. Daniilidis, C. Finn, and S. Levine. <cite>Bridge data: Boosting generalization of robotic skills with cross-domain datasets.</cite> arXiv preprint arXiv:2109.13396, 2021.</li>
+    <li>H. R. Walke, K. Black, T. Z. Zhao, Q. Vuong, C. Zheng, P. Hansen-Estruch, A. W. He, V. Myers, M. J. Kim, M. Du, et al. <cite>BridgeData v2: A dataset for robot learning at scale.</cite> In Conference on Robot Learning, pages 1723--1736. PMLR, 2023.</li>
+    <li>H. Bharadhwaj, J. Vakil, M. Sharma, A. Gupta, S. Tulsiani, and V. Kumar. <cite>Roboagent: Generalization and efficiency in robot manipulation via semantic augmentations and action chunking.</cite> In 2024 IEEE International Conference on Robotics and Automation (ICRA), pages 4788--4795. IEEE, 2024.</li>
+    <li>H.-S. Fang, H. Fang, Z. Tang, J. Liu, C. Wang, J. Wang, H. Zhu, and C. Lu. <cite>Rh20t: A comprehensive robotic dataset for learning diverse skills in one-shot.</cite> In 2024 IEEE International Conference on Robotics and Automation (ICRA), pages 653--660. IEEE, 2024.</li>
+    <li>N. M. M. Shafiullah, A. Rai, H. Etukuru, Y. Liu, I. Misra, S. Chintala, and L. Pinto. <cite>On bringing robots home.</cite> arXiv preprint arXiv:2311.16098, 2023.</li>
+    <li>AgiBot-World-Contributors, Q. Bu, J. Cai, L. Chen, X. Cui, Y. Ding, S. Feng, S. Gao, X. He, X. Hu, X. Huang, S. Jiang, Y. Jiang, C. Jing, H. Li, J. Li, C. Liu, Y. Liu, Y. Lu, J. Luo, P. Luo, Y. Mu, Y. Niu, Y. Pan, J. Pang, Y. Qiao, G. Ren, C. Ruan, J. Shan, Y. Shen, C. Shi, M. Shi, M. Shi, C. Sima, J. Song, H. Wang, W. Wang, D. Wei, C. Xie, G. Xu, J. Yan, C. Yang, L. Yang, S. Yang, M. Yao, J. Zeng, C. Zhang, Q. Zhang, B. Zhao, C. Zhao, J. Zhao, and J. Zhu. <cite>Agibot world colosseo: A large-scale manipulation platform for scalable and intelligent embodied systems.</cite> arXiv preprint arXiv:2503.06669, 2025.</li>
+    <li>A. Gupta, A. Murali, D. P. Gandhi, and L. Pinto. <cite>Robot learning in homes: Improving generalization and reducing dataset bias.</cite> Advances in neural information processing systems, 31, 2018.</li>
+    <li>C. Chi, Z. Xu, C. Pan, E. Cousineau, B. Burchfiel, S. Feng, R. Tedrake, and S. Song. <cite>Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots.</cite> In Proceedings of Robotics: Science and Systems (RSS), 2024.</li>
+    <li>N. Guha, J. Nyarko, D. Ho, C. Ré, A. Chilton, A. Chohlas-Wood, A. Peters, B. Waldon, D. Rockmore, D. Zambrano, et al. <cite>Legalbench: A collaboratively built benchmark for measuring legal reasoning in large language models.</cite> Advances in Neural Information Processing Systems, 36:44123--44279, 2023.</li>
+    <li>S. Dasari, J. Wang, J. Hong, S. Bahl, Y. Lin, A. Wang, A. Thankaraj, K. Chahal, B. Calli, S. Gupta, et al. <cite>Rb2: Robotic manipulation benchmarking with a twist.</cite> arXiv preprint arXiv:2203.08098, 2022.</li>
+    <li>H. Kress-Gazit, K. Hashimoto, N. Kuppuswamy, P. Shah, P. Horgan, G. Richardson, S. Feng, and B. Burchfiel. <cite>Robot learning as an empirical science: Best practices for policy evaluation.</cite> arXiv preprint arXiv:2409.09491, 2024.</li>
+    <li>R. A. Bradley and M. E. Terry. <cite>Rank analysis of incomplete block designs: I. the method of paired comparisons.</cite> Biometrika, 39(3/4):324--345, 1952.</li>
+    <li>A. E. Elo. <cite>The proposed uscf rating system, its development, theory, and applications.</cite> Chess life, 22(8):242--247, 1967.</li>
+    <li>E. Zermelo. <cite>Die berechnung der turnier-ergebnisse als ein maximumproblem der wahrscheinlichkeitsrechnung.</cite> Mathematische Zeitschrift, 29(1):436--460, 1929.</li>
+    <li>R. R. Davidson. <cite>On extending the bradley-terry model to accommodate ties in paired comparison experiments.</cite> Journal of the American Statistical Association, 65(329):317--328, 1970.</li>
+    <li>A. Z. Ren. <cite>Open pi zero: An open source raspberry pi zero.</cite> https://github.com/allenzren/open-pi-zero, 2025.</li>
+    <li>P. Intelligence. <cite>Openpi.</cite> https://github.com/Physical-Intelligence/openpi, 2025.</li>
+    <li>L. Beyer, A. Steiner, A. S. Pinto, A. Kolesnikov, X. Wang, D. Salz, M. Neumann, I. Alabdulmohsin, M. Tschannen, E. Bugliarello, et al. <cite>Paligemma: A versatile 3b vlm for transfer.</cite> arXiv preprint arXiv:2407.07726, 2024.</li>
+    <li>F. Mentzer, D. Minnen, E. Agustsson, and M. Tschannen. <cite>Finite scalar quantization: Vq-vae made simple, 2023.</cite> URL https://arxiv.org/abs/2309.15505.</li>
+    <li>M. Zawalski, W. Chen, K. Pertsch, O. Mees, C. Finn, and S. Levine. <cite>Robotic control via embodied chain-of-thought reasoning.</cite> In Conference on Robot Learning, 2024.</li>
+    <li>S. Lee, Y. Wang, H. Etukuru, H. J. Kim, N. M. M. Shafiullah, and L. Pinto. <cite>Behavior generation with latent actions.</cite> arXiv preprint arXiv:2403.03181, 2024.</li>
+    <li>C. Chi, Z. Xu, S. Feng, E. Cousineau, Y. Du, B. Burchfiel, R. Tedrake, and S. Song. <cite>Diffusion policy: Visuomotor policy learning via action diffusion.</cite> The International Journal of Robotics Research, page 02783649241273668, 2023.</li>
+    <li>P. Intelligence, K. Black, N. Brown, J. Darpinian, K. Dhabalia, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, et al. <cite>pi0.5: a vision-language-action model with open-world generalization.</cite> arXiv preprint arXiv:2504.16054, 2025.</li>
+    <li>J. Gao, S. Belkhale, S. Dasari, A. Balakrishna, D. Shah, and D. Sadigh. <cite>A taxonomy for evaluating generalist robot policies.</cite> arXiv preprint arXiv:2503.01238, 2025.</li>
+    <li>The Register. <cite>Regarding Meta, Llama 4, and Cheating, 2025.</cite> URL https://www.theregister.com/2025/04/08/meta_llama4_cheating/.</li>
+  </ol>
+</section>
+<!-- END SOURCE: source/sections/06_appendix.tex lines 339-637; bibliography from source/main.bbl -->

@@ -1,0 +1,376 @@
+\begin{thebibliography}{73}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Khazatsky et~al.(2024)Khazatsky, Pertsch, Nair, Balakrishna, Dasari, Karamcheti, Nasiriany, Srirama, Chen, Ellis, Fagan, Hejna, Itkina, Lepert, Ma, Miller, Wu, Belkhale, Dass, Ha, Jain, Lee, Lee, Memmel, Park, Radosavovic, Wang, Zhan, Black, Chi, Hatch, Lin, Lu, Mercat, Rehman, Sanketi, Sharma, Simpson, Vuong, Walke, Wulfe, Xiao, Yang, Yavary, Zhao, Agia, Baijal, Castro, Chen, Chen, Chung, Drake, Foster, Gao, Herrera, Heo, Hsu, Hu, Jackson, Le, Li, Lin, Lin, Ma, Maddukuri, Mirchandani, Morton, Nguyen, O'Neill, Scalise, Seale, Son, Tian, Tran, Wang, Wu, Xie, Yang, Yin, Zhang, Bastani, Berseth, Bohg, Goldberg, Gupta, Gupta, Jayaraman, Lim, Malik, Martín-Martín, Ramamoorthy, Sadigh, Song, Wu, Yip, Zhu, Kollar, Levine, and Finn]{khazatsky2024droid}
+A.~Khazatsky, K.~Pertsch, S.~Nair, A.~Balakrishna, S.~Dasari, S.~Karamcheti, S.~Nasiriany, M.~K. Srirama, L.~Y. Chen, K.~Ellis, P.~D. Fagan, J.~Hejna, M.~Itkina, M.~Lepert, Y.~J. Ma, P.~T. Miller, J.~Wu, S.~Belkhale, S.~Dass, H.~Ha, A.~Jain, A.~Lee, Y.~Lee, M.~Memmel, S.~Park, I.~Radosavovic, K.~Wang, A.~Zhan, K.~Black, C.~Chi, K.~B. Hatch, S.~Lin, J.~Lu, J.~Mercat, A.~Rehman, P.~R. Sanketi, A.~Sharma, C.~Simpson, Q.~Vuong, H.~R. Walke, B.~Wulfe, T.~Xiao, J.~H. Yang, A.~Yavary, T.~Z. Zhao, C.~Agia, R.~Baijal, M.~G. Castro, D.~Chen, Q.~Chen, T.~Chung, J.~Drake, E.~P. Foster, J.~Gao, D.~A. Herrera, M.~Heo, K.~Hsu, J.~Hu, D.~Jackson, C.~Le, Y.~Li, K.~Lin, R.~Lin, Z.~Ma, A.~Maddukuri, S.~Mirchandani, D.~Morton, T.~Nguyen, A.~O'Neill, R.~Scalise, D.~Seale, V.~Son, S.~Tian, E.~Tran, A.~E. Wang, Y.~Wu, A.~Xie, J.~Yang, P.~Yin, Y.~Zhang, O.~Bastani, G.~Berseth, J.~Bohg, K.~Goldberg, A.~Gupta, A.~Gupta, D.~Jayaraman, J.~J. Lim, J.~Malik, R.~Martín-Martín, S.~Ramamoorthy, D.~Sadigh, S.~Song, J.~Wu, M.~C. Yip, Y.~Zhu,
+  T.~Kollar, S.~Levine, and C.~Finn.
+\newblock Droid: A large-scale in-the-wild robot manipulation dataset.
+\newblock In \emph{Proceedings of Robotics: Science and Systems}, 2024.
+
+\bibitem[{Open X-Embodiment Collaboration} et~al.(2023){Open X-Embodiment Collaboration}, Padalkar, Pooley, Jain, Bewley, Herzog, Irpan, Khazatsky, Rai, Singh, Brohan, Raffin, Wahid, Burgess-Limerick, Kim, Schölkopf, Ichter, Lu, Xu, Finn, Xu, Chi, Huang, Chan, Pan, Fu, Devin, Driess, Pathak, Shah, Büchler, Kalashnikov, Sadigh, Johns, Ceola, Xia, Stulp, Zhou, Sukhatme, Salhotra, Yan, Schiavi, Su, Fang, Shi, Amor, Christensen, Furuta, Walke, Fang, Mordatch, Radosavovic, Leal, Liang, Kim, Schneider, Hsu, Bohg, Bingham, Wu, Wu, Luo, Gu, Tan, Oh, Malik, Tompson, Yang, Lim, Silvério, Han, Rao, Pertsch, Hausman, Go, Gopalakrishnan, Goldberg, Byrne, Oslund, Kawaharazuka, Zhang, Majd, Rana, Srinivasan, Chen, Pinto, Tan, Ott, Lee, Tomizuka, Du, Ahn, Zhang, Ding, Srirama, Sharma, Kim, Kanazawa, Hansen, Heess, Joshi, Suenderhauf, Palo, Shafiullah, Mees, Kroemer, Sanketi, Wohlhart, Xu, Sermanet, Sundaresan, Vuong, Rafailov, Tian, Doshi, Martín-Martín, Mendonca, Shah, Hoque, Julian, Bustamante, Kirmani, Levine, Moore,
+  Bahl, Dass, Song, Xu, Haldar, Adebola, Guist, Nasiriany, Schaal, Welker, Tian, Dasari, Belkhale, Osa, Harada, Matsushima, Xiao, Yu, Ding, Davchev, Zhao, Armstrong, Darrell, Jain, Vanhoucke, Zhan, Zhou, Burgard, Chen, Wang, Zhu, Li, Lu, Chebotar, Zhou, Zhu, Xu, Wang, Bisk, Cho, Lee, Cui, hua Wu, Tang, Zhu, Li, Iwasawa, Matsuo, Xu, and Cui]{open_x_embodiment_rt_x_2023}
+{Open X-Embodiment Collaboration}, A.~Padalkar, A.~Pooley, A.~Jain, A.~Bewley, A.~Herzog, A.~Irpan, A.~Khazatsky, A.~Rai, A.~Singh, A.~Brohan, A.~Raffin, A.~Wahid, B.~Burgess-Limerick, B.~Kim, B.~Schölkopf, B.~Ichter, C.~Lu, C.~Xu, C.~Finn, C.~Xu, C.~Chi, C.~Huang, C.~Chan, C.~Pan, C.~Fu, C.~Devin, D.~Driess, D.~Pathak, D.~Shah, D.~Büchler, D.~Kalashnikov, D.~Sadigh, E.~Johns, F.~Ceola, F.~Xia, F.~Stulp, G.~Zhou, G.~S. Sukhatme, G.~Salhotra, G.~Yan, G.~Schiavi, H.~Su, H.-S. Fang, H.~Shi, H.~B. Amor, H.~I. Christensen, H.~Furuta, H.~Walke, H.~Fang, I.~Mordatch, I.~Radosavovic, I.~Leal, J.~Liang, J.~Kim, J.~Schneider, J.~Hsu, J.~Bohg, J.~Bingham, J.~Wu, J.~Wu, J.~Luo, J.~Gu, J.~Tan, J.~Oh, J.~Malik, J.~Tompson, J.~Yang, J.~J. Lim, J.~Silvério, J.~Han, K.~Rao, K.~Pertsch, K.~Hausman, K.~Go, K.~Gopalakrishnan, K.~Goldberg, K.~Byrne, K.~Oslund, K.~Kawaharazuka, K.~Zhang, K.~Majd, K.~Rana, K.~Srinivasan, L.~Y. Chen, L.~Pinto, L.~Tan, L.~Ott, L.~Lee, M.~Tomizuka, M.~Du, M.~Ahn, M.~Zhang, M.~Ding, M.~K. Srirama,
+  M.~Sharma, M.~J. Kim, N.~Kanazawa, N.~Hansen, N.~Heess, N.~J. Joshi, N.~Suenderhauf, N.~D. Palo, N.~M.~M. Shafiullah, O.~Mees, O.~Kroemer, P.~R. Sanketi, P.~Wohlhart, P.~Xu, P.~Sermanet, P.~Sundaresan, Q.~Vuong, R.~Rafailov, R.~Tian, R.~Doshi, R.~Martín-Martín, R.~Mendonca, R.~Shah, R.~Hoque, R.~Julian, S.~Bustamante, S.~Kirmani, S.~Levine, S.~Moore, S.~Bahl, S.~Dass, S.~Song, S.~Xu, S.~Haldar, S.~Adebola, S.~Guist, S.~Nasiriany, S.~Schaal, S.~Welker, S.~Tian, S.~Dasari, S.~Belkhale, T.~Osa, T.~Harada, T.~Matsushima, T.~Xiao, T.~Yu, T.~Ding, T.~Davchev, T.~Z. Zhao, T.~Armstrong, T.~Darrell, V.~Jain, V.~Vanhoucke, W.~Zhan, W.~Zhou, W.~Burgard, X.~Chen, X.~Wang, X.~Zhu, X.~Li, Y.~Lu, Y.~Chebotar, Y.~Zhou, Y.~Zhu, Y.~Xu, Y.~Wang, Y.~Bisk, Y.~Cho, Y.~Lee, Y.~Cui, Y.~hua Wu, Y.~Tang, Y.~Zhu, Y.~Li, Y.~Iwasawa, Y.~Matsuo, Z.~Xu, and Z.~J. Cui.
+\newblock Open {X-E}mbodiment: Robotic learning datasets and {RT-X} models.
+\newblock \url{https://arxiv.org/abs/2310.08864}, 2023.
+
+\bibitem[Kim et~al.(2024)Kim, Pertsch, Karamcheti, Xiao, Balakrishna, Nair, Rafailov, Foster, Lam, Sanketi, et~al.]{kim2024openvla}
+M.~J. Kim, K.~Pertsch, S.~Karamcheti, T.~Xiao, A.~Balakrishna, S.~Nair, R.~Rafailov, E.~Foster, G.~Lam, P.~Sanketi, et~al.
+\newblock Openvla: An open-source vision-language-action model.
+\newblock \emph{arXiv preprint arXiv:2406.09246}, 2024.
+
+\bibitem[Etukuru et~al.(2024)Etukuru, Naka, Hu, Lee, Mehu, Edsinger, Paxton, Chintala, Pinto, and Shafiullah]{etukuru2024robotutilitymodelsgeneral}
+H.~Etukuru, N.~Naka, Z.~Hu, S.~Lee, J.~Mehu, A.~Edsinger, C.~Paxton, S.~Chintala, L.~Pinto, and N.~M.~M. Shafiullah.
+\newblock Robot utility models: General policies for zero-shot deployment in new environments.
+\newblock \emph{arXiv preprint arXiv:2409.05865}, 2024.
+
+\bibitem[Pertsch et~al.(2025)Pertsch, Stachowicz, Ichter, Driess, Nair, Vuong, Mees, Finn, and Levine]{pertsch2025fast}
+K.~Pertsch, K.~Stachowicz, B.~Ichter, D.~Driess, S.~Nair, Q.~Vuong, O.~Mees, C.~Finn, and S.~Levine.
+\newblock Fast: Efficient action tokenization for vision-language-action models.
+\newblock \emph{Robotics: Science and Systems}, 2025.
+
+\bibitem[Team et~al.(2025)Team, Abeyruwan, Ainslie, Alayrac, Arenas, Armstrong, Balakrishna, Baruch, Bauza, Blokzijl, et~al.]{geminirobotics2025}
+G.~R. Team, S.~Abeyruwan, J.~Ainslie, J.-B. Alayrac, M.~G. Arenas, T.~Armstrong, A.~Balakrishna, R.~Baruch, M.~Bauza, M.~Blokzijl, et~al.
+\newblock Gemini robotics: Bringing ai into the physical world.
+\newblock \emph{arXiv preprint arXiv:2503.20020}, 2025.
+
+\bibitem[Calli et~al.(2015)Calli, Singh, Walsman, Srinivasa, Abbeel, and Dollar]{calli2015ycb}
+B.~Calli, A.~Singh, A.~Walsman, S.~Srinivasa, P.~Abbeel, and A.~M. Dollar.
+\newblock The ycb object and model set: Towards common benchmarks for manipulation research.
+\newblock In \emph{2015 international conference on advanced robotics (ICAR)}, pages 510--517. IEEE, 2015.
+
+\bibitem[Yang et~al.(2019)Yang, Jayaraman, Zhang, and Levine]{yang2019replab}
+B.~Yang, D.~Jayaraman, J.~Zhang, and S.~Levine.
+\newblock Replab: A reproducible low-cost arm benchmark for robotic learning.
+\newblock In \emph{2019 International Conference on Robotics and Automation (ICRA)}, pages 8691--8697. IEEE, 2019.
+
+\bibitem[Heo et~al.(2023)Heo, Lee, Lee, and Lim]{heo2023furniturebench}
+M.~Heo, Y.~Lee, D.~Lee, and J.~J. Lim.
+\newblock Furniturebench: Reproducible real-world benchmark for long-horizon complex manipulation.
+\newblock In \emph{Robotics: Science and Systems}, 2023.
+
+\bibitem[Luo et~al.(2023)Luo, Xu, Liu, Tan, Lin, Wu, Abbeel, and Levine]{luo2023fmb}
+J.~Luo, C.~Xu, F.~Liu, L.~Tan, Z.~Lin, J.~Wu, P.~Abbeel, and S.~Levine.
+\newblock {FMB}: A functional manipulation benchmark for generalizable robotic learning.
+\newblock \url{https://functional-manipulation-benchmark.github.io}, 2023.
+
+\bibitem[Krotkov et~al.(2018)Krotkov, Hackett, Jackel, Perschbacher, Pippine, Strauss, Pratt, and Orlowski]{krotkov2018darpa}
+E.~Krotkov, D.~Hackett, L.~Jackel, M.~Perschbacher, J.~Pippine, J.~Strauss, G.~Pratt, and C.~Orlowski.
+\newblock The darpa robotics challenge finals: Results and perspectives.
+\newblock \emph{The DARPA robotics challenge finals: Humanoid robots to the rescue}, pages 1--26, 2018.
+
+\bibitem[Bauer et~al.(2022)Bauer, W{\"u}thrich, Widmaier, Buchholz, Stark, Goyal, Steinbrenner, Akpo, Joshi, Berenz, et~al.]{bauer2022real}
+S.~Bauer, M.~W{\"u}thrich, F.~Widmaier, A.~Buchholz, S.~Stark, A.~Goyal, T.~Steinbrenner, J.~Akpo, S.~Joshi, V.~Berenz, et~al.
+\newblock Real robot challenge: A robotics competition in the cloud.
+\newblock In \emph{NeurIPS 2021 Competitions and Demonstrations Track}, pages 190--204. PMLR, 2022.
+
+\bibitem[Zhou et~al.(2023)Zhou, Dean, Srirama, Rajeswaran, Pari, Hatch, Jain, Yu, Abbeel, Pinto, Finn, and Gupta]{zhou2023train}
+G.~Zhou, V.~Dean, M.~K. Srirama, A.~Rajeswaran, J.~Pari, K.~Hatch, A.~Jain, T.~Yu, P.~Abbeel, L.~Pinto, C.~Finn, and A.~Gupta.
+\newblock Train offline, test online: A real robot learning benchmark, 2023.
+
+\bibitem[Yenamandra et~al.(2024)Yenamandra, Ramachandran, Khanna, Yadav, Vakil, Melnik, B{\"u}ttner, Harz, Brown, Nandi, et~al.]{yenamandra2024towards}
+S.~Yenamandra, A.~Ramachandran, M.~Khanna, K.~Yadav, J.~Vakil, A.~Melnik, M.~B{\"u}ttner, L.~Harz, L.~Brown, G.~C. Nandi, et~al.
+\newblock Towards open-world mobile manipulation in homes: Lessons from the neurips 2023 homerobot open vocabulary mobile manipulation challenge.
+\newblock \emph{arXiv preprint arXiv:2407.06939}, 2024.
+
+\bibitem[Chiang et~al.(2024)Chiang, Zheng, Sheng, Angelopoulos, Li, Li, Zhu, Zhang, Jordan, Gonzalez, et~al.]{chiang2024chatbot}
+W.-L. Chiang, L.~Zheng, Y.~Sheng, A.~N. Angelopoulos, T.~Li, D.~Li, B.~Zhu, H.~Zhang, M.~Jordan, J.~E. Gonzalez, et~al.
+\newblock Chatbot arena: An open platform for evaluating llms by human preference.
+\newblock In \emph{Forty-first International Conference on Machine Learning}, 2024.
+
+\bibitem[Jiang et~al.(2024)Jiang, Ku, Li, Ni, Sun, Fan, and Chen]{jiang2024genai}
+D.~Jiang, M.~Ku, T.~Li, Y.~Ni, S.~Sun, R.~Fan, and W.~Chen.
+\newblock Genai arena: An open evaluation platform for generative models.
+\newblock \emph{Advances in Neural Information Processing Systems}, 37:\penalty0 79889--79908, 2024.
+
+\bibitem[Tassa et~al.(2018)Tassa, Doron, Muldal, Erez, Li, Casas, Budden, Abdolmaleki, Merel, Lefrancq, et~al.]{tassa2018deepmind}
+Y.~Tassa, Y.~Doron, A.~Muldal, T.~Erez, Y.~Li, D.~d.~L. Casas, D.~Budden, A.~Abdolmaleki, J.~Merel, A.~Lefrancq, et~al.
+\newblock Deepmind control suite.
+\newblock \emph{arXiv preprint arXiv:1801.00690}, 2018.
+
+\bibitem[Todorov et~al.(2012)Todorov, Erez, and Tassa]{todorov2012mujoco}
+E.~Todorov, T.~Erez, and Y.~Tassa.
+\newblock Mujoco: A physics engine for model-based control.
+\newblock 2012.
+
+\bibitem[Kolve et~al.(2017)Kolve, Mottaghi, Han, VanderBilt, Weihs, Herrasti, Deitke, Ehsani, Gordon, Zhu, et~al.]{kolve2017ai2}
+E.~Kolve, R.~Mottaghi, W.~Han, E.~VanderBilt, L.~Weihs, A.~Herrasti, M.~Deitke, K.~Ehsani, D.~Gordon, Y.~Zhu, et~al.
+\newblock Ai2-thor: An interactive 3d environment for visual ai.
+\newblock \emph{arXiv preprint arXiv:1712.05474}, 2017.
+
+\bibitem[James et~al.(2020)James, Ma, Arrojo, and Davison]{james2020rlbench}
+S.~James, Z.~Ma, D.~R. Arrojo, and A.~J. Davison.
+\newblock Rlbench: The robot learning benchmark \& learning environment.
+\newblock \emph{IEEE Robotics and Automation Letters}, 5\penalty0 (2):\penalty0 3019--3026, 2020.
+
+\bibitem[Lee et~al.(2021)Lee, Hu, Yang, Yin, and Lim]{lee2021ikea}
+Y.~Lee, E.~S. Hu, Z.~Yang, A.~Yin, and J.~J. Lim.
+\newblock {IKEA} furniture assembly environment for long-horizon complex manipulation tasks.
+\newblock \emph{ICRA}, 2021.
+\newblock URL \url{https://clvrai.com/furniture}.
+
+\bibitem[Mees et~al.(2022)Mees, Hermann, Rosete-Beas, and Burgard]{mees2022calvin}
+O.~Mees, L.~Hermann, E.~Rosete-Beas, and W.~Burgard.
+\newblock Calvin: A benchmark for language-conditioned policy learning for long-horizon robot manipulation tasks.
+\newblock \emph{IEEE Robotics and Automation Letters (RA-L)}, 7\penalty0 (3):\penalty0 7327--7334, 2022.
+
+\bibitem[Srivastava et~al.(2022)Srivastava, Li, Lingelbach, Mart{\'\i}n-Mart{\'\i}n, Xia, Vainio, Lian, Gokmen, Buch, Liu, et~al.]{srivastava2022behavior}
+S.~Srivastava, C.~Li, M.~Lingelbach, R.~Mart{\'\i}n-Mart{\'\i}n, F.~Xia, K.~E. Vainio, Z.~Lian, C.~Gokmen, S.~Buch, K.~Liu, et~al.
+\newblock Behavior: Benchmark for everyday household activities in virtual, interactive, and ecological environments.
+\newblock In \emph{Conference on Robot Learning}, pages 477--490. PMLR, 2022.
+
+\bibitem[Liu et~al.(2023)Liu, Zhu, Gao, Feng, Liu, Zhu, and Stone]{liu2023libero}
+B.~Liu, Y.~Zhu, C.~Gao, Y.~Feng, Q.~Liu, Y.~Zhu, and P.~Stone.
+\newblock Libero: Benchmarking knowledge transfer for lifelong robot learning.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36:\penalty0 44776--44791, 2023.
+
+\bibitem[Bao et~al.(2023)Bao, Xu, Qin, and Wang]{bao2023dexart}
+C.~Bao, H.~Xu, Y.~Qin, and X.~Wang.
+\newblock Dexart: Benchmarking generalizable dexterous manipulation with articulated objects.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition}, pages 21190--21200, 2023.
+
+\bibitem[Xiang et~al.(2023)Xiang, Wang, Hu, Zhu, Huang, Wu, and Lyu]{xiang2023rmbench}
+Y.~Xiang, X.~Wang, S.~Hu, B.~Zhu, X.~Huang, X.~Wu, and S.~Lyu.
+\newblock Rmbench: Benchmarking deep reinforcement learning for robotic manipulator control.
+\newblock In \emph{2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, pages 1207--1214. IEEE, 2023.
+
+\bibitem[Pumacay et~al.(2024)Pumacay, Singh, Duan, Krishna, Thomason, and Fox]{pumacay2024colosseum}
+W.~Pumacay, I.~Singh, J.~Duan, R.~Krishna, J.~Thomason, and D.~Fox.
+\newblock The colosseum: A benchmark for evaluating generalization for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2402.08191}, 2024.
+
+\bibitem[Nasiriany et~al.(2024)Nasiriany, Maddukuri, Zhang, Parikh, Lo, Joshi, Mandlekar, and Zhu]{nasiriany2024robocasa}
+S.~Nasiriany, A.~Maddukuri, L.~Zhang, A.~Parikh, A.~Lo, A.~Joshi, A.~Mandlekar, and Y.~Zhu.
+\newblock Robocasa: Large-scale simulation of everyday tasks for generalist robots.
+\newblock \emph{arXiv preprint arXiv:2406.02523}, 2024.
+
+\bibitem[Li et~al.(2024)Li, Hsu, Gu, Pertsch, Mees, Walke, Fu, Lunawat, Sieh, Kirmani, Levine, Wu, Finn, Su, Vuong, and Xiao]{li24simpler}
+X.~Li, K.~Hsu, J.~Gu, K.~Pertsch, O.~Mees, H.~R. Walke, C.~Fu, I.~Lunawat, I.~Sieh, S.~Kirmani, S.~Levine, J.~Wu, C.~Finn, H.~Su, Q.~Vuong, and T.~Xiao.
+\newblock Evaluating real-world robot manipulation policies in simulation.
+\newblock \emph{arXiv preprint arXiv:2405.05941}, 2024.
+
+\bibitem[Zhou et~al.(2025)Zhou, Atreya, Tan, Pertsch, and Levine]{zhou2025autoeval}
+Z.~Zhou, P.~Atreya, Y.~L. Tan, K.~Pertsch, and S.~Levine.
+\newblock Autoeval: Autonomous evaluation of generalist robot manipulation policies in the real world.
+\newblock \emph{arXiv preprint arXiv:2503.24278}, 2025.
+
+\bibitem[Collins et~al.(2023)Collins, Robson, Yamada, Sridharan, Janik, and Posner]{collins2023ramp}
+J.~Collins, M.~Robson, J.~Yamada, M.~Sridharan, K.~Janik, and I.~Posner.
+\newblock Ramp: A benchmark for evaluating robotic assembly manipulation and planning.
+\newblock \emph{IEEE Robotics and Automation Letters}, 9\penalty0 (1):\penalty0 9--16, 2023.
+
+\bibitem[Khargonkar et~al.(2024)Khargonkar, Allu, Lu, Prabhakaran, Xiang, et~al.]{khargonkar2024scenereplica}
+N.~Khargonkar, S.~H. Allu, Y.~Lu, B.~Prabhakaran, Y.~Xiang, et~al.
+\newblock Scenereplica: Benchmarking real-world robot manipulation by creating replicable scenes.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 8258--8264. IEEE, 2024.
+
+\bibitem[Pickem et~al.(2017)Pickem, Glotfelter, Wang, Mote, Ames, Feron, and Egerstedt]{pickem2017robotarium}
+D.~Pickem, P.~Glotfelter, L.~Wang, M.~Mote, A.~Ames, E.~Feron, and M.~Egerstedt.
+\newblock The robotarium: A remotely accessible swarm robotics research testbed.
+\newblock In \emph{2017 IEEE International Conference on Robotics and Automation (ICRA)}, pages 1699--1706. IEEE, 2017.
+
+\bibitem[Kitano et~al.(1997)Kitano, Asada, Kuniyoshi, Noda, Osawa, and Matsubara]{kitano1997robocup}
+H.~Kitano, M.~Asada, Y.~Kuniyoshi, I.~Noda, E.~Osawa, and H.~Matsubara.
+\newblock Robocup: A challenge problem for ai.
+\newblock \emph{AI magazine}, 18\penalty0 (1):\penalty0 73--73, 1997.
+
+\bibitem[Correll et~al.(2016)Correll, Bekris, Berenson, Brock, Causo, Hauser, Okada, Rodriguez, Romano, and Wurman]{correll2016analysis}
+N.~Correll, K.~E. Bekris, D.~Berenson, O.~Brock, A.~Causo, K.~Hauser, K.~Okada, A.~Rodriguez, J.~M. Romano, and P.~R. Wurman.
+\newblock Analysis and observations from the first amazon picking challenge.
+\newblock \emph{IEEE Transactions on Automation Science and Engineering}, 15\penalty0 (1):\penalty0 172--188, 2016.
+
+\bibitem[{The Earth Rover Challenge Organizers}(2025)]{EarthRoverChallengeWebsite}
+{The Earth Rover Challenge Organizers}.
+\newblock {The Earth Rover Challenge}.
+\newblock \url{https://sites.google.com/view/the-earth-rover-challenge/}, 2025.
+
+\bibitem[Driess et~al.(2023)Driess, Xia, Sajjadi, Lynch, Chowdhery, Ichter, Wahid, Tompson, Vuong, Yu, et~al.]{driess2023palm}
+D.~Driess, F.~Xia, M.~S. Sajjadi, C.~Lynch, A.~Chowdhery, B.~Ichter, A.~Wahid, J.~Tompson, Q.~Vuong, T.~Yu, et~al.
+\newblock Palm-e: An embodied multimodal language model.
+\newblock \emph{arXiv preprint arXiv:2303.03378}, 2023.
+
+\bibitem[Brohan et~al.(2023)Brohan, Brown, Carbajal, Chebotar, Chen, Choromanski, Ding, Driess, Dubey, Finn, Florence, Fu, Arenas, Gopalakrishnan, Han, Hausman, Herzog, Hsu, Ichter, Irpan, Joshi, Julian, Kalashnikov, Kuang, Leal, Lee, Lee, Levine, Lu, Michalewski, Mordatch, Pertsch, Rao, Reymann, Ryoo, Salazar, Sanketi, Sermanet, Singh, Singh, Soricut, Tran, Vanhoucke, Vuong, Wahid, Welker, Wohlhart, Wu, Xia, Xiao, Xu, Xu, Yu, and Zitkovich]{rt22023arxiv}
+A.~Brohan, N.~Brown, J.~Carbajal, Y.~Chebotar, X.~Chen, K.~Choromanski, T.~Ding, D.~Driess, A.~Dubey, C.~Finn, P.~Florence, C.~Fu, M.~G. Arenas, K.~Gopalakrishnan, K.~Han, K.~Hausman, A.~Herzog, J.~Hsu, B.~Ichter, A.~Irpan, N.~Joshi, R.~Julian, D.~Kalashnikov, Y.~Kuang, I.~Leal, L.~Lee, T.-W.~E. Lee, S.~Levine, Y.~Lu, H.~Michalewski, I.~Mordatch, K.~Pertsch, K.~Rao, K.~Reymann, M.~Ryoo, G.~Salazar, P.~Sanketi, P.~Sermanet, J.~Singh, A.~Singh, R.~Soricut, H.~Tran, V.~Vanhoucke, Q.~Vuong, A.~Wahid, S.~Welker, P.~Wohlhart, J.~Wu, F.~Xia, T.~Xiao, P.~Xu, S.~Xu, T.~Yu, and B.~Zitkovich.
+\newblock Rt-2: Vision-language-action models transfer web knowledge to robotic control.
+\newblock In \emph{arXiv preprint arXiv:2307.15818}, 2023.
+
+\bibitem[{Octo Model Team} et~al.(2024){Octo Model Team}, Ghosh, Walke, Pertsch, Black, Mees, Dasari, Hejna, Xu, Luo, Kreiman, Tan, Sanketi, Vuong, Xiao, Sadigh, Finn, and Levine]{octo_2023}
+{Octo Model Team}, D.~Ghosh, H.~Walke, K.~Pertsch, K.~Black, O.~Mees, S.~Dasari, J.~Hejna, C.~Xu, J.~Luo, T.~Kreiman, Y.~Tan, P.~Sanketi, Q.~Vuong, T.~Xiao, D.~Sadigh, C.~Finn, and S.~Levine.
+\newblock Octo: An open-source generalist robot policy.
+\newblock In \emph{Proceedings of Robotics: Science and Systems}, Delft, Netherlands, 2024.
+
+\bibitem[Doshi et~al.(2024)Doshi, Walke, Mees, Dasari, and Levine]{Doshi24-crossformer}
+R.~Doshi, H.~Walke, O.~Mees, S.~Dasari, and S.~Levine.
+\newblock Scaling cross-embodied learning: One policy for manipulation, navigation, locomotion and aviation.
+\newblock In \emph{Conference on Robot Learning}, 2024.
+
+\bibitem[Black et~al.(2024)Black, Brown, Driess, Esmail, Equi, Finn, Fusai, Groom, Hausman, Ichter, et~al.]{black2024pi_0}
+K.~Black, N.~Brown, D.~Driess, A.~Esmail, M.~Equi, C.~Finn, N.~Fusai, L.~Groom, K.~Hausman, B.~Ichter, et~al.
+\newblock $pi\_0 $: A vision-language-action flow model for general robot control.
+\newblock \emph{arXiv preprint arXiv:2410.24164}, 2024.
+
+\bibitem[Wen et~al.(2024)Wen, Zhu, Li, Zhu, Wu, Xu, Liu, Cheng, Shen, Peng, Feng, and Tang]{wen2024tinyvlafastdataefficientvisionlanguageaction}
+J.~Wen, Y.~Zhu, J.~Li, M.~Zhu, K.~Wu, Z.~Xu, N.~Liu, R.~Cheng, C.~Shen, Y.~Peng, F.~Feng, and J.~Tang.
+\newblock Tinyvla: Towards fast, data-efficient vision-language-action models for robotic manipulation.
+\newblock \emph{arXiv preprint arXiv:2409.12514}, 2024.
+
+\bibitem[Zhen et~al.(2024)Zhen, Qiu, Chen, Yang, Yan, Du, Hong, and Gan]{zhen20243dvla}
+H.~Zhen, X.~Qiu, P.~Chen, J.~Yang, X.~Yan, Y.~Du, Y.~Hong, and C.~Gan.
+\newblock 3d-vla: 3d vision-language-action generative world model.
+\newblock \emph{arXiv preprint arXiv:2403.09631}, 2024.
+
+\bibitem[Belkhale and Sadigh(2024)]{belkhale2024minivla}
+S.~Belkhale and D.~Sadigh.
+\newblock Minivla: A better vla with a smaller footprint, 2024.
+\newblock URL \url{https://github.com/Stanford-ILIAD/openvla-mini}.
+
+\bibitem[Szot et~al.(2024)Szot, Mazoure, Attia, Timofeev, Agrawal, Hjelm, Gan, Kira, and Toshev]{szot2024multimodal}
+A.~Szot, B.~Mazoure, O.~Attia, A.~Timofeev, H.~Agrawal, D.~Hjelm, Z.~Gan, Z.~Kira, and A.~Toshev.
+\newblock From multimodal llms to generalist embodied agents: Methods and lessons.
+\newblock \emph{arXiv preprint arXiv:2412.08442}, 2024.
+
+\bibitem[Wen et~al.(2025)Wen, Zhu, Li, Tang, Shen, and Feng]{wen2025dexvla}
+J.~Wen, Y.~Zhu, J.~Li, Z.~Tang, C.~Shen, and F.~Feng.
+\newblock Dexvla: Vision-language model with plug-in diffusion expert for general robot control.
+\newblock \emph{arXiv preprint arXiv:2502.05855}, 2025.
+
+\bibitem[Bjorck et~al.(2025)Bjorck, Casta{\~n}eda, Cherniadev, Da, Ding, Fan, Fang, Fox, Hu, Huang, et~al.]{bjorck2025gr00t}
+J.~Bjorck, F.~Casta{\~n}eda, N.~Cherniadev, X.~Da, R.~Ding, L.~Fan, Y.~Fang, D.~Fox, F.~Hu, S.~Huang, et~al.
+\newblock Gr00t n1: An open foundation model for generalist humanoid robots.
+\newblock \emph{arXiv preprint arXiv:2503.14734}, 2025.
+
+\bibitem[Dasari et~al.(2019)Dasari, Ebert, Tian, Nair, Bucher, Schmeckpeper, Singh, Levine, and Finn]{dasari2019robonet}
+S.~Dasari, F.~Ebert, S.~Tian, S.~Nair, B.~Bucher, K.~Schmeckpeper, S.~Singh, S.~Levine, and C.~Finn.
+\newblock Robonet: Large-scale multi-robot learning.
+\newblock \emph{CoRL}, 2019.
+
+\bibitem[Ebert et~al.(2021)Ebert, Yang, Schmeckpeper, Bucher, Georgakis, Daniilidis, Finn, and Levine]{ebert2021bridge}
+F.~Ebert, Y.~Yang, K.~Schmeckpeper, B.~Bucher, G.~Georgakis, K.~Daniilidis, C.~Finn, and S.~Levine.
+\newblock Bridge data: Boosting generalization of robotic skills with cross-domain datasets.
+\newblock \emph{arXiv preprint arXiv:2109.13396}, 2021.
+
+\bibitem[Walke et~al.(2023)Walke, Black, Zhao, Vuong, Zheng, Hansen-Estruch, He, Myers, Kim, Du, et~al.]{walke2023bridgedata}
+H.~R. Walke, K.~Black, T.~Z. Zhao, Q.~Vuong, C.~Zheng, P.~Hansen-Estruch, A.~W. He, V.~Myers, M.~J. Kim, M.~Du, et~al.
+\newblock {BridgeData} v2: A dataset for robot learning at scale.
+\newblock In \emph{Conference on Robot Learning}, pages 1723--1736. PMLR, 2023.
+
+\bibitem[Bharadhwaj et~al.(2024)Bharadhwaj, Vakil, Sharma, Gupta, Tulsiani, and Kumar]{bharadhwaj2023roboagent}
+H.~Bharadhwaj, J.~Vakil, M.~Sharma, A.~Gupta, S.~Tulsiani, and V.~Kumar.
+\newblock Roboagent: Generalization and efficiency in robot manipulation via semantic augmentations and action chunking.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 4788--4795. IEEE, 2024.
+
+\bibitem[Fang et~al.(2024)Fang, Fang, Tang, Liu, Wang, Wang, Zhu, and Lu]{fang2024rh20t}
+H.-S. Fang, H.~Fang, Z.~Tang, J.~Liu, C.~Wang, J.~Wang, H.~Zhu, and C.~Lu.
+\newblock Rh20t: A comprehensive robotic dataset for learning diverse skills in one-shot.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 653--660. IEEE, 2024.
+
+\bibitem[Shafiullah et~al.(2023)Shafiullah, Rai, Etukuru, Liu, Misra, Chintala, and Pinto]{shafiullah2023bringingrobotshome}
+N.~M.~M. Shafiullah, A.~Rai, H.~Etukuru, Y.~Liu, I.~Misra, S.~Chintala, and L.~Pinto.
+\newblock On bringing robots home.
+\newblock \emph{arXiv preprint arXiv:2311.16098}, 2023.
+
+\bibitem[AgiBot-World-Contributors et~al.(2025)AgiBot-World-Contributors, Bu, Cai, Chen, Cui, Ding, Feng, Gao, He, Hu, Huang, Jiang, Jiang, Jing, Li, Li, Liu, Liu, Lu, Luo, Luo, Mu, Niu, Pan, Pang, Qiao, Ren, Ruan, Shan, Shen, Shi, Shi, Shi, Sima, Song, Wang, Wang, Wei, Xie, Xu, Yan, Yang, Yang, Yang, Yao, Zeng, Zhang, Zhang, Zhao, Zhao, Zhao, and Zhu]{contributors2025agibotworld}
+AgiBot-World-Contributors, Q.~Bu, J.~Cai, L.~Chen, X.~Cui, Y.~Ding, S.~Feng, S.~Gao, X.~He, X.~Hu, X.~Huang, S.~Jiang, Y.~Jiang, C.~Jing, H.~Li, J.~Li, C.~Liu, Y.~Liu, Y.~Lu, J.~Luo, P.~Luo, Y.~Mu, Y.~Niu, Y.~Pan, J.~Pang, Y.~Qiao, G.~Ren, C.~Ruan, J.~Shan, Y.~Shen, C.~Shi, M.~Shi, M.~Shi, C.~Sima, J.~Song, H.~Wang, W.~Wang, D.~Wei, C.~Xie, G.~Xu, J.~Yan, C.~Yang, L.~Yang, S.~Yang, M.~Yao, J.~Zeng, C.~Zhang, Q.~Zhang, B.~Zhao, C.~Zhao, J.~Zhao, and J.~Zhu.
+\newblock Agibot world colosseo: A large-scale manipulation platform for scalable and intelligent embodied systems.
+\newblock \emph{arXiv preprint arXiv:2503.06669}, 2025.
+
+\bibitem[Gupta et~al.(2018)Gupta, Murali, Gandhi, and Pinto]{gupta2018robotlearninghomesimproving}
+A.~Gupta, A.~Murali, D.~P. Gandhi, and L.~Pinto.
+\newblock Robot learning in homes: Improving generalization and reducing dataset bias.
+\newblock \emph{Advances in neural information processing systems}, 31, 2018.
+
+\bibitem[Chi et~al.(2024)Chi, Xu, Pan, Cousineau, Burchfiel, Feng, Tedrake, and Song]{chi2024universal}
+C.~Chi, Z.~Xu, C.~Pan, E.~Cousineau, B.~Burchfiel, S.~Feng, R.~Tedrake, and S.~Song.
+\newblock Universal manipulation interface: In-the-wild robot teaching without in-the-wild robots.
+\newblock In \emph{Proceedings of Robotics: Science and Systems (RSS)}, 2024.
+
+\bibitem[Guha et~al.(2023)Guha, Nyarko, Ho, R{\'e}, Chilton, Chohlas-Wood, Peters, Waldon, Rockmore, Zambrano, et~al.]{guha2023legalbench}
+N.~Guha, J.~Nyarko, D.~Ho, C.~R{\'e}, A.~Chilton, A.~Chohlas-Wood, A.~Peters, B.~Waldon, D.~Rockmore, D.~Zambrano, et~al.
+\newblock Legalbench: A collaboratively built benchmark for measuring legal reasoning in large language models.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36:\penalty0 44123--44279, 2023.
+
+\bibitem[Dasari et~al.(2022)Dasari, Wang, Hong, Bahl, Lin, Wang, Thankaraj, Chahal, Calli, Gupta, et~al.]{dasari2022rb2}
+S.~Dasari, J.~Wang, J.~Hong, S.~Bahl, Y.~Lin, A.~Wang, A.~Thankaraj, K.~Chahal, B.~Calli, S.~Gupta, et~al.
+\newblock Rb2: Robotic manipulation benchmarking with a twist.
+\newblock \emph{arXiv preprint arXiv:2203.08098}, 2022.
+
+\bibitem[Kress-Gazit et~al.(2024)Kress-Gazit, Hashimoto, Kuppuswamy, Shah, Horgan, Richardson, Feng, and Burchfiel]{kress2024robot}
+H.~Kress-Gazit, K.~Hashimoto, N.~Kuppuswamy, P.~Shah, P.~Horgan, G.~Richardson, S.~Feng, and B.~Burchfiel.
+\newblock Robot learning as an empirical science: Best practices for policy evaluation.
+\newblock \emph{arXiv preprint arXiv:2409.09491}, 2024.
+
+\bibitem[Bradley and Terry(1952)]{bradley1952rank}
+R.~A. Bradley and M.~E. Terry.
+\newblock Rank analysis of incomplete block designs: I. the method of paired comparisons.
+\newblock \emph{Biometrika}, 39\penalty0 (3/4):\penalty0 324--345, 1952.
+
+\bibitem[Elo(1967)]{elo1967proposed}
+A.~E. Elo.
+\newblock The proposed uscf rating system, its development, theory, and applications.
+\newblock \emph{Chess life}, 22\penalty0 (8):\penalty0 242--247, 1967.
+
+\bibitem[Zermelo(1929)]{zermelo1929berechnung}
+E.~Zermelo.
+\newblock Die berechnung der turnier-ergebnisse als ein maximumproblem der wahrscheinlichkeitsrechnung.
+\newblock \emph{Mathematische Zeitschrift}, 29\penalty0 (1):\penalty0 436--460, 1929.
+
+\bibitem[Davidson(1970)]{davidson1970extending}
+R.~R. Davidson.
+\newblock On extending the bradley-terry model to accommodate ties in paired comparison experiments.
+\newblock \emph{Journal of the American Statistical Association}, 65\penalty0 (329):\penalty0 317--328, 1970.
+
+\bibitem[Ren(2025)]{ren2023openpizero}
+A.~Z. Ren.
+\newblock Open pi zero: An open source raspberry pi zero.
+\newblock \url{https://github.com/allenzren/open-pi-zero}, 2025.
+
+\bibitem[Intelligence(2025)]{pi2025openpi}
+P.~Intelligence.
+\newblock Openpi.
+\newblock \url{https://github.com/Physical-Intelligence/openpi}, 2025.
+
+\bibitem[Beyer et~al.(2024)Beyer, Steiner, Pinto, Kolesnikov, Wang, Salz, Neumann, Alabdulmohsin, Tschannen, Bugliarello, et~al.]{beyer2024paligemma}
+L.~Beyer, A.~Steiner, A.~S. Pinto, A.~Kolesnikov, X.~Wang, D.~Salz, M.~Neumann, I.~Alabdulmohsin, M.~Tschannen, E.~Bugliarello, et~al.
+\newblock Paligemma: A versatile 3b vlm for transfer.
+\newblock \emph{arXiv preprint arXiv:2407.07726}, 2024.
+
+\bibitem[Mentzer et~al.(2023)Mentzer, Minnen, Agustsson, and Tschannen]{fsq}
+F.~Mentzer, D.~Minnen, E.~Agustsson, and M.~Tschannen.
+\newblock Finite scalar quantization: Vq-vae made simple, 2023.
+\newblock URL \url{https://arxiv.org/abs/2309.15505}.
+
+\bibitem[Zawalski et~al.(2024)Zawalski, Chen, Pertsch, Mees, Finn, and Levine]{Zawalski24-ecot}
+M.~Zawalski, W.~Chen, K.~Pertsch, O.~Mees, C.~Finn, and S.~Levine.
+\newblock Robotic control via embodied chain-of-thought reasoning.
+\newblock In \emph{Conference on Robot Learning}, 2024.
+
+\bibitem[Lee et~al.(2024)Lee, Wang, Etukuru, Kim, Shafiullah, and Pinto]{lee2024behavior}
+S.~Lee, Y.~Wang, H.~Etukuru, H.~J. Kim, N.~M.~M. Shafiullah, and L.~Pinto.
+\newblock Behavior generation with latent actions.
+\newblock \emph{arXiv preprint arXiv:2403.03181}, 2024.
+
+\bibitem[Chi et~al.(2023)Chi, Xu, Feng, Cousineau, Du, Burchfiel, Tedrake, and Song]{chi2023diffusion}
+C.~Chi, Z.~Xu, S.~Feng, E.~Cousineau, Y.~Du, B.~Burchfiel, R.~Tedrake, and S.~Song.
+\newblock Diffusion policy: Visuomotor policy learning via action diffusion.
+\newblock \emph{The International Journal of Robotics Research}, page 02783649241273668, 2023.
+
+\bibitem[Intelligence et~al.(2025)Intelligence, Black, Brown, Darpinian, Dhabalia, Driess, Esmail, Equi, Finn, Fusai, et~al.]{intelligence2025pi}
+P.~Intelligence, K.~Black, N.~Brown, J.~Darpinian, K.~Dhabalia, D.~Driess, A.~Esmail, M.~Equi, C.~Finn, N.~Fusai, et~al.
+\newblock pi0.5: a vision-language-action model with open-world generalization.
+\newblock \emph{arXiv preprint arXiv:2504.16054}, 2025.
+
+\bibitem[Gao et~al.(2025)Gao, Belkhale, Dasari, Balakrishna, Shah, and Sadigh]{gao2025taxonomy}
+J.~Gao, S.~Belkhale, S.~Dasari, A.~Balakrishna, D.~Shah, and D.~Sadigh.
+\newblock A taxonomy for evaluating generalist robot policies.
+\newblock \emph{arXiv preprint arXiv:2503.01238}, 2025.
+
+\bibitem[{The Register}(2025)]{theregister2025llamacheating}
+{The Register}.
+\newblock {Regarding Meta, Llama 4, and Cheating}, 2025.
+\newblock URL \url{https://www.theregister.com/2025/04/08/meta_llama4_cheating/}.
+
+\end{thebibliography}

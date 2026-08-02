@@ -1,0 +1,175 @@
+\documentclass{article}
+\usepackage{amssymb}
+
+\usepackage[final]{corl_2025} %
+
+\usepackage[numbers]{natbib}
+\usepackage{multicol}
+\usepackage{multirow}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=orange,
+	filecolor=magenta,      
+	urlcolor=orange,
+	citecolor=orange,
+}
+\usepackage{url}
+\usepackage{float}
+
+\usepackage{mathtools}
+\usepackage{makecell}
+\usepackage{amsfonts}  %
+\usepackage{graphics}
+\usepackage[pdftex]{graphicx}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage{color}
+\usepackage{dsfont}
+\usepackage[]{mdframed}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{xparse}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{framed}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{cleveref}
+
+\usepackage{booktabs}
+\usepackage{epigraph}
+
+\usepackage{xcolor} %
+\usepackage{hyperref} %
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+}
+
+\usepackage{colortbl} %
+\definecolor{lightblue}{RGB}{217, 237, 247} %
+\definecolor{lightgreen}{RGB}{229, 245, 224}
+
+\usepackage{xargs} %
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\wrn}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\cmt}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\algrenewcommand{\algorithmiccomment}[1]{\hfill\textcolor{lightgray}{$\triangleright$\;#1}}
+
+\newcommand{\eh}[1]{\chcomment[id=eh]{#1}}
+\newcommand{\ehc}[1]{\begin{scriptsize}{\textcolor{orange}{[EH: #1]}}\end{scriptsize}}
+
+
+
+\newcommand{\pl}[1]{\textcolor{red}{[PL: #1]}}
+\newcommand{\rmm}[1]{\textcolor{blue}{[RMM: #1]}}
+
+\newcommand{\ba}{\mathbf{a}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bo}{\mathbf{o}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\E}{\mathbb{E}}
+
+\renewcommand{\cref}{\Cref}  %
+
+\newcommand\mjk[1]{\textcolor{red}{[MJK: #1]}}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\lstdefinelanguage{Python}{
+  morekeywords=[1]{True, False, None, and, as, assert, async, await, break, class, continue, def, del, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, with, yield},
+  morekeywords=[2]{transformers, numpy},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]',
+  morestring=[b]",
+}
+
+\definecolor{darkgreen}{RGB}{0,128,0}
+\definecolor{darkblue}{RGB}{0,0,255}
+\definecolor{darkred}{RGB}{139,0,0}
+
+\lstset{
+    frame=tb,                    %
+    framesep=1pt,               %
+    basicstyle=\ttfamily,       %
+    breaklines=true,            %
+    showstringspaces=false,     %
+    keywordstyle=\color{darkblue},
+    stringstyle=\color{darkred},
+    commentstyle=\color{darkgreen},
+    language=Python,
+    morekeywords={from,import,True,False},
+    moredelim=[is][\color{darkgreen}]{~}{~},  %
+    moredelim=[is][\color{darkblue}]{`}{`},   %
+}
+
+\def \Acronym {RoboArena}
+\def \NUniversities {7}
+\def \NPolicies {7}
+\def \NEvals {4284}
+\def \NPairwise {612}
+
+\newcommand{\website}{\url{https://robo-arena.github.io}}
+
+\title{\Acronym: Distributed Real-World Evaluation of Generalist Robot Policies}
+
+
+
+
+\author{
+  \hspace{-2cm}Pranav Atreya$^{\ast, 1}$ \quad Karl Pertsch$^{\ast, 1, 2}$ \quad Tony Lee$^{\ast, 2}$ \\
+  \hspace{-2cm}\textbf{Moo Jin Kim}$^{2}$ \quad \textbf{Arhan Jain}$^{3}$ \quad \textbf{Artur Kuramshin}$^{4}$ \quad \textbf{Clemens Eppner}$^{5}$ \quad \textbf{Cyrus Neary}$^{4}$ \quad \textbf{Edward Hu}$^{6}$\\
+  \hspace{-2cm}\textbf{Fabio Ramos}$^{5}$ \quad \textbf{Jonathan Tremblay}$^{5}$ \quad \textbf{Kanav Arora}$^{3}$ \quad \textbf{Kirsty Ellis}$^{4}$ \quad \textbf{Luca Macesanu}$^{7}$ \quad \textbf{Marcel Torne Villasevil}$^{2}$ \\
+  \hspace{-2cm} \textbf{Matthew Leonard}$^{6}$ \quad \textbf{Meedeum Cho}$^{8}$ \quad \textbf{Ozgur Aslan}$^{4}$ \quad \textbf{Shivin Dass}$^{7}$ \quad \textbf{Jie Wang}$^{6}$ \quad \textbf{William Reger}$^{7}$ \\
+  \hspace{-2cm}\textbf{Xingfang Yuan}$^{6}$ \quad \textbf{Xuning Yang}$^{5}$ \quad \textbf{Abhishek Gupta}$^{3}$ \quad \textbf{Dinesh Jayaraman}$^{6}$ \\
+  \hspace{-2cm}\textbf{Glen Berseth}$^{4}$ \quad \textbf{Kostas Daniilidis}$^{6}$ \quad \textbf{Roberto Martin-Martin}$^{7}$ \quad \textbf{Youngwoon Lee}$^{8}$\\
+  \hspace{-2cm}\textbf{Percy Liang}$^{2}$ \quad \textbf{Chelsea Finn}$^{2}$ \quad \textbf{Sergey Levine}$^{1}$\\[0.3cm]
+  \hspace{-2cm}\website
+}
+
+
+\begin{document}
+\maketitle
+
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext{
+{\fontsize{8pt}{11pt}\selectfont
+$^\ast$: Core contributors, detailed contributions in \cref{sec:contributions}\\Correspondence to: \href{mailto:pranavatreya@berkeley.edu,pertsch@berkeley.edu,tonyhlee@stanford.edu}{\texttt{pranavatreya@berkeley.edu, pertsch@berkeley.edu, tonyhlee@stanford.edu}}\\
+    $^1$UC Berkeley, $^2$Stanford University, $^3$University of Washington, $^4$University of Montreal, $^5$NVIDIA, $^6$University of Pennsylvania, $^7$UT Austin, $^8$Yonsei University
+}
+}
+\renewcommand*{\thefootnote}{\arabic{footnote}}
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_method}
+\input{sections/035_setup}
+\input{sections/04_experiments}
+\input{sections/05_conclusion}
+
+
+
+\acknowledgments{We thank Siyi Huang, Ellie Huynh, Emiliano Adrian Sanchez, Justin Kang, and Sarah Kunda for help with evaluating policies. We also thank Kyle Stachowicz for help with repairing the DROID robot station during development. This research was partly supported by RAI, ONR N00014-25-1-2060, ONR N00014-22-1-2621, ONR N00014-22-12677NSF, NFS IIS-2150826, NSF CAREER 2239301, NSF 2331783, DARPA HR00112490428, DARPA TIAMAT HR00112490421, the Amazon Science Hub, the Toyota Research Institute, the Army Research Lab, and the National Research Foundation of Korea (NRF) grant funded by the Korean government (MSIT) (RS-2024-00333634). We acknowlegde compute support from the Google TPU Research cloud (TRC). We also want to acknowledge funding support from Natural Sciences and Engineering Research Council of Canada, Fonds de recherche du Québec and The Canadian Institute for Advanced Research (CIFAR) and compute support from Digital Research Alliance of Canada, Mila IDT, and NVidia. We would also like to thank John Edwards Leadership Fund (CFI) for funding the purchase of part of the hardware for this project.}
+
+
+\bibliography{references}  %
+
+\clearpage
+\input{sections/06_appendix}
+
+\end{document}

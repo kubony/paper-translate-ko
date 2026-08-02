@@ -1,0 +1,139 @@
+<pre class="equation" data-eq="A-18">∂Q/∂τ_t = −∑_{n=1}^M γ_{n,t} [
+  ∂ log P(y_n | t)/∂z_{i,t} + ∂ log P(y_n | t)/∂z_{j,t}
+]</pre>
+
+<pre class="equation" data-eq="A-19">∂²Q/∂τ_t² = −∑_{n=1}^M γ_{n,t} [
+  σ(z_{i,t})(1 − σ(z_{i,t})) + σ(z_{j,t})(1 − σ(z_{j,t}))
+]</pre>
+
+<p>이러한 모든 gradient 항과 Hessian 항은 알고리즘 A-1에 설명된 M-step clipped-Newton update에 사용된다.</p>
+</section>
+
+<section class="algorithm" id="alg-hybrid-em-full">
+  <h3>알고리즘 A-1: 모델 parameter fitting을 위한 EM</h3>
+  <p><strong>입력:</strong> 데이터 {(i_n, j_n, y_n)}_{n=1}^M, bucket 수 T, 최대 반복 횟수 <code>EM_ITERS</code></p>
+  <p><strong>출력:</strong> θ, ψ, τ, ν, ν_tie 및 정렬된 policy 순위</p>
+  <ol>
+    <li><strong>초기화한다.</strong>
+      <ol>
+        <li>p = 1, …, N에 대해 θ_p ∼ 𝒩(0, 0.1)로 둔다.</li>
+        <li>모든 p, t에 대해 ψ_{p,t} ← 0으로 둔다.</li>
+        <li>t = 1, …, T에 대해 τ_t ∼ 𝒩(0, 0.1)로 둔다.</li>
+        <li>mixture weight는 t = 1, …, T에 대해 ν_t ← 1/T로 둔다.</li>
+        <li>tie-parameter는 ν_tie ← 0.5로 둔다.</li>
+      </ol>
+    </li>
+    <li>m = 1부터 <code>EM_ITERS</code>까지 다음을 반복한다.
+      <ol>
+        <li><strong>E-step: responsibility를 계산한다.</strong>
+          <ol>
+            <li>n = 1부터 M까지 다음을 수행한다.
+              <ol>
+                <li>각 bucket t에 대해 P(y_n | t)를 계산한다.</li>
+                <li>γ_{n,t} ← ν_t P(y_n | t)로 둔다.</li>
+                <li>{γ_{n,1}, …, γ_{n,T}}의 합이 1이 되도록 정규화한다.</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li><strong>M-step: clipped-Newton update를 수행한다.</strong>
+          <ol>
+            <li>각 policy p = 1, …, N에 대해 다음을 수행한다.
+              <ol>
+                <li>gradient g_p = ∂Q/∂θ_p와 Hessian h_p = ∂²Q/∂θ_p²를 계산한다.</li>
+                <li>θ_p ← θ_p − clip(g_p/h_p)로 갱신한다.</li>
+              </ol>
+            </li>
+            <li>p = 1, …, N 및 t = 1, …, T인 각 (p, t)에 대해 다음을 수행한다.
+              <ol>
+                <li>g_{p,t} = ∂Q/∂ψ_{p,t}와 h_{p,t} = ∂²Q/∂ψ_{p,t}²를 계산한다.</li>
+                <li>ψ_{p,t} ← ψ_{p,t} − clip(g_{p,t}/h_{p,t})로 갱신한다.</li>
+              </ol>
+            </li>
+            <li>각 bucket t = 1, …, T에 대해 다음을 수행한다.
+              <ol>
+                <li>g_t = ∂Q/∂τ_t와 h_t = ∂²Q/∂τ_t²를 계산한다.</li>
+                <li>τ_t ← τ_t − clip(g_t/h_t)로 갱신한다.</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li><strong>mixture weight와 tie-rate를 갱신한다.</strong>
+          <ol>
+            <li>ν_t ← (1/M) ∑_{n=1}^M γ_{n,t}로 둔다.</li>
+            <li>ν_tie ← 0.5 × [∑_{n,t} γ_{n,t} p_tie(n,t)]/[∑_{n,t} γ_{n,t} p_win(n,t)]로 둔다.</li>
+          </ol>
+        </li>
+        <li>어느 θ_p에서든 최대 변화량이 <code>tol</code>보다 작으면 반복을 중단한다.</li>
+      </ol>
+    </li>
+    <li>policy를 θ_p의 내림차순으로 정렬하여 반환한다.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>부분 성공 정보 포함</h2>
+  <p>부분 성공 정보를 이용할 수 있을 때에는 알고리즘이 이를 활용하도록 쉽게 수정할 수 있다. s_n^(i), s_n^(j) ∈ [0, 1]로 둔다. E-step likelihood에 추가 Gaussian 항 exp(−[((s^(i) − q_i)² + (s^(j) − q_j)²)/(2σ_partial²)])^w_ps를 도입하고, 앞서 제시한 모델 정의 및 gradient와 Hessian 유도에서와 정확히 같은 방식으로 M-step에 이 항의 gradient와 Hessian을 추가한다. 수정된 pseudocode는 E-step에 두 줄을 추가하며, 각 g, h에 부분 성공 기여분을 더한다.</p>
+</section>
+
+<section>
+  <h2>기준 순위 산정 알고리즘</h2>
+  <p>아래에서는 고전적인 preference 전용 접근법과 간단한 부분 성공 접근법을 모두 포함하여, 비교 대상으로 사용하는 더 단순한 순위 산정 방법을 요약한다.</p>
+
+  <h3>Bradley–Terry MLE (offline)</h3>
+  <p>표준 Bradley–Terry maximum-likelihood estimator에서는 다음을 가정한다.</p>
+  <pre class="equation" data-eq="A-20">P(y_n = 2) = σ(θ_{i_n} − θ_{j_n})</pre>
+  <p>모든 승리/패배 결과의 log-likelihood를 최대화하여 능력 parameter θ를 fitting한다(tie는 약간의 수정으로 처리할 수 있다). 간단한 gradient-ascent update는 다음과 같다.</p>
+  <pre class="equation" data-eq="A-21">θ_p ← θ_p
+  + η ∑_{n: i_n=p} [y_n − σ(θ_{i_n} − θ_{j_n})]
+  − η ∑_{n: j_n=p} [y_n − σ(θ_{i_n} − θ_{j_n})]</pre>
+  <p>여기서 η는 작은 learning rate이고, i_n이 이기면 y_n = 2이며 패배하면 y_n = 0이다. tie는 일반적으로 절반의 승리와 절반의 패배로 처리한다. 이 update를 수렴할 때까지 반복하면 BT 모델의 offline MLE를 얻는다. 실제로는 training을 안정화하기 위해 L2 regularization λθ_p도 추가한다.</p>
+
+  <h3>Elo 방식 online update</h3>
+  <p>Elo는 흔히 체스 선수의 rating에 사용하는 BT의 one-pass online 버전이다. A와 B 사이의 관측된 각 비교가 끝난 뒤, 관련된 두 rating만 다음과 같이 갱신한다.</p>
+  <pre class="equation" data-eq="A-22">θ_A ← θ_A + K [y_AB − σ(θ_A − θ_B)],
+θ_B ← θ_B − K [y_AB − σ(θ_A − θ_B)]</pre>
+  <p>여기서 K는 상수인 “K-factor”이며, A가 이기면 y_AB = 1, A가 지면 y_AB = 0이다(tie에는 y_AB = 0.5를 설정한다). 이 update는 데이터가 도착하는 즉시 rating을 조정할 수 있으며 데이터셋 전체를 훑는 global pass가 필요하지 않다는 특성이 있다.</p>
+
+  <h3>부분 성공 평균화</h3>
+  <p>preference를 사용하지 않는 baseline으로서 모든 binary 결과를 무시하고, 대신 전체 rollout에 걸친 <em>평균 부분 성공률</em>로 policy의 순위를 정할 수 있다. 구체적으로 policy p가 각 trial n에서 0 이상 1 이하인 fractional success score s_n^(p)를 받는다면 다음을 계산한다.</p>
+  <pre class="equation" data-eq="A-23">s̄_p = (1/N_p) ∑_{n: i_n=p or j_n=p} s_n^(p)</pre>
+  <p>여기서 N_p는 p가 관여한 rollout의 총수이다. 마지막으로 policy를 s̄_p의 내림차순으로 정렬한다. 이 방법은 연속적인 performance feedback을 직접 활용하지만 A/B 평가의 paired-comparison 구조는 고려하지 않는다.</p>
+</section>
+
+<section>
+  <h2>Hyperparameter 표</h2>
+  <table>
+    <caption>표 1. EM 절차의 hyperparameter.</caption>
+    <thead>
+      <tr><th>Parameter</th><th>기본값</th><th>탐색 범위</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>EM_ITERS</code></td><td>60</td><td>{50, 100, 200}</td></tr>
+      <tr><td>bucket 수 T</td><td>60</td><td>{10 … 200}</td></tr>
+      <tr><td><code>step_clip</code></td><td>1.0</td><td>[0.1, 10]</td></tr>
+      <tr><td><code>l2_theta</code></td><td>10<sup>−2</sup></td><td>{10<sup>−3</sup>, 10<sup>−2</sup>, 10<sup>−1</sup>}</td></tr>
+      <tr><td><code>l2_psi</code></td><td>10<sup>−2</sup></td><td>{10<sup>−3</sup>, 10<sup>−2</sup>, 10<sup>−1</sup>}</td></tr>
+      <tr><td><code>step_decay</code></td><td>0.99</td><td>{0.9, 0.99, 0.999}</td></tr>
+      <tr><td><code>tol</code></td><td>10<sup>−4</sup></td><td>{10<sup>−5</sup>, 10<sup>−4</sup>}</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Task 분포 및 policy 집합의 변화 시뮬레이션</h2>
+  <p>RoboArena platform은 robotics community를 위한 장기적인 평가 및 benchmarking 자원으로 기능하도록 의도되었다. 이러한 환경에서는 시간이 지남에 따라 약한 policy가 제외되고 강한 policy가 pool에 추가되면서 policy 집합이 변화할 가능성이 크다. 동시에 policy의 역량이 발전함에 따라 evaluator 역시 새로운 policy 역량을 더 잘 시험하기 위해 평가용으로 설정하는 task를 조정할 가능성이 크다.</p>
+  <p>시간에 따른 distribution shift 상황에서도 RoboArena 순위 산정 모델이 여전히 타당하고 우수한 성능을 유지하는지 시험한다. 쉬운 task에서 시작하여 시간이 흐름에 따라 더 어려운 task로 이동하도록 task 난이도에 인위적인 drift를 적용한 상태에서 순위를 다시 산정했다. task 난이도는 task별 평균 progress score로 판단했다. 이와 동시에 시간이 흐름에 따라 약한 policy를 단계적으로 제외하고 더 강한 policy를 평가 pool에 추가했으며, 이 강도 역시 policy별 progress score로 판단했다. 이는 점점 더 유능한 policy와 점점 더 까다로운 task 분포를 갖는 community benchmark로서 RoboArena가 발전하는 상황을 시뮬레이션한다. 표 2의 결과는 이러한 더 까다로운 상황에서도 RoboArena 평가가 단일 laboratory의 “Regular” 평가보다 oracle score와 유의하게 더 높은 상관관계를 유지함을 보여준다.</p>
+
+  <table>
+    <caption>표 2. 시뮬레이션한 distribution shift하의 RoboArena.</caption>
+    <thead>
+      <tr><th><strong>평가 접근법</strong></th><th><strong>Pearson r (↑)</strong></th><th><strong>MMRV (↓)</strong></th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Regular</td><td>0.692</td><td>0.141</td></tr>
+      <tr><td>RoboArena w/ dist. shifts (ours)</td><td><strong>0.838</strong></td><td><strong>0.058</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+</section>

@@ -1,0 +1,30 @@
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/roboarena_teaser.pdf}
+    \caption{We present \Acronym{}, a distributed real-world evaluation framework for generalist robot policies. Instead of standardizing environments and tasks, \Acronym{} aggregates crowd-sourced pairwise A/B policy evaluations across a broad spectrum of environments and tasks to derive a global policy ranking. Its decentralized design makes \Acronym{} a scalable, comprehensive, and trustworthy framework for generalist robot policy evaluation. We open-source an instantiation of \Acronym{} on the DROID robot platform~\citep{khazatsky2024droid} and invite community members to participate, both by contributing policies and running evaluations.
+    }
+    \label{fig:teaser}
+\end{figure}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+Modern robot policies are increasingly general, and able to perform a wide range of tasks across many environments~\citep{open_x_embodiment_rt_x_2023, kim2024openvla, etukuru2024robotutilitymodelsgeneral, pertsch2025fast, geminirobotics2025}. With the increased generality a new challenge arises: how can we accurately measure and compare the performance of such generalist policies? Conventional approaches to robot evaluation and benchmarking rely on comparing policies across tightly standardized sets of environments and tasks~\citep{calli2015ycb, yang2019replab, heo2023furniturebench, luo2023fmb}, and are typically restricted to only a handful of tasks across a small number of scenes~\citep{krotkov2018darpa, bauer2022real, zhou2023train, yenamandra2024towards}. As such, they are not well-suited to provide comprehensive performance evaluations for policies that are designed to perform across a much broader spectrum of initial conditions. At the same time, existing evaluation approaches are challenging to scale: guaranteeing comparable conditions across a large number of real-world tasks and environments faces many practical challenges, from accurately reproducing scene layouts and lighting conditions, to maintaining large, centralized fleets of evaluation robots, and manufacturing differences between said robots. As such, the development of increasingly general robot policies requires us to rethink the way we evaluate robot policies.
+
+
+
+At first glance, broadly capable robot policies seem to compound the reproducibility and scalability challenges faced by robot evaluations and benchmarks in the past. 
+Yet, in this work, we argue that increasingly general robot policies offer an \emph{opportunity} for an alternative approach to robot evaluation, that has the promise to address many of the challenges of prior evaluation efforts. %
+Realizing this potential, however, requires rethinking how we run robot evaluations: instead of \emph{standardization} and centralized evaluation ``challenges'', we argue that \emph{decentralization} and an evaluation approach that embraces the non-stationarity of the physical world offer a promising alternative. %
+
+To this end, we propose \Acronym{}, a distributed real-world evaluation framework for generalist robot policies. Inspired by recent crowdsourced benchmarks for evaluating generalist language or vision-language models like Chatbot Arena~\citep{chiang2024chatbot} or GenAI Arena~\citep{jiang2024genai}, \Acronym{} relies on a decentralized network of evaluators that perform \emph{pairwise}, \emph{double-blind} comparisons of policies in \emph{whichever scene} and on \emph{whatever task} they deem suitable. The evaluator then provides a preference for which of the two policies performed better, along with a free-form language explanation. Our evaluation algorithm aggregates a large number of such pairwise comparisons into a global policy ranking, as well as a set of qualitative characteristics, strengths and weaknesses for each policy. This decentralized design allows \Acronym{} to be \textbf{open-ended} in the number of environments and tasks policies are evaluated on, \textbf{robust}, since many entities across the decentralized network contribute via double-blind evaluations to the final score, and \textbf{scalable}, with dozens of evaluators asynchronously contributing policy evaluations at any time of day. By not relying on identical initial conditions beyond the horizon of a single pairwise policy comparison, \Acronym{} foregoes many of the practical challenges prior robot evaluation frameworks faced.
+
+In this paper, we outline our distributed evaluation protocol, including algorithms for aggregating pairwise policy comparisons into global policy rankings, and for extracting qualitative policy characteristics via LLM-assisted analysis of evaluation results. We then instantiate \Acronym{} on the DROID robot platform~\citep{khazatsky2024droid}, on which modern policies can out-of-the-box generalize to new scenes and tasks~\citep{pertsch2025fast}. Through decentralized evaluations of \NPolicies{}~generalist policies across \NUniversities{}~universities and a total of \NPairwise{}~pairwise comparisons, we demonstrate that \Acronym{} provides more accurate performance rankings of generalist policies than the conventional, centralized evaluation scheme used in prior work, when compared to an ``oracle'' policy ranking computed via exhaustive evaluation of all policies on all tested tasks. At the same time, \Acronym{} matches the episode efficiency of standard evaluation, i.e., the same number of evaluations, when distributed across the \Acronym{} evaluator network, lead to higher quality policy rankings. In addition to the evaluation framework, our work also provides the most comprehensive evaluations of generalist robot policies to date (\NEvals{}~evaluation episodes across numerous tasks and scenes), and highlights the limitations of current policies. 
+
+
+
+
+
+
+

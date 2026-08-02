@@ -1,0 +1,114 @@
+\section{Experiments}
+\label{sec:experiments}
+
+The goal of our experimental evaluation is to answer the following questions: (1)~How does \Acronym{} compare to conventional robot evaluation approaches for ranking the performance of generalist robot policies? (2)~How \emph{sample efficient} is \Acronym{} in ranking robot policies? (3)~Can \Acronym{} extract \emph{qualitative} insights about policy performance beyond aggregate performance?
+
+\subsection{Experimental Setup}
+
+
+
+\textbf{Policy pool.} We populate the policy pool with all publicly available \emph{generalist} DROID policies that have been shown to work out of the box in new environments. At the time of writing and to our knowledge, there are \emph{seven} such policies, based off PaliGemma~\citep{beyer2024paligemma} or $\pi_0$~\citep{black2024pi_0} base models. %
+Concretely, we evaluate the following policies: \textbf{$\pi_0$-flow-DROID}, the $\pi_0$ flow-vision-language-action model (VLA)~\citep{black2024pi_0}, fine-tuned on the DROID dataset; \textbf{$\pi_0$-FAST-DROID}, the $\pi_0$-FAST autoregressive VLA~\citep{pertsch2025fast}, fine-tuned on the DROID dataset; \textbf{PG-flow-DROID, PG-FAST-DROID, PG-FAST+-DROID, PG-FSQ-DROID, PG-Bin-DROID}, PaliGemma~\citep{beyer2024paligemma} vision-language models (VLMs), fine-tuned on the DROID dataset using different action representations from \citet{pertsch2025fast}: $\pi_0$-style flow matching, FAST/FAST+ tokenization~\citep{pertsch2025fast}, finite scalar quantization~\citep{fsq}, and simple binning tokenization~\citep{rt22023arxiv, kim2024openvla}. We use the publicly available implementation in \citep{pi2025openpi} for all policies.
+
+\textbf{Comparison.} We establish an ``oracle'' policy ranking by exhaustively evaluating \emph{all} policies on \emph{all} tested tasks and comparing their average progress scores. This was done by asking evaluators to score the remaining five policies after each A/B evaluation on the same task. In total, we use \NEvals{}~evaluations to compute this oracle ranking. We compare \Acronym{} to a conventional robot policy evaluation approach, which tests all policies on a fixed, tightly standardized set of evaluation tasks in a narrower set of environments. \textbf{Concretely, we compare to the DROID evaluation procedure used in \citet{pertsch2025fast}}, which consists of 17~tasks and 44~episodes per policy and is representative of typical robot evaluations (\citep{kim2024openvla, Zawalski24-ecot}, see the appendix of \citet{pertsch2025fast} for a detailed list of tasks). %
+
+\subsection{\Acronym{} Accurately Ranks Policy Performances}
+\label{sec:ranking_results}
+\vspace{-1em}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/roboarena_main_results.pdf}
+    \caption{\textbf{Left}: Examples of \Acronym{} evaluations. Evaluations span a diverse set of scenes and tasks. \textbf{Right}: ``Oracle'' policy ranking, aggregated from progress scores of \NEvals{}~evaluation rollouts. 
+    }
+    \label{fig:ranking_result}
+\end{figure}
+
+
+
+\begin{wrapfigure}{R}{0.5\textwidth}
+    \centering
+    \vspace{-0.3cm}
+    \includegraphics[width=0.5\textwidth]{figures/roboarena_ranking_results.pdf}
+    \caption{
+        Policy rankings from \Acronym{} pairwise comparisons correlate significantly better with oracle rankings than conventional robot evaluation approaches (``Regular''). Our task-aware ranking approach (``TASK'') leads to the best ranking. 
+        Ranking with progress scores (``PROG'') also proves effective, but may lose more nuanced information about policy performance. %
+    }
+    \vspace{-0.5cm}
+    \label{fig:correlation_results}
+\end{wrapfigure}
+In total, our \Acronym{} evaluation covers \NEvals{}~policy rollouts across dozens of scenes and hundreds of task instructions. We show a few examples in \cref{fig:ranking_result}, left, and many more in \cref{app:detailed_eval_breakdown}. To our knowledge, this is the most extensive evaluation of generalist policies to date. While the remainder of this section is devoted to evaluating our \Acronym{} evaluation framework itself, we provide a detailed analysis of the underlying evaluation data, including strengths and weaknesses of current generalist policies, in \cref{app:policy_eval_summary}.
+
+We evaluate how well our pairwise evaluation approach can approximate the oracle ranking (see \cref{fig:ranking_result}, right), which is computed through exhaustive evaluation of all policies on all tasks. We compare \Acronym{} to conventional robot evaluations from prior work. We follow \citet{li24simpler} and report Pearson correlation $r$, as well as Mean Maximum Rank Violation (MMRV), a ranking metric that takes the \emph{performance difference} between policies into account.
+
+We test instantiations of \Acronym{} with standard ranking algorithms, namely Elo~\citep{elo1967proposed} and Bradley-Terry (``BT'', \citep{bradley1952rank}), and our task-aware ranking approach introduced in \cref{sec:policy_ranking} (``TASK''). The results in \cref{fig:correlation_results} show that conventional robot evaluations (``Regular''), which due to reproducibility challenges are restricted to a relatively small number of tasks and environments, do not provide a reliable performance estimate for \emph{generalist} policies. \textbf{This highlights the benefit of evaluations \emph{without} task and environment standardization, as they lead to much greater diversity, and thus effective ranking for generalist policies (\cref{fig:correlation_results}).} Additionally, we find that our task-aware ranking approach leads to more accurate rankings than both standard Elo computation and the conventional Bradley-Terry model. 
+The resulting rankings of both, oracle and our approach follow the intuitions of prior work: expressive action representations outperform simple binning tokenization~\citep{pertsch2025fast, lee2024behavior, black2024pi_0, chi2023diffusion}, and discrete action tokenization (``FAST'', ``FSQ'') outperform diffusion policies (``Flow'', ``$\pi_0$-DROID'') in language-conditioned evaluations~\citep{pertsch2025fast, intelligence2025pi} (\cref{fig:ranking_result}). 
+
+We also test using an average of the progress scores for each of the pairwise policy comparisons to compute a global ranking (``PROG''). The results in \cref{fig:correlation_results} show that this strategy achieves good correlation to the oracle as well. However, ranking policies based on progress scores alone can miss more nuanced feedback on policy performance. We find that evaluators regularly score both policies in an A/B comparison with the \emph{same} progress score, yet express clear \emph{preference} for one policy over the other, e.g., because it acted more swiftly or confidently (see \cref{app:comp_over_progress} for examples). Thus, progress-based and preference-based rankings are complementary, and should both be reported.%
+
+
+\subsection{\Acronym{} Evaluation is Sample Efficient}
+
+
+\begin{wrapfigure}{R}{0.5\textwidth}
+\vspace{-0.5cm}
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/roboarena_convergence_results.pdf}
+    \caption{
+        Rank correlation as a function of number of evaluation episodes. \Acronym{} converges to high-quality rankings within just 100~pairwise comparisons. %
+    }
+    \vspace{-0.3cm}
+    \label{fig:convergence_results}
+\end{wrapfigure}
+We investigate how many evaluations are required to produce an accurate ranking using \Acronym{}: we compute rankings for differently-sized, random subsets of our full evaluation data and report ranking accuracy as a function of the number of evaluation episodes in \cref{fig:convergence_results}. We find that \Acronym{} converges to high-quality rankings within just 100~pairwise comparisons, matching the convergence speed of conventional robot evaluations, while providing significantly more accurate rankings. The quality of \Acronym{} rankings further improves as more comparisons are collected. This suggests, that distributed \Acronym{} evaluations offer an appealing alternative to regular policy evaluations.
+
+
+\subsection{Extracting qualitative policy characteristics}
+\label{sec:qualitative_exp}
+
+
+\begin{wrapfigure}{r}{0.35\textwidth}
+\vspace{-1cm}
+\begin{tabularx}{0.35\textwidth}{l|X}
+\toprule
+Model & Task Category Acc. \\
+\midrule
+GPT-4o & 94.6\% \\
+\bottomrule
+\end{tabularx}
+\caption{Task categorization accuracy (448~samples).}
+\label{tab:categorization_performance}
+\vspace{-0.4cm}
+\end{wrapfigure}
+In this section, we evaluate the quality of the LLM/VLM-assisted \emph{policy reports} (\cref{sec:qualitative_analysis_tools}). %
+First, we evaluate the VLM category predictions by comparing them to category assignments made by a human expert, and we find that they are approximately 95\% accurate (\cref{tab:categorization_performance}).
+
+\begin{wrapfigure}{R}{0.5\textwidth}
+    \centering
+    \vspace{-0.5cm}
+    \includegraphics[width=0.5\textwidth]{figures/roboarena_cat_results.pdf}
+    \caption{
+        Claims made by our LLM-assisted analysis tools about \texttt{$\pi_0$-FAST-DROID} outperforming, matching, or underperforming other policies are supported by the win rates in the evaluation data. 
+    }
+    \vspace{-0.3cm}
+    \label{fig:cat_results}
+\end{wrapfigure}
+
+Next, we examine whether the comparative claims in the generated policy report align with the evaluation data, using the example of the strongest policy in our pool: $\pi_0$-FAST-DROID~\citep{pertsch2025fast}. Concretely, the report compares $\pi_0$-FAST-DROID's performance to that of other policies in the pool along different task categories. In \cref{fig:cat_results} we show, that for most categories for which the report claims that $\pi_0$-FAST-DROID outperforms, matches, or underperforms other policies, these claims are supported by the respective win rates in the evaluation data. %
+We encourage readers to review the full, interactive report with video references in our supplementary material. %
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

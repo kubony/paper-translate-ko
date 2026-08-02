@@ -1,0 +1,211 @@
+<!-- RoboArena 본문 한국어 완역 HTML fragment -->
+<article lang="ko">
+<header>
+  <h1>RoboArena: Generalist Robot Policy의 분산형 실제 환경 평가</h1>
+</header>
+
+<!-- SOURCE: sections/00_abstract.tex BEGIN -->
+<section id="abstract">
+  <h2>초록</h2>
+  <p>현대의 generalist policy를 포괄적이고 편향 없이 비교 가능하게 평가하는 일은 유독 어렵다. 기존 로봇 벤치마킹 접근법은 대개 고정된 평가 과제와 환경을 지정하거나 중앙집중식 “로봇 챌린지”를 개최하는 식의 강한 표준화에 의존하며, 광범위한 과제와 환경에 걸친 generalist policy 평가로 쉽게 확장되지 않는다. 본 연구에서는 실제 환경에서 generalist robot policy를 확장 가능하게 평가하는 새로운 접근법인 RoboArena를 제안한다. 고정된 과제, 환경 또는 장소를 중심으로 평가를 표준화하는 대신, 분산된 평가자 네트워크 전반에서 평가를 크라우드소싱할 것을 제안한다. 중요한 점은 평가자가 평가할 과제와 환경을 자유롭게 선택할 수 있어 다양성을 쉽게 확장할 수 있지만, policy <em>쌍</em>에 대한 이중맹검 평가를 수행해야 한다는 것이다. 그런 다음 다양한 과제와 환경에서 수행한 쌍별 비교의 선호도 피드백을 취합해 policy 순위를 도출할 수 있다. 본 접근법을 DROID 로봇 플랫폼을 이용하는 7개 학술기관의 평가자 네트워크에 구현한다. 7개 generalist policy를 대상으로 실제 로봇에서 600회가 넘는 쌍별 평가 에피소드를 수행하여, 본 크라우드소싱 접근법이 기존의 중앙집중식 평가 접근법보다 현존 generalist policy의 성능 순위를 더 정확히 산출하는 동시에 확장성, 복원력, 신뢰성도 더 높다는 것을 입증한다. 본 평가 네트워크를 커뮤니티에 개방하며, 이를 통해 generalist robot policy를 더 쉽게 비교할 수 있기를 기대한다.</p>
+  <p class="keywords"><strong>핵심어:</strong> Generalist Robot Policy 평가, 크라우드소싱 평가</p>
+</section>
+<!-- SOURCE: sections/00_abstract.tex END -->
+
+<!-- SOURCE: sections/01_introduction.tex BEGIN -->
+<!-- FIGURE 1: generalist robot policy를 위한 분산형 실제 환경 평가 프레임워크인 RoboArena를 제시한다. 환경과 과제를 표준화하는 대신, RoboArena는 폭넓은 환경과 과제에서 크라우드소싱한 쌍별 A/B policy 평가를 취합하여 전역 policy 순위를 도출한다. RoboArena의 탈중앙화 설계는 generalist robot policy 평가를 위한 확장 가능하고 포괄적이며 신뢰할 수 있는 프레임워크를 만든다. DROID 로봇 플랫폼에 구현한 RoboArena를 오픈소스로 공개하며, 커뮤니티 구성원에게 policy를 제공하고 평가를 수행하는 두 방식 모두로 참여할 것을 요청한다. -->
+<section id="introduction">
+  <h2>1. 서론</h2>
+  <p>현대의 robot policy는 갈수록 범용화되어 여러 환경에서 광범위한 과제를 수행할 수 있다. 이러한 범용성이 높아지면서 새로운 문제가 생긴다. 이와 같은 generalist policy의 성능을 어떻게 정확히 측정하고 비교할 수 있는가? 로봇 평가와 벤치마킹의 전통적 접근법은 엄격하게 표준화한 환경 및 과제 집합에서 policy를 비교하는 데 의존하며, 대개 소수의 장면에 걸친 몇 개 과제로만 제한된다. 따라서 훨씬 광범위한 초기 조건에서 작동하도록 설계된 policy를 포괄적으로 성능 평가하는 데 적합하지 않다. 동시에 기존 평가 접근법은 확장하기 어렵다. 실제 환경의 수많은 과제와 환경에서 비교 가능한 조건을 보장하려면 장면 배치와 조명 조건을 정확히 재현하는 일부터 대규모 중앙집중식 평가 로봇 군집을 유지하는 일, 그리고 해당 로봇들 사이의 제조상 차이에 이르기까지 많은 실무적 난관에 직면한다. 그러므로 갈수록 범용화되는 robot policy를 개발하려면 robot policy 평가 방식을 재고해야 한다.</p>
+  <p>언뜻 보면 폭넓은 능력을 갖춘 robot policy는 과거의 로봇 평가와 벤치마크가 겪은 재현성 및 확장성 문제를 더 심화하는 듯하다. 그러나 본 연구에서는 갈수록 범용화되는 robot policy가 기존 평가 노력의 여러 문제를 해결할 가능성이 있는 대안적 로봇 평가 접근법의 <em>기회</em>를 제공한다고 주장한다. 다만 이 잠재력을 실현하려면 로봇 평가 수행 방식을 재고해야 한다. 본 연구는 <em>표준화</em>와 중앙집중식 평가 “챌린지” 대신 <em>탈중앙화</em>와 물리적 세계의 비정상성을 수용하는 평가 접근법이 유망한 대안이라고 주장한다.</p>
+  <p>이를 위해 generalist robot policy를 위한 분산형 실제 환경 평가 프레임워크인 RoboArena를 제안한다. Chatbot Arena나 GenAI Arena처럼 generalist 언어 또는 비전-언어 모델을 평가하는 최근의 크라우드소싱 벤치마크에서 영감을 받은 RoboArena는 평가자가 적절하다고 판단하는 <em>어떤 장면</em>과 <em>어떤 과제</em>에서든 policy를 <em>쌍별</em>, <em>이중맹검</em> 방식으로 비교하는 탈중앙화 평가자 네트워크에 의존한다. 평가자는 두 policy 중 어느 쪽이 더 잘 수행했는지에 대한 선호도와 자유 형식의 언어 설명을 제공한다. 본 평가 알고리즘은 많은 쌍별 비교를 전역 policy 순위로 취합하고, 각 policy의 정성적 특성, 강점, 약점도 도출한다. 이러한 탈중앙화 설계 덕분에 RoboArena는 policy를 평가할 환경과 과제 수에 제한을 두지 않으므로 <strong>개방형</strong>이고, 탈중앙화 네트워크 전반의 여러 주체가 이중맹검 평가를 통해 최종 점수에 기여하므로 <strong>견고</strong>하며, 수십 명의 평가자가 하루 중 언제든 비동기적으로 policy 평가에 기여할 수 있어 <strong>확장 가능</strong>하다. RoboArena는 단 한 번의 쌍별 policy 비교 범위를 넘어 동일한 초기 조건에 의존하지 않음으로써, 기존 로봇 평가 프레임워크가 겪은 여러 실무적 문제를 피한다.</p>
+  <p>본 논문에서는 쌍별 policy 비교를 전역 policy 순위로 취합하는 알고리즘과 평가 결과의 LLM 보조 분석을 통해 정성적 policy 특성을 추출하는 방법을 포함하여 분산형 평가 프로토콜을 설명한다. 이어서 현대 policy가 새로운 장면과 과제에 별도 조정 없이 일반화될 수 있는 DROID 로봇 플랫폼에 RoboArena를 구현한다. 7개 대학에서 7개 generalist policy를 탈중앙화 방식으로 평가하고 총 612회의 쌍별 비교를 수행하여, 모든 policy를 시험한 모든 과제에서 빠짐없이 평가해 계산한 “oracle” policy 순위와 비교했을 때 RoboArena가 기존 연구에서 사용한 전통적 중앙집중식 평가 방식보다 generalist policy의 성능 순위를 더 정확히 제공한다는 것을 입증한다. 동시에 RoboArena는 표준 평가와 같은 에피소드 효율을 달성한다. 즉, 동일한 수의 평가를 RoboArena 평가자 네트워크에 분산하면 더 높은 품질의 policy 순위를 얻는다. 본 연구는 평가 프레임워크뿐 아니라 지금까지 가장 포괄적인 generalist robot policy 평가도 제공하며, 이는 수많은 과제와 장면에 걸친 4284개의 평가 에피소드로 구성되고 현 policy의 한계를 드러낸다.</p>
+</section>
+<!-- SOURCE: sections/01_introduction.tex END -->
+
+<!-- SOURCE: sections/02_related_work.tex BEGIN -->
+<section id="related-work">
+  <h2>2. 관련 연구</h2>
+  <h3>시뮬레이션 및 실제 환경 로봇 평가</h3>
+  <p>시뮬레이션 평가는 완벽한 재현성을 제공하며 효율적으로 병렬화할 수 있다. 이에 따라 여러 해 동안 수많은 시뮬레이션 로봇 벤치마크가 제안되었다. 그러나 시뮬레이션 환경은 실제 세계를 불완전하게 복제하며, 시각적·물리적 충실도를 최적화한 연구조차 지원하는 과제의 다양성이 제한되는 경우가 많고 때로는 실제 환경의 policy 성능을 정확히 반영하지 못한다. 실제 환경에서 벤치마크는 환경 설정을 재현하는 상세한 매뉴얼을 제공하거나, 중앙에서 호스팅하는 평가에 원격으로 접근하게 하거나, 대면 챌린지를 조직하는 방식으로 재현성을 확보하려 한다. 그러나 초기 조건의 재현성을 보장하고 중앙집중식 평가를 실현하기 위해 이러한 접근법은 대개 평가를 좁은 과제 및 환경 집합으로, 심지어 특정 챌린지 날짜로 제한한다.</p>
+  <p>본 연구에서는 <em>탈중앙화</em> 평가자 네트워크 전반에서 policy 쌍별 비교를 크라우드소싱하는 실제 환경 로봇 평가의 대안적 접근법을 제안한다. 본 접근법은 더 넓은 과제 및 환경 분포를 포괄할 수 있으며, 기존의 중앙집중식 평가 접근법보다 본질적으로 복원력과 확장성이 높다.</p>
+  <h3>Generalist robot policy</h3>
+  <p>최근 로보틱스에서는 다양한 로봇 경험 데이터셋으로 <em>generalist</em> robot policy를 훈련하는 추세가 나타났다. 특히 여러 연구는 별도 조정 없이 여러 환경에서 과제를 수행할 수 있는 policy를 입증했다. 동시에 로봇 평가의 전통적 접근법은 광범위한 과제 및 환경 분포로 확장하기가 번거로워 이러한 generalist policy의 성능을 포괄적으로 평가하는 데 어려움을 겪는다. 이것이 본 연구의 분산형 평가 접근법에 동기를 부여한다.</p>
+  <h3>크라우드소싱 벤치마크</h3>
+  <p>최근 몇 년 사이 크라우드소싱 벤치마크는 언어 모델링부터 생성 이미지 및 비디오 모델링, 심지어 전문 법률 모델 훈련에 이르기까지 널리 사용되었다. Dasari 등은 여러 기관의 policy 순위 결과를 취합해 학습 <em>알고리즘</em>을 더 포괄적으로 평가하는 벤치마크를 제안했지만, 새로운 기관과 당면 과제마다 policy를 다시 훈련해야 했기 때문에 시험하는 환경과 과제 수가 적은 수준에 머물렀다. 이와 달리 본 연구는 별도 조정 없이 평가할 수 있는 <em>generalist robot policy</em>용 분산형 벤치마크를 제안하며, 이로써 훨씬 광범위한 과제와 환경 분포에서 평가하는 것이 가능해진다.</p>
+</section>
+<!-- SOURCE: sections/02_related_work.tex END -->
+
+<!-- SOURCE: sections/03_method.tex BEGIN -->
+<section id="method">
+  <h2>3. 쌍별 비교를 통한 탈중앙화 Robot Policy 평가</h2>
+  <p>전통적 robot policy 평가는 policy를 비교하는 조건을 가능한 한 많이 <em>표준화</em>하는 것을 목표로 한다. 대개 policy를 실행할 고정된 과제 및 장면 집합을 정의하고 조명, 카메라 각도, 장면 배경과 같은 초기 조건을 긴밀히 일치시키려 한다. 서론에서 논의했듯이 실제 환경에서 이러한 표준화된 조건을 재현하기는 극도로 어려우며, 특히 한 중앙 장소뿐 아니라 여러 기관에서 평가를 수행해야 할 때 더욱 그렇다.</p>
+  <p>본 절에서는 표준화된 설정에서 policy를 반복 평가하는 방식을 버리고 <em>탈중앙화된 쌍별 이중맹검 policy 비교</em>에 의존하는 대안적 로봇 평가 접근법을 소개한다. 핵심적으로 본 평가 접근법은 policy 쌍을 어떤 장면이나 과제에서 평가해야 하는지 규정하지 않고, 그 대신 <em>다양한</em> 과제와 장면에서 많은 쌍별 비교를 취합하여 policy 순위를 정한다. 이러한 탈중앙화 접근법에는 여러 장점이 있다.</p>
+  <ul>
+    <li>과제와 환경을 표준화하지 않아 포괄 범위를 넓히므로 <strong>개방형</strong>이다.</li>
+    <li>이중맹검 탈중앙화 평가에서는 어느 한 주체도 결과를 쉽게 좌우할 수 없으므로 <strong>견고</strong>하다.</li>
+    <li>여러 기관이 평가에 협력할 수 있으므로 <strong>확장 가능</strong>하다.</li>
+    <li>과제가 policy 능력의 최전선에 맞추어 자연스럽게 적응할 수 있으므로 <strong>적응 가능</strong>하다.</li>
+  </ul>
+  <p>본 절의 나머지 부분에서는 먼저 평가 절차를 설명한 다음, 쌍별 비교를 전역 policy 순위로 취합하는 방법을 자세히 제시하고, 마지막으로 평가 데이터에서 정성적 policy 특성을 추출하는 도구를 설명한다.</p>
+
+  <section id="policy-evaluation-protocol">
+    <h3>3.1. Policy 평가 프로토콜</h3>
+    <div class="algorithm" id="algorithm-1">
+      <h4>알고리즘 1. Policy 평가 프로토콜</h4>
+      <p><strong>요구 사항:</strong> policy 집합 Π, 평가자 E, 중앙 서버 C</p>
+      <p><strong>보장 결과:</strong> 전역 policy 순위, policy 특성</p>
+      <ol>
+        <li>i = 1부터 K회 평가까지 다음을 반복한다.
+          <ol>
+            <li>E가 C에 평가할 policy를 요청한다.</li>
+            <li>C가 두 policy π<sub>A</sub>, π<sub>B</sub>를 Π에서 표본 추출한다.</li>
+            <li>E가 장면을 재배치하고 과제 T<sub>i</sub>를 정의한다.</li>
+            <li>E가 π<sub>A</sub>와 π<sub>B</sub>를 순차적으로 실행한다.</li>
+            <li>E가 C에 쌍별 피드백 F<sub>i</sub>(π<sub>A</sub>, π<sub>B</sub>)를 제공한다.</li>
+          </ol>
+        </li>
+        <li>C가 {F<sub>i</sub>}<sub>i=1</sub><sup>K</sup>를 전역 순위로 취합한다(3.2절).</li>
+        <li>C가 정성적 policy 특성을 추출한다(3.3절).</li>
+      </ol>
+    </div>
+    <p>알고리즘 1에 policy 평가 프로토콜의 개요를 제시한다. policy 풀 π<sub>1…N</sub> ∈ Π가 주어질 때 목표는 성능 순위를 추정하는 것이다. 본 평가는 <em>generalist</em> robot policy를 대상으로 설계하므로 Π의 모든 policy를 광범위한 장면과 과제에서 의미 있고 안전하게 평가할 수 있다고 가정한다. 또한 실제 로봇 평가를 비동기적으로 수행하는 평가자 풀 E와 탈중앙화 평가 운영을 관리하는 중앙 평가 서버 C를 이용할 수 있다고 가정한다.</p>
+    <p>평가 세션 중 평가자 E는 중앙 서버 C에 두 policy를 요청한다. C는 두 policy (π<sub>A</sub>, π<sub>B</sub>) ∈ Π를 무작위로 표본 추출하여 E에 할당한다. 편향 없는 평가를 보장하기 위해 평가자는 자신이 어떤 policy를 평가하는지 알지 못한다. 실제로는 원격 호스팅된 평가 서버의 IP 주소만 제공한다. policy를 표본 추출한 뒤 평가자는 로봇을 새로운 위치로 옮기고 로봇 앞의 물체를 재배치하는 등의 방식으로 평가 장면을 구성하고, 자연어 지시 형식으로 평가 과제 T<sub>i</sub>를 정의한다. 이어서 E는 과제가 완료되거나 고정된 시간 제한에 이를 때까지 policy π<sub>A</sub>와 π<sub>B</sub>의 rollout을 연이어 실행한다. 중요한 점은 평가자 E가 이 A/B policy 비교 <em>내부에서는</em> 초기 조건을 <em>긴밀히 일치시켜야</em> 한다는 것이다. 별개의 쌍별 평가 <em>사이에서는</em> 조건을 바꿀 수 있다. 이를 통해 policy π<sub>A</sub>와 π<sub>B</sub>를 공정하게 비교한다.</p>
+    <p>두 평가가 모두 끝나면 E는 policy 성능에 대한 피드백 F(π<sub>A</sub>, π<sub>B</sub>)를 제공한다. <strong>평가자에게 세 가지 유형의 피드백을 요청한다.</strong> 첫째, 과제에서 policy가 달성한 최대 <em>진행도</em>에 비례하는 [0…100] 범위의 연속형 <strong>진행도 점수</strong>를 요청한다. 예를 들어 진행하지 못하면 0, 과제를 성공적으로 실행하면 100, 부분 성공에는 중간값을 부여한다. 둘째, 평가자가 어느 policy를 선호했는지 나타내는 이진 <strong>쌍별 선호도</strong> 레이블을 요청하며, policy 선호도를 결정하는 방법은 평가자에게 맡긴다. 셋째, 한 policy를 다른 policy보다 선호한 <em>이유</em>에 대한 자유 형식의 <strong>자연어 설명</strong>을 요청한다.</p>
+    <p>과제 지시 T, 쌍별 피드백 F, 모든 observation과 action 기록을 중앙 서버 C로 전송한 뒤 평가자는 다른 평가 세션을 계속하거나 중단했다가 나중에 돌아올 수 있다. 단일 쌍별 비교 밖의 모든 평가는 어느 시간과 장소에서든 완전히 <em>비동기적으로</em> 실행할 수 있다.</p>
+  </section>
+
+  <section id="global-policy-rankings">
+    <h3>3.2. 전역 Policy 순위 계산</h3>
+    <p>본 절에서는 평가자가 제공한 쌍별 피드백을 이용하여 전역 policy 순위를 계산하는 알고리즘을 논의한다. 형식적으로 N개 policy의 집합 Π = {π<sub>1</sub>, …, π<sub>N</sub>}와 쌍별 선호도 데이터셋 D<sub>p</sub> = {P<sub>πA,πB</sub>, t}가 주어진다. 여기서 P<sub>πA,πB</sub> ∈ {0, 1}은 이진 선호도를 나타내고, t는 A/B 평가를 수행한 과제, 예를 들어 특정 장면과 언어 지시를 식별한다. 목표는 전역 policy 순위 R: π<sub>i</sub> &gt; π<sub>j</sub> &gt; … &gt; π<sub>k</sub>를 계산하는 것이다.</p>
+    <h4>Bradley-Terry 모델</h4>
+    <p>Bradley-Terry(BT) 모델은 선호도 학습 설정에서 흔히 사용된다. BT는 policy π<sub>A</sub>가 π<sub>B</sub>를 상대로 이길 확률을 로그 능력치 차이의 sigmoid로 모델링한다.</p>
+    <div class="equation-inline"><code>p(π_A &gt; π_B) = σ(θ_A − θ_B)</code></div>
+    <p>이 모델의 로그 능력치 매개변수는 Elo 같은 온라인 알고리즘으로 적합하거나, 데이터의 최대우도 적합값으로 수렴한다고 보장되는 반복 알고리즘을 사용해 오프라인 설정에서 적합할 수 있다. 이 반복 알고리즘은 무승부를 지원하도록 수정할 수도 있다.</p>
+    <h4>BT 확장</h4>
+    <p>Bradley-Terry 모델에는 안정적인 오프라인 solver가 존재한다는 매력이 있지만, 선호도 데이터셋의 각 쌍별 비교가 동일한 조건에서 이루어진다고 가정한다. A/B 평가를 수행하는 <em>과제</em>가 평가마다 달라질 수 있는 A/B robot policy 평가 설정에서는 이 가정이 성립하지 않는다. 특히 과제는 policy 선호도에 상당한 영향을 줄 수 있다. 예를 들어 두 policy 모두에 매우 어렵거나 매우 쉬운 과제는 π<sub>A</sub>와 π<sub>B</sub>를 구분하는 신호를 약화하며, 따라서 평가자가 π<sub>A</sub>를 π<sub>B</sub>보다 선호할 확률을 낮출 수 있다.</p>
+    <p>또한 policy 쌍은 과제의 서로 다른 부분집합에서 상이한 상대적 성능 관계를 보일 수 있다. 예컨대 특정 과제 부분집합에 특화된 policy는 그 부분집합에서는 더 범용적인 policy보다 선호되지만 전체를 취합하면 그렇지 않을 수 있다. 따라서 선호도 데이터를 모델링할 때 과제 효과를 고려하는 것이 중요하다. 표준 BT 모델은 과제 관련 효과를 단순히 noise로 취급하므로 순위 품질이 낮아진다.</p>
+    <p>각 policy의 BT 로그 능력치 매개변수 θ = (θ<sub>1</sub> … θ<sub>N</sub>)에 과제 난이도 매개변수 τ = (τ<sub>1</sub> … τ<sub>T</sub>), Σ<sub>t</sub>ν<sub>t</sub> = 1을 만족하는 주변 과제 확률 ν = (ν<sub>1</sub> … ν<sub>T</sub>), 그리고 policy-과제 offset ψ = ((ψ<sub>1,1</sub> … ψ<sub>1,T</sub>), …, (ψ<sub>N,1</sub> … ψ<sub>N,T</sub>))를 추가할 것을 제안한다. ν는 주어진 A/B trial이 잠재 bucket t에 속할 사전확률을 정의하고, ψ는 <em>policy 의존적</em> 과제 난이도를 모델링한다.</p>
+    <pre class="equation" data-eq="p(π_A &gt; π_B) = Σ_(t=1)^T ν_t · σ(θ_A + ψ_(A,t) − τ_t) · [1 − σ(θ_B + ψ_(B,t) − τ_t)]">p(π_A &gt; π_B) = Σ(t=1…T) ν_t · σ(θ_A + ψ_(A,t) − τ_t) · [1 − σ(θ_B + ψ_(B,t) − τ_t)]</pre>
+    <p>핵심적으로 모든 매개변수는 선호도 데이터만으로 학습할 수 있으며, 보조 과제 정보는 필요하지 않다. 최대우도 추정 과정을 통해 과제 관련 매개변수 τ, ν, ψ가 자동으로 적합된다. 과제 bucket 수 T는 hyperparameter이다.</p>
+    <h4>근사 MLE를 위한 EM 알고리즘</h4>
+    <p>매개변수 θ, τ, ν, ψ는 근사 최대우도 expectation-maximization(EM) 알고리즘으로 적합할 수 있다. 본질적으로 이 알고리즘은 현재 모델 매개변수하에서 데이터의 likelihood를 측정하고, 이 likelihood의 1차 및 2차 도함수를 계산하며, clipped Newton update로 maximization 단계를 수행하고, 평균을 0으로 유지하도록 새 매개변수를 중심화하는 과정을 반복한다. 도함수의 자세한 유도와 EM update 알고리즘의 설명은 부록의 순위 모델 절에 제시한다.</p>
+  </section>
+
+  <section id="qualitative-policy-characteristics">
+    <h3>3.3. 정성적 Policy 특성 추출</h3>
+    <!-- FIGURE 2: RoboArena의 풍부한 평가 데이터에서 정성적 policy 특성을 추출하는 pipeline이다. VLM을 사용해 장면과 과제를 범주화한 뒤, LLM을 사용해 많은 평가 rollout의 정보를 정성적 강점과 약점을 요약하고 구체적인 평가 rollout 비디오를 근거로 인용하는 policy report로 취합한다. -->
+    <p>모델의 언어 지시 이행 능력이나 다단계 과제 수행 능력과 같은 <em>정성적</em> policy 특성을 추정하는 일은 향후 연구를 이끄는 데 매우 중요하다. 일반적으로 연구자는 특정 policy의 모든 평가를 직접 수행하여 이러한 정성적 특성에 대한 직관을 형성한다. 그러나 분산형 평가 설정에서는 수백 개의 policy rollout 비디오, 과제 지시, 평가자의 언어 피드백에서 이처럼 미묘한 통찰을 종합할 새로운 도구가 필요하다. 이를 위해 분석을 보조하는 대규모 언어 모델 및 비전-언어 모델(LLM, VLM)의 사용을 실험한다.</p>
+    <p>그림 2에 prototype 분석 도구의 개요를 제시한다. 각 평가 비디오의 첫 이미지와 해당 과제 지시를 VLM(<code>OpenAI GPT‑4.5</code>)에 전달하고 과제를 범주화하도록 요청한다. 예를 들어 pick-place, open-close, tool use로 분류하며 장면의 조명, clutter, 물체 가시성 등을 설명하게 한다. 이어서 풀의 각 policy에 대해 LLM(<code>OpenAI o3</code>)을 사용하여 모든 평가의 선호도 annotation, 범주화 결과, 자유 형식 평가자 피드백을 요약한 <em>policy report</em>를 생성한다. LLM에는 과제 범주별로 다른 policy와 성능을 비교하고 언어 피드백에서 정성적 policy 특성을 추출하라고 지시한다. 중요한 점은 report의 모든 주장에 근거로 평가 에피소드를 <em>인용</em>하도록 LLM에 지시한다는 것이며, 연구자가 주장을 검증할 수 있도록 해당 rollout의 비디오를 report에 자동으로 달아 준다. 실험의 정성적 분석 절에서 본 도구를 실험적으로 검증하고, 보충 데이터에 policy report 예시를 포함한다.</p>
+  </section>
+</section>
+<!-- SOURCE: sections/03_method.tex END -->
+
+<!-- SOURCE: sections/035_setup.tex BEGIN -->
+<section id="droid-roboarena-system">
+  <h2>4. DROID-RoboArena 평가 시스템</h2>
+  <p>RoboArena를 DROID 로봇 플랫폼의 prototype 평가 시스템으로 구현한다. 이 플랫폼은 Franka Panda 7DoF 로봇 팔, Robotiq 2F-85 평행 조 그리퍼, ZED-mini 스테레오 손목 카메라, 하나 이상의 외부 ZED 2 스테레오 카메라로 구성된다(그림 3). DROID 플랫폼은 다음과 같은 몇 가지 매력적인 특성을 제공하므로 이를 선택한다.</p>
+  <ul>
+    <li>Panda 팔은 다양한 실제 환경에서 광범위한 조작 과제를 수행하기에 충분한 dexterity를 제공한다.</li>
+    <li>로봇은 높이를 조절할 수 있는 이동식 테이블에 장착되어 장면과 카메라 시점을 빠르게 재구성할 수 있다.</li>
+    <li>가장 중요한 점은 이 플랫폼이 <em>일반화 가능한</em> robot policy 훈련을 지원하는 대규모 실제 환경 오픈소스 데이터셋인 DROID 데이터셋과 연계된다는 것이다.</li>
+    <li>마지막으로 DROID setup은 이미 전 세계 여러 학술기관에 배치되어 있으며, 이는 대규모 분산형 평가를 구현하는 데 핵심적이다.</li>
+  </ul>
+  <!-- FIGURE 3: DROID-RoboArena 평가 시스템에 사용하는 DROID 로봇 setup이다. Khazatsky 등의 허가를 받아 재수록했다. -->
+  <p>DROID가 분산형 로봇 평가의 prototype을 개발하기 편리한 플랫폼이기는 하지만, RoboArena 평가 접근법은 다른 로봇 embodiment로 쉽게 확장되며 여러 플랫폼에 걸친 cross-embodiment policy를 평가하는 데까지 잠재적으로 확장될 수 있음을 밝힌다. 본 절의 나머지 부분에서는 평가 시스템 설계를 자세히 설명하고, 더 넓은 로보틱스 커뮤니티의 공개 참여를 지원하는 안전 고려 사항과 incentive mechanism을 개괄한다.</p>
+
+  <section id="system-design">
+    <h3>4.1. RoboArena 시스템 설계</h3>
+    <!-- FIGURE 4: DROID-RoboArena 시스템은 원격 호스팅된 policy server 풀, 실제 로봇 setup을 보유한 분산형 평가자 “client” 풀, 평가 결과를 저장하는 database, 그리고 통신을 조율하고 평가 결과를 취합하며 policy 순위를 계산하는 중앙 평가 관리 server로 구성된다. -->
+    <p>잠재적으로 큰 policy 풀을 여러 장소, 국가, 심지어 대륙에 걸친 평가자 풀이 탈중앙화 방식으로 평가하는 시스템을 설계한다. 본 시스템에는 policy inference server, evaluation client, evaluation database, 중앙 evaluation server라는 네 가지 핵심 구성요소가 있다(그림 4).</p>
+    <h4>Policy inference server</h4>
+    <p>풀의 모든 policy는 로봇 평가 station의 “on-premise” 환경에서 실행하지 않고 원격 server에서 호스팅한다. 여기에는 여러 장점이 있다. 여러 평가자가 같은 policy server를 공유할 수 있어 <em>자원을 효율적으로 활용</em>한다. client 측에서 inference compute를 제공할 필요가 없으므로 <em>가벼운 evaluation client</em>가 가능해져 평가 기여의 진입 장벽을 낮춘다. 사용자가 평가를 위해 제출할 때 자신의 policy를 직접 호스팅한다고 가정하므로 policy server에 대한 <em>사용자 측 제어</em>가 가능하다. 그 결과 policy를 올바르게 실행하고 충분한 inference compute를 갖추도록 보장하며, model weight를 공유하지 않고도 독점 모델을 평가할 수 있다. 다만 원격 호스팅은 policy inference 중 추가 latency를 유발할 수 있지만, 실제로 DROID policy를 주로 평가하는 정적 조작 과제에서는 이를 무시할 수 있을 정도로 작았다.</p>
+    <p>향후 RoboArena 평가 버전에서 더 동적인 과제를 평가하려면 적어도 부분적으로 local inference를 지원해야 할 수도 있음을 인정한다.</p>
+    <h4>Evaluation client</h4>
+    <p>3.1절에 설명한 평가 프로토콜을 사용자가 따르도록 안내하는 client-side script를 제공한다. 이 script는 중앙 evaluation server 및 policy inference server와의 통신을 처리한다. client 측 inference compute가 필요하지 않으므로 인터넷과 DROID 로봇에 연결된 어떤 컴퓨터에서도 이 script를 실행할 수 있다.</p>
+    <h4>Evaluation database</h4>
+    <p>이 database에는 지시, 점수와 선호도, 자연어 피드백, rollout 비디오 등 모든 평가 결과를 호스팅한다. 정보는 client가 업로드한다.</p>
+    <h4>중앙 Evaluation server</h4>
+    <p>평가자에게 policy를 할당하고 policy 풀에 새로 등록되거나 폐기된 policy를 추적하며, evaluation client가 crash하거나 네트워크 연결을 잃는 경우처럼 시간 제한이 지나면 평가를 자동으로 취소하는 중앙 evaluation server를 호스팅한다.</p>
+  </section>
+
+  <section id="open-sourcing">
+    <h3>4.2. RoboArena 오픈소스화: Interface, 안전, Incentive</h3>
+    <p>DROID-RoboArena를 설계하는 목표는 누구나 policy를 제출하고 평가에 기여할 수 있는 로보틱스 커뮤니티의 자원으로 제공하는 것이다. 특히 DROID-RoboArena를 통해 물리적 로봇을 이용할 수 없는 연구자도 실제 환경의 generalist robot policy를 훈련하고 평가할 수 있다. 이제 다양한 실제 로봇 데이터셋, 확장 가능한 modeling framework, DROID-RoboArena 실제 로봇 평가 등 필요한 모든 자원이 오픈소스로 제공된다.</p>
+    <p>DROID-RoboArena를 사용하기 쉽고 안전하며 자립적으로 만들려면 몇 가지 요소가 더 필요하다. 첫째, 웹사이트에서 수행된 모든 평가를 쉽게 탐색하고 기존 policy leaderboard를 볼 수 있게 한다. “모든 policy”와 “오픈소스 policy”의 leaderboard를 별도로 공개할 계획이다. 후자는 공개된 데이터셋으로만 훈련하며, weight 접근 권한과 훈련 재현 방법의 세부 사항을 제공한다. 또한 policy가 로봇 평가 hardware를 손상하지 않도록 여러 <strong>안전 계층</strong>을 설계한다. 먼저 새로 제출된 policy server가 예상 입력 및 출력 형식을 준수하는지 시험한다. 그런 다음 policy가 안전하지 않게 행동하여 로봇을 손상할 위험이 있을 때 신속하게 개입할 수 있도록 특별히 훈련된 평가자와 함께 몇 가지 장면과 과제의 “test environment”에서 해당 policy를 실행한다. 이는 자율주행차의 test driver와 유사하다. policy가 이러한 시험을 통과한 뒤에만 일반 풀에 추가하여 평가자에게 배포한다.</p>
+    <p>마지막으로 DROID-RoboArena가 장기적으로 자립하도록 평가 공급과 수요를 균형 있게 조절하는 <strong>“evaluation credit” 시스템</strong>을 구현한다. 평가자는 쌍별 policy 평가를 한 번 실행할 때마다 credit을 하나 받고, 이를 사용하여 자신의 policy와 풀의 다른 policy 사이에 같은 수의 쌍별 비교를 요청할 수 있다. 이렇게 하면 개인이 들이는 평가 노력은 자신의 setup에서 자신의 policy만 평가할 때와 비슷하지만, 탈중앙화 벤치마킹 시스템을 통해 다른 사람의 policy를 평가하는 데 동의함으로써 같은 노력으로 사실상 훨씬 넓은 평가 범위를 얻는다. 물리적 로봇에 접근할 수 없어 직접 평가에 기여하지 못하는 연구자의 참여를 지원하기 위해 여러 기관이 모든 사용자에게 “무료”로 배분할 기본 평가 예산을 “후원”하기로 합의했다.</p>
+  </section>
+</section>
+<!-- SOURCE: sections/035_setup.tex END -->
+
+<!-- SOURCE: sections/04_experiments.tex BEGIN -->
+<section id="experiments">
+  <h2>5. 실험</h2>
+  <p>실험 평가의 목표는 다음 질문에 답하는 것이다. (1) generalist robot policy의 성능 순위를 산출할 때 RoboArena는 전통적 로봇 평가 접근법과 비교해 어떠한가? (2) robot policy 순위 산출에서 RoboArena의 <em>sample efficiency</em>는 어떠한가? (3) RoboArena는 취합된 성능을 넘어 policy 성능에 관한 <em>정성적</em> 통찰을 추출할 수 있는가?</p>
+
+  <section id="experimental-setup">
+    <h3>5.1. 실험 설정</h3>
+    <h4>Policy 풀</h4>
+    <p>새로운 환경에서 별도 조정 없이 작동한다고 입증된 공개 <em>generalist</em> DROID policy를 모두 policy 풀에 포함한다. 논문 작성 시점에 저자가 아는 한 이러한 policy는 PaliGemma 또는 π<sub>0</sub> base model을 기반으로 한 <em>7개</em>이다. 구체적으로 다음 policy를 평가한다. <strong>π<sub>0</sub>-flow-DROID</strong>는 DROID 데이터셋으로 fine-tuning한 π<sub>0</sub> flow-vision-language-action model(VLA)이다. <strong>π<sub>0</sub>-FAST-DROID</strong>는 DROID 데이터셋으로 fine-tuning한 π<sub>0</sub>-FAST autoregressive VLA이다. <strong>PG-flow-DROID, PG-FAST-DROID, PG-FAST+-DROID, PG-FSQ-DROID, PG-Bin-DROID</strong>는 Pertsch 등이 제시한 서로 다른 action representation, 즉 π<sub>0</sub> 방식 flow matching, FAST/FAST+ tokenization, finite scalar quantization, 단순 binning tokenization을 사용하여 DROID 데이터셋으로 fine-tuning한 PaliGemma vision-language model(VLM)이다. 모든 policy에 공개 구현인 OpenPI를 사용한다.</p>
+    <h4>비교</h4>
+    <p><em>모든</em> 시험 과제에서 <em>모든</em> policy를 빠짐없이 평가하고 평균 진행도 점수를 비교하여 “oracle” policy 순위를 정한다. 이는 각 A/B 평가가 끝난 뒤 평가자에게 같은 과제에서 나머지 5개 policy의 점수를 매기도록 요청하는 방식으로 수행했다. 이 oracle 순위를 계산하는 데 총 4284회의 평가를 사용한다. RoboArena를 더 좁은 환경 집합에서 고정되고 엄격하게 표준화된 평가 과제 집합으로 모든 policy를 시험하는 전통적 robot policy 평가 접근법과 비교한다. <strong>구체적으로 Pertsch 등이 사용한 DROID 평가 절차와 비교한다.</strong> 이 절차는 policy당 17개 과제와 44개 에피소드로 구성되며 전형적인 로봇 평가를 대표한다. 자세한 과제 목록은 Pertsch 등의 부록에 제시되어 있다.</p>
+  </section>
+
+  <section id="ranking-performance">
+    <h3>5.2. RoboArena는 Policy 성능 순위를 정확히 산출한다</h3>
+    <!-- FIGURE 5: 왼쪽: RoboArena 평가 예시이다. 평가는 다양한 장면과 과제에 걸쳐 있다. 오른쪽: 4284개 평가 rollout의 진행도 점수를 취합한 “oracle” policy 순위이다. -->
+    <!-- FIGURE 6: RoboArena 쌍별 비교로 얻은 policy 순위는 전통적 robot 평가 접근법(“Regular”)으로 얻은 순위보다 oracle 순위와 유의하게 더 높은 상관관계를 보인다. 과제 인식 순위 산출 접근법(“TASK”)이 가장 좋은 순위를 도출한다. 진행도 점수를 이용한 순위 산출(“PROG”)도 효과적이지만 policy 성능에 관한 더 미묘한 정보를 잃을 수 있다. -->
+    <p>RoboArena 평가는 수십 개 장면과 수백 개 과제 지시에 걸친 총 4284회의 policy rollout을 포괄한다. 그림 5 왼쪽에 몇 가지 예시를 제시하며, 부록의 상세 평가 분석 절에 더 많은 예시를 제시한다. 저자가 아는 한 이는 지금까지 가장 광범위한 generalist policy 평가이다. 본 절의 나머지 부분은 RoboArena 평가 프레임워크 자체를 평가하지만, 현 generalist policy의 강점과 약점을 포함한 기저 평가 데이터의 상세 분석은 부록의 policy 평가 요약 절에 제시한다.</p>
+    <p>모든 과제에서 모든 policy를 빠짐없이 평가해 계산한 oracle 순위(그림 5 오른쪽)를 본 쌍별 평가 접근법이 얼마나 잘 근사하는지 평가한다. RoboArena를 기존 연구의 전통적 로봇 평가와 비교한다. Li 등의 방식을 따라 Pearson correlation r과 함께 policy 사이의 <em>성능 차이</em>를 고려하는 순위 지표인 Mean Maximum Rank Violation(MMRV)을 보고한다.</p>
+    <p>Elo 및 Bradley-Terry(“BT”)라는 표준 순위 알고리즘을 사용한 RoboArena 구현과 3.2절에서 소개한 과제 인식 순위 접근법(“TASK”)을 시험한다. 그림 6의 결과는 재현성 문제 때문에 비교적 적은 수의 과제와 환경으로 제한되는 전통적 로봇 평가(“Regular”)가 <em>generalist</em> policy의 신뢰할 만한 성능 추정치를 제공하지 못한다는 것을 보여준다. <strong>이는 과제와 환경을 표준화하지 <em>않는</em> 평가가 훨씬 높은 다양성으로 이어지고, 그 결과 generalist policy의 순위를 효과적으로 산출한다는 이점을 부각한다(그림 6).</strong> 또한 본 과제 인식 순위 접근법은 표준 Elo 계산 및 전통적 Bradley-Terry 모델보다 더 정확한 순위를 도출한다.</p>
+    <p>oracle과 본 접근법이 산출한 순위는 모두 기존 연구의 직관을 따른다. 표현력이 풍부한 action representation은 단순 binning tokenization보다 우수하며, 언어 조건부 평가에서는 discrete action tokenization(“FAST”, “FSQ”)이 diffusion policy(“Flow”, “π<sub>0</sub>-DROID”)보다 우수하다(그림 5).</p>
+    <p>각 쌍별 policy 비교의 진행도 점수 평균을 사용하여 전역 순위를 계산하는 방식(“PROG”)도 시험한다. 그림 6의 결과는 이 전략 역시 oracle과 좋은 상관관계를 달성함을 보여준다. 그러나 진행도 점수만으로 policy 순위를 산출하면 policy 성능에 관한 더 미묘한 피드백을 놓칠 수 있다. 평가자가 A/B 비교의 두 policy에 <em>동일한</em> 진행도 점수를 주면서도, 예를 들어 더 신속하거나 자신 있게 행동했다는 이유로 한 policy를 다른 policy보다 명확히 <em>선호</em>하는 경우가 자주 있음을 확인한다. 예시는 부록의 진행도 대비 비교 절에 제시한다. 따라서 진행도 기반 순위와 선호도 기반 순위는 상호 보완적이며, 둘 다 보고해야 한다.</p>
+  </section>
+
+  <section id="sample-efficiency">
+    <h3>5.3. RoboArena 평가는 Sample Efficient하다</h3>
+    <!-- FIGURE 7: 평가 에피소드 수에 따른 순위 상관관계이다. RoboArena는 단 100회의 쌍별 비교만으로 고품질 순위에 수렴한다. -->
+    <p>RoboArena로 정확한 순위를 산출하는 데 필요한 평가 수를 조사한다. 전체 평가 데이터에서 크기가 서로 다른 무작위 부분집합을 추출해 순위를 계산하고, 그림 7에 평가 에피소드 수에 따른 순위 정확도를 보고한다. RoboArena는 단 100회의 쌍별 비교만으로 고품질 순위에 수렴하여 전통적 로봇 평가의 수렴 속도와 같으면서도 유의하게 더 정확한 순위를 제공한다. 비교가 더 많이 수집될수록 RoboArena 순위의 품질은 더욱 향상된다. 이는 분산형 RoboArena 평가가 일반적인 policy 평가의 매력적인 대안을 제공함을 시사한다.</p>
+  </section>
+
+  <section id="qualitative-experiment">
+    <h3>5.4. 정성적 Policy 특성 추출</h3>
+    <figure class="metric-card" data-figure="8">
+    <table id="figure-8-metric">
+      <caption>그림 8. 과제 범주화 정확도(448개 sample).</caption>
+      <thead><tr><th>Model</th><th>Task Category Acc.</th></tr></thead>
+      <tbody><tr><td>GPT-4o</td><td>94.6%</td></tr></tbody>
+    </table>
+    </figure>
+    <p>본 절에서는 LLM/VLM 보조 <em>policy report</em>의 품질을 평가한다. 먼저 VLM 범주 예측을 인간 전문가가 부여한 범주와 비교하여 평가하며, 약 95%의 정확도를 보임을 확인한다(그림 8).</p>
+    <!-- FIGURE 9: LLM 보조 분석 도구가 π₀-FAST-DROID가 다른 policy보다 우수하거나, 대등하거나, 열등하다고 한 주장은 평가 데이터의 승률로 뒷받침된다. -->
+    <p>다음으로 생성된 policy report의 비교 주장이 평가 데이터와 일치하는지 살펴보기 위해 풀에서 가장 강한 policy인 π<sub>0</sub>-FAST-DROID의 예를 사용한다. 구체적으로 report는 서로 다른 과제 범주에서 π<sub>0</sub>-FAST-DROID의 성능을 풀의 다른 policy와 비교한다. 그림 9에서 report가 π<sub>0</sub>-FAST-DROID가 다른 policy보다 우수하거나, 대등하거나, 열등하다고 주장한 범주의 대부분은 평가 데이터의 해당 승률로 그 주장이 뒷받침됨을 보여준다. 독자에게 보충 자료에서 비디오 참조가 포함된 완전한 interactive report를 검토할 것을 권한다.</p>
+  </section>
+</section>
+<!-- SOURCE: sections/04_experiments.tex END -->
+
+<!-- SOURCE: sections/05_conclusion.tex BEGIN -->
+<section id="discussion">
+  <h2>6. 논의</h2>
+  <p>generalist robot policy를 평가하는 분산형 프레임워크 RoboArena를 소개했다. 각 평가자가 다양한 과제와 장면에서 쌍별 policy 비교를 실행하는 탈중앙화 평가자 네트워크 전반의 평가를 취합함으로써, RoboArena가 높은 평가 sample efficiency를 유지하면서도 전통적 중앙집중식 평가 접근법보다 더 정확한 policy 성능 순위를 생성할 수 있음을 보였다. 또한 평가 결과의 LLM 보조 분석을 위한 prototype 도구를 소개했다. generalist robot policy 평가의 비교 가능성을 높이고자 RoboArena 평가 프레임워크를 오픈소스로 공개하고 다른 연구자가 policy와 평가를 기여할 수 있도록 접근 권한을 제공할 것이다.</p>
+</section>
+<section id="limitations">
+  <h2>7. 한계</h2>
+  <h3>Cross-embodiment</h3>
+  <p>RoboArena는 로봇 평가를 위한 범용 접근법이지만, 본 논문의 실험 평가는 평가 프레임워크 개발에 적합했던 DROID 플랫폼에 중점을 두었다. 그러나 여러 장면과 과제뿐 아니라 여러 로봇 embodiment에서도 작동할 수 있는 <em>cross-embodiment</em> policy 개발에 관한 관심이 커지고 있다. 향후 연구에서는 RoboArena를 다양한 로봇 embodiment로 확장하면서도 특정 embodiment에서만 평가할 수 있는 policy를 계속 지원하는 방법을 조사해야 한다.</p>
+  <h3>통제 실험</h3>
+  <p>과제나 장면에 제한을 두지 않는 탈중앙화 평가에 초점을 맞춘 RoboArena의 설계는 한 번에 <em>하나의</em> 조건만 바꾸는 실험, 예를 들어 카메라 각도만 또는 물체 위치만 바꾸는 실험을 수행하기 어렵게 한다. 따라서 RoboArena는 일반화의 개별 축에 초점을 맞춘 표적화된 소규모 평가와 상호 보완적이다.</p>
+  <h3>적대적 평가자</h3>
+  <p>RoboArena의 분산형 이중맹검 평가 방식은 개인의 영향력에 대해 본질적인 견고성을 제공하지만, 무작위 선호도 점수나 의도적으로 오해를 유도하는 언어 피드백을 제공하는 등 평가 결과를 조작하려는 의도적으로 적대적인 평가자에 대한 견고성은 조사하지 않았다. 향후 연구에서는 분산형 로봇 평가 접근법이 이러한 조작에 더 강하게 대응하도록 만드는 방법을 조사해야 한다.</p>
+  <h3>과도한 최적화와 Gotthart의 법칙</h3>
+  <p>모델 성능과 같은 대상을 위한 척도가 목표가 되면 더는 좋은 척도가 아니게 된다는 것이 통념이다. Gotthart의 법칙이라고도 하는 이러한 과도한 최적화의 가능성은 모든 척도에 내재하며, 크라우드소싱 평가가 정적 벤치마크보다 본질적으로 이러한 과도한 최적화에 더 견고할 수 있음에도 최근에는 크라우드소싱 평가에도 영향을 미치는 것으로 나타났다. 로보틱스에서는 현재 policy의 제한적인 성능 탓에 이러한 과도한 최적화 가능성이 낮지만, 향후 연구에서는 RoboArena 같은 접근법을 이용한 평가가 사람이 인식하는 실제 환경의 policy 성능과 계속 높은 상관관계를 유지하는지 비판적으로 검토해야 한다.</p>
+</section>
+<!-- SOURCE: sections/05_conclusion.tex END -->
+
+<!-- SOURCE: main.tex ACKNOWLEDGMENTS BEGIN -->
+<section id="acknowledgments">
+  <h2>감사의 말</h2>
+  <p>policy 평가에 도움을 준 Siyi Huang, Ellie Huynh, Emiliano Adrian Sanchez, Justin Kang, Sarah Kunda에게 감사한다. 개발 중 DROID 로봇 station 수리에 도움을 준 Kyle Stachowicz에게도 감사한다. 본 연구는 RAI, ONR N00014-25-1-2060, ONR N00014-22-1-2621, ONR N00014-22-12677NSF, NFS IIS-2150826, NSF CAREER 2239301, NSF 2331783, DARPA HR00112490428, DARPA TIAMAT HR00112490421, Amazon Science Hub, Toyota Research Institute, Army Research Lab, 그리고 한국 정부(MSIT)가 지원하는 한국연구재단(NRF) 과제(RS-2024-00333634)의 부분 지원을 받았다. Google TPU Research Cloud(TRC)의 compute 지원에 감사한다. 또한 Natural Sciences and Engineering Research Council of Canada, Fonds de recherche du Québec, The Canadian Institute for Advanced Research(CIFAR)의 재정 지원과 Digital Research Alliance of Canada, Mila IDT, NVidia의 compute 지원에 감사한다. 이 프로젝트 hardware 일부의 구입 비용을 지원한 John Edwards Leadership Fund(CFI)에도 감사한다.</p>
+</section>
+<!-- SOURCE: main.tex ACKNOWLEDGMENTS END -->
+</article>

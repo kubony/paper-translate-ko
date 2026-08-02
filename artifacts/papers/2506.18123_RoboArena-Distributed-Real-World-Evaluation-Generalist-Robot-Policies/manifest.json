@@ -1,0 +1,25 @@
+{
+  "figures": [
+    {"no":"1","page":2,"desc":"RoboArena 분산형 실제 평가 개요"},
+    {"no":"2","page":6,"desc":"정성적 policy 특성 추출 pipeline"},
+    {"no":"3","page":6,"desc":"DROID 로봇 setup"},
+    {"no":"4","page":7,"desc":"DROID-RoboArena 시스템 구조"},
+    {"no":"5","page":9,"desc":"평가 예시와 oracle policy 순위"},
+    {"no":"6","page":9,"desc":"RoboArena와 기존 평가의 순위 상관 비교"},
+    {"no":"7","page":10,"desc":"평가 수에 따른 순위 수렴"},
+    {"no":"8","page":10,"desc":"VLM task 범주화 정확도"},
+    {"no":"9","page":10,"desc":"LLM policy report 주장과 실제 승률 대조"},
+    {"no":"10","page":23,"desc":"평가 instruction 동사와 object 다양성"},
+    {"no":"11","page":24,"desc":"32개 평가 environment collage"},
+    {"no":"12","page":25,"desc":"현 generalist policy의 정성적 강점과 약점 예시"},
+    {"no":"13","page":27,"desc":"π0-FAST-DROID 전체 성능 보고서"},
+    {"no":"14","page":28,"desc":"전체 policy 보고서 생성 prompt"},
+    {"no":"15","page":29,"desc":"간결한 policy 보고서 요약 prompt"}
+  ],
+  "tables": [
+    {"no":"1","page":22,"desc":"EM 절차 hyperparameter"},
+    {"no":"2","page":22,"desc":"모의 distribution shift에서의 RoboArena"},
+    {"no":"3","page":25,"desc":"동일한 부분 성공 점수에서도 다른 preference feedback 예시"}
+  ],
+  "display_equations": 24
+}

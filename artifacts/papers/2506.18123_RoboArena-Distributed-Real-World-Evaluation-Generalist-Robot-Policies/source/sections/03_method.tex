@@ -1,0 +1,112 @@
+\section{Decentralized Robot Policy Evaluation via Pairwise Comparison}
+\label{sec:method} 
+
+Conventional robot policy evaluations aim to \emph{standardize} the conditions under which policies are compared as much as possible, typically by defining fixed sets of tasks and scenes policies should be run on, and by trying to closely match initial conditions like lighting, camera angles, or scene background~\citep{calli2015ycb, heo2023furniturebench, walke2023bridgedata, kress2024robot}. As we discussed in \cref{sec:intro}, reproducing such standardized conditions in the real world is extremely challenging, particularly when evaluations should be run not just in one central place, but across institutions. 
+
+In this section, we introduce an alternative approach for robot evaluation that foregoes repeatedly evaluating policies in standardized settings, and instead relies on \emph{decentralized, pair-wise, double-blind policy comparisons}. Crucially, our evaluation approach \emph{does not} prescribe what scene or task a policy pair should be evaluated in, but instead aggregates a large number of pairwise comparisons across \emph{many} tasks and scenes to establish a policy ranking. This decentralized approach has multiple benefits:
+it is \textbf{open-ended}, since we do not standardize tasks and environments, thus broadening coverage; it is \textbf{robust}, since no single entity can easily sway results in double-blind, decentralized evaluations; it is \textbf{scalable}, since many institutions can collaborate on the evaluations; and it is \textbf{adaptable}, since tasks can naturally adapt to the frontier of policy capabilities.
+
+In the remainder of this section, we will first describe our evaluation procedure~(\cref{sec:eval_procedure}), then detail how we aggregate pairwise comparisons into global policy rankings~(\cref{sec:policy_ranking}), %
+and finally describe tools for extracting qualitative policy characteristics from the evaluation data~(\cref{sec:qualitative_analysis_tools}).
+
+
+\subsection{Policy Evaluation Protocol}
+\label{sec:eval_procedure}
+
+\begin{wrapfigure}{r}{0.6\textwidth}
+\begin{minipage}{0.6\textwidth}
+\vspace{-0.8cm}
+\begin{algorithm}[H]
+\caption{Policy Evaluation Protocol}
+\label{alg:eval_protocol}
+\begin{algorithmic}[1]
+\Require Set of policies $\Pi$, Evaluator $E$, Central Server $C$
+\Ensure Global policy ranking, policy characteristics
+
+\For{$i = 1$ to $K$ evaluations}
+    \State $E$ requests policies for evaluation from $C$
+    \State $C$ samples two policies $\pi_A, \pi_B \sim \Pi$ %
+    \State $E$ rearranges scene and defines task $T_i$
+    \State $E$ executes $\pi_A$ and $\pi_B$ sequentially
+    \State $E$ provides pairwise feedback $F_i(\pi_A, \pi_B)$ to $C$
+\EndFor
+\State $C$ aggregates $\{F_i\}_{i=1}^K$ into global ranking \Comment{Section 3.2}
+\State $C$ extracts qualitative policy characteristics \Comment{Sec. 3.3}
+\end{algorithmic}
+\end{algorithm}
+\end{minipage}
+\vspace{-0.5cm}
+\end{wrapfigure}
+We provide a summary of our policy evaluation protocol in \cref{alg:eval_protocol}. Given a pool of policies $\pi_{1 \dots N} \in \Pi$, our goal is to estimate a performance ranking. %
+We design our evaluation for \emph{generalist} robot policies, and thus assume that all policies in $\Pi$ can be meaningfully (and safely) evaluated across a broad range of scenes and tasks. Additionally, we assume access to a pool of evaluators $E$ that asynchronously run real robot evaluations, and a central evaluation server $C$ that manages the decentralized evaluation operation.
+
+During an evaluation session, an evaluator $E$ requests two policies from the central server $C$. $C$ randomly samples two policies $(\pi_A, \pi_B) \in \Pi$ and assigns them to $E$. 
+To ensure unbiased evaluation, the evaluators do not know which policies they are evaluating. In practice, we simply provide them with the IP addresses of remotely hosted evaluation servers. After policies are sampled, the evaluator arranges the evaluation scene, e.g., by moving the robot to a new location and rearranging the objects in front of the robot, and defines the evaluation task $T_i$ in form of a natural language instruction. Then, $E$ runs rollouts for policies $\pi_A$ and $\pi_B$ back-to-back until the task is completed or a fixed timeout is reached. Importantly, we require the evaluator $E$ to \emph{closely match} the initial conditions \emph{within} this A/B policy comparison (while they can choose to change them \emph{between} separate pairwise evaluations). This ensures that the comparison of policies $\pi_A$ and $\pi_B$ is fair.
+
+After both evaluations are complete, $E$ provides feedback $F(\pi_A, \pi_B)$ about the performance of the policies. \textbf{We ask evaluators to provide three types of feedback:} a continuous \textbf{progress score} $\in [0 \dots 100]$ that is proportional to the maximum \emph{progress} a policy achieved on the task (e.g., 0 for no progress, 100 for successfully executing the task, intermediate values for partial success); a binary, \textbf{pairwise preference} label that indicates which policy the evaluator preferred (we leave it to the evaluator to decide how to determine their policy preference); and a free-form, \textbf{natural language explanation} for \emph{why} they preferred one policy over the other. 
+
+After the task instruction $T$, pairwise feedback $F$, and recordings of all observations and actions are sent to the central server $C$, the evaluator may choose to continue with another evaluation session, or pause and return at a later time. All evaluations outside a single pairwise comparison can run fully \emph{asynchronously} at any time or place. %
+
+\subsection{Computing Global Policy Rankings}
+\label{sec:policy_ranking}
+In this section, we discuss our algorithm for computing a global policy ranking using the pairwise feedback provided by the evaluators. Formally, we are given a set of $N$ policies $\Pi = \{\pi_1, \dots, \pi_N\}$ and a dataset of pairwise preferences $\mathcal{D}_p = \{P_{\pi_A, \pi_B}, t\}$, where $P_{\pi_A, \pi_B} \in \{0, 1\}$ indicates a binary preference, and $t$ identifies the task the A/B evaluation was run on (e.g., a specific scene and language instruction). We aim to compute a global policy ranking $\mathcal{R}: \pi_i > \pi_j > \dots > \pi_k$. 
+
+\textbf{Bradley-Terry Model~~~} The Bradley-Terry (BT) model~\citep{bradley1952rank} is commonly used in a learning from preferences setting. BT models the win-probability of policy $\pi_A$ versus $\pi_B$ as the sigmoid of the difference of log-abilities: $p(\pi_A > \pi_B) = \sigma(\theta_A - \theta_B)$. Then, the log-ability parameters of this model can be fit either via an online algorithm such as Elo~\citep{elo1967proposed}%
+, or in an offline setting with an iterative algorithm guaranteed to converge to the maximum likelihood fit of the data~\cite{zermelo1929berechnung}. This iterative algorithm can also be modified to support ties~\cite{davidson1970extending}. 
+
+\textbf{Extending BT~~~} The Bradley-Terry model, while appealing due to the existence of stable offline solvers, assumes that each pairwise comparison in the preference dataset takes place under identical conditions. This assumption is not satisfied in the setting of A/B robot policy evaluations, where the \emph{task} under which the A/B evaluation is conducted can vary from one evaluation to the next. Importantly, the task can significantly affect the policy preference: for example, a task that is very difficult or very easy for both policies can diminish any differentiating signal between $\pi_A$ and $\pi_B$, and thus the probability that $\pi_A$ is preferred over $\pi_B$ by evaluators. 
+Further, pairs of policies can exhibit different relative performance relationships on different subsets of tasks; a specialized policy for one subset of tasks would, for example, be preferred over more generalist policies on this subset, but not in aggregate. Thus, it is important to account for task-effects when modeling the preference data. Standard BT models would simply treat task-related effects as noise, leading to worse rankings.
+
+We propose to augment the BT log-ability parameters for each of the policies $\theta = (\theta_1 \dots \theta_N)$ with task difficulty parameters $\tau = (\tau_1 \dots\ \tau_T)$, marginal task probabilities $\nu = (\nu_1 \dots \nu_T)$ s.t. $\sum_t \nu_t = 1$, defining the prior probability any given A/B trial belongs to latent bucket $t$,
+and policy-task offsets $\psi = ((\psi_{1_1} \dots \psi_{1_T}), \dots, (\psi_{N_1} \dots \psi_{N_T}))$, which model \emph{policy-dependent} task difficulty:
+\vspace{-1em}
+\begin{equation}
+    p(\pi_A > \pi_B) = \sum_{t=1}^{T} \nu_t \cdot \sigma(\theta_A + \psi_{A_t} - \tau_t) \cdot (1 - \sigma(\theta_B + \psi_{B_t} - \tau_t))
+\end{equation}
+Critically, all parameters can be learned solely from preference data; no auxiliary task information is required. Via the maximum likelihood estimation process, the task-related parameters $\tau, \nu$, and $\psi$ will be automatically fit. The number of task buckets $T$ is a hyperparameter.%
+
+\textbf{An EM algorithm for approximate MLE~~~} The parameters $\theta, \tau, \nu$ and $\psi$ can be fit via an approximate maximum likelihood expectation-maximization (EM) algorithm. In essence, the algorithm iterates between measuring the likelihood of the data under the current model parameters, calculating the first and second-order derivatives of this likelihood, performing a maximization step with clipped Newton updates, and centering the new parameters to maintain zero mean. A detailed derivation of the derivatives and description of the EM update algorithm can be found in \cref{app:ranking_model}. 
+
+
+
+
+
+\subsection{Extracting Qualitative Policy Characteristics}
+\vspace{-2mm}
+\label{sec:qualitative_analysis_tools}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/roboarena_qualitative_analysis_tool.pdf}
+    \caption{Pipeline for extracting \emph{qualitative} policy characteristics from \Acronym{}'s rich evaluation data. We use a VLMs to categorize scenes and tasks, and then use an LLM to aggregate information across a large number of evaluation rollouts into a \emph{policy report} that summarizes qualitative strengths and weaknesses, and cites concrete evaluation rollout videos as evidence.
+    }
+    \label{fig:analysis_pipeline}
+\end{figure}
+
+
+Estimating \emph{qualitative} policy characteristics, e.g., a model's ability to follow language or perform multi-step tasks, is crucial to guide future research. Typically, researchers develop an intuition for such qualitative characteristics by running all evaluations for a given policy themselves. Yet, in a distributed evaluation setup we need new tools to synthesize such nuanced insights from hundreds of policy rollout videos, task instructions, and evaluator language feedback. To this end, we experiment with using large language and vision-language models (LLMs, VLMs) to assist with the analysis.
+
+We provide an overview of our prototype analysis tool in \cref{fig:analysis_pipeline}. We pass the first images of each evaluation video and the corresponding task instruction to a VLM  (\texttt{OpenAI GPT‑4.5}) and ask it to categorize the task (e.g., pick-place vs. open-close vs. tool use) and describe the scene's lighting, clutter, object visibility, etc. Then, for each policy in our pool, we use an LLM  (\texttt{OpenAI o3}) to generate a \emph{policy report} by summarizing preference annotations, categorization results, and free-form evaluator feedback for all evaluations. We instruct the LLM to compare performance to other policies along the task categories, and to extract qualitative policy characteristics from the language feedback. Importantly, the LLM is instructed to \emph{cite} evaluation episodes as evidence for any claim in the report and we automatically annotate the report with videos from these rollouts to enable researchers to verify any claims. We experimentally verify our tool in \cref{sec:qualitative_exp}, and include example policy reports in the supplementary data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

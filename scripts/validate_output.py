@@ -821,12 +821,26 @@ def check_html(rep, html_path, workdir, orig_pdf, manifest):
     if manifest is not None:
         n_fig_m = len(manifest.get("figures", []))
         n_tab_m = len(manifest.get("tables", []))
-        if n_img >= n_fig_m:
-            rep.ok(f"그림 개수: HTML img {n_img}개 ≥ manifest figures {n_fig_m}개.")
+        # A paper figure need not be rasterized: long reports, prompt templates, and
+        # diagrams may be faithfully rebuilt as searchable HTML inside
+        # <figure data-figure="N">. Prefer those explicit figure entities when
+        # present, and retain <img> counting as a backwards-compatible fallback.
+        figure_ids = re.findall(
+            r"<figure\b[^>]*\bdata-figure\s*=\s*[\"']([^\"']+)[\"']",
+            raw,
+            re.IGNORECASE,
+        )
+        n_figure_entities = len(set(figure_ids)) if figure_ids else n_img
+        figure_kind = "HTML <figure data-figure>" if figure_ids else "HTML img"
+        if n_figure_entities >= n_fig_m:
+            rep.ok(
+                f"그림 개수: {figure_kind} {n_figure_entities}개 ≥ "
+                f"manifest figures {n_fig_m}개."
+            )
         else:
             rep.fail(
-                f"그림 누락: HTML img {n_img}개 < manifest figures {n_fig_m}개. "
-                f"manifest에 적은 그림을 모두 추출·삽입하라."
+                f"그림 누락: {figure_kind} {n_figure_entities}개 < manifest figures {n_fig_m}개. "
+                f"manifest에 적은 그림을 모두 추출·삽입 또는 구조화 HTML로 재구성하라."
             )
         if n_table >= n_tab_m:
             rep.ok(f"표 개수: HTML <table> {n_table}개 ≥ manifest tables {n_tab_m}개.")
