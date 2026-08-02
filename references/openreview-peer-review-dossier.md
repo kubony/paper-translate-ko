@@ -165,7 +165,12 @@ separator 회귀도 검사하고 canonical `render_pdf.py`로 출력한다.
    삭제하지 않는다. Ghostscript `pdfwrite -dNoOutputFonts -dPreserveAnnots=true`로 글자를 vector
    outline으로 바꾼 별도 `*_VIEWER_COMPAT.pdf`를 만들고, 원본은 검색·선택 가능한 canonical
    artifact로 보존한다. 호환본은 page 수, annotation 수, 전 page raster, 특히 신고된 마지막 page를
-   다시 검사하고 텍스트 선택이 제한됨을 밝힌다.
+   다시 검사한다. 글자를 outline으로만 변환하면 텍스트 선택이 사라지므로, canonical PDF의
+   `rawdict` line text와 좌표를 가져와 실제 사용 glyph만 subset한 CJK CID font로 invisible
+   text layer(`render_mode=3`)를 겹친 **selectable compatibility copy**를 우선 전달한다. 완료
+   조건은 page별 정규화 text length ratio 99% 이상, 마지막 page의 고유 한국어/영문 phrase
+   search hit, annotation 보존, outline-only 호환본과 전 page raster pixel equality다. full CJK
+   font를 그대로 embed해 첨부 한도를 낭비하지 말고 문서 glyph subset을 사용한다.
 8. raw Markdown 표, fixed footer 겹침, separator 관통/분절이 하나라도 발견되면
    수정→재렌더→**전 페이지** 기계/시각 QA를 처음부터 반복한다.
 

@@ -1,0 +1,35 @@
+{
+  "artifact": "ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_SELECTABLE_COMPAT.pdf",
+  "author": "제니 (Jennie)",
+  "purpose": "Discord/mobile preview 호환성과 텍스트 선택·검색을 동시에 제공",
+  "source_layers": {
+    "visible": "Ghostscript vector outlines; no Type 3 output fonts",
+    "searchable": "canonical PDF rawdict line text at source coordinates; render_mode 3",
+    "search_font": "document-glyph subset of Noto Sans CJK KR; CID Type 0C; embedded; Unicode mapping present"
+  },
+  "canonical_sha256": "44f2e0b331cb1dd570b256eeca198c3fea8e3b6d7170fa86a88a66c6e965315f",
+  "selectable_compat_sha256": "607c73fda4ed995bca1d5ebf7b122a88bea639a42fd5747707041980e3fddfd4",
+  "bytes": 5409753,
+  "pages": 15,
+  "a4_pages": 15,
+  "openreview_link_annotations": 14,
+  "text_lines_inserted": 1206,
+  "page_normalized_text_length_ratio": {
+    "minimum": 0.9946,
+    "maximum": 1.0,
+    "note": "차이는 searchable layer에서 표시가 필요 없는 emoji glyph를 제외한 데서 발생"
+  },
+  "visual_pixel_equality_to_outline_compat": {
+    "pages_compared": 15,
+    "dpi": 120,
+    "changed_pages": []
+  },
+  "last_three_page_selection": {
+    "13": {"query": "Reviewer EsMj에 대한 답변", "hits": 1, "selected_text_exact": true},
+    "14": {"query": "Reviewer GZFu에 대한 답변", "hits": 1, "selected_text_exact": true},
+    "15": {"query": "Meta-review", "hits": 3, "selected_text_exact": true},
+    "15_limit": {"query": "수집 및 완전성 한계", "hits": 1, "selected_text_exact": true}
+  },
+  "independent_renderers": ["Poppler pdftoppm", "PyMuPDF", "Chrome PDF viewer"],
+  "result": "PASS"
+}

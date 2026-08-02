@@ -15,11 +15,14 @@
 
 - HTML: `translation_full_ko.html`
 - Canonical PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO.pdf`
-- Discord/mobile viewer compatibility PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_VIEWER_COMPAT.pdf`
-  - Chrome/Skia의 다수 Type 3 한글 subset font를 vector outline으로 변환한 표시 호환판
-  - 15쪽·OpenReview annotation 14개·마지막 3쪽 독립 Poppler 렌더 및 확대 QA PASS
-  - SHA-256: `04b563c4af0f9c059221c0050e03d6726666ea6137ceca4ca26210c6bf59b2d5`
-  - 글자 선택·검색은 canonical PDF를 사용한다.
+- Discord/mobile **selectable compatibility PDF (권장 전달본)**: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_SELECTABLE_COMPAT.pdf`
+  - vector outline 표시 layer + canonical line 좌표의 invisible searchable text layer
+  - 15쪽·OpenReview annotation 14개·마지막 3쪽 독립 Poppler/PyMuPDF/Chrome 검증 PASS
+  - 전 page raster가 outline-only 호환본과 pixel-identical
+  - 페이지별 canonical text length 보존율 99.46–100%, 마지막 3쪽 phrase search/selection PASS
+  - 5,409,753 bytes, SHA-256: `607c73fda4ed995bca1d5ebf7b122a88bea639a42fd5747707041980e3fddfd4`
+- Outline-only fallback PDF: `ICLR2026_GK4rznYwhn_DualVLN_OpenReview_FULL_KO_VIEWER_COMPAT.pdf`
+  - 텍스트 선택이 필요 없는 viewer fallback이며 selectable 판본으로 대체한다.
 - Audited translations:
   - `translations/reviews_ko_audited.json`
   - `translations/rebuttals_a_ko_audited.json`
