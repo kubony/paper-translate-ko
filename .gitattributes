@@ -7,3 +7,4 @@ artifacts/**/*.pdf filter=lfs diff=lfs merge=lfs -text
 *.gif filter=lfs diff=lfs merge=lfs -text
 artifacts/papers/*/figures/assets/*.png filter=lfs diff=lfs merge=lfs -text
 artifacts/papers/2604.15483_pi0.7-Steerable-Generalist-Robotic-Foundation-Model/figures_source/*.png filter=lfs diff=lfs merge=lfs -text
+papers/2603.09877_InternVL-U-Democratizing-Unified-Multimodal-Models/2603.09877_ko_translation_layout.pdf filter=lfs diff=lfs merge=lfs -text

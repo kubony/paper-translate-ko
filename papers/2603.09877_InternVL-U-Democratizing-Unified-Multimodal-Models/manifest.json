@@ -1,0 +1,272 @@
+{
+  "figures": [
+    {
+      "no": "1",
+      "page": 2,
+      "desc": "원문 Figure 1"
+    },
+    {
+      "no": "2",
+      "page": 3,
+      "desc": "원문 Figure 2"
+    },
+    {
+      "no": "3",
+      "page": 9,
+      "desc": "원문 Figure 3"
+    },
+    {
+      "no": "4",
+      "page": 10,
+      "desc": "원문 Figure 4"
+    },
+    {
+      "no": "5",
+      "page": 13,
+      "desc": "원문 Figure 5"
+    },
+    {
+      "no": "6",
+      "page": 13,
+      "desc": "원문 Figure 6"
+    },
+    {
+      "no": "7",
+      "page": 15,
+      "desc": "원문 Figure 7"
+    },
+    {
+      "no": "8",
+      "page": 16,
+      "desc": "원문 Figure 8"
+    },
+    {
+      "no": "9",
+      "page": 16,
+      "desc": "원문 Figure 9"
+    },
+    {
+      "no": "10",
+      "page": 17,
+      "desc": "원문 Figure 10"
+    },
+    {
+      "no": "11",
+      "page": 17,
+      "desc": "원문 Figure 11"
+    },
+    {
+      "no": "12",
+      "page": 19,
+      "desc": "원문 Figure 12"
+    },
+    {
+      "no": "13",
+      "page": 21,
+      "desc": "원문 Figure 13"
+    },
+    {
+      "no": "14",
+      "page": 21,
+      "desc": "원문 Figure 14"
+    },
+    {
+      "no": "15",
+      "page": 22,
+      "desc": "원문 Figure 15"
+    },
+    {
+      "no": "16",
+      "page": 23,
+      "desc": "원문 Figure 16"
+    },
+    {
+      "no": "17",
+      "page": 24,
+      "desc": "원문 Figure 17"
+    },
+    {
+      "no": "18",
+      "page": 24,
+      "desc": "원문 Figure 18"
+    },
+    {
+      "no": "19",
+      "page": 26,
+      "desc": "원문 Figure 19"
+    },
+    {
+      "no": "20",
+      "page": 30,
+      "desc": "원문 Figure 20"
+    },
+    {
+      "no": "21",
+      "page": 32,
+      "desc": "원문 Figure 21"
+    },
+    {
+      "no": "22",
+      "page": 34,
+      "desc": "원문 Figure 22"
+    },
+    {
+      "no": "23",
+      "page": 35,
+      "desc": "원문 Figure 23"
+    },
+    {
+      "no": "24",
+      "page": 37,
+      "desc": "원문 Figure 24"
+    },
+    {
+      "no": "25",
+      "page": 38,
+      "desc": "원문 Figure 25"
+    },
+    {
+      "no": "26",
+      "page": 38,
+      "desc": "원문 Figure 26"
+    },
+    {
+      "no": "27",
+      "page": 52,
+      "desc": "원문 Figure 27"
+    },
+    {
+      "no": "28",
+      "page": 57,
+      "desc": "원문 Figure 28"
+    },
+    {
+      "no": "29",
+      "page": 58,
+      "desc": "원문 Figure 29"
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "page": 13,
+      "desc": "원문 Table 1"
+    },
+    {
+      "no": "2",
+      "page": 25,
+      "desc": "원문 Table 2"
+    },
+    {
+      "no": "3",
+      "page": 25,
+      "desc": "원문 Table 3"
+    },
+    {
+      "no": "4",
+      "page": 26,
+      "desc": "원문 Table 4"
+    },
+    {
+      "no": "5",
+      "page": 27,
+      "desc": "원문 Table 5"
+    },
+    {
+      "no": "6",
+      "page": 27,
+      "desc": "원문 Table 6"
+    },
+    {
+      "no": "7",
+      "page": 28,
+      "desc": "원문 Table 7"
+    },
+    {
+      "no": "8",
+      "page": 28,
+      "desc": "원문 Table 8"
+    },
+    {
+      "no": "9",
+      "page": 29,
+      "desc": "원문 Table 9"
+    },
+    {
+      "no": "10",
+      "page": 29,
+      "desc": "원문 Table 10"
+    },
+    {
+      "no": "11",
+      "page": 31,
+      "desc": "원문 Table 11"
+    },
+    {
+      "no": "12",
+      "page": 31,
+      "desc": "원문 Table 12"
+    },
+    {
+      "no": "13",
+      "page": 33,
+      "desc": "원문 Table 13"
+    },
+    {
+      "no": "14",
+      "page": 33,
+      "desc": "원문 Table 14"
+    },
+    {
+      "no": "15",
+      "page": 35,
+      "desc": "원문 Table 15"
+    },
+    {
+      "no": "16",
+      "page": 35,
+      "desc": "원문 Table 16"
+    },
+    {
+      "no": "17",
+      "page": 36,
+      "desc": "원문 Table 17"
+    },
+    {
+      "no": "18",
+      "page": 36,
+      "desc": "원문 Table 18"
+    },
+    {
+      "no": "19",
+      "page": 37,
+      "desc": "원문 Table 19"
+    },
+    {
+      "no": "20",
+      "page": 51,
+      "desc": "원문 Table 20"
+    },
+    {
+      "no": "21",
+      "page": 52,
+      "desc": "원문 Table 21"
+    },
+    {
+      "no": "22",
+      "page": 53,
+      "desc": "원문 Table 22"
+    },
+    {
+      "no": "23",
+      "page": 59,
+      "desc": "원문 Table 23"
+    },
+    {
+      "no": "24",
+      "page": 59,
+      "desc": "원문 Table 24"
+    }
+  ],
+  "display_equations": 14
+}

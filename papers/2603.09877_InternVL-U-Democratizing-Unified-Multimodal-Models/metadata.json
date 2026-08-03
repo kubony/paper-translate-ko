@@ -1,0 +1,137 @@
+{
+  "arxiv_id": "2603.09877",
+  "title": "InternVL-U: Democratizing Unified Multimodal Models for Understanding, Reasoning, Generation and Editing",
+  "authors": [
+    {
+      "name": "Changyao Tian",
+      "affiliation": ""
+    },
+    {
+      "name": "Danni Yang",
+      "affiliation": ""
+    },
+    {
+      "name": "Guanzhou Chen",
+      "affiliation": ""
+    },
+    {
+      "name": "Erfei Cui",
+      "affiliation": ""
+    },
+    {
+      "name": "Zhaokai Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "Yuchen Duan",
+      "affiliation": ""
+    },
+    {
+      "name": "Penghao Yin",
+      "affiliation": ""
+    },
+    {
+      "name": "Sitao Chen",
+      "affiliation": ""
+    },
+    {
+      "name": "Ganlin Yang",
+      "affiliation": ""
+    },
+    {
+      "name": "Mingxin Liu",
+      "affiliation": ""
+    },
+    {
+      "name": "Zirun Zhu",
+      "affiliation": ""
+    },
+    {
+      "name": "Ziqian Fan",
+      "affiliation": ""
+    },
+    {
+      "name": "Leyao Gu",
+      "affiliation": ""
+    },
+    {
+      "name": "Haomin Wang",
+      "affiliation": ""
+    },
+    {
+      "name": "Qi Wei",
+      "affiliation": ""
+    },
+    {
+      "name": "Jinhui Yin",
+      "affiliation": ""
+    },
+    {
+      "name": "Xue Yang",
+      "affiliation": ""
+    },
+    {
+      "name": "Zhihang Zhong",
+      "affiliation": ""
+    },
+    {
+      "name": "Qi Qin",
+      "affiliation": ""
+    },
+    {
+      "name": "Yi Xin",
+      "affiliation": ""
+    },
+    {
+      "name": "Bin Fu",
+      "affiliation": ""
+    },
+    {
+      "name": "Yihao Liu",
+      "affiliation": ""
+    },
+    {
+      "name": "Jiaye Ge",
+      "affiliation": ""
+    },
+    {
+      "name": "Qipeng Guo",
+      "affiliation": ""
+    },
+    {
+      "name": "Gen Luo",
+      "affiliation": ""
+    },
+    {
+      "name": "Hongsheng Li",
+      "affiliation": ""
+    },
+    {
+      "name": "Yu Qiao",
+      "affiliation": ""
+    },
+    {
+      "name": "Kai Chen",
+      "affiliation": ""
+    },
+    {
+      "name": "Hongjie Zhang",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "Unified multimodal models (UMMs) that integrate understanding, reasoning, generation, and editing face inherent trade-offs between maintaining strong semantic comprehension and acquiring powerful generation capabilities. In this report, we present InternVL-U, a lightweight 4B-parameter UMM that democratizes these capabilities within a unified framework. Guided by the principles of unified contextual modeling and modality-specific modular design with decoupled visual representations, InternVL-U integrates a state-of-the-art Multimodal Large Language Model (MLLM) with a specialized MMDiT-based visual generation head. To further bridge the gap between aesthetic generation and high-level intelligence, we construct a comprehensive data synthesis pipeline targeting high-semantic-density tasks, such as text rendering and scientific reasoning, under a reasoning-centric paradigm that leverages Chain-of-Thought (CoT) to better align abstract user intent with fine-grained visual generation details. Extensive experiments demonstrate that InternVL-U achieves a superior performance - efficiency balance. Despite using only 4B parameters, it consistently outperforms unified baseline models with over 3x larger scales such as BAGEL (14B) on various generation and editing tasks, while retaining strong multimodal understanding and reasoning capabilities.",
+  "comment": "technical report, 61 pages, https://github.com/OpenGVLab/InternVL-U",
+  "journal_ref": "",
+  "primary_category": "cs.CV",
+  "categories": [
+    "cs.CV"
+  ],
+  "published": "2026-03-10T16:38:33Z",
+  "updated": "2026-03-10T16:38:33Z",
+  "abs_url": "https://arxiv.org/abs/2603.09877",
+  "pdf_url": "https://arxiv.org/pdf/2603.09877",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2603.09877v1",
+    "pdf": "https://arxiv.org/pdf/2603.09877v1"
+  }
+}
