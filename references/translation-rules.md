@@ -173,11 +173,13 @@ knowledge` 같은 한정 표현은 "우리가 아는 한"처럼 보존하고, �
 
 ## 7. 인용과 참고문헌
 
-- 본문 인라인 인용 번호 `[12, 34]`는 **제거**하고 문장을 자연스럽게 다듬는다.
-  구체적 시스템을 지칭하면 이름으로 풀어쓴다("Khronos의 접근을 따른다").
-- 문서 끝에 `참고문헌 요약` 섹션: "아래는 원문 참고문헌 N개의 핵심 목록이다.
-  원문과의 대조를 위해 citation key와 제목은 주로 원문을 유지했다." 안내 후,
-  `저자 et al. (연도), 제목.` 형태의 번호 목록(2단, 원문 제목 유지).
+- 본문 인용은 삭제하거나 raw BibTeX key로 노출하지 않는다. 원문의 bibliography style과 번호를 보존한 **압축 숫자형 표기**를 사용한다: `[12]`, `[12, 57]`, `[12–14, 21]`.
+- 연속 번호 3개 이상만 en dash로 압축하고 citation 전체에 `white-space: nowrap`을 적용한다. 각 번호/range는 대응 참고문헌 항목으로 연결한다.
+- `.bbl`의 `\\bibitem` 순서를 canonical map으로 사용한다. `.bbl`이 없으면 active citation key만 담은 최소 `.aux`와 원문의 `\\bibliographystyle`로 BibTeX를 실행해 순서를 생성한다. `refs.bib`의 물리적 entry 순서를 번호로 추측하지 않는다.
+- fragment의 `[key; key]`는 모든 token이 canonical citation map에 있을 때만 치환한다. `[dev]`, `[High]`, `[0,1]`을 인용으로 오인하지 않는다.
+- 문서 끝 `참고문헌`에는 실제 인용된 entry만 원문 번호 순서로 싣고, `첫 저자 et al. (연도). 원문 제목.` 형식을 기본으로 한다.
+- raw key·미해결 `\\cite{...}`·깨진 내부 링크가 0개인지 assertion하고, 인용 밀집 본문과 참고문헌 시작·중간·마지막 페이지를 확대 QA한다.
+- 세부 구현과 검증은 `references/citation-and-bibliography-layout.md`를 따른다.
 
 ## 8. 완전성 기준
 

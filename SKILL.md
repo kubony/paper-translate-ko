@@ -31,6 +31,12 @@ OpenReview의 review·rebuttal·meta-review를 “한글 논문 완역본처럼�
 field-level fidelity audit, Markdown 정규화, separator-safe A4 2단 조판과 전 페이지 QA는
 `references/openreview-peer-review-dossier.md`를 따른다.
 
+논문 후보를 조사·선별하거나 번역본에 critical review, 관련 연구, OpenReview 평가,
+재현 비용, 사용자 프로젝트 적용점을 붙이는 요청은 번역과 섞지 말고 companion review로
+처리한다. exact title/ID/venue·공개 자산 검증, predecessor/direct comparison/follow-up map,
+claim–evidence 분리, 증거 강도·실행 가치 평가와 `즉시 구현 / 단기 실험 / 장기 연구 / 관찰`
+분류는 `references/paper-research-and-critical-review.md`를 따른다.
+
 ## 도구 실행 규약
 
 - Python 스크립트 중 `extract_figures.py`는 pymupdf가 필요하다. 시스템 pip는
@@ -292,8 +298,8 @@ python3 scripts/fetch_web_assets.py --out <작업폴더>/assets <page_url> ...
 - 혼합 표기: 전문용어는 영문 원형 + 한글 조사("grounding해야"). 모델명·벤치마크명·데이터셋명·지표명·수치·인명은 원문 유지.
 - 디스플레이 수식은 monospace 코드블록에 ASCII/유니코드 근사 표기. LaTeX 렌더 금지.
 - 표는 이미지가 아니라 **HTML 표로 재구성**(수치·최고성능 bold 그대로).
-- 본문 인라인 인용 번호 `[12]`는 제거하고 문장을 다듬는다.
-- 참고문헌은 문서 끝에 요약 목록(원문 제목 유지).
+- 본문 인용은 원문 번호에 맞춘 압축 숫자형 링크(`[12–14, 21]`)로 보존한다. raw BibTeX key와 `\\cite{...}`는 노출하지 않으며, 실제 인용된 참고문헌만 원문 순서로 정리한다. 세부 절차는 `references/citation-and-bibliography-layout.md`를 따른다.
+- 참고문헌은 문서 끝에 `첫 저자 et al. (연도). 원문 제목.` 형식으로 둔다.
 - 문어체 평서형("~한다")으로 통일, 경어체 금지. 초록~부록 전 문단 완역(요약·생략 금지).
 
 **실전에서 실제로 발생한 실패 유형 — 재발 금지:**
@@ -423,6 +429,8 @@ uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
 
 - VLA/VLN architecture·modality·temporal context·training/evaluation 분리와 Chrome multicol 회귀 사례:
   `references/dualvln-translation-lessons-learned.md`
+- 본문 citation key→원문 번호 mapping·압축 숫자형 링크·참고문헌 조판:
+  `references/citation-and-bibliography-layout.md`
 - Static multicol preflight:
   `python3 scripts/check_multicol_layout.py <작업폴더>/translation.html`
 

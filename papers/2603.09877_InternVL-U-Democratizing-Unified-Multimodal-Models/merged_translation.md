@@ -28,22 +28,22 @@ unified contextual modeling, modality-specific modular design, decoupled visual 
 <figure data-figure="2"><img src="source/figures/teasers/overview_page2.pdf" alt="그림 2"></figure>
 
 <!-- src: sections/1.introduction.tex:L45-L47 -->
-Unified multimodal model(UMM)은 최근 몇 년 동안 빠르게 발전해 왔다 [team2024chameleon; chen2025blip3; li2025onecat; tian2025unigen; tang2025unilip]. GPT-4o [hurst2024gpt] 같은 모델의 등장은 native image generation과 고도화된 언어 능력의 통합이 사용자가 자연어로 복잡한 시각 과제를 수행하도록 할 뿐 아니라 Artificial General Intelligence(AGI)와 World Model을 탐구하는 길도 연다는 점을 보여준다 [deng2025bagel; cui2025emu3]. 폐쇄형 모델이 뛰어난 범용 성능을 보이는 동안, 연구 커뮤니티는 이러한 unified model을 구축하기 위해 다양한 architecture 및 representation 전략을 활발히 탐구해 왔다. 이러한 노력은 대체로 두 패러다임으로 나뉜다. (1) **Fully-native UMM** [team2024chameleon; cui2025emu3; deng2025bagel; wang2025ovis; xin2025lumina; xie2025show]은 처음부터 학습하거나 unimodal component(예: ViT, LLM)로 초기화한 뒤 multimodal understanding 및 generation 과제를 처음부터 공동 학습한다. (2) **Fully-ensemble UMM** [pan2025transfer; lin2025uniworld; song2025query; wu2025openuni]은 사전 학습된 multimodal understanding model과 사전 학습된 image generation model을 사후 정렬하여 unified system을 구축한다. 그러나 두 패러다임 모두 상당한 한계가 있다.
+Unified multimodal model(UMM)은 최근 몇 년 동안 빠르게 발전해 왔다 <span class="citation">[<a href="#ref-12">12</a>, <a href="#ref-57">57</a>, <a href="#ref-95">95, 96</a>, <a href="#ref-102">102</a>]</span>. GPT-4o <span class="citation">[<a href="#ref-46">46</a>]</span> 같은 모델의 등장은 native image generation과 고도화된 언어 능력의 통합이 사용자가 자연어로 복잡한 시각 과제를 수행하도록 할 뿐 아니라 Artificial General Intelligence(AGI)와 World Model을 탐구하는 길도 연다는 점을 보여준다 <span class="citation">[<a href="#ref-21">21</a>, <a href="#ref-26">26</a>]</span>. 폐쇄형 모델이 뛰어난 범용 성능을 보이는 동안, 연구 커뮤니티는 이러한 unified model을 구축하기 위해 다양한 architecture 및 representation 전략을 활발히 탐구해 왔다. 이러한 노력은 대체로 두 패러다임으로 나뉜다. (1) **Fully-native UMM** <span class="citation">[<a href="#ref-21">21</a>, <a href="#ref-26">26</a>, <a href="#ref-96">96</a>, <a href="#ref-106">106</a>, <a href="#ref-120">120, 121</a>]</span>은 처음부터 학습하거나 unimodal component(예: ViT, LLM)로 초기화한 뒤 multimodal understanding 및 generation 과제를 처음부터 공동 학습한다. (2) **Fully-ensemble UMM** <span class="citation">[<a href="#ref-64">64</a>, <a href="#ref-86">86</a>, <a href="#ref-94">94</a>, <a href="#ref-117">117</a>]</span>은 사전 학습된 multimodal understanding model과 사전 학습된 image generation model을 사후 정렬하여 unified system을 구축한다. 그러나 두 패러다임 모두 상당한 한계가 있다.
 
 <!-- src: sections/1.introduction.tex:L49-L50 -->
-Fully-native UMM의 경우 modeling, representation, architecture 전반에서 최적 설계가 무엇인지 아직 커뮤니티의 합의가 이루어지지 않았다 [he2025emmaefficientmultimodalunderstanding]. 이론적 견해 차이가 존재할 뿐 아니라 어떤 단일 접근법도 성능이나 효율성에서 결정적인 우위를 보여주지 못했다 [li2025onecat]. 더욱이 multimodal understanding 및 generation 능력을 처음부터 공동 학습하는 일은 특히 서로 다른 modality의 상충하는 데이터 분포를 균형 있게 맞춰야 한다는 점에서 상당한 engineering 난제를 야기한다. 무엇보다 이 패러다임은 커뮤니티에서 이미 이용할 수 있는 최신(SOTA) multimodal understanding model [Qwen-VL; chen2024internvl]의 이점을 포기해야 하는 경우가 많아, 감당하기 어려운 학습 비용과 위험을 초래한다. 반대로 fully-ensemble UMM은 일반적으로 외부에서 별도로 사전 학습된 image generator를 visual generation head로 부착한다 [xie2024sana; flux2024; rombach2022high]. 실제로 이들은 반복적인 trade-off에 직면한다. Qwen-Image [wu2025qwen]와 Hunyuan Image 3.0 [cao2025hunyuanimage]처럼 head의 parameter 수를 매우 크게 확장하여 최상급 시각 품질을 달성할 수 있지만, 이는 학습 및 배포 비용을 크게 높인다. 다른 선택으로는 작은 head를 유지하면서 Stable Diffusion 3 [mmdit]의 multi-encoder text conditioning이나 Z-Image [cai2025z]의 text condition과 image condition을 분리하는 설계처럼 정교하지만 흔히 파편화된 conditioning pipeline을 도입할 수 있다. 어느 쪽이든 결과적인 interface를 단일 MLLM의 hidden-state 공간에 깔끔하게 정렬하기 어려우며, 이는 제한된 자원 아래 post-alignment training으로 얻을 수 있는 이득을 제약한다.
+Fully-native UMM의 경우 modeling, representation, architecture 전반에서 최적 설계가 무엇인지 아직 커뮤니티의 합의가 이루어지지 않았다 <span class="citation">[<a href="#ref-40">40</a>]</span>. 이론적 견해 차이가 존재할 뿐 아니라 어떤 단일 접근법도 성능이나 효율성에서 결정적인 우위를 보여주지 못했다 <span class="citation">[<a href="#ref-57">57</a>]</span>. 더욱이 multimodal understanding 및 generation 능력을 처음부터 공동 학습하는 일은 특히 서로 다른 modality의 상충하는 데이터 분포를 균형 있게 맞춰야 한다는 점에서 상당한 engineering 난제를 야기한다. 무엇보다 이 패러다임은 커뮤니티에서 이미 이용할 수 있는 최신(SOTA) multimodal understanding model <span class="citation">[<a href="#ref-3">3</a>, <a href="#ref-17">17</a>]</span>의 이점을 포기해야 하는 경우가 많아, 감당하기 어려운 학습 비용과 위험을 초래한다. 반대로 fully-ensemble UMM은 일반적으로 외부에서 별도로 사전 학습된 image generator를 visual generation head로 부착한다 <span class="citation">[<a href="#ref-52">52</a>, <a href="#ref-91">91</a>, <a href="#ref-119">119</a>]</span>. 실제로 이들은 반복적인 trade-off에 직면한다. Qwen-Image <span class="citation">[<a href="#ref-116">116</a>]</span>와 Hunyuan Image 3.0 <span class="citation">[<a href="#ref-8">8</a>]</span>처럼 head의 parameter 수를 매우 크게 확장하여 최상급 시각 품질을 달성할 수 있지만, 이는 학습 및 배포 비용을 크게 높인다. 다른 선택으로는 작은 head를 유지하면서 Stable Diffusion 3 <span class="citation">[<a href="#ref-30">30</a>]</span>의 multi-encoder text conditioning이나 Z-Image <span class="citation">[<a href="#ref-7">7</a>]</span>의 text condition과 image condition을 분리하는 설계처럼 정교하지만 흔히 파편화된 conditioning pipeline을 도입할 수 있다. 어느 쪽이든 결과적인 interface를 단일 MLLM의 hidden-state 공간에 깔끔하게 정렬하기 어려우며, 이는 제한된 자원 아래 post-alignment training으로 얻을 수 있는 이득을 제약한다.
 
 <!-- src: sections/1.introduction.tex:L52-L52 -->
-이러한 난제를 해결하기 위해 먼저 modeling, architecture, representation이라는 세 차원에서 unified model의 설계 원칙을 체계적으로 분석한다. 통합된 semantic reasoning 공간 안에서 모델은 서로 다른 modality의 통계적 특성에 대응하기 위해 hybrid modeling objective를 사용하고, 전체 architecture 효율성을 높이기 위해 modality-specific modularity를 따르며, 고수준 semantic understanding과 저수준 pixel reconstruction 사이의 균형을 위해 decoupled visual representation을 사용해야 한다고 본다. 이 원칙에 따라 간결하고 효율적인 unified multimodal model인 InternVL-U를 제안한다. SoTA 성능의 open-source MLLM인 InternVL 3.5 [wang2025internvl3_5]를 기반으로, MLLM hidden state와 정렬되는 unified semantic conditioning interface를 갖춘 custom MMDiT 기반 visual generation head를 통합한다. 3단계 progressive training 전략을 통해 InternVL-U는 전신 모델의 견고한 understanding 및 reasoning 능력을 물려받을 뿐 아니라 강력한 multimodal generation 및 editing 능력도 습득한다. 또한 InternVL-U는 self-reflection reasoning을 활용해 MLLM에서 물려받은 world knowledge를 이용함으로써 이러한 능력을 더욱 향상한다.
+이러한 난제를 해결하기 위해 먼저 modeling, architecture, representation이라는 세 차원에서 unified model의 설계 원칙을 체계적으로 분석한다. 통합된 semantic reasoning 공간 안에서 모델은 서로 다른 modality의 통계적 특성에 대응하기 위해 hybrid modeling objective를 사용하고, 전체 architecture 효율성을 높이기 위해 modality-specific modularity를 따르며, 고수준 semantic understanding과 저수준 pixel reconstruction 사이의 균형을 위해 decoupled visual representation을 사용해야 한다고 본다. 이 원칙에 따라 간결하고 효율적인 unified multimodal model인 InternVL-U를 제안한다. SoTA 성능의 open-source MLLM인 InternVL 3.5 <span class="citation">[<a href="#ref-111">111</a>]</span>를 기반으로, MLLM hidden state와 정렬되는 unified semantic conditioning interface를 갖춘 custom MMDiT 기반 visual generation head를 통합한다. 3단계 progressive training 전략을 통해 InternVL-U는 전신 모델의 견고한 understanding 및 reasoning 능력을 물려받을 뿐 아니라 강력한 multimodal generation 및 editing 능력도 습득한다. 또한 InternVL-U는 self-reflection reasoning을 활용해 MLLM에서 물려받은 world knowledge를 이용함으로써 이러한 능력을 더욱 향상한다.
 
 <!-- src: sections/1.introduction.tex:L54-L54 -->
-그러나 설계의 통합만으로는 진정한 AGI 지향 UMM이 보장되지 않는다. 모델이 궁극적으로 획득하는 능력은 학습에 사용된 objective와 data regime의 영향을 강하게 받기 때문이다 [rombach2022high; wang2025internvl3_5]. Unified multimodal model에는 시각적 능력과 의미적 신뢰성이 모두 기대되지만, 오늘날의 visual generation model과 multimodal understanding model은 근본적으로 다른 목표와 사용 사례에 최적화되어 있다. 전통적인 generation model은 주로 미학과 visual fidelity 같은 *저수준* 지각 품질을 겨냥하는 반면, understanding model은 knowledge injection과 reasoning emergence를 포함한 *고수준* 지능을 강조한다. 이러한 objective 불일치는 AGI 지향 UMM 개발의 주요 장애물이다. 그 핵심 원인은 학습 데이터 분포의 domain gap이라고 주장한다. Generation model은 texture와 high-frequency detail은 풍부하지만 semantic density는 비교적 낮은 자연 이미지 corpus(예: 인물 및 풍경)를 주로 학습한다. 대조적으로 understanding model은 GUI, infographic, OCR 중심 문서 같은 합성 이미지를 포함하여 text가 풍부하고 구조적으로 조직된 데이터에 크게 의존한다. 이러한 데이터는 texture는 단순할 수 있지만 조밀한 의미, 풍부한 textual cue, 구조화된 지식을 담고 있다.
+그러나 설계의 통합만으로는 진정한 AGI 지향 UMM이 보장되지 않는다. 모델이 궁극적으로 획득하는 능력은 학습에 사용된 objective와 data regime의 영향을 강하게 받기 때문이다 <span class="citation">[<a href="#ref-91">91</a>, <a href="#ref-111">111</a>]</span>. Unified multimodal model에는 시각적 능력과 의미적 신뢰성이 모두 기대되지만, 오늘날의 visual generation model과 multimodal understanding model은 근본적으로 다른 목표와 사용 사례에 최적화되어 있다. 전통적인 generation model은 주로 미학과 visual fidelity 같은 *저수준* 지각 품질을 겨냥하는 반면, understanding model은 knowledge injection과 reasoning emergence를 포함한 *고수준* 지능을 강조한다. 이러한 objective 불일치는 AGI 지향 UMM 개발의 주요 장애물이다. 그 핵심 원인은 학습 데이터 분포의 domain gap이라고 주장한다. Generation model은 texture와 high-frequency detail은 풍부하지만 semantic density는 비교적 낮은 자연 이미지 corpus(예: 인물 및 풍경)를 주로 학습한다. 대조적으로 understanding model은 GUI, infographic, OCR 중심 문서 같은 합성 이미지를 포함하여 text가 풍부하고 구조적으로 조직된 데이터에 크게 의존한다. 이러한 데이터는 texture는 단순할 수 있지만 조밀한 의미, 풍부한 textual cue, 구조화된 지식을 담고 있다.
 
 <!-- src: sections/1.introduction.tex:L56-L58 -->
-이 진단과 일치하게 차세대 상용 모델(예: Nano-Banana Pro [deepmind_gemini3proimage_2025])은 미학만을 추구하는 데서 벗어나 typography의 정밀성과 지식에 충실한 콘텐츠 생성을 강조함으로써 이 간극을 적극적으로 좁히기 시작했다. 이러한 흐름에서 영감을 받고 InternVL-U의 AGI 지향 UMM으로서의 잠재력을 끌어내기 위해 text rendering, scientific reasoning, 공간 및 유머 생성 등 다양한 능력을 겨냥하는 포괄적인 multimodal 데이터 합성 pipeline을 구축한다. 구체적으로 “high semantic density” text 시나리오에는 bilingual typography와 local consistency editing을 포괄하는 완전 자동 text rendering 및 editing pipeline을 설계하여 generative model의 symbolic precision 부족을 해결한다. “knowledge-intensive” 과학 시나리오에는 programmatic tool(예: GeoGebra, SVG)과 academic corpus를 활용하여 수학, 물리학, 컴퓨터 과학 등 여러 분야에 걸친 구조화된 visual-text 데이터를 구축한다. 또한 사용자 의도가 지닌 추상적이고 불충분하게 명시된 성격을 더 잘 포착하기 위해 “Reasoning-centric” 데이터 합성 패러다임을 제안한다. 명시적 Chain-of-Thought(CoT)를 도입하여 모호한 instruction을 planning과 constraint가 담긴 실행 가능한 단계로 변환하고, meme generation, geometric transformation, logically constrained editing 같은 과제에서 단순한 instruction following을 넘어 깊은 intent alignment로 도약한다. 이러한 pipeline의 데이터를 통합함으로써 InternVL-U는 강력한 범용 생성 능력을 유지하면서도 정확한 text rendering 및 editing, spatial reasoning, humor generation, multidisciplinary scientific knowledge 생성 능력을 크게 향상한다.
+이 진단과 일치하게 차세대 상용 모델(예: Nano-Banana Pro <span class="citation">[<a href="#ref-24">24</a>]</span>)은 미학만을 추구하는 데서 벗어나 typography의 정밀성과 지식에 충실한 콘텐츠 생성을 강조함으로써 이 간극을 적극적으로 좁히기 시작했다. 이러한 흐름에서 영감을 받고 InternVL-U의 AGI 지향 UMM으로서의 잠재력을 끌어내기 위해 text rendering, scientific reasoning, 공간 및 유머 생성 등 다양한 능력을 겨냥하는 포괄적인 multimodal 데이터 합성 pipeline을 구축한다. 구체적으로 “high semantic density” text 시나리오에는 bilingual typography와 local consistency editing을 포괄하는 완전 자동 text rendering 및 editing pipeline을 설계하여 generative model의 symbolic precision 부족을 해결한다. “knowledge-intensive” 과학 시나리오에는 programmatic tool(예: GeoGebra, SVG)과 academic corpus를 활용하여 수학, 물리학, 컴퓨터 과학 등 여러 분야에 걸친 구조화된 visual-text 데이터를 구축한다. 또한 사용자 의도가 지닌 추상적이고 불충분하게 명시된 성격을 더 잘 포착하기 위해 “Reasoning-centric” 데이터 합성 패러다임을 제안한다. 명시적 Chain-of-Thought(CoT)를 도입하여 모호한 instruction을 planning과 constraint가 담긴 실행 가능한 단계로 변환하고, meme generation, geometric transformation, logically constrained editing 같은 과제에서 단순한 instruction following을 넘어 깊은 intent alignment로 도약한다. 이러한 pipeline의 데이터를 통합함으로써 InternVL-U는 강력한 범용 생성 능력을 유지하면서도 정확한 text rendering 및 editing, spatial reasoning, humor generation, multidisciplinary scientific knowledge 생성 능력을 크게 향상한다.
 
 <!-- src: sections/1.introduction.tex:L60-L60 -->
-광범위한 실증 평가는 InternVL-U가 성능과 효율성 사이에서 우수한 균형을 달성함을 보여준다. 5절에서 논의하듯 text-to-image 생성에서 기존 unified model을 일반, text-centric, knowledge-intensive benchmark 전반에 걸쳐 일관되게 능가하며, 훨씬 큰 specialized generation model의 능력에 근접한다. 특히 뛰어난 instruction following을 보이며, 이전 unified architecture가 읽을 수 있는 text rendering에 취약했던 문제를 효과적으로 해결한다. 핵심적으로 CoT 전략의 통합은 generation과 editing 모두에 중요한 촉매로 작용하여, 지식이 풍부한 generation 및 복잡한 논리에 의존하는 editing 과제에서 모델이 탁월한 성능을 발휘하고 괄목할 성능 향상을 내도록 한다. 또한 multimodal understanding 측면에서 InternVL-U는 전신 모델의 견고한 능력을 유지하며 native vision-language comprehension을 훼손하지 않고 비교 가능한 unified baseline을 능가한다. 커뮤니티의 효율적인 benchmarking을 지원하기 위해 UMM 평가를 간소화하는 *GenEditEvalKit* [umm_evalkit_github]와 더욱 포괄적인 text-editing benchmark를 제공하는 *TextEdit Benchmark* [textedit_github]도 소개한다.
+광범위한 실증 평가는 InternVL-U가 성능과 효율성 사이에서 우수한 균형을 달성함을 보여준다. 5절에서 논의하듯 text-to-image 생성에서 기존 unified model을 일반, text-centric, knowledge-intensive benchmark 전반에 걸쳐 일관되게 능가하며, 훨씬 큰 specialized generation model의 능력에 근접한다. 특히 뛰어난 instruction following을 보이며, 이전 unified architecture가 읽을 수 있는 text rendering에 취약했던 문제를 효과적으로 해결한다. 핵심적으로 CoT 전략의 통합은 generation과 editing 모두에 중요한 촉매로 작용하여, 지식이 풍부한 generation 및 복잡한 논리에 의존하는 editing 과제에서 모델이 탁월한 성능을 발휘하고 괄목할 성능 향상을 내도록 한다. 또한 multimodal understanding 측면에서 InternVL-U는 전신 모델의 견고한 능력을 유지하며 native vision-language comprehension을 훼손하지 않고 비교 가능한 unified baseline을 능가한다. 커뮤니티의 효율적인 benchmarking을 지원하기 위해 UMM 평가를 간소화하는 *GenEditEvalKit* <span class="citation">[<a href="#ref-84">84</a>]</span>와 더욱 포괄적인 text-editing benchmark를 제공하는 *TextEdit Benchmark* <span class="citation">[<a href="#ref-85">85</a>]</span>도 소개한다.
 
 <!-- src: sections/1.introduction.tex:L62-L70 -->
 요약하면 기여는 다음 세 가지다.
@@ -57,17 +57,17 @@ Fully-native UMM의 경우 modeling, representation, architecture 전반에서 �
 ## 2.1 Multimodal Large Language Model
 
 <!-- src: sections/2.related.tex:L3-L6 -->
-최근 Multimodal Large Language Model(MLLM)의 발전은 vision-language 과제에 혁신을 일으켰다. LLaVA [liu2023llava; liu2023improvedllava; liu2024llavanext], Qwen-VL [Qwen-VL; Qwen2-VL; Qwen2.5-VL; Qwen3-VL], InternVL [chen2024internvl; chen2024expanding; chen2024far; zhu2025internvl3; luo2024mono_internvl; mono_internvl_v1.5; wang2025internvl3_5] 같은 대표적인 open-source 계열과 GPT [achiam2023gpt; GPT-5], Gemini [team2024gemini; comanici2025gemini; gemini25; Gemini-3-Flash] 같은 proprietary model은 visual understanding에서 뛰어난 능력을 입증했다. 표준 MLLM은 일반적으로 adapter [li2022blip; liu2023improvedllava]를 통해 vision encoder [dosovitskiy2020image]와 LLM [touvron2023llama; yang2025qwen3; anil2023palm]을 연결하는 unified architecture를 채택한다. 또한 최근 흐름은 interleaved image-text sequence 처리 [cui2025emu35nativemultimodalmodels; deng2025bagel; tian2024mminterleaved; yang2024vision]와 video understanding [2023videochat; Maaz2023VideoChatGPT; lin2023video; wang2025internvideo2; yang2025cambrian; yang2025kwai]으로 확장되어 long-context multimodal interaction의 경계를 넓히고 있다.
+최근 Multimodal Large Language Model(MLLM)의 발전은 vision-language 과제에 혁신을 일으켰다. LLaVA <span class="citation">[<a href="#ref-67">67–69</a>]</span>, Qwen-VL <span class="citation">[<a href="#ref-3">3–5</a>, <a href="#ref-110">110</a>]</span>, InternVL <span class="citation">[<a href="#ref-15">15–17</a>, <a href="#ref-76">76, 77</a>, <a href="#ref-111">111</a>, <a href="#ref-135">135</a>]</span> 같은 대표적인 open-source 계열과 GPT <span class="citation">[<a href="#ref-1">1</a>, <a href="#ref-82">82</a>]</span>, Gemini <span class="citation">[<a href="#ref-18">18</a>, <a href="#ref-23">23</a>, <a href="#ref-37">37</a>, <a href="#ref-97">97</a>]</span> 같은 proprietary model은 visual understanding에서 뛰어난 능력을 입증했다. 표준 MLLM은 일반적으로 adapter <span class="citation">[<a href="#ref-59">59</a>, <a href="#ref-67">67</a>]</span>를 통해 vision encoder <span class="citation">[<a href="#ref-27">27</a>]</span>와 LLM <span class="citation">[<a href="#ref-2">2</a>, <a href="#ref-103">103</a>, <a href="#ref-123">123</a>]</span>을 연결하는 unified architecture를 채택한다. 또한 최근 흐름은 interleaved image-text sequence 처리 <span class="citation">[<a href="#ref-22">22</a>, <a href="#ref-26">26</a>, <a href="#ref-100">100</a>, <a href="#ref-125">125</a>]</span>와 video understanding <span class="citation">[<a href="#ref-60">60</a>, <a href="#ref-65">65</a>, <a href="#ref-78">78</a>, <a href="#ref-112">112</a>, <a href="#ref-124">124</a>, <a href="#ref-127">127</a>]</span>으로 확장되어 long-context multimodal interaction의 경계를 넓히고 있다.
 
 ## 2.2 Visual Generative Model
 
 <!-- src: sections/2.related.tex:L8-L12 -->
-Visual generation은 초기 GAN [isola2017image; karras2019style; goodfellow2020generative]에서 우수한 scalability와 sample quality를 제공하는 주류 diffusion 기반 프레임워크 [ho2020denoising; rombach2022high; flux2024] 및 flow matching 패러다임 [lipman2024flowmatchingguidecode; liu2022flow]으로 발전했다. 이와 병행하여 discrete token 기반 접근법 [tian2024visual; esser2021taming; ramesh2021zero; chang2022maskgit]은 VQ 계열 codec을 통해 이미지를 autoregressive 방식으로 생성하여 LLM과 통합된 token 공간을 가능하게 한다. Stable Diffusion 3.5 [rombach2022high], FLUX.2 [flux-2-2025], Hunyuan Image 3.0 [cao2025hunyuanimage], Qwen-Image [wu2025qwen]를 비롯한 최신 text-to-image model은 instruction following과 복잡한 scene generation을 강조한다. 한편 커뮤니티는 복잡한 구조와 text의 rendering, 그리고 긴 prompt 및 multi-concept description에 대한 generalization을 개선하기 위해 data-centric 및 architecture-centric 접근법을 탐구해 왔다 [wu2025qwen; wang2025ovis_image; team2025longcat; cai2025z]. 아울러 Nano Banana Pro [deepmind_gemini3proimage_2025], GPT-Image-1.5 [GPT-Image-1.5], Seedream 4.0 [seedream2025seedream] 같은 여러 폐쇄형 최신 시스템도 instruction-following과 복잡한 multi-concept image generation 과제에서 강력한 성능을 보여주었다. 이 밖에 instruction-driven editing [brooks2023instructpix2pix; labs2025flux1kontextflowmatching; liu2025step1x-edit]도 주목받고 있으며, 이 과제는 semantic consistency를 보존하면서 특정 영역을 조작할 것을 모델에 요구한다.
+Visual generation은 초기 GAN <span class="citation">[<a href="#ref-36">36</a>, <a href="#ref-47">47, 48</a>]</span>에서 우수한 scalability와 sample quality를 제공하는 주류 diffusion 기반 프레임워크 <span class="citation">[<a href="#ref-42">42</a>, <a href="#ref-52">52</a>, <a href="#ref-91">91</a>]</span> 및 flow matching 패러다임 <span class="citation">[<a href="#ref-66">66</a>, <a href="#ref-72">72</a>]</span>으로 발전했다. 이와 병행하여 discrete token 기반 접근법 <span class="citation">[<a href="#ref-9">9</a>, <a href="#ref-31">31</a>, <a href="#ref-90">90</a>, <a href="#ref-101">101</a>]</span>은 VQ 계열 codec을 통해 이미지를 autoregressive 방식으로 생성하여 LLM과 통합된 token 공간을 가능하게 한다. Stable Diffusion 3.5 <span class="citation">[<a href="#ref-91">91</a>]</span>, FLUX.2 <span class="citation">[<a href="#ref-53">53</a>]</span>, Hunyuan Image 3.0 <span class="citation">[<a href="#ref-8">8</a>]</span>, Qwen-Image <span class="citation">[<a href="#ref-116">116</a>]</span>를 비롯한 최신 text-to-image model은 instruction following과 복잡한 scene generation을 강조한다. 한편 커뮤니티는 복잡한 구조와 text의 rendering, 그리고 긴 prompt 및 multi-concept description에 대한 generalization을 개선하기 위해 data-centric 및 architecture-centric 접근법을 탐구해 왔다 <span class="citation">[<a href="#ref-7">7</a>, <a href="#ref-98">98</a>, <a href="#ref-105">105</a>, <a href="#ref-116">116</a>]</span>. 아울러 Nano Banana Pro <span class="citation">[<a href="#ref-24">24</a>]</span>, GPT-Image-1.5 <span class="citation">[<a href="#ref-83">83</a>]</span>, Seedream 4.0 <span class="citation">[<a href="#ref-92">92</a>]</span> 같은 여러 폐쇄형 최신 시스템도 instruction-following과 복잡한 multi-concept image generation 과제에서 강력한 성능을 보여주었다. 이 밖에 instruction-driven editing <span class="citation">[<a href="#ref-6">6</a>, <a href="#ref-54">54</a>, <a href="#ref-70">70</a>]</span>도 주목받고 있으며, 이 과제는 semantic consistency를 보존하면서 특정 영역을 조작할 것을 모델에 요구한다.
 
 ## 2.3 Unified Multimodal Model
 
 <!-- src: sections/2.related.tex:L14-L20 -->
-Unified Multimodal Model(UMM)은 하나의 파운데이션 모델 안에 understanding, generation, editing을 통합하는 것을 목표로 한다. 강력한 LLM을 visual tokenizer 또는 latent representation과 결합함으로써 UMM은 시각 콘텐츠를 통합된 방식으로 이해하고 생성할 수 있다. 기존 접근법은 일반적으로 두 범주로 나뉜다. (1) Chameleon [team2024chameleon], Emu3 [cui2025emu3], SynerGen-VL [li2025synergen] 같은 **Auto-Regressive Discrete-token 방식**은 image generation을 next-token prediction으로 취급하여 modality를 자연스럽게 통합하지만 visual fidelity에서 어려움을 겪는 경우가 많다. (2) BLIP-3o [chen2025blip3o], BAGEL [deng2025bagel], Ovis-U1 [wang2025ovis] 및 기타 모델 [li2025onecat; tian2025unigen; shen2025mammothmoda2; liu2025tuna; wang2025skywork; li2025uniworld; he2025emmaefficientmultimodalunderstanding] 같은 **Diffusion/Hybrid 방식**은 LLM의 reasoning power와 diffusion 또는 flow matching model의 high-fidelity generation을 결합한다. 최근 연구는 이 밖에도 서로 다른 unified 패러다임 [modelmanzano; tang2025unilip; li2025lavida; yang2025mmada; xin2025lumina]을 탐구한다. 이러한 연구 흐름에 따라 본 연구의 InternVL-U는 open-source MLLM, 즉 InternVL3.5 [wang2025internvl3_5]를 기반으로 하며, 하나의 프레임워크 안에서 범용 understanding, generation, editing뿐 아니라 domain-specific 시나리오(예: text rendering, science, meme)를 위한 능력도 통합한다.
+Unified Multimodal Model(UMM)은 하나의 파운데이션 모델 안에 understanding, generation, editing을 통합하는 것을 목표로 한다. 강력한 LLM을 visual tokenizer 또는 latent representation과 결합함으로써 UMM은 시각 콘텐츠를 통합된 방식으로 이해하고 생성할 수 있다. 기존 접근법은 일반적으로 두 범주로 나뉜다. (1) Chameleon <span class="citation">[<a href="#ref-96">96</a>]</span>, Emu3 <span class="citation">[<a href="#ref-21">21</a>]</span>, SynerGen-VL <span class="citation">[<a href="#ref-58">58</a>]</span> 같은 **Auto-Regressive Discrete-token 방식**은 image generation을 next-token prediction으로 취급하여 modality를 자연스럽게 통합하지만 visual fidelity에서 어려움을 겪는 경우가 많다. (2) BLIP-3o <span class="citation">[<a href="#ref-13">13</a>]</span>, BAGEL <span class="citation">[<a href="#ref-26">26</a>]</span>, Ovis-U1 <span class="citation">[<a href="#ref-106">106</a>]</span> 및 기타 모델 <span class="citation">[<a href="#ref-40">40</a>, <a href="#ref-57">57</a>, <a href="#ref-62">62</a>, <a href="#ref-74">74</a>, <a href="#ref-93">93</a>, <a href="#ref-102">102</a>, <a href="#ref-109">109</a>]</span> 같은 **Diffusion/Hybrid 방식**은 LLM의 reasoning power와 diffusion 또는 flow matching model의 high-fidelity generation을 결합한다. 최근 연구는 이 밖에도 서로 다른 unified 패러다임 <span class="citation">[<a href="#ref-61">61</a>, <a href="#ref-80">80</a>, <a href="#ref-95">95</a>, <a href="#ref-121">121</a>, <a href="#ref-126">126</a>]</span>을 탐구한다. 이러한 연구 흐름에 따라 본 연구의 InternVL-U는 open-source MLLM, 즉 InternVL3.5 <span class="citation">[<a href="#ref-111">111</a>]</span>를 기반으로 하며, 하나의 프레임워크 안에서 범용 understanding, generation, editing뿐 아니라 domain-specific 시나리오(예: text rendering, science, meme)를 위한 능력도 통합한다.
 
 # 3. 방법: InternVL-U
 
@@ -84,7 +84,7 @@ Unified Multimodal Model(UMM)은 하나의 파운데이션 모델 안에 underst
 ### 3.1.1 전체 설계 원칙
 
 <!-- src: sections/3.methodology.tex:L16-L20 -->
-그림 3에서 보듯 모든 modality에 동질화된 processing pipeline을 강제하는 최근 접근법 [liang2024mixture]과 달리, 본 architecture는 서로 다른 modality에 맞춘 처리가 효율성과 성능을 극대화하는 데 필요하다는 철학을 따른다. 설계 원칙은 modeling paradigm, structural efficiency, data representation이라는 세 핵심 차원으로 정리한다.
+그림 3에서 보듯 모든 modality에 동질화된 processing pipeline을 강제하는 최근 접근법 <span class="citation">[<a href="#ref-63">63</a>]</span>과 달리, 본 architecture는 서로 다른 modality에 맞춘 처리가 효율성과 성능을 극대화하는 데 필요하다는 철학을 따른다. 설계 원칙은 modeling paradigm, structural efficiency, data representation이라는 세 핵심 차원으로 정리한다.
 
 #### Modality-Adaptive Generation을 적용한 Unified Contextual Modeling
 
@@ -92,15 +92,15 @@ Unified Multimodal Model(UMM)은 하나의 파운데이션 모델 안에 underst
 첫 번째 원칙은 multimodal understanding(context)과 generation(prediction) 사이의 이분법을 다룬다. Contextualization에는 깊은 semantic fusion을 촉진하는 unified representation이 유리하지만, generation은 각 modality에 내재한 통계적 특성을 존중해야 한다고 주장한다.
 
 - **Unified Context, Adaptive Target:** context 단계에서는 visual token과 linguistic token을 모두 공유 latent space에 projection하고 causal masking을 적용한 unified autoregressive(AR) 패러다임을 사용한다. 이는 reasoning 과정에서 modality 간 복잡한 고수준 semantic dependency를 모델이 포착하도록 보장한다.
-- **Hybrid Generative Objective:** 그러나 prediction target에는 “모든 것을 tokenization”하는 접근법 [cui2025emu3]에서 벗어난다. 본질적으로 discrete하고 sequential한 text는 cross-entropy loss를 사용하여 유한 vocabulary에 대한 categorical distribution으로 modeling하는 것이 가장 적합하다. 반면 visual signal은 continuous하고 공간적으로 상관되어 있다. Discrete visual tokenization도 실행 가능한 대안이지만(VQ-VAE 기반 AR model의 경우처럼), quantization bottleneck을 유발하고 세밀한 spatial modeling을 덜 직접적으로 만들 수 있다. 따라서 hybrid AR + Diffusion modeling 패러다임을 채택한다. Image generation은 diffusion을 일반화한 formulation인 Flow Matching을 사용하여 continuous multivariate probability space에서 modeling하고, text에는 AR objective를 유지한다. 이 설계는 text에 대한 autoregressive language modeling의 강점을 보존하면서 image에는 diffusion 기반 방식의 high-fidelity generation 능력을 활용하도록 한다.
+- **Hybrid Generative Objective:** 그러나 prediction target에는 “모든 것을 tokenization”하는 접근법 <span class="citation">[<a href="#ref-21">21</a>]</span>에서 벗어난다. 본질적으로 discrete하고 sequential한 text는 cross-entropy loss를 사용하여 유한 vocabulary에 대한 categorical distribution으로 modeling하는 것이 가장 적합하다. 반면 visual signal은 continuous하고 공간적으로 상관되어 있다. Discrete visual tokenization도 실행 가능한 대안이지만(VQ-VAE 기반 AR model의 경우처럼), quantization bottleneck을 유발하고 세밀한 spatial modeling을 덜 직접적으로 만들 수 있다. 따라서 hybrid AR + Diffusion modeling 패러다임을 채택한다. Image generation은 diffusion을 일반화한 formulation인 Flow Matching을 사용하여 continuous multivariate probability space에서 modeling하고, text에는 AR objective를 유지한다. 이 설계는 text에 대한 autoregressive language modeling의 강점을 보존하면서 image에는 diffusion 기반 방식의 high-fidelity generation 능력을 활용하도록 한다.
 
 #### Modality-Specific Modular Design을 통한 Structural Efficiency
 
 <!-- src: sections/3.methodology.tex:L36-L44 -->
-두 번째 원칙은 모든 modality를 동일한 token sequence로 취급하는 완전히 modality-agnostic한 architecture(예: Mixture-of-Transformer(MoT) [liang2024mixture])의 계산 비효율을 다룬다. 서로 다른 modality는 상이한 “semantic density”를 지니며, text는 의미적으로 조밀하지만 raw visual patch는 희소하고 중복적이라고 주장한다.
+두 번째 원칙은 모든 modality를 동일한 token sequence로 취급하는 완전히 modality-agnostic한 architecture(예: Mixture-of-Transformer(MoT) <span class="citation">[<a href="#ref-63">63</a>]</span>)의 계산 비효율을 다룬다. 서로 다른 modality는 상이한 “semantic density”를 지니며, text는 의미적으로 조밀하지만 raw visual patch는 희소하고 중복적이라고 주장한다.
 
-- **Encoder-Based MLLM Initialization:** generic transformer로 raw modality를 처리할 때 본질적으로 발생하는 parameter 및 FLOPs 낭비를 줄이기 위해 modality-specific encoding stem을 통합한다. 더 monolithic하거나 native multimodal design [luo2025mono; tian2025navil] 대신 사전 학습된 ViT [chen2024internvl]를 활용하는 encoder 기반 architecture로 multimodal context modeling backbone을 초기화한다. 이 설계는 visual information이 unified latent space에 들어가기 전에 이를 효율적으로 집계하는 데 필요한 inductive bias를 도입한다.
-- **Modality-Specific Generation Head:** 또한 text와 image의 decoding 요구가 다름을 고려하여, 사전 학습된 MLLM에 image generation을 위한 Multimodal Diffusion Transformer(MMDiT) [mmdit] architecture 기반의 전용 generation head를 확장한다. Context modeling backbone에 pixel-level synthesis 부담을 지우는 대신, MMDiT가 unified hidden state를 conditioning signal로 받아 continuous visual latent space에서 image를 합성하는 전용 generative module 역할을 한다. 이 hierarchical design은 backbone이 semantic reasoning에 집중하고 특화된 stem과 head가 modality-specific translation을 처리하도록 하여, 더 통합적이면서도 계산 효율적인 UMM을 만든다.
+- **Encoder-Based MLLM Initialization:** generic transformer로 raw modality를 처리할 때 본질적으로 발생하는 parameter 및 FLOPs 낭비를 줄이기 위해 modality-specific encoding stem을 통합한다. 더 monolithic하거나 native multimodal design <span class="citation">[<a href="#ref-75">75</a>, <a href="#ref-99">99</a>]</span> 대신 사전 학습된 ViT <span class="citation">[<a href="#ref-17">17</a>]</span>를 활용하는 encoder 기반 architecture로 multimodal context modeling backbone을 초기화한다. 이 설계는 visual information이 unified latent space에 들어가기 전에 이를 효율적으로 집계하는 데 필요한 inductive bias를 도입한다.
+- **Modality-Specific Generation Head:** 또한 text와 image의 decoding 요구가 다름을 고려하여, 사전 학습된 MLLM에 image generation을 위한 Multimodal Diffusion Transformer(MMDiT) <span class="citation">[<a href="#ref-30">30</a>]</span> architecture 기반의 전용 generation head를 확장한다. Context modeling backbone에 pixel-level synthesis 부담을 지우는 대신, MMDiT가 unified hidden state를 conditioning signal로 받아 continuous visual latent space에서 image를 합성하는 전용 generative module 역할을 한다. 이 hierarchical design은 backbone이 semantic reasoning에 집중하고 특화된 stem과 head가 modality-specific translation을 처리하도록 하여, 더 통합적이면서도 계산 효율적인 UMM을 만든다.
 
 #### Understanding과 Generation을 위한 Decoupled Visual Representation
 
@@ -130,7 +130,7 @@ Multimodal hidden state(*context*)와 VAE image latent(*target*)의 feature dist
 #### Gated Attention을 적용한 Dual-Stream MMDiT Block
 
 <!-- src: sections/3.methodology.tex:L72-L78 -->
-Multimodal context와 generative target의 서로 다른 통계적 특성을 고려하기 위해 완전한 Dual-Stream architecture를 채택한다. 두 stream은 token-level dependency를 포착하기 위해 joint self-attention으로 상호작용하지만 QKVO projection과 Feed-Forward Network(FFN)에는 분리된 parameter를 사용한다. 또한 high-resolution, long-context 시나리오에서 non-linearity를 높이고 “attention-sink” 현상을 완화하기 위해 element-wise Gating Mechanism [qiu2025gated]을 attention block에 통합한다. 형식적으로 attention layer의 modulated output **O′**는 다음과 같다.
+Multimodal context와 generative target의 서로 다른 통계적 특성을 고려하기 위해 완전한 Dual-Stream architecture를 채택한다. 두 stream은 token-level dependency를 포착하기 위해 joint self-attention으로 상호작용하지만 QKVO projection과 Feed-Forward Network(FFN)에는 분리된 parameter를 사용한다. 또한 high-resolution, long-context 시나리오에서 non-linearity를 높이고 “attention-sink” 현상을 완화하기 위해 element-wise Gating Mechanism <span class="citation">[<a href="#ref-89">89</a>]</span>을 attention block에 통합한다. 형식적으로 attention layer의 modulated output **O′**는 다음과 같다.
 
 <pre class="equation">O′ = O ⊙ σ(XW_g)</pre>
 
@@ -139,9 +139,9 @@ Multimodal context와 generative target의 서로 다른 통계적 특성을 고
 #### Resolution Interpolation을 적용한 Unified MSRoPE
 
 <!-- src: sections/3.methodology.tex:L80-L84 -->
-공간 구조를 엄밀하게 보존하기 위해 positional information을 encoding하는 Multimodal Scalable RoPE(MSRoPE) [wu2025qwenimagetechnicalreport]를 사용한다.
+공간 구조를 엄밀하게 보존하기 위해 positional information을 encoding하는 Multimodal Scalable RoPE(MSRoPE) <span class="citation">[<a href="#ref-115">115</a>]</span>를 사용한다.
 
-- **Unified 3D Encoding:** multimodal context의 visual token을 flattened 1D sequence로 취급하는 경우가 많은 이전 연구 [wu2025qwenimagetechnicalreport]와 달리, generative target과 context 내 visual token 모두에 unified 3D positional embedding(temporal, height, width)을 적용한다. 이러한 정렬은 image editing처럼 정밀한 spatial reasoning이 필요한 과제에 상당한 이점을 준다.
+- **Unified 3D Encoding:** multimodal context의 visual token을 flattened 1D sequence로 취급하는 경우가 많은 이전 연구 <span class="citation">[<a href="#ref-115">115</a>]</span>와 달리, generative target과 context 내 visual token 모두에 unified 3D positional embedding(temporal, height, width)을 적용한다. 이러한 정렬은 image editing처럼 정밀한 spatial reasoning이 필요한 과제에 상당한 이점을 준다.
 - **Positional Interpolation:** resolution scaling을 지원하기 위해 high-resolution fine-tuning 중 position index를 직접 extrapolation할 때 관찰되는 “tiling artifact”를 다룬다. 대신 Resolution Interpolation 전략을 채택한다. 최대 target resolution(예: 1024px)을 기준으로 position embedding 범위를 정의한다. 초기 low-resolution pre-training(예: 512px) 중에는 더 작은 index 범위를 쓰는 대신 전체 범위를 사용하되 인접 token 사이의 stride를 늘린다. 이는 모델이 처음부터 일관된 global spatial representation을 학습하도록 보장하고, 더 높은 resolution으로 scale을 확장할 때 domain gap을 최소화한다.
 
 ## 3.2 학습 전략
@@ -186,7 +186,7 @@ Visual 구성 요소에는 image latent의 continuous distribution을 modeling�
 #### Stage 1: Generation Head Pre-training
 
 <!-- src: sections/3.methodology.tex:L122-L124 -->
-초기 단계에서는 새로 초기화한 visual generation head를 MLLM latent space에 grounding하는 데 집중한다. Semantic representation을 보존하기 위해 MLLM을 freeze하고 generation head와 projector만 학습한다. 이전 연구 [xie2024sana]를 따라 256px pre-training을 생략하고 고정 resolution 512px을 사용하여 초기 convergence를 가속한다. 초기화에 text-to-image data만 사용하는 이전 접근법 [wang2025ovis; wu2025qwenimagetechnicalreport]과 달리, 시작부터 text-to-image generation 및 image editing dataset의 mixture를 포함한다. 이 multi-task 전략은 generation head가 text instruction과 visual context token 모두에 동시에 attention하도록 강제하여 multimodal condition alignment를 위한 견고한 기반을 마련한다.
+초기 단계에서는 새로 초기화한 visual generation head를 MLLM latent space에 grounding하는 데 집중한다. Semantic representation을 보존하기 위해 MLLM을 freeze하고 generation head와 projector만 학습한다. 이전 연구 <span class="citation">[<a href="#ref-119">119</a>]</span>를 따라 256px pre-training을 생략하고 고정 resolution 512px을 사용하여 초기 convergence를 가속한다. 초기화에 text-to-image data만 사용하는 이전 접근법 <span class="citation">[<a href="#ref-106">106</a>, <a href="#ref-115">115</a>]</span>과 달리, 시작부터 text-to-image generation 및 image editing dataset의 mixture를 포함한다. 이 multi-task 전략은 generation head가 text instruction과 visual context token 모두에 동시에 attention하도록 강제하여 multimodal condition alignment를 위한 견고한 기반을 마련한다.
 
 #### Stage 2: Any-resolution Continued Pre-training
 
@@ -224,14 +224,14 @@ InternVL의 강력한 멀티모달 이해 기반 위에서 InternVL-U에 멀티�
 
 <!-- source: sections/4.data.tex:14-22 -->
 **그림 1. 파이프라인으로 합성한 일반 데이터의 예.** 합성 데이터는 다양한 텍스트 주석을 포함하며 초상, 포스터, 자연 장면 등을 비롯한 여러 시각 영역을 포괄한다.  
-<figure><img src="source/figures/data/general_data_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="5"><img src="source/figures/data/general_data_example.pdf" alt="그림 5"></figure>
 
 <!-- source: sections/4.data.tex:24 -->
 먼저 이미지 생성과 이미지 편집을 위한 일반 데이터 전처리 및 합성 파이프라인을 설계한다. 대표적인 예는 그림 1에 제시한다.
 
 <!-- source: sections/4.data.tex:26-33 -->
 **그림 2. 일반 데이터 합성 파이프라인 개요.** 먼저 전처리 단계에서 필터링, 확장, 중복 제거를 적용하여 고품질 소스 풀을 구축한다. 이를 토대로 두 병렬 분기를 배치하여 각각 text-to-image 쌍과 instruction-guided 편집 데이터를 생성한다.  
-<figure><img src="source/figures/data/general_data_pipeline.pdf" alt="원문 피겨"></figure>
+<figure data-figure="6"><img src="source/figures/data/general_data_pipeline.pdf" alt="그림 6"></figure>
 
 <!-- source: sections/4.data.tex:35-40 -->
 ### 4.2.1. 일반 전처리
@@ -279,7 +279,7 @@ InternVL의 강력한 멀티모달 이해 기반 위에서 InternVL-U에 멀티�
 
 <!-- source: sections/4.data.tex:84-91 -->
 **그림 3. 파이프라인으로 합성한 세 가지 유형의 텍스트 중심 데이터.** 첫 번째 유형은 마스킹된 배경 이미지를 사용하여 자연 이미지 위에 의미적으로 관련된 텍스트를 겹쳐 놓는다. 두 번째 유형은 단색 배경에 텍스트를 렌더링하며 깔끔하고 미적으로 보기 좋은 레이아웃에 초점을 둔다. 세 번째 유형은 번호판, 모바일 인터페이스, 간판 및 이와 유사한 표면의 텍스트를 수정하는 것처럼 기존 이미지 내부의 텍스트를 편집한다.  
-<figure><img src="source/figures/data/text_data_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="7"><img src="source/figures/data/text_data_example.pdf" alt="그림 7"></figure>
 
 <!-- source: sections/4.data.tex:94-96 -->
 시각 매체의 텍스트 요소는 의미 밀도가 매우 높고 의사소통에 중요하므로, 정확한 텍스트 렌더링과 세밀한 편집은 현실 응용에 필수적이다. 텍스트 관련 과제에서 최근 진전이 있었음에도 일반 멀티모달 모델은 여전히 텍스트 중심 생성 및 편집에 어려움을 겪으며, 철자 오류, 비알파벳 언어에 대한 미흡한 지원, 레이아웃 오정렬, 의도하지 않은 시각적 아티팩트를 흔히 보인다.
@@ -288,7 +288,7 @@ InternVL의 강력한 멀티모달 이해 기반 위에서 InternVL-U에 멀티�
 
 <!-- source: sections/4.data.tex:98-104 -->
 **그림 4. 텍스트 렌더링 데이터 구축 파이프라인.** 합성 텍스트 렌더링을 위해 마스크 이미지, 글꼴 색상, 글꼴 스타일, 적응형 레이아웃 옵션을 준비한다. 렌더링 과정에서는 이러한 속성을 무작위로 샘플링하고 텍스트 길이에 적응하는 타이포그래피로 텍스트를 렌더링한다.  
-<figure><img src="source/figures/data/text_data_pipeline_render.pdf" alt="원문 피겨"></figure>
+<figure data-figure="8"><img src="source/figures/data/text_data_pipeline_render.pdf" alt="그림 8"></figure>
 
 <!-- source: sections/4.data.tex:106-110 -->
 ### 4.3.1. Text-to-Image 데이터
@@ -304,7 +304,7 @@ InternVL의 강력한 멀티모달 이해 기반 위에서 InternVL-U에 멀티�
 
 <!-- source: sections/4.data.tex:118-124 -->
 **그림 5. 텍스트 편집 데이터 구축 파이프라인.** 첫째, OCR 도구로 편집 후보 텍스트 영역을 추출한다. 둘째, 편집 instruction을 생성한다. 셋째, 생성 모델로 편집된 ground truth를 생성한다. 이 세 단계를 통해 고품질 텍스트 편집 triplet을 합성한다.  
-<figure><img src="source/figures/data/text_data_pipeline_edit.pdf" alt="원문 피겨"></figure>
+<figure data-figure="9"><img src="source/figures/data/text_data_pipeline_edit.pdf" alt="그림 9"></figure>
 
 <!-- source: sections/4.data.tex:126-135 -->
 ## 4.4. 과학 중심 데이터 합성
@@ -313,11 +313,11 @@ InternVL의 강력한 멀티모달 이해 기반 위에서 InternVL-U에 멀티�
 
 <!-- source: sections/4.data.tex:139-147 -->
 **그림 6. 과학 데이터 생성 파이프라인.** 일반 과학 T2I의 경우 웹 이미지와 오픈소스 데이터셋을 수집하고 오픈소스 모델을 이용한 자동 필터링 및 주석 생성을 설계한다. 물리학의 경우 PaddleOCR로 문서에서 이미지를 얻고, 고품질 이미지 쌍을 저렴하게 생성하기 위한 SVG 기반 파이프라인을 제안한다. 컴퓨터 과학의 경우 과제를 정의하고 Python 라이브러리로 이미지를 렌더링한다.  
-<figure><img src="source/figures/data/science_data_pipeline.pdf" alt="원문 피겨"></figure>
+<figure data-figure="10"><img src="source/figures/data/science_data_pipeline.pdf" alt="그림 10"></figure>
 
 <!-- source: sections/4.data.tex:149-158 -->
 **그림 7. 과학 중심 데이터의 예.** 일반 과학 T2I는 조밀하고 상세한 instruction을 특징으로 하며 여러 학문 분야의 개념을 묘사해야 한다. 물리학과 컴퓨터 과학은 학문적 추론을 수반하는 이미지 편집에 초점을 둔다.  
-<figure><img src="source/figures/data/science_data_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="11"><img src="source/figures/data/science_data_example.pdf" alt="그림 11"></figure>
 
 <!-- source: sections/4.data.tex:161-168 -->
 ### 4.4.1. 일반 과학 생성 데이터
@@ -352,7 +352,7 @@ Text-to-image 생성을 위한 이미지는 오픈소스 멀티모달 과학 이
 
 <!-- source: sections/4.data.tex:205-213 -->
 **그림 8. 공간 중심 데이터의 예.** 세 가지 공간 중심 시나리오, 즉 입체기하(예: 회전체, 대칭), multi-view CAD(삼면도), 3D 객체의 공간 회전을 고려한다.  
-<figure><img src="source/figures/data/spatial_data_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="12"><img src="source/figures/data/spatial_data_example.pdf" alt="그림 12"></figure>
 
 <!-- source: sections/4.data.tex:215-217 -->
 ## 4.5. 공간 중심 데이터 합성
@@ -381,7 +381,7 @@ GeoGebra와 matplotlib을 사용하여 입체기하 편집 데이터를 렌더�
 ### 4.5.3. 공간 회전 편집 데이터
 
 **그림 9. 공간 회전 편집 데이터 합성 파이프라인 개요.** Stage 1에서는 필터링된 참조 이미지 풀을 준비한다. 이어서 Stage 2에서는 객체-문맥 통합을 위한 Object-First 전략 또는 엄격한 배경 보존을 위한 Background-First 전략을 통해 최종 편집 쌍을 생성한다.  
-<figure><img src="source/figures/data/rotation_data_pipeline.pdf" alt="원문 피겨"></figure>
+<figure data-figure="13"><img src="source/figures/data/rotation_data_pipeline.pdf" alt="그림 13"></figure>
 
 <!-- source: sections/4.data.tex:251-264 -->
 오픈소스 3D 모델 데이터셋 Objaverse를 활용하여 고품질 객체 회전 데이터를 구축한다. 먼저 객체를 균일한 각도로 회전시키고 렌더링한다. 이는 광범위한 일상 객체를 포괄하지만 일반적으로 풍부한 환경 문맥이 부족하다. 그림 9와 같이 이러한 객체에 적절한 배경을 부여하기 위해 처음에는 객체마다 배경을 포함한 서로 다른 참조 이미지 4개를 생성한다. 그런 다음 이 후보들에 엄격한 다단계 필터링 메커니즘을 적용한다.
@@ -397,7 +397,7 @@ GeoGebra와 matplotlib을 사용하여 입체기하 편집 데이터를 렌더�
 
 <!-- source: sections/4.data.tex:267-272 -->
 **그림 10. 이미지 생성 및 편집용 meme 데이터 예.** 여기의 meme 데이터는 일상에서 흔히 발견되는 인간 유머의 요소와 표현의 미묘한 차이를 포착한다.  
-<figure><img src="source/figures/data/humor_data_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="14"><img src="source/figures/data/humor_data_example.pdf" alt="그림 14"></figure>
 
 <!-- source: sections/4.data.tex:274-283 -->
 ## 4.6. 유머 중심 데이터 합성
@@ -408,7 +408,7 @@ Meme은 시각 요소와 텍스트 요소의 결합을 통해 유머, 풍자, �
 
 <!-- source: sections/4.data.tex:284-290 -->
 **그림 11. Meme 데이터 합성 파이프라인.** 5개 단계로 이루어지며, chain-of-thought 추론을 활용해 인터넷 meme을 처리하고 meme 생성 및 편집용 고품질 학습 데이터를 합성한다.  
-<figure><img src="source/figures/data/humor_data_pipeline.pdf" alt="원문 피겨"></figure>
+<figure data-figure="15"><img src="source/figures/data/humor_data_pipeline.pdf" alt="그림 15"></figure>
 
 <!-- source: sections/4.data.tex:292-302 -->
 이 합성 데이터셋을 구축하기 위해 먼저 인터넷과 오픈소스 데이터셋에서 다수의 meme 이미지를 크롤링하여 수집하고, 이어서 자동화된 파이프라인(그림 11)을 적용해 고품질 쌍 이미지와 정렬된 instruction을 생성한다.
@@ -430,7 +430,7 @@ Meme은 시각 요소와 텍스트 요소의 결합을 통해 유머, 풍자, �
 
 <!-- source: sections/4.data.tex:313-318 -->
 **그림 12. 일반 이미지 생성 및 편집을 위한 CoT 추론 및 강화의 예.** Chain-of-thought 추론을 통해 원본 프롬프트에 더 세밀한 세부 사항을 추가하여 강화하며, 이로써 모델은 더 정확하고 충실도 높게 생성 및 편집을 수행할 수 있다.  
-<figure><img src="source/figures/data/cot_general_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="16"><img src="source/figures/data/cot_general_example.pdf" alt="그림 16"></figure>
 
 <!-- source: sections/4.data.tex:320-322 -->
 **일반 이미지.** 일반 이미지 생성 및 편집에서 사용자가 제공하는 instruction은 흔히 짧고 불충분하게 지정되어 있다. 장면 구성, 대상 영역 또는 수정 속성을 모호하게 기술하면 모델이 사용자 의도를 잘못 해석하여 충실도가 낮은 생성이나 부정확한 세밀 편집으로 이어질 수 있다. 이 문제를 완화하려면 추론 기반 프롬프트 재작성과 정제가 중요하다. 이에 따라 구축한 데이터셋의 모든 instruction에 CoT augmentation을 적용한다. 생성 과제에서는 추상적 개념을 객체, 배경, 스타일에 대한 상세한 시각적 설명으로 확장한다. 편집 과제에서는 대상 영역을 국소화하기 위한 더 명료한 지시 대상, 수정하거나 보존할 명시적 속성, 필요한 시각 일관성 제약으로 instruction을 보강한다. 이 과정은 원래 의도를 바꾸지 않으면서 더 근거 있고 유익한 프롬프트를 생성하여 감독 신호의 학습 가능성과 결과의 제어 가능성을 개선한다. 그림 12와 같이 추론 시 CoT로 강화한 instruction을 사용하면 사용자 요구에 더 잘 정렬된, 눈에 띄게 더 정확한 생성 및 편집 결과를 얻는다.
@@ -440,7 +440,7 @@ Meme은 시각 요소와 텍스트 요소의 결합을 통해 유머, 풍자, �
 
 <!-- source: sections/4.data.tex:327-335 -->
 **그림 13. 지식 주입 T2I 및 편집을 위한 CoT 추론 및 강화의 예.** CoT 추론 후 추상적인 지식 개념이 구체화되어 더 정밀한 생성 및 편집이 가능해진다.  
-<figure><img src="source/figures/data/cot_knowledge_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="17"><img src="source/figures/data/cot_knowledge_example.pdf" alt="그림 17"></figure>
 
 <!-- source: sections/4.data.tex:337-339 -->
 **Meme 이미지.** 4.6절에서 meme 생성 및 편집 과제를 소개했다. Meme 시나리오에서 사용자 instruction은 흔히 짧고 매우 추상적이며(예: “내 행복을 표현하는 이미지를 생성하라”), 대개 구체적인 시각 세부 사항의 설명이 없다. 이를 해결하기 위해 추론 기반 프롬프트 강화를 도입하여 짧은 instruction을 명시적이고 제어 가능한 명세로 변환한다. 원래 의도를 바꾸지 않으면서 프롬프트에 (1) 구체적인 장면 및 시각 요소의 세부 사항, (2) 의도한 정서적 입장과 표현 메커니즘, 즉 유머 구조, (3) 템플릿 및 타이포그래피 제약(예: 캡션 배치 위치)을 보강한다. 편집 과제에는 국소 연산을 추가로 명시하고 어떤 영역과 속성을 그대로 유지해야 하는지 명확히 밝힌다. 결과 파이프라인은 그림 11에 제시한다. 이 추론 중심 instruction 구성은 더 강하고 안정적인 감독 신호를 제공하여 meme 생성과 편집 모두에서 제어 가능성과 사용자 의도와의 정렬을 개선한다.
@@ -450,7 +450,7 @@ Meme은 시각 요소와 텍스트 요소의 결합을 통해 유머, 풍자, �
 
 <!-- source: sections/4.data.tex:347-353 -->
 **그림 14. 과학 T2I 및 편집을 위한 CoT 추론 및 강화의 예.** CoT 추론을 통해 과학 지식이 더 명시적이고 상세한 방식으로 생성 과정에 주입된다(예: 요소를 어떻게 묘사하고 연산을 어떻게 실행해야 하는지).  
-<figure><img src="source/figures/data/cot_science_example.pdf" alt="원문 피겨"></figure>
+<figure data-figure="18"><img src="source/figures/data/cot_science_example.pdf" alt="그림 18"></figure>
 
 
 <!-- source: sections/5.experiment.tex:1 -->
@@ -716,7 +716,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 정량 지표를 넘어 실제적인 강점을 더 분명히 보여주기 위해 추가 정성 비교를 제시한다. 그림 20과 같이 InternVL-U는 일반 이미지 생성에서 뛰어난 시각적 충실도를 보인다. 특히 복잡한 질감과 섬세한 조명 효과를 표현하면서 각 instruction의 의도를 정확히 포착한다.
 
 **그림 20. 일반 이미지 생성 시각화.** 다른 오픈소스 모델과 비교할 때 InternVL-U는 복잡한 질감과 섬세한 조명 효과를 매우 충실하게 표현하며 각 instruction의 정확한 의도를 포착한다.  
-<figure><img src="source/figures/experiment/gen_general_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="20"><img src="source/figures/experiment/gen_general_data_comp.pdf" alt="그림 20"></figure>
 
 <!-- source: sections/5.experiment.tex:91-98 -->
 ### 5.3.2. 텍스트 중심 이미지 생성
@@ -769,7 +769,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 그림 21과 같이 InternVL-U는 중국어와 영어 문자뿐 아니라 숫자 및 수학 기호도 높은 판독성과 적은 아티팩트로 렌더링한다. BAGEL과 Ovis-U1 같은 오픈소스 통합 멀티모달 기준 모델보다 텍스트 렌더링 품질이 우수하며, 20B 대규모 모델 Qwen-Image 및 비공개 모델 Nano Banana Pro와도 경쟁력 있는 성능을 보인다.
 
 **그림 21. 텍스트 중심 이미지 생성 시각화.** 결과는 InternVL-U가 중국어, 영어, 숫자 및 수식 기호를 렌더링하는 데 뛰어난 능력을 갖추었음을 보여준다. 오픈소스 통합 멀티모달 모델인 BAGEL과 Ovis-U1보다 렌더링 능력이 우수하며, 대규모 매개변수 모델 Qwen Image 및 상용 비공개 모델 Nano Banana Pro와 견줄 만한 성능을 보인다.  
-<figure><img src="source/figures/experiment/gen_text_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="21"><img src="source/figures/experiment/gen_text_data_comp.pdf" alt="그림 21"></figure>
 
 <!-- source: sections/5.experiment.tex:111-116; tables are placed before heading in source -->
 ### 5.3.3. 지식 기반 이미지 생성
@@ -824,7 +824,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 그림 22와 같이 모델이 세계 지식을 이해해야 하는 프롬프트에서 InternVL-U는 지식에 더 충실한 렌더링을 제공한다. 복잡한 instruction에도 시각적으로 충실한 결과를 생성하며, 명시적으로 지식을 통합하지 않는 기준 모델보다 현저히 우수하다.
 
 **그림 22. 지식 기반 이미지 생성 시각화.** InternVL-U는 지식을 정확히 렌더링하는 데 탁월한 능력을 보인다. 본 모델은 도메인 지식을 효과적으로 통합하여 복잡한 프롬프트에도 시각적으로 충실한 결과를 생성하며, 구체적인 세계 지식이 없는 기준 모델보다 성능이 크게 우수하다.  
-<figure><img src="source/figures/experiment/gen_knowledge_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="22"><img src="source/figures/experiment/gen_knowledge_data_comp.pdf" alt="그림 22"></figure>
 
 <!-- source: sections/5.experiment.tex:130-146 -->
 ## 5.4. 이미지 편집
@@ -878,7 +878,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 그림 23과 같이 InternVL-U는 원본 이미지의 조명과 구조적 세부 사항을 충실히 보존하면서 사실적인 질감과 스타일을 생성하는 데 뛰어나다. 그 결과 다른 오픈소스 모델보다 광범위한 시나리오에서 더 자연스럽고 일관된 편집 결과를 생성한다.
 
 **그림 23. 일반 이미지 편집 시각화.** InternVL-U는 원본 이미지의 조명과 구조적 세부 사항을 높은 충실도로 유지하면서 사실적인 질감과 스타일을 생성하는 데 뛰어나며, 여러 과제에서 다른 오픈소스 모델보다 우수한 성능을 보인다.  
-<figure><img src="source/figures/experiment/edit_general_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="23"><img src="source/figures/experiment/edit_general_data_comp.pdf" alt="그림 23"></figure>
 
 <!-- source: sections/5.experiment.tex:158-168 -->
 ### 5.4.2. 텍스트 중심 이미지 편집
@@ -923,7 +923,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 그림 24에서는 제안한 TextEdit 벤치마크에서 대표적인 최고 수준 오픈소스 및 상용 모델의 성능을 시각화한다. InternVL-U는 광범위한 텍스트 편집 시나리오에서 강한 결과를 보인다. 특히 이미지에서 교체할 텍스트의 위치를 정확히 찾아 목표 텍스트로 바꾸면서도 시각적 심미성과 텍스트 정확성을 모두 보존한다. 이 결과는 현재 최고 수준의 성능을 명확히 보여주고 기존 텍스트 편집 능력의 상한을 효과적으로 드러내며, 본 벤치마크가 텍스트 중심 이미지 편집의 성능 최전선을 어떻게 규정하는지 부각한다.
 
 **그림 24. 텍스트 중심 이미지 편집 시각화.** InternVL-U는 더 정확하고 충실한 텍스트 편집 능력을 보이는 동시에, 편집 대상 영역 밖의 텍스트 및 시각 콘텐츠를 일관되게 보존한다.  
-<figure><img src="source/figures/experiment/edit_text_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="24"><img src="source/figures/experiment/edit_text_data_comp.pdf" alt="그림 24"></figure>
 
 <!-- source: sections/5.experiment.tex:177-186 -->
 ### 5.4.3. 추론 기반 이미지 편집
@@ -953,11 +953,11 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 **정성적 결과.** 그림 25와 같이 InternVL-U는 다단계 추론과 엄격한 논리 제약이 필요한 복잡한 편집 instruction을 기존 방법보다 안정적으로 처리한다. 달력 날짜 갱신과 같은 시간 계산, 이미지에 맞는 시를 검색하는 것과 같은 공간적·문화적 이해, 이진 탐색 트리 삽입과 같은 정밀한 알고리즘 규칙 등 다양한 제약을 정확히 해석하고 실행할 수 있다.
 
 **그림 25. 추론 기반 이미지 편집 시각화.** InternVL-U는 다단계 추론이 필요한 복잡한 프롬프트를 처리할 때 최신 모델보다 우수하다. 달력 날짜를 갱신하는 시간 계산, 시를 배치하기 위한 공간적·문화적 이해, 이진 탐색 트리 삽입을 위한 정밀한 알고리즘 규칙에 이르는 다양한 논리 제약을 정확히 해석하고 실행하는 본 모델의 우수한 능력을 결과가 보여준다.  
-<figure><img src="source/figures/experiment/edit_cot_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="25"><img src="source/figures/experiment/edit_cot_data_comp.pdf" alt="그림 25"></figure>
 
 <!-- source: sections/5.experiment.tex:196-201 -->
 **그림 26. 더 특수한 이미지 편집 사례 시각화.** InternVL-U는 복잡한 편집 과제에서 발전된 공간 추론 능력과 정밀한 제어력을 보인다. 결과는 그래프 속성(예: 노드 차수)을 정확히 식별하고, 적절한 표현을 갖춘 유머 중심 콘텐츠를 생성하며, 좌표 벡터에 따라 정밀한 3D 기하 변환을 실행하는 본 모델의 우수한 능력을 부각하여 특수 영역에서의 폭넓은 적용 가능성을 보여준다.  
-<figure><img src="source/figures/experiment/edit_more_data_comp.pdf" alt="원문 피겨"></figure>
+<figure data-figure="26"><img src="source/figures/experiment/edit_more_data_comp.pdf" alt="그림 26"></figure>
 
 <!-- source: sections/5.experiment.tex:203-204 -->
 ## 5.5. 추가 정성적 결과
@@ -982,7 +982,7 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 
 ## 설계 동기
 
-텍스트-이미지 생성 및 이미지 편집 모델이 실제 응용 분야에서 점차 널리 채택됨에 따라, **텍스트 중심 이미지 편집**은 광고 디자인, 포스터 수정, UI 현지화, 상업용 자산 업데이트에서 빈번히 요구되는 기능이 되었다. 그러나 기존의 범용 이미지 편집 모델은 텍스트 콘텐츠를 처리할 때 여전히 신뢰성이 낮다. 한편으로 생성된 텍스트에는 철자 오류, 왜곡된 글리프, 망가진 여러 줄 레이아웃, 배경과의 부자연스러운 융합이 자주 나타난다. 다른 한편으로 모델은 텍스트를 교체하면서 비대상 영역(예: 재질 텍스처, 얼굴 세부 묘사, 배경 구조)을 의도치 않게 변경하는 경우가 많아, 사실상 “텍스트 편집”이 “이미지 전체 편집”으로 변질된다. 또한 표~표 benchmarks-class에 제시한 것처럼, 기존의 텍스트 중심 벤치마크(예: AnyText, LongText, CVTG-2K)는 주로 텍스트 *생성*의 정확도에 초점을 맞추며, 구체적인 텍스트 *편집* 시나리오를 충분히 모델링하지 못한다. MARIO-Eval-edit와 같은 텍스트 편집 벤치마크가 존재하지만, 이미지 출처가 제한된 종류의 텍스트 시나리오만 포괄하므로 실제 환경과 합성 디자인 자료 모두에서 접하는 다양한 텍스트 매체와 레이아웃 형태를 충분히 반영하지 못한다. 더 나아가 이러한 벤치마크에는 편집 충실도와 시각적 보존에 대한 체계적인 평가가 없다.
+텍스트-이미지 생성 및 이미지 편집 모델이 실제 응용 분야에서 점차 널리 채택됨에 따라, **텍스트 중심 이미지 편집**은 광고 디자인, 포스터 수정, UI 현지화, 상업용 자산 업데이트에서 빈번히 요구되는 기능이 되었다. 그러나 기존의 범용 이미지 편집 모델은 텍스트 콘텐츠를 처리할 때 여전히 신뢰성이 낮다. 한편으로 생성된 텍스트에는 철자 오류, 왜곡된 글리프, 망가진 여러 줄 레이아웃, 배경과의 부자연스러운 융합이 자주 나타난다. 다른 한편으로 모델은 텍스트를 교체하면서 비대상 영역(예: 재질 텍스처, 얼굴 세부 묘사, 배경 구조)을 의도치 않게 변경하는 경우가 많아, 사실상 “텍스트 편집”이 “이미지 전체 편집”으로 변질된다. 또한 표~표 benchmarks-class에 제시한 것처럼, 기존의 텍스트 중심 벤치마크(예: AnyText<span class="citation">[<a href="#ref-104">104</a>]</span>, LongText<span class="citation">[<a href="#ref-33">33</a>]</span>, CVTG-2K<span class="citation">[<a href="#ref-28">28</a>]</span>)는 주로 텍스트 *생성*의 정확도에 초점을 맞추며, 구체적인 텍스트 *편집* 시나리오를 충분히 모델링하지 못한다. MARIO-Eval-edit<span class="citation">[<a href="#ref-55">55</a>]</span>와 같은 텍스트 편집 벤치마크가 존재하지만, 이미지 출처가 제한된 종류의 텍스트 시나리오만 포괄하므로 실제 환경과 합성 디자인 자료 모두에서 접하는 다양한 텍스트 매체와 레이아웃 형태를 충분히 반영하지 못한다. 더 나아가 이러한 벤치마크에는 편집 충실도와 시각적 보존에 대한 체계적인 평가가 없다.
 
 ### 표 20. 오픈소스 텍스트 생성·편집 벤치마크 비교
 
@@ -1071,9 +1071,9 @@ Text-to-image 생성 능력을 종합적으로 평가하기 위해 일반 평가
 
 텍스트 편집의 정량 평가는 특정 텍스트 콘텐츠를 조작하는 동시에 배경을 엄격히 보존해야 한다는 이중 요구 때문에 어렵다. 총체적인 평가를 제공하기 위해 **전통적 지표(Classic Metrics)**와 **MLLM 기반 지표(MLLM-based Metrics)**를 결합한 하이브리드 평가 전략을 사용한다.
 
-**전통적 지표**는 텍스트의 존재 여부와 정확성에 초점을 맞춘다. 표준 OCR 도구를 사용하여 편집 거리와 검출률을 측정한다. 구체적으로 평가는 *대상 영역(Target Region)*과 *배경 영역(Background Region)*으로 분리하며, 전자는 편집 성공 여부를, 후자는 보존 능력을 측정한다. 또한 CLIPScore를 사용하여 전반적인 이미지 품질과 의미적 정렬을 평가하고, 미적 품질도 함께 평가한다.
+**전통적 지표**는 텍스트의 존재 여부와 정확성에 초점을 맞춘다. 표준 OCR 도구를 사용하여 편집 거리와 검출률을 측정한다. 구체적으로 평가는 *대상 영역(Target Region)*과 *배경 영역(Background Region)*으로 분리하며, 전자는 편집 성공 여부를, 후자는 보존 능력을 측정한다. 또한 CLIPScore<span class="citation">[<a href="#ref-41">41</a>]</span>를 사용하여 전반적인 이미지 품질과 의미적 정렬을 평가하고, 미적 품질도 함께 평가한다.
 
-**MLLM 기반 지표**는 “고스팅” 아티팩트, 조명 불일치, 부분적인 삭제와 같은 시각적 미묘함을 더 잘 포착하기 위해 추가로 도입한다. 전문가 수준의 포렌식 분석을 모사하기 위해 가장 강력한 멀티모달 이해 모델인 Gemini-3-Pro를 심사 모델로 사용하여 국소적 사실성과 장면 무결성 등의 차원에 세분화된 점수를 부여하며, 이를 통해 인간의 선호에 더욱 부합하는 평가를 제공한다.
+**MLLM 기반 지표**는 “고스팅” 아티팩트, 조명 불일치, 부분적인 삭제와 같은 시각적 미묘함을 더 잘 포착하기 위해 추가로 도입한다. 전문가 수준의 포렌식 분석을 모사하기 위해 가장 강력한 멀티모달 이해 모델인 Gemini-3-Pro<span class="citation">[<a href="#ref-38">38</a>]</span>를 심사 모델로 사용하여 국소적 사실성과 장면 무결성 등의 차원에 세분화된 점수를 부여하며, 이를 통해 인간의 선호에 더욱 부합하는 평가를 제공한다.
 
 아래에서는 표~표 benchmark_metrics의 구조에 따라 각 평가 지표의 구체적인 구현을 설명한다.
 
@@ -1443,7 +1443,7 @@ TA=Target Accuracy, TP=Text Preservation, SI=Scene Integrity, LR=Local Realism, 
 
 2단계 필터링은 다음 차원을 기준으로 수행한다.
 
-1. **이미지 유형:** 이미지를 MMMU [MMMU]에서 정의한 30개 이미지 유형 중 하나로 분류한다. 예를 들면 `Posters`, `Diagrams`, `Screenshots` 등이 있다. 생물학 분야의 `Microscopic_Images`나 모든 주제 분야의 `Tables`처럼, 주제에 따라 특정 이미지 유형을 제거한다.
+1. **이미지 유형:** 이미지를 MMMU <span class="citation">[<a href="#ref-129">129</a>]</span>에서 정의한 30개 이미지 유형 중 하나로 분류한다. 예를 들면 `Posters`, `Diagrams`, `Screenshots` 등이 있다. 생물학 분야의 `Microscopic_Images`나 모든 주제 분야의 `Tables`처럼, 주제에 따라 특정 이미지 유형을 제거한다.
 
 2. **주제:** 이미지를 미리 정의된 주제 목록에 따라 분류하며, 문학, 미술, 디자인 등에 속하는 이미지는 대개 회화나 사진과 같은 자연 이미지이므로 제거한다.
 
@@ -1509,385 +1509,4 @@ TA=Target Accuracy, TP=Text Preservation, SI=Scene Integrity, LR=Local Realism, 
 5. **입체 투영:** 투영 과제는 matplotlib로 구현하며, 3차원 입체의 유형과 색상을 무작위로 표본 추출한다. 먼저 축 정렬로 인한 퇴화를 피하기 위해 각 입체를 설정 가능한 각도만큼 회전한 다음, *xoy* 평면에 직교 투영한다.
 
 
-# 참고문헌 요약
-
-원문 참고문헌 340개의 제목을 원문 표기로 유지했다.
-
-1. Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks (2017).
-2. Chain-of-Thought Prompting Elicits Reasoning in Large Language Models (2022).
-3. Learning to reason with LLMs (2024).
-4. DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement
-                  Learning (2025).
-5. Language Models are Few-Shot Learners (2020).
-6. Transformers Learn to Achieve Second-Order Convergence Rates for In-Context
-                  Linear Regression (2024).
-7. Can Looped Transformers Learn to Implement Multi-step Gradient Descent
-                  for In-context Learning? (2024).
-8. Transformers Learn to Implement Multi-step Gradient Descent with Chain
-                  of Thought (2025).
-9. Transformers as Statisticians: Provable In-Context Learning with In-Context
-                  Algorithm Selection (2023).
-10. Meta-Learning in Neural Networks: A Survey (2022).
-11. Evolutionary principles in self-referential learning, or on learning
-                  how to learn: The meta-meta-. hook (1987).
-12. Learning to learn by gradient descent by gradient descent (2016).
-13. Optimization as a Model for Few-Shot Learning (2017).
-14. Attention is All you Need (2017).
-15. Improving language understanding by generative pre-training (2018).
-16. Universal Language Model Fine-tuning for Text Classification (2018).
-17. BERT: Pre-training of Deep Bidirectional Transformers for Language
-                  Understanding (2019).
-18. Playing Atari with Deep Reinforcement Learning (2013).
-19. Training language models to follow instructions with human feedback (2022).
-20. Looped Transformers as Programmable Computers (2023).
-21. On the reciprocal of the general algebraic matrix (1920).
-22. Application of calculus of matrices to method of least squares: with special reference to geodetic calculations (1951).
-23. A generalized inverse for matrices (1955).
-24. Approximations by superpositions of a sigmoidal function (1989).
-25. Approximation capabilities of multilayer feedforward networks (1991).
-26. A List of Writings Relating to the Method of Least Squares: With Historical and Critical Notes (1877).
-27. Direct Preference Optimization: Your Language Model is Secretly a
-                  Reward Model (2023).
-28. DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open
-                  Language Models (2024).
-29. Back to Basics: Revisiting REINFORCE-Style Optimization for Learning
-                  from Human Feedback in LLMs (2024).
-30. Proximal Policy Optimization Algorithms (2017).
-31. Meta-Dataset: A Dataset of Datasets for Learning to Learn from Few
-                  Examples (2020).
-32. Learning a Universal Template for Few-shot Dataset Generalization (2021).
-33. All Roads Lead to Likelihood: The Value of Reinforcement Learning
-                  in Fine-Tuning (2025).
-34. Adaptive Task Sampling for Meta-learning (2020).
-35. On sensitivity of meta-learning to support data (2021).
-36. How to Train Your MAML to Excel in Few-Shot Classification (2022).
-37. Task-Robust Model-Agnostic Meta-Learning (2020).
-38. ST-MAML : A stochastic-task based method for task-heterogeneous
-                  meta-learning (2022).
-39. Meta-Learning With Differentiable Convex Optimization (2019).
-40. How Does the Task Landscape Affect MAML Performance? (2022).
-41. How to train your MAML (2019).
-42. Qwen2.5 Technical Report (2024).
-43. Open-Reasoner-Zero: An Open Source Approach to Scaling Up Reinforcement Learning on the Base Model (2025).
-44. Qwen2.5-Math Technical Report: Toward Mathematical Expert Model via
-                  Self-Improvement (2024).
-45. Let's Verify Step by Step (2024).
-46. Are Your LLMs Capable of Stable Reasoning? (2024).
-47. Scaling Relationship on Learning Mathematical Reasoning with Large
-                  Language Models (2023).
-48. Beyond Human Data: Scaling Self-Training for Problem-Solving with
-                  Language Models (2024).
-49. Automatic Combination of Sample Selection Strategies for Few-Shot
-                  Learning (2024).
-50. Light-R1: Curriculum SFT, DPO and RL for Long COT from Scratch
-                  and Beyond (2025).
-51. Iterative Preference Learning from Human Feedback: Bridging Theory
-                  and Practice for RLHF under KL-constraint (2024).
-52. Gemini 2.5: Our most intelligent AI model (2025).
-53. Evaluating Large Language Models Trained on Code (2021).
-54. GPQA: A Graduate-Level Google-Proof Q&A Benchmark (2023).
-55. Speculative Thinking: Enhancing Small-Model Reasoning with Large Model Guidance at Inference Time (2025).
-56. Towards Thinking-Optimal Scaling of Test-Time Compute for LLM Reasoning (2025).
-57. Reasoning Models Know When They're Right: Probing Hidden States for Self-Verification (2025).
-58. A Survey of Efficient Reasoning for Large Reasoning Models: Language,
-                  Multimodality, and Beyond (2025).
-59. Reasoning Models Can Be Effective Without Thinking (2025).
-60. MathCoder: Seamless Code Integration in LLMs for Enhanced Mathematical
-                  Reasoning (2024).
-61. Qwen2.5-Coder Technical Report (2024).
-62. DeepSeek-Coder: When the Large Language Model Meets Programming -
-                  The Rise of Code Intelligence (2024).
-63. Measuring Mathematical Problem Solving With the MATH Dataset (2021).
-64. Kimi k1.5: Scaling Reinforcement Learning with LLMs (2025).
-65. LiveCodeBench: Holistic and Contamination Free Evaluation of Large
-                  Language Models for Code (2024).
-66. Towards Reasoning Era: A Survey of Long Chain-of-Thought for Reasoning
-                  Large Language Models (2025).
-67. Rethinking Reflection in Pre-Training (2025).
-68. Route Sparse Autoencoder to Interpret Large Language Models (2025).
-69. The Llama 3 Herd of Models (2024).
-70. GPT-4 Technical Report (2023).
-71. DeepSeek-V3 Technical Report (2024).
-72. How Can We Know What Language Models Know (2020).
-73. Towards Revealing the Mystery behind Chain of Thought: A Theoretical
-                  Perspective (2023).
-74. SFT or RL? An Early Investigation into Training R1-Like Reasoning Large Vision-Language Models (2025).
-75. SFT Memorizes, RL Generalizes: A Comparative Study of Foundation
-                  Model Post-training (2025).
-76. A Survey on In-context Learning (2024).
-77. Rethinking the Role of Demonstrations: What Makes In-Context Learning
-                  Work? (2022).
-78. Learning To Retrieve Prompts for In-Context Learning (2022).
-79. MetaICL: Learning to Learn In Context (2022).
-80. In-Context Learning with Long-Context Models: An In-Depth Exploration (2024).
-81. Tree of Thoughts: Deliberate Problem Solving with Large Language Models (2023).
-82. Graph of Thoughts: Solving Elaborate Problems with Large Language
-                  Models (2024).
-83. Open Thoughts (2025).
-84. Sky-T1: Train your own O1 preview model within \$450 (2025).
-85. LIMO: Less is More for Reasoning (2025).
-86. NuminaMath 72B CoT (2024).
-87. QwQ-32B: Embracing the Power of Reinforcement Learning (2025).
-88. Are Transformers universal approximators of sequence-to-sequence functions? (2020).
-89. What learning algorithm is in-context learning? Investigations with
-                  linear models (2023).
-90. In-context Learning and Induction Heads (2022).
-91. An Explanation of In-context Learning as Implicit Bayesian Inference (2022).
-92. Why Can GPT Learn In-Context? Language Models Secretly Perform Gradient Descent as Meta-Optimizers (2023).
-93. On the Ability and Limitations of Transformers to Recognize Formal
-                  Languages (2020).
-94. Tighter Bounds on the Expressivity of Transformer Encoders (2023).
-95. Universal Transformers (2019).
-96. RNNs can generate bounded hierarchical languages with optimal memory (2020).
-97. Transformers Learn Shortcuts to Automata (2023).
-98. Saturated Transformers are Constant-Depth Threshold Circuits (2022).
-99. Thinking Like Transformers (2021).
-100. Self-Attention Networks Can Process Bounded Hierarchical Languages (2021).
-101. O(n) Connections are Expressive Enough: Universal Approximability
-                  of Sparse Transformers (2020).
-102. On the optimization of a synaptic learning
-rule (1992).
-103. Learning to Learn: Introduction and Overview (1998).
-104. Prototypical Networks for Few-shot Learning (2017).
-105. One-shot Learning with Memory-Augmented Neural Networks (2016).
-106. Bespoke-Stratos: The unreasonable effectiveness of reasoning distillation (2025).
-107. s1: Simple test-time scaling (2025).
-108. DAPO: An Open-Source LLM Reinforcement Learning System at Scale (2025).
-109. VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks (2025).
-110. Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model? (2025).
-111. Variational Metric Scaling for Metric-Based Meta-Learning (2020).
-112. BlockMix: Meta Regularization and Self-Calibrated Inference for Metric-Based
-                  Meta-Learning (2020).
-113. Adversarial gradient-based meta learning with metric-based test (2023).
-114. Memory Networks (2015).
-115. End-To-End Memory Networks (2015).
-116. Meta-Learning with Implicit Gradients (2019).
-117. Multi-Objective Meta Learning (2021).
-118. Meta-learning with an Adaptive Task Scheduler (2021).
-119. Transformers Learn Higher-Order Optimization Methods for In-Context
-                  Learning: A Study with Linear Models (2023).
-120. A Survey on LLM Test-Time Compute via Search: Tasks, LLM Profiling,
-                  Search Algorithms, and Relevant Frameworks (2025).
-121. Atom of Thoughts for Markov LLM Test-Time Scaling (2025).
-122. O1 Replication Journey: A Strategic Progress Report - Part 1 (2024).
-123. Imitate, Explore, and Self-Improve: A Reproduction Report on Slow-thinking
-                  Reasoning Systems (2024).
-124. Qwen3: Think Deeper, Act Faster (2025).
-125. GMMSampling: a new model-based, data difficulty-driven resampling
-                  method for multi-class imbalanced data (2024).
-126. Visualizing the Loss Landscape of Neural Nets (2018).
-127. Llama-Nemotron: Efficient Reasoning Models (2025).
-128. GPG: A Simple and Strong Reinforcement Learning Baseline for Model Reasoning (2025).
-129. Learning to Optimize (2017).
-130. Learning to Optimize Neural Nets (2017).
-131. Learning to Optimize for Reinforcement Learning (2024).
-132. A Simple Guard for Learned Optimizers (2022).
-133. \(μ\)LO: Compute-Efficient Meta-Generalization of Learned Optimizers (2024).
-134. A Closer Look at the Training Strategy for Modern Meta-Learning (2020).
-135. HybridFlow: A Flexible and Efficient RLHF Framework (2025).
-136. PyTorch: An Imperative Style, High-Performance Deep Learning Library (2019).
-137. Transformers: State-of-the-Art Natural Language Processing (2020).
-138. Efficient Memory Management for Large Language Model Serving with
-                  PagedAttention (2023).
-139. A Survey of Scientific Large Language Models: From Data Foundations to Agent Frontiers (2025).
-140. Scientists' First Exam: Probing Cognitive Abilities of MLLM via Perception, Understanding, and Reasoning (2025).
-141. GenExam: A Multidisciplinary Text-to-Image Exam (2025).
-142. Probing Scientific General Intelligence of LLMs with Scientist-Aligned Workflows (2025).
-143. Mmmu: A massive multi-discipline multimodal understanding and reasoning benchmark for expert agi (2024).
-144. SridBench: Benchmark of Scientific Research Illustration Drawing of Image Generation Model (2025).
-145. Qwen3-VL Technical Report (2025).
-146. Emerging Properties in Unified Multimodal Pretraining (2025).
-147. TokensGen: Harnessing Condensed Tokens for Long Video Generation (2025).
-148. Expanding performance boundaries of open-source multimodal models with model, data, and test-time scaling (2024).
-149. Gemini: a family of highly capable multimodal models (2023).
-150. Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context (2024).
-151. Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities (2025).
-152. Gpt-4 technical report (2023).
-153. How far are we to gpt-4v? closing the gap to commercial multimodal models with open-source suites (2024).
-154. Internvl: Scaling up vision foundation models and aligning for generic visual-linguistic tasks (2024).
-155. InternVL3.5: Advancing Open-Source Multimodal Models in Versatility, Reasoning, and Efficiency (2025).
-156. Internvl3: Exploring advanced training and test-time recipes for open-source multimodal models (2025).
-157. Qwen2.5-VL Technical Report (2025).
-158. Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution (2024).
-159. Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond (2023).
-160. Visual Instruction Tuning (2023).
-161. LLaVA-NeXT: Improved reasoning, OCR, and world knowledge (2024).
-162. Improved Baselines with Visual Instruction Tuning (2023).
-163. Qwen-Image Technical Report (2025).
-164. PaddleOCR 3.0 Technical Report (2025).
-165. Flux-text: A simple and advanced diffusion transformer baseline for scene text editing (2025).
-166. AnyText: Multilingual Visual Text Generation And Editing (2023).
-167. MemeMind: A Large-Scale Multimodal Dataset with Chain-of-Thought Reasoning for Harmful Meme Detection (2025).
-168. Towards comprehensive detection of chinese harmful memes (2024).
-169. What makes a meme a meme? identifying memes for memetics-aware dataset creation (2025).
-170. Large Vision-Language Models for Knowledge-Grounded Data Annotation of Memes (2025).
-171. Multi-Granular Multimodal Clue Fusion for Meme Understanding (2025).
-172. Met-meme: A multimodal meme dataset rich in metaphors (2022).
-173. Learning transferable visual models from natural language supervision (2021).
-174. An image is worth 16x16 words: Transformers for image recognition at scale (2020).
-175. Qwen3 technical report (2025).
-176. Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation (2022).
-177. Llama: Open and efficient foundation language models (2023).
-178. Internlm: A multilingual language model with progressively enhanced capabilities (2023).
-179. Palm 2 technical report (2023).
-180. Lisa: Reasoning segmentation via large language model (2024).
-181. Mineru2. 5: A decoupled vision-language model for efficient high-resolution document parsing (2025).
-182. Paddleocr-vl: Boosting multilingual document parsing via a 0.9 b ultra-compact vision-language model (2025).
-183. High-resolution image synthesis with latent diffusion models (2022).
-184. Instructpix2pix: Learning to follow image editing instructions (2023).
-185. Adding conditional control to text-to-image diffusion models (2023).
-186. Generative adversarial networks (2020).
-187. A style-based generator architecture for generative adversarial networks (2019).
-188. FLUX (2024).
-189. Score-Based Generative Modeling through Stochastic Differential Equations (2021).
-190. Denoising Diffusion Probabilistic Models (2020).
-191. MM-Interleaved: Interleaved Image-Text Generative Modeling via Multi-modal Feature Synchronizer (2024).
-192. Video-LLaVA: Learning United Visual Representation by Alignment Before Projection (2023).
-193. VideoChat: Chat-Centric Video Understanding (2023).
-194. Video-ChatGPT: Towards Detailed Video Understanding via Large Vision and Language Models (2024).
-195. Vlm-r1: A stable and generalizable r1-style large vision-language model (2025).
-196. R1-V: Reinforcing Super Generalization Ability in Vision-Language Models with Less Than \$3 (2025).
-197. Vision Model Pre-training on Interleaved Image-Text Data via Latent Compression Learning (2024).
-198. Flow Matching Guide and Code (2024).
-199. Flow straight and fast: Learning to generate and transfer data with rectified flow (2022).
-200. Visual autoregressive modeling: Scalable image generation via next-scale prediction (2024).
-201. MaskGIT: Masked Generative Image Transformer (2022).
-202. Zero-shot text-to-image generation (2021).
-203. Taming transformers for high-resolution image synthesis (2021).
-204. Neural discrete representation learning (2017).
-205. HunyuanImage 3.0 Technical Report (2025).
-206. Omnigen: Unified image generation (2024).
-207. OmniGen2: Exploration to Advanced Multimodal Generation (2025).
-208. FLUX.1 Kontext: Flow Matching for In-Context Image Generation and Editing in Latent Space (2025).
-209. Step1X-Edit: A Practical Framework for General Image Editing (2025).
-210. FLUX.2: Frontier Visual Intelligence (2025).
-211. Ovis-Image Technical Report (2025).
-212. LongCat-Image Technical Report (2025).
-213. Qwen-image technical report (2025).
-214. Z-Image: An Efficient Image Generation Foundation Model with Single-Stream Diffusion Transformer (2025).
-215. Query-kontext: An unified multimodal model for image generation and editing (2025).
-216. Sana: Efficient High-Resolution Image Synthesis with Linear Diffusion Transformer (2024).
-217. SANA 1.5: Efficient Scaling of Training-Time and Inference-Time Compute in Linear Diffusion Transformer (2025).
-218. Dreamomni2: Multimodal instruction-based editing and generation (2025).
-219. Onecat: Decoder-only auto-regressive model for unified understanding and generation (2025).
-220. Janus-pro: Unified multimodal understanding and generation with data and model scaling (2025).
-221. Show-o2: Improved Native Unified Multimodal Models (2025).
-222. Lumina-dimoo: An omni diffusion large language model for multi-modal generation and understanding (2025).
-223. Emu3. 5: Native multimodal models are world learners (2025).
-224. Ovis-U1 Technical Report (2025).
-225. Uniworld-v2: Reinforce image editing with diffusion negative-aware finetuning and mllm implicit feedback (2025).
-226. Blip3-o: A family of fully open unified multimodal models-architecture, training and dataset (2025).
-227. Blip3o-next: Next frontier of native image generation (2025).
-228. Lavida-O: Elastic Large Masked Diffusion Models for Unified Multimodal Understanding and Generation (2025).
-229. Mogao: An omni foundation model for interleaved multi-modal generation (2025).
-230. Ming-univision: Joint image understanding and generation with a unified continuous tokenizer (2025).
-231. MANZANO: ASIMPLE AND SCALABLE UNIFIED MUL-TIMODAL MODEL WITH A HYBRID VISION TOKENIZER ().
-232. EMMA: Efficient Multimodal Understanding, Generation, and Editing with a Unified Architecture (2025).
-233. MammothModa2: A Unified AR-Diffusion Framework for Multimodal Understanding and Generation (2025).
-234. TUNA: Taming Unified Visual Representations for Native Unified Multimodal Models (2025).
-235. UniGen-1.5: Enhancing Image Generation and Editing through Reward Unification in Reinforcement Learning (2025).
-236. Unilip: Adapting clip for unified multimodal understanding, generation and editing (2025).
-237. OpenUni: A Simple Baseline for Unified Multimodal Understanding and Generation (2025).
-238. Skywork unipic: Unified autoregressive modeling for visual understanding and generation (2025).
-239. Mono-internvl: Pushing the boundaries of monolithic multimodal large language models with endogenous visual pre-training (2024).
-240. Mono-InternVL-1.5: Towards Cheaper and Faster Monolithic Multimodal Large Language Models (2025).
-241. A diagram is worth a dozen images (2016).
-242. Are you smarter than a sixth grader? textbook question answering for multimodal machine comprehension (2017).
-243. Mv-math: Evaluating multimodal math reasoning in multi-visual contexts (2025).
-244. Mavis: Mathematical visual instruction tuning (2024).
-245. CMM-Math: A Chinese Multimodal Math Dataset To Evaluate and Enhance the Mathematics Reasoning of Large Multimodal Models (2024).
-246. ChemEval: A Comprehensive Multi-Level Chemical Evaluation for Large Language Models (2024).
-247. ChEBI in 2016: Improved services and an expanding collection of metabolites (2016).
-248. ChemQA: a Multimodal Question-and-Answering Dataset on Chemistry Reasoning (2024).
-249. GeoGebra: Dynamic Mathematics Software (2024).
-250. InternSVG: Towards Unified SVG Tasks with Multimodal Large Language Models (2025).
-251. Can large language models understand symbolic graphics programs? (2024).
-252. Gemini 3 Flash: frontier intelligence built for speed (2025).
-253. Gemini 3 Pro: Best for complex tasks and bringing creative concepts to life (2025).
-254. GPT-5 System Card (2025).
-255. PaddleOCR 3.0 Technical Report (2025).
-256. Scaling rectified flow transformers for high-resolution image synthesis (2024).
-257. Internvideo2. 5: Empowering video mllms with long and rich context modeling (2025).
-258. Cambrian-s: Towards spatial supersensing in video (2025).
-259. Kwai keye-vl 1.5 technical report (2025).
-260. Seedream 4.0: Toward next-generation multimodal image generation (2025).
-261. Mmada: Multimodal large diffusion language models (2025).
-262. Chameleon: Mixed-modal early-fusion foundation models (2024).
-263. Transfusion: Predict the next token and diffuse images with one multi-modal model (2024).
-264. Synergen-vl: Towards synergistic image understanding and generation with vision experts and token folding (2025).
-265. Show-o: One single transformer to unify multimodal understanding and generation (2024).
-266. Vila-u: a unified foundation model integrating visual understanding and generation (2024).
-267. Gemini\,3\,Pro Image Model Card (2025).
-268. GPT-Image-1.5 (2025).
-269. Emu3.5: Native Multimodal Models are World Learners (2025).
-270. Objaverse: A universe of annotated 3d objects (2023).
-271. SAM 3D: 3Dfy Anything in Images (2025).
-272. Laion-5b: An open large-scale dataset for training next generation image-text models (2022).
-273. Microsoft coco: Common objects in context (2014).
-274. The open images dataset v4: Unified image classification, object detection, and visual relationship detection at scale (2020).
-275. Segment anything (2023).
-276. 15m multimodal facial image-text dataset (2024).
-277. HumanVLM: Foundation for Human-Scene Vision-Language Model (2024).
-278. Textpainter: Multimodal text image generation with visual-harmony and text-comprehension for poster design (2023).
-279. AutoPoster: A Highly Automatic and Content-aware Design System for Advertising Poster Generation (2023).
-280. A Large Chinese Text Dataset in the Wild (2019).
-281. ABC: A Big CAD Model Dataset for Geometric Deep Learning. In 2019 IEEE (2018).
-282. Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free (2025).
-283. Mono-internvl-1.5: Towards cheaper and faster monolithic multimodal large language models (2025).
-284. NaViL: Rethinking Scaling Properties of Native Multimodal Large Language Models under Data Constraints (2025).
-285. X-omni: Reinforcement learning makes discrete autoregressive image generative models great again (2025).
-286. Textcrafter: Accurately rendering multiple texts in complex visual scenes (2025).
-287. Anytrans: Translate anytext in the image with large scale models (2024).
-288. Mme: A comprehensive evaluation benchmark for multimodal large language models (2025).
-289. OCRBench: On the Hidden Mystery of OCR in Large Multimodal Models (2023).
-290. Geneval: An object-focused framework for evaluating text-to-image alignment (2023).
-291. Mixture-of-transformers: A sparse and scalable architecture for multi-modal foundation models (2024).
-292. Ella: Equip diffusion models with llm for enhanced semantic alignment (2024).
-293. TIIF-Bench: How Does Your T2I Model Follow Your Instructions? (2025).
-294. OneIG-Bench: Omni-dimensional Nuanced Evaluation for Image Generation (2025).
-295. Wise: A world knowledge-informed semantic evaluation for text-to-image generation (2025).
-296. Imgedit: A unified image editing dataset and benchmark (2025).
-297. Seed-bench: Benchmarking multimodal llms with generative comprehension (2023).
-298. Chartqa: A benchmark for question answering about charts with visual and logical reasoning (2022).
-299. Mathverse: Does your multi-modal llm truly see the diagrams in visual math problems? (2024).
-300. Logicvista: Multimodal llm logical reasoning benchmark in visual contexts (2024).
-301. Envisioning beyond the pixels: Benchmarking reasoning-informed visual editing (2025).
-302. Image-to-image translation with conditional adversarial networks (2017).
-303. Seedream 3.0 technical report (2025).
-304. Uniworld: High-resolution semantic encoders for unified visual understanding and generation (2025).
-305. Gpt-4o system card (2024).
-306. Introducing our latest image generation model in the API (2025).
-307. Introducing Gemini 2.5 Flash Image, our state-of-the-art image model (2025).
-308. Janusflow: Harmonizing autoregression and rectified flow for unified multimodal understanding and generation (2025).
-309. Transfer between modalities with metaqueries (2025).
-310. Skywork unipic 2.0: Building kontext model with online rl for unified multimodal model (2025).
-311. LightFusion: A Light-weighted, Double Fusion Framework for Unified Multimodal Understanding and Generation (2025).
-312. Next-omni: Towards any-to-any omnimodal foundation models with discrete flow matching (2025).
-313. Mammoth2: Scaling instructions from the web (2024).
-314. Mmbench: Is your multi-modal model an all-around player? (2024).
-315. Mm-vet: Evaluating large multimodal models for integrated capabilities (2023).
-316. Mathvista: Evaluating math reasoning in visual contexts with gpt-4v, bard, and other large multimodal models (2023).
-317. Measuring multimodal mathematical reasoning with math-vision dataset (2024).
-318. Dynamath: A dynamic visual benchmark for evaluating mathematical reasoning robustness of vision language models (2024).
-319. We-math: Does your large multimodal model achieve human-like mathematical reasoning? (2025).
-320. ShareGPT-4o-Image: Aligning Multimodal Models with GPT-4o-Level Image Generation (2025).
-321. Open-Sora Plan: Open-Source Large Video Generation Model (2024).
-322. Echo-4o: Harnessing the Power of GPT-4o Synthetic Images for Improved Image Generation (2025).
-323. OpenGPT-4o-Image: A Comprehensive Dataset for Advanced Image Generation and Editing (2025).
-324. FLUX-Reason-6M & PRISM-Bench: A Million-Scale Text-to-Image Reasoning Dataset and Comprehensive Benchmark (2025).
-325. AnyEdit: Mastering Unified High-Quality Image Editing for Any Idea (2024).
-326. Paint by Inpaint: Learning to Add Image Objects by Removing Them First (2024).
-327. SEED-X: Multimodal Models with Unified Multi-granularity Comprehension and Generation (2024).
-328. OmniEdit: Building Image Editing Generalist Models Through Specialist Supervision (2024).
-329. UltraEdit: Instruction-based Fine-Grained Image Editing at Scale (2024).
-330. HQ-Edit: A High-Quality Dataset for Instruction-based Image Editing (2024).
-331. X2Edit: Revisiting Arbitrary-Instruction Image Editing through Self-Constructed Data and Task-Aware Representation Learning (2025).
-332. NoHumansRequired: Autonomous High-Quality Image Editing Triplet Mining (2025).
-333. Pico-Banana-400K: A Large-Scale Dataset for Text-Guided Image Editing (2025).
-334. GPT-IMAGE-EDIT-1.5M: A Million-Scale, GPT-Generated Image Dataset (2025).
-335. Seedream 4.5 (2025).
-336. Vlmevalkit: An open-source toolkit for evaluating large multi-modality models (2024).
-337. Clipscore: A reference-free evaluation metric for image captioning (2021).
-338. GenEditEvalKit ().
-339. TextEdit ().
-340. Implementation and benchmarking of perceptual image hash functions (2010).
+<section class="references"><h1>참고문헌</h1><p>본문에서 인용한 참고문헌 136개를 원문의 번호 순서로 정리했다.</p><ol><li id="ref-1"><span class="ref-author">Achiam et al.</span> (2023). Gpt-4 technical report.</li><li id="ref-2"><span class="ref-author">Anil et al.</span> (2023). Palm 2 technical report.</li><li id="ref-3"><span class="ref-author">Bai et al.</span> (2023). Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond.</li><li id="ref-4"><span class="ref-author">Bai et al.</span> (2025). Qwen3-VL Technical Report.</li><li id="ref-5"><span class="ref-author">Bai et al.</span> (2025). Qwen2.5-VL Technical Report.</li><li id="ref-6"><span class="ref-author">Brooks et al.</span> (2023). Instructpix2pix: Learning to follow image editing instructions.</li><li id="ref-7"><span class="ref-author">Cai et al.</span> (2025). Z-Image: An Efficient Image Generation Foundation Model with Single-Stream Diffusion Transformer.</li><li id="ref-8"><span class="ref-author">Cao et al.</span> (2025). HunyuanImage 3.0 Technical Report.</li><li id="ref-9"><span class="ref-author">Chang et al.</span> (2022). MaskGIT: Masked Generative Image Transformer.</li><li id="ref-10"><span class="ref-author">Chang et al.</span> (2025). OneIG-Bench: Omni-dimensional Nuanced Evaluation for Image Generation.</li><li id="ref-11"><span class="ref-author">Chang et al.</span> (2025). SridBench: Benchmark of Scientific Research Illustration Drawing of Image Generation Model.</li><li id="ref-12"><span class="ref-author">Chen et al.</span> (2025). Blip3-o: A family of fully open unified multimodal models-architecture, training and dataset.</li><li id="ref-13"><span class="ref-author">Chen et al.</span> (2025). Blip3o-next: Next frontier of native image generation.</li><li id="ref-14"><span class="ref-author">Chen et al.</span> (2025). Janus-pro: Unified multimodal understanding and generation with data and model scaling.</li><li id="ref-15"><span class="ref-author">Chen et al.</span> (2024). Expanding performance boundaries of open-source multimodal models with model, data, and test-time scaling.</li><li id="ref-16"><span class="ref-author">Chen et al.</span> (2024). How far are we to gpt-4v? closing the gap to commercial multimodal models with open-source suites.</li><li id="ref-17"><span class="ref-author">Chen et al.</span> (2024). Internvl: Scaling up vision foundation models and aligning for generic visual-linguistic tasks.</li><li id="ref-18"><span class="ref-author">Comanici et al.</span> (2025). Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities.</li><li id="ref-19"><span class="ref-author">Cui et al.</span> (2025). PaddleOCR 3.0 Technical Report.</li><li id="ref-20"><span class="ref-author">Cui et al.</span> (2025). PaddleOCR 3.0 Technical Report.</li><li id="ref-21"><span class="ref-author">Cui et al.</span> (2025). Emu3. 5: Native multimodal models are world learners.</li><li id="ref-22"><span class="ref-author">Cui et al.</span> (2025). Emu3.5: Native Multimodal Models are World Learners.</li><li id="ref-23"><span class="ref-author">Deepmind</span> (2025). Gemini 2.5: Our most intelligent AI model.</li><li id="ref-24"><span class="ref-author">DeepMind</span> (2025). Gemini\,3\,Pro Image Model Card.</li><li id="ref-25"><span class="ref-author">Deitke et al.</span> (2023). Objaverse: A universe of annotated 3d objects.</li><li id="ref-26"><span class="ref-author">Deng et al.</span> (2025). Emerging Properties in Unified Multimodal Pretraining.</li><li id="ref-27"><span class="ref-author">Dosovitskiy</span> (2020). An image is worth 16x16 words: Transformers for image recognition at scale.</li><li id="ref-28"><span class="ref-author">Du et al.</span> (2025). Textcrafter: Accurately rendering multiple texts in complex visual scenes.</li><li id="ref-29"><span class="ref-author">Duan et al.</span> (2024). Vlmevalkit: An open-source toolkit for evaluating large multi-modality models.</li><li id="ref-30"><span class="ref-author">Esser et al.</span> (2024). Scaling rectified flow transformers for high-resolution image synthesis.</li><li id="ref-31"><span class="ref-author">Esser et al.</span> (2021). Taming transformers for high-resolution image synthesis.</li><li id="ref-32"><span class="ref-author">Fu et al.</span> (2025). Mme: A comprehensive evaluation benchmark for multimodal large language models.</li><li id="ref-33"><span class="ref-author">Geng et al.</span> (2025). X-omni: Reinforcement learning makes discrete autoregressive image generative models great again.</li><li id="ref-34"><span class="ref-author">Team</span> (2024). GeoGebra: Dynamic Mathematics Software.</li><li id="ref-35"><span class="ref-author">Ghosh et al.</span> (2023). Geneval: An object-focused framework for evaluating text-to-image alignment.</li><li id="ref-36"><span class="ref-author">Goodfellow et al.</span> (2020). Generative adversarial networks.</li><li id="ref-37"><span class="ref-author">Google</span> (2025). Gemini 3 Flash: frontier intelligence built for speed.</li><li id="ref-38"><span class="ref-author">Google</span> (2025). Gemini 3 Pro: Best for complex tasks and bringing creative concepts to life.</li><li id="ref-39"><span class="ref-author">Hastings et al.</span> (2016). ChEBI in 2016: Improved services and an expanding collection of metabolites.</li><li id="ref-40"><span class="ref-author">He et al.</span> (2025). EMMA: Efficient Multimodal Understanding, Generation, and Editing with a Unified Architecture.</li><li id="ref-41"><span class="ref-author">Hessel et al.</span> (2021). Clipscore: A reference-free evaluation metric for image captioning.</li><li id="ref-42"><span class="ref-author">Ho et al.</span> (2020). Denoising Diffusion Probabilistic Models.</li><li id="ref-43"><span class="ref-author">Hu et al.</span> (2025). A Survey of Scientific Large Language Models: From Data Foundations to Agent Frontiers.</li><li id="ref-44"><span class="ref-author">Hu et al.</span> (2024). Ella: Equip diffusion models with llm for enhanced semantic alignment.</li><li id="ref-45"><span class="ref-author">Huang et al.</span> (2024). ChemEval: A Comprehensive Multi-Level Chemical Evaluation for Large Language Models.</li><li id="ref-46"><span class="ref-author">Hurst et al.</span> (2024). Gpt-4o system card.</li><li id="ref-47"><span class="ref-author">Isola et al.</span> (2017). Image-to-image translation with conditional adversarial networks.</li><li id="ref-48"><span class="ref-author">Karras et al.</span> (2019). A style-based generator architecture for generative adversarial networks.</li><li id="ref-49"><span class="ref-author">Kembhavi et al.</span> (2016). A diagram is worth a dozen images.</li><li id="ref-50"><span class="ref-author">Kembhavi et al.</span> (2017). Are you smarter than a sixth grader? textbook question answering for multimodal machine comprehension.</li><li id="ref-51"><span class="ref-author">Koch et al.</span> (2018). ABC: A Big CAD Model Dataset for Geometric Deep Learning. In 2019 IEEE.</li><li id="ref-52"><span class="ref-author">Labs</span> (2024). FLUX.</li><li id="ref-53"><span class="ref-author">Labs</span> (2025). FLUX.2: Frontier Visual Intelligence.</li><li id="ref-54"><span class="ref-author">Labs et al.</span> (2025). FLUX.1 Kontext: Flow Matching for In-Context Image Generation and Editing in Latent Space.</li><li id="ref-55"><span class="ref-author">Lan et al.</span> (2025). Flux-text: A simple and advanced diffusion transformer baseline for scene text editing.</li><li id="ref-56"><span class="ref-author">Li et al.</span> (2023). Seed-bench: Benchmarking multimodal llms with generative comprehension.</li><li id="ref-57"><span class="ref-author">Li et al.</span> (2025). Onecat: Decoder-only auto-regressive model for unified understanding and generation.</li><li id="ref-58"><span class="ref-author">Li et al.</span> (2025). Synergen-vl: Towards synergistic image understanding and generation with vision experts and token folding.</li><li id="ref-59"><span class="ref-author">Li et al.</span> (2022). Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation.</li><li id="ref-60"><span class="ref-author">Li et al.</span> (2023). VideoChat: Chat-Centric Video Understanding.</li><li id="ref-61"><span class="ref-author">Li et al.</span> (2025). Lavida-O: Elastic Large Masked Diffusion Models for Unified Multimodal Understanding and Generation.</li><li id="ref-62"><span class="ref-author">Li et al.</span> (2025). Uniworld-v2: Reinforce image editing with diffusion negative-aware finetuning and mllm implicit feedback.</li><li id="ref-63"><span class="ref-author">Liang et al.</span> (2024). Mixture-of-transformers: A sparse and scalable architecture for multi-modal foundation models.</li><li id="ref-64"><span class="ref-author">Lin et al.</span> (2025). Uniworld: High-resolution semantic encoders for unified visual understanding and generation.</li><li id="ref-65"><span class="ref-author">Lin et al.</span> (2023). Video-LLaVA: Learning United Visual Representation by Alignment Before Projection.</li><li id="ref-66"><span class="ref-author">Lipman et al.</span> (2024). Flow Matching Guide and Code.</li><li id="ref-67"><span class="ref-author">Liu et al.</span> (2023). Improved Baselines with Visual Instruction Tuning.</li><li id="ref-68"><span class="ref-author">Liu et al.</span> (2024). LLaVA-NeXT: Improved reasoning, OCR, and world knowledge.</li><li id="ref-69"><span class="ref-author">Liu et al.</span> (2023). Visual Instruction Tuning.</li><li id="ref-70"><span class="ref-author">Liu et al.</span> (2025). Step1X-Edit: A Practical Framework for General Image Editing.</li><li id="ref-71"><span class="ref-author">Liu et al.</span> (2024). CMM-Math: A Chinese Multimodal Math Dataset To Evaluate and Enhance the Mathematics Reasoning of Large Multimodal Models.</li><li id="ref-72"><span class="ref-author">Liu et al.</span> (2022). Flow straight and fast: Learning to generate and transfer data with rectified flow.</li><li id="ref-73"><span class="ref-author">Liu et al.</span> (2023). OCRBench: On the Hidden Mystery of OCR in Large Multimodal Models.</li><li id="ref-74"><span class="ref-author">Liu et al.</span> (2025). TUNA: Taming Unified Visual Representations for Native Unified Multimodal Models.</li><li id="ref-75"><span class="ref-author">Luo et al.</span> (2025). Mono-internvl-1.5: Towards cheaper and faster monolithic multimodal large language models.</li><li id="ref-76"><span class="ref-author">Luo et al.</span> (2025). Mono-InternVL-1.5: Towards Cheaper and Faster Monolithic Multimodal Large Language Models.</li><li id="ref-77"><span class="ref-author">Luo et al.</span> (2024). Mono-internvl: Pushing the boundaries of monolithic multimodal large language models with endogenous visual pre-training.</li><li id="ref-78"><span class="ref-author">Maaz et al.</span> (2024). Video-ChatGPT: Towards Detailed Video Understanding via Large Vision and Language Models.</li><li id="ref-79"><span class="ref-author">Masry et al.</span> (2022). Chartqa: A benchmark for question answering about charts with visual and logical reasoning.</li><li id="ref-80"><span class="ref-author">MODEL</span> (n.d.). MANZANO: ASIMPLE AND SCALABLE UNIFIED MUL-TIMODAL MODEL WITH A HYBRID VISION TOKENIZER.</li><li id="ref-81"><span class="ref-author">Niu et al.</span> (2025). Wise: A world knowledge-informed semantic evaluation for text-to-image generation.</li><li id="ref-82"><span class="ref-author">OpenAI</span> (2025). GPT-5 System Card.</li><li id="ref-83"><span class="ref-author">OpenAI</span> (2025). GPT-Image-1.5.</li><li id="ref-84"><span class="ref-author">OpenCompass</span> (n.d.). GenEditEvalKit.</li><li id="ref-85"><span class="ref-author">OpenCompass</span> (n.d.). TextEdit.</li><li id="ref-86"><span class="ref-author">Pan et al.</span> (2025). Transfer between modalities with metaqueries.</li><li id="ref-87"><span class="ref-author">Qian et al.</span> (2024). Anytrans: Translate anytext in the image with large scale models.</li><li id="ref-88"><span class="ref-author">Qiu et al.</span> (2024). Can large language models understand symbolic graphics programs?.</li><li id="ref-89"><span class="ref-author">Qiu et al.</span> (2025). Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free.</li><li id="ref-90"><span class="ref-author">Ramesh et al.</span> (2021). Zero-shot text-to-image generation.</li><li id="ref-91"><span class="ref-author">Rombach et al.</span> (2022). High-resolution image synthesis with latent diffusion models.</li><li id="ref-92"><span class="ref-author">Seedream et al.</span> (2025). Seedream 4.0: Toward next-generation multimodal image generation.</li><li id="ref-93"><span class="ref-author">Shen et al.</span> (2025). MammothModa2: A Unified AR-Diffusion Framework for Multimodal Understanding and Generation.</li><li id="ref-94"><span class="ref-author">Song et al.</span> (2025). Query-kontext: An unified multimodal model for image generation and editing.</li><li id="ref-95"><span class="ref-author">Tang et al.</span> (2025). Unilip: Adapting clip for unified multimodal understanding, generation and editing.</li><li id="ref-96"><span class="ref-author">Team</span> (2024). Chameleon: Mixed-modal early-fusion foundation models.</li><li id="ref-97"><span class="ref-author">Team et al.</span> (2024). Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context.</li><li id="ref-98"><span class="ref-author">Team et al.</span> (2025). LongCat-Image Technical Report.</li><li id="ref-99"><span class="ref-author">Tian et al.</span> (2025). NaViL: Rethinking Scaling Properties of Native Multimodal Large Language Models under Data Constraints.</li><li id="ref-100"><span class="ref-author">Tian et al.</span> (2024). MM-Interleaved: Interleaved Image-Text Generative Modeling via Multi-modal Feature Synchronizer.</li><li id="ref-101"><span class="ref-author">Tian et al.</span> (2024). Visual autoregressive modeling: Scalable image generation via next-scale prediction.</li><li id="ref-102"><span class="ref-author">Tian et al.</span> (2025). UniGen-1.5: Enhancing Image Generation and Editing through Reward Unification in Reinforcement Learning.</li><li id="ref-103"><span class="ref-author">Touvron et al.</span> (2023). Llama: Open and efficient foundation language models.</li><li id="ref-104"><span class="ref-author">Tuo et al.</span> (2023). AnyText: Multilingual Visual Text Generation And Editing.</li><li id="ref-105"><span class="ref-author">Wang et al.</span> (2025). Ovis-Image Technical Report.</li><li id="ref-106"><span class="ref-author">Wang et al.</span> (2025). Ovis-U1 Technical Report.</li><li id="ref-107"><span class="ref-author">Wang et al.</span> (2025). InternSVG: Towards Unified SVG Tasks with Multimodal Large Language Models.</li><li id="ref-108"><span class="ref-author">Wang et al.</span> (2025). Mv-math: Evaluating multimodal math reasoning in multi-visual contexts.</li><li id="ref-109"><span class="ref-author">Wang et al.</span> (2025). Skywork unipic: Unified autoregressive modeling for visual understanding and generation.</li><li id="ref-110"><span class="ref-author">Wang et al.</span> (2024). Qwen2-VL: Enhancing Vision-Language Model&#x27;s Perception of the World at Any Resolution.</li><li id="ref-111"><span class="ref-author">Wang et al.</span> (2025). InternVL3.5: Advancing Open-Source Multimodal Models in Versatility, Reasoning, and Efficiency.</li><li id="ref-112"><span class="ref-author">Wang et al.</span> (2025). Internvideo2. 5: Empowering video mllms with long and rich context modeling.</li><li id="ref-113"><span class="ref-author">Wang et al.</span> (2025). GenExam: A Multidisciplinary Text-to-Image Exam.</li><li id="ref-114"><span class="ref-author">Wei et al.</span> (2025). TIIF-Bench: How Does Your T2I Model Follow Your Instructions?.</li><li id="ref-115"><span class="ref-author">Wu et al.</span> (2025). Qwen-Image Technical Report.</li><li id="ref-116"><span class="ref-author">Wu et al.</span> (2025). Qwen-image technical report.</li><li id="ref-117"><span class="ref-author">Wu et al.</span> (2025). OpenUni: A Simple Baseline for Unified Multimodal Understanding and Generation.</li><li id="ref-118"><span class="ref-author">Xiao et al.</span> (2024). Logicvista: Multimodal llm logical reasoning benchmark in visual contexts.</li><li id="ref-119"><span class="ref-author">Xie et al.</span> (2024). Sana: Efficient High-Resolution Image Synthesis with Linear Diffusion Transformer.</li><li id="ref-120"><span class="ref-author">Xie et al.</span> (2025). Show-o2: Improved Native Unified Multimodal Models.</li><li id="ref-121"><span class="ref-author">Xin et al.</span> (2025). Lumina-dimoo: An omni diffusion large language model for multi-modal generation and understanding.</li><li id="ref-122"><span class="ref-author">Xu et al.</span> (2025). Probing Scientific General Intelligence of LLMs with Scientist-Aligned Workflows.</li><li id="ref-123"><span class="ref-author">Yang et al.</span> (2025). Qwen3 technical report.</li><li id="ref-124"><span class="ref-author">Yang et al.</span> (2025). Kwai keye-vl 1.5 technical report.</li><li id="ref-125"><span class="ref-author">Yang et al.</span> (2024). Vision Model Pre-training on Interleaved Image-Text Data via Latent Compression Learning.</li><li id="ref-126"><span class="ref-author">Yang et al.</span> (2025). Mmada: Multimodal large diffusion language models.</li><li id="ref-127"><span class="ref-author">Yang et al.</span> (2025). Cambrian-s: Towards spatial supersensing in video.</li><li id="ref-128"><span class="ref-author">Ye et al.</span> (2025). Imgedit: A unified image editing dataset and benchmark.</li><li id="ref-129"><span class="ref-author">Yue et al.</span> (2024). Mmmu: A massive multi-discipline multimodal understanding and reasoning benchmark for expert agi.</li><li id="ref-130"><span class="ref-author">Zauner</span> (2010). Implementation and benchmarking of perceptual image hash functions.</li><li id="ref-131"><span class="ref-author">Zhang et al.</span> (2024). Mathverse: Does your multi-modal llm truly see the diagrams in visual math problems?.</li><li id="ref-132"><span class="ref-author">Zhang et al.</span> (2024). Mavis: Mathematical visual instruction tuning.</li><li id="ref-133"><span class="ref-author">Zhao et al.</span> (2025). Envisioning beyond the pixels: Benchmarking reasoning-informed visual editing.</li><li id="ref-134"><span class="ref-author">Zhou et al.</span> (2025). Scientists&#x27; First Exam: Probing Cognitive Abilities of MLLM via Perception, Understanding, and Reasoning.</li><li id="ref-135"><span class="ref-author">Zhu et al.</span> (2025). Internvl3: Exploring advanced training and test-time recipes for open-source multimodal models.</li><li id="ref-136"><span class="ref-author">Zhu et al.</span> (2024). ChemQA: a Multimodal Question-and-Answering Dataset on Chemistry Reasoning.</li></ol></section>

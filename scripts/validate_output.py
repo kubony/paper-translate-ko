@@ -101,7 +101,7 @@ MACHINE_TRANSLATION_RESIDUE = (
         ),
     ),
 )
-# 인라인 인용 잔존: [12], [3, 4] — 단 '∈ [0,1]' 같은 수식 구간은 오탐이므로 WARN만.
+# 숫자형 인라인 인용: [12], [3, 4] — 참고문헌과 대응하면 정상이다.
 INLINE_CITE = re.compile(r"\[\d{1,3}(?:,\s*\d{1,3})*\]")
 CITE_OK_CONTEXT = re.compile(r"[∈±\[\(=,]\s*$")
 
@@ -130,7 +130,7 @@ REF_LABEL = re.compile(r"(?<![A-Za-z])(?:sub)?(?:sec|tab|fig|eq|alg|app|thm|lem|
 # `|---|---:|` 정렬 구분선은 산문에 나올 수 없으므로 단독으로 FAIL 근거가 된다.
 MD_TABLE_SEP = re.compile(r"^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)+\|?[ \t]*$", re.M)
 # `# 부록` 같은 해시 헤딩. 코드블록 주석과 구별할 수 없어 WARN으로만 다룬다.
-MD_HEADING = re.compile(r"^[ \t]*#{1,6}[ \t]+\S", re.M)
+MD_HEADING = re.compile(r"^[ \t]*#{1,6}[ \t]+(?!Params\b)(?:[가-힣]|[A-Za-z]{3,})", re.M)
 
 # 캡션에 원본 파일명·자산 URL이 노출된 흔적.
 # 규칙은 `그림 N. <한 줄 요약>.` 이므로 캡션 행에 확장자가 오면 번역되지 않은 것이다.
@@ -669,7 +669,7 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
     else:
         rep.ok("최종 PDF: screen-reader/LaTeXML 수식 변환 잔재 없음.")
 
-    # LaTeX 잔재 + 인라인 인용 잔존 (페이지 단위)
+    # LaTeX 잔재 + 숫자형 인라인 인용 inventory (페이지 단위)
     d = fitz.open(final_pdf)
     latex_pages, cite_pages = [], []
     for i, pg in enumerate(d, start=1):
@@ -692,12 +692,12 @@ def check_final_pdf(rep, final_pdf, orig_pdf):
         rep.ok("LaTeX 잔재 없음 — 수식이 변환된 상태다.")
 
     if cite_pages:
-        rep.warn(
-            f"인라인 인용 [n] 잔존 의심: 페이지 {cite_pages}. 규칙 7에 따라 본문 인용 "
-            f"번호는 제거하고 문장을 다듬어야 한다 ('∈ [0,1]' 같은 수식 구간이면 무시)."
+        rep.ok(
+            f"숫자형 인라인 인용 검출: 페이지 {cite_pages} — 참고문헌과 대응하는 "
+            f"압축 숫자형 표기([n], [n–m])는 허용한다."
         )
     else:
-        rep.ok("인라인 인용 [n] 잔존 없음.")
+        rep.ok("숫자형 인라인 인용 없음.")
 
     # 경어체 검사 (표지 1페이지는 안내문에 경어체가 정상이므로 제외)
     d = fitz.open(final_pdf)
