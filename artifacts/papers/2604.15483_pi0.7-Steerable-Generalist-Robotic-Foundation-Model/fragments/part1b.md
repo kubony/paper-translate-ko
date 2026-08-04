@@ -5,7 +5,7 @@
 **그림 2. 아키텍처 개요.** π0.7 모델은 4B VLM backbone, `MEM` 스타일 video history encoder, 860M parameter action expert로 구성된 5B-parameter VLA이다. 모델의 context에는 언어 명령, 데이터 품질과 전략을 기술하는 episode metadata, subgoal image와 같은 multimodal input을 비롯한 서로 구별되는 여러 modality가 포함된다. 실행 시 언어 명령은 동일한 아키텍처에 기반한 high-level semantic policy가 생성하며, subgoal image는 BAGEL image generation model에 기반한 lightweight world model이 생성한다.
 
 [P1B-003 | 원문 259–260행]
-π0.7은 기존 π0.6의 VLA 아키텍처와 `MEM` memory system을 토대로 구축하고 이를 multi-modal context conditioning으로 확장한 최신 로봇 파운데이션 모델이다. 모델은 Gemma3 4B-parameter VLM으로 초기화한 VLM backbone과 860M parameter의 flow matching action expert로 구성되며, VLM backbone에는 400M-parameter vision encoder가 포함된다. 모델의 전체 parameter 수는 약 5B이다. Vision encoder 역시 Gemma3로 초기화하며 `MEM` video history encoder의 설계를 따른다. 즉, history observation에 temporal compression과 spatial compression을 모두 적용하고 history frame 수와 무관하게 고정된 수의 token을 출력한다. 모델 아키텍처의 개요는 그림 2에 제시하며, 아키텍처는 4장의 아키텍처 절에서 더 자세히 설명한다.
+π0.7은 기존 π0.6의 VLA 아키텍처와 `MEM` memory system을 토대로 구축하고 이를 multi-modal context conditioning으로 확장한 최신 로봇 파운데이션 모델이다. 모델은 Gemma3 4B-parameter VLM으로 초기화한 VLM backbone과 860M parameter의 flow matching action expert로 구성되며, VLM backbone에는 400M-parameter vision encoder가 포함된다. 모델의 전체 parameter 수는 약 5B이다. Vision encoder 역시 Gemma3로 초기화하며 `MEM` video history encoder의 설계를 따른다. 즉, history observation에 temporal compression과 spatial compression을 모두 적용하고 history frame 수와 무관하게 고정된 수의 token을 출력한다. 모델 아키텍처의 개요는 Figure fig:arch에 제시하며, 아키텍처는 4장의 아키텍처 절에서 더 자세히 설명한다.
 
 [P1B-004 | 원문 262–262행]
 이전 모델인 π0, π0.5, π0.6은 task에 대한 짧은 텍스트 설명을 context로 사용한다. π0.7을 학습할 때는 context를 더 표현력 있는 언어 명령, episode metadata, subgoal image 등 추가 정보와 modality까지 포함하도록 확장하며, 이에 따라 다양하고 잠재적으로 suboptimal한 데이터로 학습할 수 있다.
@@ -23,7 +23,7 @@
 π0.5를 따라, 전체 텍스트 task 설명 ℓₜ(예: “주방을 청소하라”)에 더해 **다음 semantic subtask**를 포착하는 중간 단계의 더 high-level인 텍스트를 prompt의 일부로 포함한다. 이 중간 텍스트를 ℓ̂ₜ(예: “냉장고 문을 열어라”)로 나타낸다. inference 중 ℓ̂ₜ는 학습된 high-level policy 또는 사람이 생성할 수 있고 생략할 수도 있으며, 시간에 따라 바뀔 수 있다. 다양한 task와 scenario로부터 데이터를 수집한 다음, segment에 상세한 텍스트 설명을 annotation한다.
 
 [P1B-009 | 원문 275–275행]
-모델을 semantic subtask에 conditioning하면 모델을 단계별로 **말로 coaching**할 수도 있다. 모델은 다양한 언어 instruction을 따르도록 학습되므로, 예를 들어 고구마를 air fryer에 넣는 새로운 task에서 사람의 실시간 instruction을 따를 수 있다(그림 4 참조). Coaching 후에는 verbal coaching 데이터를 사용해 π0.7을 새로운 subtask instruction에 robot observation, task specification, 과거 subtask instruction의 history를 mapping하는 high-level policy로 finetuning할 수 있다(그림 2 왼쪽 아래). 그러면 이 high-level policy가 로봇을 안내해 task를 완전 자율적으로 수행하게 한다.
+모델을 semantic subtask에 conditioning하면 모델을 단계별로 **말로 coaching**할 수도 있다. 모델은 다양한 언어 instruction을 따르도록 학습되므로, 예를 들어 고구마를 air fryer에 넣는 새로운 task에서 사람의 실시간 instruction을 따를 수 있다(Figure fig:air_fryer_coaching 참조). Coaching 후에는 verbal coaching 데이터를 사용해 π0.7을 새로운 subtask instruction에 robot observation, task specification, 과거 subtask instruction의 history를 mapping하는 high-level policy로 finetuning할 수 있다(Figure fig:arch 왼쪽 아래). 그러면 이 high-level policy가 로봇을 안내해 task를 완전 자율적으로 수행하게 한다.
 
 [P1B-010 | 원문 277–277행]
 ### 5.2 Subgoal image

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import json, re, html
+import json, re, html, subprocess, sys
 import markdown
 
 BASE = Path(__file__).resolve().parent
@@ -10,6 +10,7 @@ FRAGS = [
 ]
 
 FIGURES = {
+'fig:teaser': (1, 'fig1.png', True),
 'fig:arch': (2, 'model_architecture.png', True),
 'fig:prompt': (3, 'prompts_v4.png', True),
 'fig:robots': (4, 'pi07robots_v5.png', False),
@@ -52,9 +53,14 @@ def inline_md(s: str) -> str:
 def figure_html(label: str, caption: str) -> str:
     no, filename, wide = FIGURES[label]
     cls = ' class="fig-wide"' if wide else ''
-    return (f'<figure{cls} data-figure="{no}">\n'
+    return (f'<figure{cls} id="fig-{no}" data-source-label="{html.escape(label)}" data-figure="{no}">\n'
             f'<img src="figures_source/{filename}" alt="그림 {no}">\n'
             f'<figcaption><b>그림 {no}.</b> {inline_md(caption)}</figcaption>\n</figure>')
+
+def xref_html(label: str) -> str:
+    no, _, _ = FIGURES[label]
+    return (f'<a class="xref" data-source-ref="{html.escape(label)}" '
+            f'href="#fig-{no}">그림 {no}</a>')
 
 def clean_fragment(text: str) -> str:
     out=[]
@@ -105,10 +111,12 @@ def clean_fragment(text: str) -> str:
         else:
             lines.append(line)
     text='\n'.join(lines)
-    # Convert source-label prose references to the visible figure numbering.
-    for label,(no,_,_) in FIGURES.items():
-        text=text.replace('FIGURE '+label, f'그림 {no}')
-        text=text.replace('Figure '+label, f'그림 {no}')
+    # Convert semantic source-label prose references to linked visible numbers.
+    # Keeping the source label in HTML lets validate_cross_references.py compare
+    # every translated reference against LaTeX's canonical label→number mapping.
+    for label in sorted(FIGURES, key=len, reverse=True):
+        text=text.replace('FIGURE '+label, xref_html(label))
+        text=text.replace('Figure '+label, xref_html(label))
     return text
 
 def normalize_headings(body_html: str) -> str:
@@ -149,11 +157,7 @@ body=markdown.markdown(raw, extensions=['tables','fenced_code'])
 body=normalize_headings(body)
 body=body.replace('<ol>', '<ol class="refs">', 1 if '참고문헌 요약' in body else 0)
 
-teaser=figure_html('fig:teaser' if False else 'fig:arch','') if False else '''
-<figure class="fig-wide" data-figure="1">
-<img src="figures_source/fig1.png" alt="그림 1">
-<figcaption><b>그림 1.</b> 조종 가능한 범용 로봇 파운데이션 모델 π0.7은 여러 task, environment, robot에서 dexterous task를 수행한다. π0.7은 task 설명뿐 아니라 상세 언어, 생성 subgoal image, episode metadata를 포함하는 다양한 prompt로 학습한다. 이 context는 무엇을 할지뿐 아니라 어떻게 수행할지도 제공하여, 로봇·비로봇 데이터의 광범위한 skill을 새로운 방식으로 조합해 새 task를 해결할 수 있게 한다.</figcaption>
-</figure>'''
+teaser=figure_html('fig:teaser', '조종 가능한 범용 로봇 파운데이션 모델 π0.7은 여러 task, environment, robot에서 dexterous task를 수행한다. π0.7은 task 설명뿐 아니라 상세 언어, 생성 subgoal image, episode metadata를 포함하는 다양한 prompt로 학습한다. 이 context는 무엇을 할지뿐 아니라 어떻게 수행할지도 제공하여, 로봇·비로봇 데이터의 광범위한 skill을 새로운 방식으로 조합해 새 task를 해결할 수 있게 한다.')
 
 css='''
 @page { size:A4; margin:15mm; }
@@ -211,3 +215,8 @@ final=front+body+video_appendix()+'</div></body></html>'
 (BASE/'translation.html').write_text(final)
 print('wrote', BASE/'translation.html', 'chars', len(final))
 print('figures', len(re.findall(r'data-figure="', final)), 'equations', len(re.findall(r'class="equation"', final)), 'tables', len(re.findall(r'<table', final)), 'videos', len(re.findall(r'>레포 사본</a>', final)))
+validator = BASE.parents[2] / 'scripts' / 'validate_cross_references.py'
+subprocess.run(
+    [sys.executable, str(validator), str(BASE/'source/main.tex'), str(BASE/'translation.html')],
+    check=True,
+)

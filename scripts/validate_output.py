@@ -31,6 +31,7 @@ manifest.json 스키마:
 """
 import glob
 import html as _html
+import importlib.util
 import json
 import os
 import re
@@ -971,6 +972,30 @@ def check_media_assets(rep, workdir, html_path):
         rep.ok(f"미디어 자산: 보관한 {len(stored)}개 모두 본문/부록에서 링크됨.")
 
 
+def check_cross_references(rep, workdir, html_path):
+    """LaTeX label→번호와 번역 HTML의 모든 figure reference를 대조한다."""
+    source_tex = os.path.join(workdir, "source", "main.tex")
+    if not (os.path.exists(source_tex) and os.path.exists(html_path)):
+        return
+
+    validator_path = os.path.join(os.path.dirname(__file__), "validate_cross_references.py")
+    spec = importlib.util.spec_from_file_location("validate_cross_references", validator_path)
+    if spec is None or spec.loader is None:
+        rep.fail(f"cross-reference validator를 불러올 수 없다: {validator_path}")
+        return
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    with open(source_tex, encoding="utf-8") as f:
+        source = f.read()
+    with open(html_path, encoding="utf-8") as f:
+        translated = f.read()
+    errors = module.validate_cross_references(source, translated)
+    if errors:
+        rep.fail("figure cross-reference 불일치: " + " | ".join(errors[:8]))
+    else:
+        rep.ok("figure cross-reference: LaTeX label→번호·href·참조 횟수 모두 일치.")
+
+
 # ---- 최종 PDF 자동 탐색 (모드 A) -----------------------------------------
 def _find_final_pdf(workdir):
     patterns = ["*_ko_translation_layout.pdf", "*_paper_translate_ko.pdf"]
@@ -1035,6 +1060,9 @@ def mode_workdir(workdir, final_arg):
         check_html(rep, html_path, workdir, orig_pdf, manifest)
     elif os.path.exists(html_path):
         rep.warn("original.pdf가 없어 표 휴리스틱을 생략한다.")
+
+    # LaTeX source가 있으면 모든 figure reference를 canonical label 기준으로 검증한다.
+    check_cross_references(rep, workdir, html_path)
 
     # 미디어 자산 계약 (웹 출처)
     check_media_assets(rep, workdir, html_path)

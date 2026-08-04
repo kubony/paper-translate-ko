@@ -49,6 +49,7 @@ arXiv 2512.00565 논문을 레이아웃 유지해서 한글로 번역해줘
 work/<식별자>_<Title-Slug>/            # 예: 2410.01273_CANVAS-Commonsense-Aware-Navigation
   README.md                            # 서지 정보·원문 링크·산출물·자산 요약
   original.pdf                         # 원본 PDF. fetch_arxiv.py도 이 이름으로 저장함
+  source/main.tex                      # LaTeX source가 있으면 figure label의 canonical 번호 기준
   metadata.json                        # arXiv 메타데이터
   manifest.json                        # 원문 그림/표/디스플레이 수식 개수 검증 기준
   figures/                             # fig-*.png + pages/page-*.png 미리보기
@@ -122,11 +123,15 @@ python3 scripts/render_pdf.py \
   "$WORK/translation.html" \
   "$WORK/2512.00565_ko_translation_layout.pdf"
 
-# 5. 필수 검증 게이트. PASS가 아니면 translation.html을 수정하고 4→5를 반복합니다.
+# 5. LaTeX source가 있으면 figure label→번호·링크·참조 횟수 exact-match gate
+python3 scripts/validate_cross_references.py \
+  "$WORK/source/main.tex" "$WORK/translation.html"
+
+# 6. 필수 출력 검증 게이트. PASS가 아니면 translation.html을 수정하고 4→6을 반복합니다.
 uv run --quiet --with pymupdf python3 scripts/validate_output.py \
   "$WORK" --final "$WORK/2512.00565_ko_translation_layout.pdf"
 
-# 6. Discord/채팅 첨부 한도를 넘으면 8 MiB 이하 페이지 조각으로 분할
+# 7. Discord/채팅 첨부 한도를 넘으면 8 MiB 이하 페이지 조각으로 분할
 uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
   "$WORK/2512.00565_ko_translation_layout.pdf" "$WORK/discord_parts" --max-mib 8
 ```
@@ -150,6 +155,7 @@ uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py \
 - 템플릿 자리표시 잔재(`없음(null)`, `제공되지 않음`)
 - 캡션·섹션 번호 이중 인쇄(`그림 1. 그림 1:`, `2.1 2.1 태스크 설계`)
 - 본문이 참조하는 `표 N`/`그림 N`에 대응 캡션이 없음(주 결과표 누락 등)
+- LaTeX `\\ref{fig:...}` label과 번역 HTML의 표시 번호·href·target·label별 참조 횟수 불일치
 - screen-reader/LaTeXML 수식 변환 잔재(`아래 첨자`, `superscript`, `textsubscript` 등)
 - 고신뢰 기계번역 잔재(`건강하게 감소`, `예측할 수 있다고 예상할 수`, `제작대를 제작` 등)
 - 본문 인라인 인용 번호 `[12]` 잔존 의심
@@ -170,6 +176,7 @@ scripts/mirror_assets_gcs.py              # 대용량 자산 GCS 미러링
 scripts/extract_figures.py                # PDF 그림 후보 추출/수동 crop
 scripts/render_pdf.py                     # HTML → PDF 렌더링
 scripts/validate_output.py                # 출력 계약 검증 게이트
+scripts/validate_cross_references.py      # LaTeX figure label→번호/링크 exact-match gate
 scripts/split_pdf_for_delivery.py         # Discord/채팅용 크기 제한 PDF 분할
 assets/template.html                      # 실제 작업용 skeleton
 assets/example.html                       # 구성요소 예시 HTML
@@ -183,6 +190,7 @@ python3 scripts/fetch_arxiv.py
 python3 scripts/fetch_web_assets.py --help
 python3 scripts/mirror_assets_gcs.py --help
 python3 scripts/render_pdf.py
+python3 scripts/validate_cross_references.py --help
 uv run --quiet --with pymupdf python3 scripts/extract_figures.py
 uv run --quiet --with pymupdf python3 scripts/validate_output.py
 uv run --quiet --with pymupdf python3 scripts/split_pdf_for_delivery.py --help
