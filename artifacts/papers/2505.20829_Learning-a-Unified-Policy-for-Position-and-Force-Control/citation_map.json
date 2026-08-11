@@ -1,0 +1,352 @@
+{
+  "hwangbo2019learning": {
+    "number": 1,
+    "author": "Hwangbo",
+    "year": "2019",
+    "title": "Learning agile and dynamic motor skills for legged robots",
+    "id": "ref-1"
+  },
+  "zhuang2024humanoid": {
+    "number": 2,
+    "author": "Zhuang",
+    "year": "2024",
+    "title": "Humanoid parkour learning",
+    "id": "ref-2"
+  },
+  "he2024agile": {
+    "number": 3,
+    "author": "He",
+    "year": "2024",
+    "title": "Agile but safe: Learning collision-free high-speed legged locomotion",
+    "id": "ref-3"
+  },
+  "hoeller2024anymal": {
+    "number": 4,
+    "author": "Hoeller",
+    "year": "2024",
+    "title": "Anymal parkour: Learning agile navigation for quadrupedal robots",
+    "id": "ref-4"
+  },
+  "sleiman2023versatile": {
+    "number": 5,
+    "author": "Sleiman",
+    "year": "2023",
+    "title": "Versatile multicontact planning and control for legged loco-manipulation",
+    "id": "ref-5"
+  },
+  "fu2023deep": {
+    "number": 6,
+    "author": "Fu",
+    "year": "2023",
+    "title": "Deep whole-body control: learning a unified policy for manipulation and locomotion",
+    "id": "ref-6"
+  },
+  "liu2024visual": {
+    "number": 7,
+    "author": "Liu",
+    "year": "2024",
+    "title": "Visual whole-body control for legged loco-manipulation",
+    "id": "ref-7"
+  },
+  "qiu2024wildlma": {
+    "number": 8,
+    "author": "Qiu",
+    "year": "2024",
+    "title": "Wildlma: Long horizon loco-manipulation in the wild",
+    "id": "ref-8"
+  },
+  "portela2024learning": {
+    "number": 9,
+    "author": "Portela",
+    "year": "2024",
+    "title": "Learning force control for legged manipulation",
+    "id": "ref-9"
+  },
+  "zhuang2023robot": {
+    "number": 10,
+    "author": "Zhuang",
+    "year": "2023",
+    "title": "Robot parkour learning",
+    "id": "ref-10"
+  },
+  "shridhar2023perceiver": {
+    "number": 11,
+    "author": "Shridhar",
+    "year": "2023",
+    "title": "Perceiver-actor: A multi-task transformer for robotic manipulation",
+    "id": "ref-11"
+  },
+  "chi2023diffusion": {
+    "number": 12,
+    "author": "Chi",
+    "year": "2023",
+    "title": "Diffusion policy: Visuomotor policy learning via action diffusion",
+    "id": "ref-12"
+  },
+  "brohan2023rt": {
+    "number": 13,
+    "author": "Brohan",
+    "year": "2023",
+    "title": "Rt-2: Vision-language-action models transfer web knowledge to robotic control",
+    "id": "ref-13"
+  },
+  "team2024octo": {
+    "number": 14,
+    "author": "Team",
+    "year": "2024",
+    "title": "Octo: An open-source generalist robot policy",
+    "id": "ref-14"
+  },
+  "black2024pi_0": {
+    "number": 15,
+    "author": "Black",
+    "year": "2024",
+    "title": "A vision-language-action flow model for general robot control",
+    "id": "ref-15"
+  },
+  "walke2023bridgedata": {
+    "number": 16,
+    "author": "Walke",
+    "year": "2023",
+    "title": "Bridgedata v2: A dataset for robot learning at scale",
+    "id": "ref-16"
+  },
+  "khazatsky2024droid": {
+    "number": 17,
+    "author": "Khazatsky",
+    "year": "2024",
+    "title": "Droid: A large-scale in-the-wild robot manipulation dataset",
+    "id": "ref-17"
+  },
+  "o2024open": {
+    "number": 18,
+    "author": "O’Neill",
+    "year": "2024",
+    "title": "Open x-embodiment: Robotic learning datasets and rt-x models: Open x-embodiment collaboration 0",
+    "id": "ref-18"
+  },
+  "makoviychuk2021isaac": {
+    "number": 19,
+    "author": "Makoviychuk",
+    "year": "2021",
+    "title": "Isaac gym: High performance gpu-based physics simulation for robot learning",
+    "id": "ref-19"
+  },
+  "sleiman2021unified": {
+    "number": 20,
+    "author": "Sleiman",
+    "year": "2021",
+    "title": "A unified mpc framework for whole-body dynamic locomotion and manipulation",
+    "id": "ref-20"
+  },
+  "polverini2020multi": {
+    "number": 21,
+    "author": "Polverini",
+    "year": "2020",
+    "title": "Multi-contact heavy object pushing with a centaur-type humanoid robot: Planning and control for a real demonstrator",
+    "id": "ref-21"
+  },
+  "rudin2022learning": {
+    "number": 22,
+    "author": "Rudin",
+    "year": "2022",
+    "title": "Learning to walk in minutes using massively parallel deep reinforcement learning",
+    "id": "ref-22"
+  },
+  "pan2024roboduet": {
+    "number": 23,
+    "author": "Pan",
+    "year": "2024",
+    "title": "Roboduet: A framework affording mobile-manipulation and cross-embodiment",
+    "id": "ref-23"
+  },
+  "ma2022combining": {
+    "number": 24,
+    "author": "Ma",
+    "year": "2022",
+    "title": "Combining learning-based locomotion policy with model-based manipulation for legged mobile manipulators",
+    "id": "ref-24"
+  },
+  "wang2024quadwbg": {
+    "number": 25,
+    "author": "Wang",
+    "year": "2024",
+    "title": "Quadwbg: Generalizable quadrupedal whole-body grasping",
+    "id": "ref-25"
+  },
+  "murphy2012high": {
+    "number": 26,
+    "author": "Murphy",
+    "year": "2012",
+    "title": "High degree-of-freedom dynamic manipulation",
+    "id": "ref-26"
+  },
+  "murooka2015whole": {
+    "number": 27,
+    "author": "Murooka",
+    "year": "2015",
+    "title": "Whole-body pushing manipulation with contact posture planning of large and heavy object for humanoid robot",
+    "id": "ref-27"
+  },
+  "rehman2016towards": {
+    "number": 28,
+    "author": "Rehman",
+    "year": "2016",
+    "title": "Towards a multi-legged mobile manipulator",
+    "id": "ref-28"
+  },
+  "bellicoso2019alma": {
+    "number": 29,
+    "author": "Bellicoso",
+    "year": "2019",
+    "title": "Alma-articulated locomotion and manipulation for a torque-controllable robot",
+    "id": "ref-29"
+  },
+  "risiglione2022whole": {
+    "number": 30,
+    "author": "Risiglione",
+    "year": "2022",
+    "title": "A whole-body controller based on a simplified template for rendering impedances in quadruped manipulators",
+    "id": "ref-30"
+  },
+  "raibert1981hybrid": {
+    "number": 31,
+    "author": "Raibert",
+    "year": "1981",
+    "title": "Hybrid position/force control of manipulators",
+    "id": "ref-31"
+  },
+  "mason1981compliance": {
+    "number": 32,
+    "author": "Mason",
+    "year": "1981",
+    "title": "Compliance and force control for computer controlled manipulators",
+    "id": "ref-32"
+  },
+  "yoshikawa1987dynamic": {
+    "number": 33,
+    "author": "Yoshikawa",
+    "year": "1987",
+    "title": "Dynamic hybrid position/force control of robot manipulators--description of hand constraints and calculation of joint driving force",
+    "id": "ref-33"
+  },
+  "hogan1984impedance": {
+    "number": 34,
+    "author": "Hogan",
+    "year": "1984",
+    "title": "Impedance control: An approach to manipulation",
+    "id": "ref-34"
+  },
+  "zhang2021learning": {
+    "number": 35,
+    "author": "Zhang",
+    "year": "2021",
+    "title": "Learning variable impedance control via inverse reinforcement learning for force-related tasks",
+    "id": "ref-35"
+  },
+  "hou2024adaptive": {
+    "number": 36,
+    "author": "Hou",
+    "year": "2024",
+    "title": "Adaptive compliance policy: Learning approximate compliance for diffusion guided control",
+    "id": "ref-36"
+  },
+  "de2024current": {
+    "number": 37,
+    "author": "de Wolde",
+    "year": "2024",
+    "title": "Current-based impedance control for interacting with mobile manipulators",
+    "id": "ref-37"
+  },
+  "bousmalis2023robocat": {
+    "number": 38,
+    "author": "Bousmalis",
+    "year": "2023",
+    "title": "Robocat: A self-improving generalist agent for robotic manipulation",
+    "id": "ref-38"
+  },
+  "mees2024octo": {
+    "number": 39,
+    "author": "Mees",
+    "year": "2024",
+    "title": "Octo: An open-source generalist robot policy",
+    "id": "ref-39"
+  },
+  "vuong2023open": {
+    "number": 40,
+    "author": "Vuong",
+    "year": "2023",
+    "title": "Open x-embodiment: Robotic learning datasets and rt-x models",
+    "id": "ref-40"
+  },
+  "yang2023polybot": {
+    "number": 41,
+    "author": "Yang",
+    "year": "2023",
+    "title": "Polybot: Training one policy across robots while embracing variability",
+    "id": "ref-41"
+  },
+  "fang2024rh20t": {
+    "number": 42,
+    "author": "Fang",
+    "year": "2024",
+    "title": "Rh20t: A comprehensive robotic dataset for learning diverse skills in one-shot",
+    "id": "ref-42"
+  },
+  "pomerleau1988alvinn": {
+    "number": 43,
+    "author": "Pomerleau",
+    "year": "1988",
+    "title": "Alvinn: An autonomous land vehicle in a neural network",
+    "id": "ref-43"
+  },
+  "bojarski2016endendlearningselfdriving": {
+    "number": 44,
+    "author": "Bojarski",
+    "year": "2016",
+    "title": "End to end learning for self-driving cars, 2016",
+    "id": "ref-44"
+  },
+  "fu2024mobile": {
+    "number": 45,
+    "author": "Fu",
+    "year": "2024",
+    "title": "Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation",
+    "id": "ref-45"
+  },
+  "ha2024umi": {
+    "number": 46,
+    "author": "Ha",
+    "year": "2024",
+    "title": "Umi on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers",
+    "id": "ref-46"
+  },
+  "he2024learning": {
+    "number": 47,
+    "author": "He",
+    "year": "2024",
+    "title": "Learning visual quadrupedal loco-manipulation from demonstrations",
+    "id": "ref-47"
+  },
+  "lin2024learning": {
+    "number": 48,
+    "author": "Lin",
+    "year": "2024",
+    "title": "Learning visuotactile skills with two multifingered hands",
+    "id": "ref-48"
+  },
+  "yang2023seq2seq": {
+    "number": 49,
+    "author": "Yang",
+    "year": "2023",
+    "title": "Seq2seq imitation learning for tactile feedback-based manipulation",
+    "id": "ref-49"
+  },
+  "schulman2017proximal": {
+    "number": 50,
+    "author": "Schulman",
+    "year": "2017",
+    "title": "Proximal policy optimization algorithms",
+    "id": "ref-50"
+  }
+}

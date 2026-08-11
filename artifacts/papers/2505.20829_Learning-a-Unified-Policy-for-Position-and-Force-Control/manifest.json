@@ -1,0 +1,105 @@
+{
+  "arxiv_id": "2505.20829",
+  "title": "Learning a Unified Policy for Position and Force Control in Legged Loco-Manipulation",
+  "language": "ko",
+  "generated": "2026-08-11",
+  "source_fragments": [
+    "part1a.md",
+    "part1b.md",
+    "part2.md",
+    "part3a.md",
+    "part3b.md",
+    "part3c.md"
+  ],
+  "outputs": [
+    "translation.html",
+    "manifest.json",
+    "citation_map.json",
+    "README.md"
+  ],
+  "figures": [
+    {
+      "no": "1"
+    },
+    {
+      "no": "2"
+    },
+    {
+      "no": "3"
+    },
+    {
+      "no": "4"
+    },
+    {
+      "no": "5"
+    },
+    {
+      "no": "A.6"
+    },
+    {
+      "no": "A.7"
+    },
+    {
+      "no": "A.8"
+    },
+    {
+      "no": "A.9"
+    }
+  ],
+  "tables": [
+    {
+      "no": "A.1"
+    },
+    {
+      "no": "A.2"
+    },
+    {
+      "no": "A.3"
+    }
+  ],
+  "display_equations": 9,
+  "canonical": {
+    "figures": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "A.6",
+      "A.7",
+      "A.8",
+      "A.9"
+    ],
+    "tables": [
+      "A.1",
+      "A.2",
+      "A.3"
+    ],
+    "equations": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "A.1",
+      "A.2",
+      "A.3",
+      "A.4"
+    ]
+  },
+  "counts": {
+    "figures": 9,
+    "tables": 3,
+    "equations": 9,
+    "references": 50,
+    "inline_citations": 69,
+    "videos": 14
+  },
+  "self_check": {
+    "missing_local_paths": [],
+    "raw_visible_latex": [],
+    "unresolved_tokens": 0,
+    "duplicate_ids": [],
+    "status": "passed"
+  }
+}

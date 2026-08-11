@@ -1,0 +1,94 @@
+\usepackage{acronym}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{comment}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{dsfont}
+\usepackage{siunitx}
+\let\labelindent\relax
+\usepackage{enumitem}
+\usepackage{wrapfig}
+% \usepackage{minted}
+% \usepackage{ulem}
+\definecolor{LightGray}{gray}{0.9}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+% \hypersetup{colorlinks=true,linkcolor=cvprblue,citecolor=cvprblue}
+% \hypersetup{colorlinks=true,linkcolor=cvprblue,citecolor=cvprblue,filecolor=cvprblue,urlcolor=cvprblue}
+\usepackage[pagebackref,breaklinks,colorlinks=true,linkcolor=cvprblue,citecolor=cvprblue,bookmarks=true]{hyperref}
+\usepackage[capitalise,nameinlink]{cleveref}
+\usepackage[sort]{cite}
+% numbers option provides compact numerical references in the text. 
+% \usepackage[numbers]{natbib}
+\usepackage{multicol}
+
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+  {\z@}{0ex \@plus 0ex \@minus 0ex}{-1em}%
+  {\hskip\parindent\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\newcommand{\etc}{\emph{etc.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\cf}{\emph{c.f.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\sota}{\text{state-of-the-art}\xspace}
+
+% Acronym
+\acrodef{ddim}[DDIM]{Denoising Diffusion Implicit Models}
+\acrodef{mlp}[MLP]{multi-layer perception}
+\acrodef{bc}[BC]{Behavior cloning}
+\acrodef{mpc}[MPC]{model predictive control}
+\acrodef{rl}[RL]{reinforcement learning}
+\acrodef{il}[IL]{imitation learning}
+\acrodef{wbc}[WBC]{Whole body control}
+\acrodef{llm}[LLM]{large language model}
+\acrodef{mmlm}[MMLM]{multi-modal language model}
+\acrodef{sft}[SFT]{supervised fine-tuning}
+\acrodef{rlhf}[RLHF]{Reinforcement Learning from Human Feedback}
+\acrodef{sg3d}[3DSG]{3D Scene Graph}
+\acrodef{qa}[QA]{question-answering}
+\acrodef{gui}[GUI]{graphical user interface}
+\acrodef{cot}[CoT]{Chain-of-Thought}
+\acrodef{mse}[MSE]{mean squared error}
+\acrodef{ppo}[PPO]{Proximal Policy Optimization}
+
+
+% Commands
+\newcommand{\modelname}{\textsc{SynergAI}\xspace}
+\newcommand{\supp}{\textit{appendix}\xspace}
+\newcommand{\srh}{SR$_{\text{Human}}$}
+\newcommand{\srl}{SR$_{\text{LLM}}$}
+\newcommand{\sri}{SR$_{\text{Init}}$}
+\newcommand{\tsri}{TSR$_{\text{Init}}$}
+\newcommand{\rrr}{RR$_{\text{Interaction}}$}
+\newcommand{\numtask}{7\xspace}
+
+% Handy Colors
+\definecolor{gblue}{HTML}{4285F4}
+\definecolor{gred}{HTML}{DB4437}
+\definecolor{ggreen}{HTML}{0F9D58}
+\definecolor{vblue}{HTML}{2993ba}
+\newcommand{\todo}[1]{\textcolor{red}{#1}\xspace}
+\newcommand{\bx}[1]{\textcolor{orange}{[BX: {#1}]}\xspace}
+\newcommand{\peiyuan}[1]{\textcolor{gblue}{[PYuan: #1]}\xspace}
+\newcommand{\sy}[1]{\textcolor{gred}{[SY: #1]}\xspace}
+
+\newcommand{\rsout}[1]{\sout{\textcolor{blue}{#1}}}
+\newcommand{\rnew}[1]{\textcolor{blue}{#1}\xspace}
+
+% Cref configs
+\newcommand{\crefrangeconjunction}{--}
+
+% New formatting
+\newcommand{\para}[1]{\textbf{#1}\xspace\xspace}

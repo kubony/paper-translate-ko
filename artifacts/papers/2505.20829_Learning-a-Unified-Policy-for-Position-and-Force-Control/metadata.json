@@ -1,0 +1,41 @@
+{
+  "arxiv_id": "2505.20829",
+  "title": "Learning a Unified Policy for Position and Force Control in Legged Loco-Manipulation",
+  "authors": [
+    {
+      "name": "Peiyuan Zhi",
+      "affiliation": ""
+    },
+    {
+      "name": "Peiyang Li",
+      "affiliation": ""
+    },
+    {
+      "name": "Jianqin Yin",
+      "affiliation": ""
+    },
+    {
+      "name": "Baoxiong Jia",
+      "affiliation": ""
+    },
+    {
+      "name": "Siyuan Huang",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "Robotic loco-manipulation tasks often involve contact-rich interactions with the environment, requiring the joint modeling of contact force and robot position. However, recent visuomotor policies often focus solely on learning position or force control, overlooking their co-learning. In this work, we propose the first unified policy for legged robots that jointly models force and position control learned without reliance on force sensors. By simulating diverse combinations of position and force commands alongside external disturbance forces, we use reinforcement learning to learn a policy that estimates forces from historical robot states and compensates for them through position and velocity adjustments. This policy enables a wide range of manipulation behaviors under varying force and position inputs, including position tracking, force application, force tracking, and compliant interactions. Furthermore, we demonstrate that the learned policy enhances trajectory-based imitation learning pipelines by incorporating essential contact information through its force estimation module, achieving approximately 39.5% higher success rates across four challenging contact-rich manipulation tasks compared to position-control policies. Extensive experiments on both a quadrupedal manipulator and a humanoid robot validate the versatility and robustness of the proposed policy across diverse scenarios.",
+  "comment": "website: https://unified-force.github.io/",
+  "journal_ref": "",
+  "primary_category": "cs.RO",
+  "categories": [
+    "cs.RO"
+  ],
+  "published": "2025-05-27T07:44:35Z",
+  "updated": "2025-10-04T13:34:15Z",
+  "abs_url": "https://arxiv.org/abs/2505.20829",
+  "pdf_url": "https://arxiv.org/pdf/2505.20829",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2505.20829v2",
+    "pdf": "https://arxiv.org/pdf/2505.20829v2"
+  }
+}

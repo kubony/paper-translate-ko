@@ -1,0 +1,258 @@
+\begin{thebibliography}{50}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Hwangbo et~al.(2019)Hwangbo, Lee, Dosovitskiy, Bellicoso, Tsounis, Koltun, and Hutter]{hwangbo2019learning}
+J.~Hwangbo, J.~Lee, A.~Dosovitskiy, D.~Bellicoso, V.~Tsounis, V.~Koltun, and M.~Hutter.
+\newblock Learning agile and dynamic motor skills for legged robots.
+\newblock \emph{Science Robotics}, 4\penalty0 (26):\penalty0 eaau5872, 2019.
+
+\bibitem[Zhuang et~al.(2024)Zhuang, Yao, and Zhao]{zhuang2024humanoid}
+Z.~Zhuang, S.~Yao, and H.~Zhao.
+\newblock Humanoid parkour learning.
+\newblock \emph{arXiv preprint arXiv:2406.10759}, 2024.
+
+\bibitem[He et~al.(2024)He, Zhang, Xiao, He, Liu, and Shi]{he2024agile}
+T.~He, C.~Zhang, W.~Xiao, G.~He, C.~Liu, and G.~Shi.
+\newblock Agile but safe: Learning collision-free high-speed legged locomotion.
+\newblock \emph{arXiv preprint arXiv:2401.17583}, 2024.
+
+\bibitem[Hoeller et~al.(2024)Hoeller, Rudin, Sako, and Hutter]{hoeller2024anymal}
+D.~Hoeller, N.~Rudin, D.~Sako, and M.~Hutter.
+\newblock Anymal parkour: Learning agile navigation for quadrupedal robots.
+\newblock \emph{Science Robotics}, 9\penalty0 (88):\penalty0 eadi7566, 2024.
+
+\bibitem[Sleiman et~al.(2023)Sleiman, Farshidian, and Hutter]{sleiman2023versatile}
+J.-P. Sleiman, F.~Farshidian, and M.~Hutter.
+\newblock Versatile multicontact planning and control for legged loco-manipulation.
+\newblock \emph{Science Robotics}, 8\penalty0 (81):\penalty0 eadg5014, 2023.
+
+\bibitem[Fu et~al.(2023)Fu, Cheng, and Pathak]{fu2023deep}
+Z.~Fu, X.~Cheng, and D.~Pathak.
+\newblock Deep whole-body control: learning a unified policy for manipulation and locomotion.
+\newblock In \emph{Conference on Robot Learning}, pages 138--149. PMLR, 2023.
+
+\bibitem[Liu et~al.(2024)Liu, Chen, Cheng, Ji, Qiu, Yang, and Wang]{liu2024visual}
+M.~Liu, Z.~Chen, X.~Cheng, Y.~Ji, R.~Qiu, R.~Yang, and X.~Wang.
+\newblock Visual whole-body control for legged loco-manipulation.
+\newblock \emph{The 8th Conference on Robot Learning}, 2024.
+
+\bibitem[Qiu et~al.(2024)Qiu, Song, Peng, Suryadevara, Yang, Liu, Ji, Jia, Yang, Zou, et~al.]{qiu2024wildlma}
+R.-Z. Qiu, Y.~Song, X.~Peng, S.~A. Suryadevara, G.~Yang, M.~Liu, M.~Ji, C.~Jia, R.~Yang, X.~Zou, et~al.
+\newblock Wildlma: Long horizon loco-manipulation in the wild.
+\newblock \emph{arXiv preprint arXiv:2411.15131}, 2024.
+
+\bibitem[Portela et~al.(2024)Portela, Margolis, Ji, and Agrawal]{portela2024learning}
+T.~Portela, G.~B. Margolis, Y.~Ji, and P.~Agrawal.
+\newblock Learning force control for legged manipulation.
+\newblock \emph{arXiv preprint arXiv:2405.01402}, 2024.
+
+\bibitem[Zhuang et~al.(2023)Zhuang, Fu, Wang, Atkeson, Schwertfeger, Finn, and Zhao]{zhuang2023robot}
+Z.~Zhuang, Z.~Fu, J.~Wang, C.~Atkeson, S.~Schwertfeger, C.~Finn, and H.~Zhao.
+\newblock Robot parkour learning.
+\newblock \emph{arXiv preprint arXiv:2309.05665}, 2023.
+
+\bibitem[Shridhar et~al.(2023)Shridhar, Manuelli, and Fox]{shridhar2023perceiver}
+M.~Shridhar, L.~Manuelli, and D.~Fox.
+\newblock Perceiver-actor: A multi-task transformer for robotic manipulation.
+\newblock In \emph{Conference on Robot Learning (CoRL)}, 2023.
+
+\bibitem[Chi et~al.(2023)Chi, Xu, Feng, Cousineau, Du, Burchfiel, Tedrake, and Song]{chi2023diffusion}
+C.~Chi, Z.~Xu, S.~Feng, E.~Cousineau, Y.~Du, B.~Burchfiel, R.~Tedrake, and S.~Song.
+\newblock Diffusion policy: Visuomotor policy learning via action diffusion.
+\newblock \emph{The International Journal of Robotics Research}, page 02783649241273668, 2023.
+
+\bibitem[Brohan et~al.(2023)Brohan, Brown, Carbajal, Chebotar, Chen, Choromanski, Ding, Driess, Dubey, Finn, et~al.]{brohan2023rt}
+A.~Brohan, N.~Brown, J.~Carbajal, Y.~Chebotar, X.~Chen, K.~Choromanski, T.~Ding, D.~Driess, A.~Dubey, C.~Finn, et~al.
+\newblock Rt-2: Vision-language-action models transfer web knowledge to robotic control.
+\newblock \emph{arXiv preprint arXiv:2307.15818}, 2023.
+
+\bibitem[Team et~al.(2024)Team, Ghosh, Walke, Pertsch, Black, Mees, Dasari, Hejna, Kreiman, Xu, et~al.]{team2024octo}
+O.~M. Team, D.~Ghosh, H.~Walke, K.~Pertsch, K.~Black, O.~Mees, S.~Dasari, J.~Hejna, T.~Kreiman, C.~Xu, et~al.
+\newblock Octo: An open-source generalist robot policy.
+\newblock \emph{arXiv preprint arXiv:2405.12213}, 2024.
+
+\bibitem[Black et~al.(2024)Black, Brown, Driess, Esmail, Equi, Finn, Fusai, Groom, Hausman, Ichter, et~al.]{black2024pi_0}
+K.~Black, N.~Brown, D.~Driess, A.~Esmail, M.~Equi, C.~Finn, N.~Fusai, L.~Groom, K.~Hausman, B.~Ichter, et~al.
+\newblock A vision-language-action flow model for general robot control.
+\newblock \emph{arXiv preprint arXiv:2410.24164}, 2024.
+
+\bibitem[Walke et~al.(2023)Walke, Black, Zhao, Vuong, Zheng, Hansen-Estruch, He, Myers, Kim, Du, et~al.]{walke2023bridgedata}
+H.~R. Walke, K.~Black, T.~Z. Zhao, Q.~Vuong, C.~Zheng, P.~Hansen-Estruch, A.~W. He, V.~Myers, M.~J. Kim, M.~Du, et~al.
+\newblock Bridgedata v2: A dataset for robot learning at scale.
+\newblock In \emph{Conference on Robot Learning (CoRL)}, 2023.
+
+\bibitem[Khazatsky et~al.(2024)Khazatsky, Pertsch, Nair, Balakrishna, Dasari, Karamcheti, Nasiriany, Srirama, Chen, Ellis, et~al.]{khazatsky2024droid}
+A.~Khazatsky, K.~Pertsch, S.~Nair, A.~Balakrishna, S.~Dasari, S.~Karamcheti, S.~Nasiriany, M.~K. Srirama, L.~Y. Chen, K.~Ellis, et~al.
+\newblock Droid: A large-scale in-the-wild robot manipulation dataset.
+\newblock \emph{arXiv preprint arXiv:2403.12945}, 2024.
+
+\bibitem[O’Neill et~al.(2024)O’Neill, Rehman, Maddukuri, Gupta, Padalkar, Lee, Pooley, Gupta, Mandlekar, Jain, et~al.]{o2024open}
+A.~O’Neill, A.~Rehman, A.~Maddukuri, A.~Gupta, A.~Padalkar, A.~Lee, A.~Pooley, A.~Gupta, A.~Mandlekar, A.~Jain, et~al.
+\newblock Open x-embodiment: Robotic learning datasets and rt-x models: Open x-embodiment collaboration 0.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 6892--6903. IEEE, 2024.
+
+\bibitem[Makoviychuk et~al.(2021)Makoviychuk, Wawrzyniak, Guo, Lu, Storey, Macklin, Hoeller, Rudin, Allshire, Handa, et~al.]{makoviychuk2021isaac}
+V.~Makoviychuk, L.~Wawrzyniak, Y.~Guo, M.~Lu, K.~Storey, M.~Macklin, D.~Hoeller, N.~Rudin, A.~Allshire, A.~Handa, et~al.
+\newblock Isaac gym: High performance gpu-based physics simulation for robot learning.
+\newblock \emph{arXiv preprint arXiv:2108.10470}, 2021.
+
+\bibitem[Sleiman et~al.(2021)Sleiman, Farshidian, Minniti, and Hutter]{sleiman2021unified}
+J.-P. Sleiman, F.~Farshidian, M.~V. Minniti, and M.~Hutter.
+\newblock A unified mpc framework for whole-body dynamic locomotion and manipulation.
+\newblock \emph{IEEE Robotics and Automation Letters}, 6\penalty0 (3):\penalty0 4688--4695, 2021.
+
+\bibitem[Polverini et~al.(2020)Polverini, Laurenzi, Hoffman, Ruscelli, and Tsagarakis]{polverini2020multi}
+M.~P. Polverini, A.~Laurenzi, E.~M. Hoffman, F.~Ruscelli, and N.~G. Tsagarakis.
+\newblock Multi-contact heavy object pushing with a centaur-type humanoid robot: Planning and control for a real demonstrator.
+\newblock \emph{IEEE Robotics and Automation Letters}, 5\penalty0 (2):\penalty0 859--866, 2020.
+
+\bibitem[Rudin et~al.(2022)Rudin, Hoeller, Reist, and Hutter]{rudin2022learning}
+N.~Rudin, D.~Hoeller, P.~Reist, and M.~Hutter.
+\newblock Learning to walk in minutes using massively parallel deep reinforcement learning.
+\newblock In \emph{Conference on Robot Learning}, pages 91--100. PMLR, 2022.
+
+\bibitem[Pan et~al.(2024)Pan, Ben, Yuan, Jiang, Ji, Pang, Liu, and Xu]{pan2024roboduet}
+G.~Pan, Q.~Ben, Z.~Yuan, G.~Jiang, Y.~Ji, J.~Pang, H.~Liu, and H.~Xu.
+\newblock Roboduet: A framework affording mobile-manipulation and cross-embodiment.
+\newblock \emph{arXiv preprint arXiv:2403.17367}, 2024.
+
+\bibitem[Ma et~al.(2022)Ma, Farshidian, Miki, Lee, and Hutter]{ma2022combining}
+Y.~Ma, F.~Farshidian, T.~Miki, J.~Lee, and M.~Hutter.
+\newblock Combining learning-based locomotion policy with model-based manipulation for legged mobile manipulators.
+\newblock \emph{IEEE Robotics and Automation Letters}, 7\penalty0 (2):\penalty0 2377--2384, 2022.
+
+\bibitem[Wang et~al.(2024)Wang, Rajabov, Xu, Zheng, and Wang]{wang2024quadwbg}
+J.~Wang, J.~Rajabov, C.~Xu, Y.~Zheng, and H.~Wang.
+\newblock Quadwbg: Generalizable quadrupedal whole-body grasping.
+\newblock \emph{arXiv preprint arXiv:2411.06782}, 2024.
+
+\bibitem[Murphy et~al.(2012)Murphy, Stephens, Abe, and Rizzi]{murphy2012high}
+M.~P. Murphy, B.~Stephens, Y.~Abe, and A.~A. Rizzi.
+\newblock High degree-of-freedom dynamic manipulation.
+\newblock In \emph{Unmanned Systems Technology XIV}, volume 8387, pages 339--348. SPIE, 2012.
+
+\bibitem[Murooka et~al.(2015)Murooka, Nozawa, Kakiuchi, Okada, and Inaba]{murooka2015whole}
+M.~Murooka, S.~Nozawa, Y.~Kakiuchi, K.~Okada, and M.~Inaba.
+\newblock Whole-body pushing manipulation with contact posture planning of large and heavy object for humanoid robot.
+\newblock In \emph{2015 IEEE International Conference on Robotics and Automation (ICRA)}, pages 5682--5689. IEEE, 2015.
+
+\bibitem[Rehman et~al.(2016)Rehman, Focchi, Lee, Dallali, Caldwell, and Semini]{rehman2016towards}
+B.~U. Rehman, M.~Focchi, J.~Lee, H.~Dallali, D.~G. Caldwell, and C.~Semini.
+\newblock Towards a multi-legged mobile manipulator.
+\newblock In \emph{2016 IEEE International Conference on Robotics and Automation (ICRA)}, pages 3618--3624. IEEE, 2016.
+
+\bibitem[Bellicoso et~al.(2019)Bellicoso, Kr{\"a}mer, St{\"a}uble, Sako, Jenelten, Bjelonic, and Hutter]{bellicoso2019alma}
+C.~D. Bellicoso, K.~Kr{\"a}mer, M.~St{\"a}uble, D.~Sako, F.~Jenelten, M.~Bjelonic, and M.~Hutter.
+\newblock Alma-articulated locomotion and manipulation for a torque-controllable robot.
+\newblock In \emph{2019 International conference on robotics and automation (ICRA)}, pages 8477--8483. IEEE, 2019.
+
+\bibitem[Risiglione et~al.(2022)Risiglione, Barasuol, Caldwell, and Semini]{risiglione2022whole}
+M.~Risiglione, V.~Barasuol, D.~G. Caldwell, and C.~Semini.
+\newblock A whole-body controller based on a simplified template for rendering impedances in quadruped manipulators.
+\newblock In \emph{2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, pages 9620--9627. IEEE, 2022.
+
+\bibitem[Raibert and Craig(1981)]{raibert1981hybrid}
+M.~H. Raibert and J.~J. Craig.
+\newblock Hybrid position/force control of manipulators.
+\newblock 1981.
+
+\bibitem[Mason(1981)]{mason1981compliance}
+M.~T. Mason.
+\newblock Compliance and force control for computer controlled manipulators.
+\newblock \emph{IEEE Transactions on Systems, Man, and Cybernetics}, 11\penalty0 (6):\penalty0 418--432, 1981.
+
+\bibitem[Yoshikawa(1987)]{yoshikawa1987dynamic}
+T.~Yoshikawa.
+\newblock Dynamic hybrid position/force control of robot manipulators--description of hand constraints and calculation of joint driving force.
+\newblock \emph{IEEE Journal on Robotics and Automation}, 3\penalty0 (5):\penalty0 386--392, 1987.
+
+\bibitem[Hogan(1984)]{hogan1984impedance}
+N.~Hogan.
+\newblock Impedance control: An approach to manipulation.
+\newblock In \emph{1984 American control conference}, pages 304--313. IEEE, 1984.
+
+\bibitem[Zhang et~al.(2021)Zhang, Sun, Kuang, and Tomizuka]{zhang2021learning}
+X.~Zhang, L.~Sun, Z.~Kuang, and M.~Tomizuka.
+\newblock Learning variable impedance control via inverse reinforcement learning for force-related tasks.
+\newblock \emph{IEEE Robotics and Automation Letters}, 6\penalty0 (2):\penalty0 2225--2232, 2021.
+
+\bibitem[Hou et~al.(2024)Hou, Liu, Chi, Cousineau, Kuppuswamy, Feng, Burchfiel, and Song]{hou2024adaptive}
+Y.~Hou, Z.~Liu, C.~Chi, E.~Cousineau, N.~Kuppuswamy, S.~Feng, B.~Burchfiel, and S.~Song.
+\newblock Adaptive compliance policy: Learning approximate compliance for diffusion guided control.
+\newblock \emph{arXiv preprint arXiv:2410.09309}, 2024.
+
+\bibitem[de~Wolde et~al.(2024)de~Wolde, Knoedler, Garofalo, and Alonso-Mora]{de2024current}
+J.~de~Wolde, L.~Knoedler, G.~Garofalo, and J.~Alonso-Mora.
+\newblock Current-based impedance control for interacting with mobile manipulators.
+\newblock \emph{arXiv preprint arXiv:2403.13079}, 2024.
+
+\bibitem[Bousmalis et~al.(2023)Bousmalis, Vezzani, Rao, Devin, Lee, Villalonga, Davchev, Zhou, Gupta, Raju, et~al.]{bousmalis2023robocat}
+K.~Bousmalis, G.~Vezzani, D.~Rao, C.~M. Devin, A.~X. Lee, M.~B. Villalonga, T.~Davchev, Y.~Zhou, A.~Gupta, A.~Raju, et~al.
+\newblock Robocat: A self-improving generalist agent for robotic manipulation.
+\newblock \emph{Transactions on Machine Learning Research}, 2023.
+
+\bibitem[Mees et~al.(2024)Mees, Ghosh, Pertsch, Black, Walke, Dasari, Hejna, Kreiman, Xu, Luo, et~al.]{mees2024octo}
+O.~Mees, D.~Ghosh, K.~Pertsch, K.~Black, H.~R. Walke, S.~Dasari, J.~Hejna, T.~Kreiman, C.~Xu, J.~Luo, et~al.
+\newblock Octo: An open-source generalist robot policy.
+\newblock In \emph{First Workshop on Vision-Language Models for Navigation and Manipulation at ICRA 2024}, 2024.
+
+\bibitem[Vuong et~al.(2023)Vuong, Levine, Walke, Pertsch, Singh, Doshi, Xu, Luo, Tan, Shah, et~al.]{vuong2023open}
+Q.~Vuong, S.~Levine, H.~R. Walke, K.~Pertsch, A.~Singh, R.~Doshi, C.~Xu, J.~Luo, L.~Tan, D.~Shah, et~al.
+\newblock Open x-embodiment: Robotic learning datasets and rt-x models.
+\newblock In \emph{Towards Generalist Robots: Learning Paradigms for Scalable Skill Acquisition@ CoRL2023}, 2023.
+
+\bibitem[Yang et~al.(2023)Yang, Sadigh, and Finn]{yang2023polybot}
+J.~Yang, D.~Sadigh, and C.~Finn.
+\newblock Polybot: Training one policy across robots while embracing variability.
+\newblock \emph{arXiv preprint arXiv:2307.03719}, 2023.
+
+\bibitem[Fang et~al.(2024)Fang, Fang, Tang, Liu, Wang, Wang, Zhu, and Lu]{fang2024rh20t}
+H.-S. Fang, H.~Fang, Z.~Tang, J.~Liu, C.~Wang, J.~Wang, H.~Zhu, and C.~Lu.
+\newblock Rh20t: A comprehensive robotic dataset for learning diverse skills in one-shot.
+\newblock In \emph{2024 IEEE International Conference on Robotics and Automation (ICRA)}, pages 653--660. IEEE, 2024.
+
+\bibitem[Pomerleau(1988)]{pomerleau1988alvinn}
+D.~A. Pomerleau.
+\newblock Alvinn: An autonomous land vehicle in a neural network.
+\newblock \emph{Advances in neural information processing systems}, 1, 1988.
+
+\bibitem[Bojarski et~al.(2016)Bojarski, Testa, Dworakowski, Firner, Flepp, Goyal, Jackel, Monfort, Muller, Zhang, Zhang, Zhao, and Zieba]{bojarski2016endendlearningselfdriving}
+M.~Bojarski, D.~D. Testa, D.~Dworakowski, B.~Firner, B.~Flepp, P.~Goyal, L.~D. Jackel, M.~Monfort, U.~Muller, J.~Zhang, X.~Zhang, J.~Zhao, and K.~Zieba.
+\newblock End to end learning for self-driving cars, 2016.
+\newblock URL \url{https://arxiv.org/abs/1604.07316}.
+
+\bibitem[Fu et~al.(2024)Fu, Zhao, and Finn]{fu2024mobile}
+Z.~Fu, T.~Z. Zhao, and C.~Finn.
+\newblock Mobile aloha: Learning bimanual mobile manipulation with low-cost whole-body teleoperation.
+\newblock In \emph{{Conference on Robot Learning (CoRL)}}, 2024.
+
+\bibitem[Ha et~al.(2024)Ha, Gao, Fu, Tan, and Song]{ha2024umi}
+H.~Ha, Y.~Gao, Z.~Fu, J.~Tan, and S.~Song.
+\newblock Umi on legs: Making manipulation policies mobile with manipulation-centric whole-body controllers.
+\newblock \emph{arXiv preprint arXiv:2407.10353}, 2024.
+
+\bibitem[He et~al.(2024)He, Lei, Ze, Sreenath, Li, and Xu]{he2024learning}
+Z.~He, K.~Lei, Y.~Ze, K.~Sreenath, Z.~Li, and H.~Xu.
+\newblock Learning visual quadrupedal loco-manipulation from demonstrations.
+\newblock \emph{arXiv preprint arXiv:2403.20328}, 2024.
+
+\bibitem[Lin et~al.(2024)Lin, Zhang, Li, Qi, Yi, Levine, and Malik]{lin2024learning}
+T.~Lin, Y.~Zhang, Q.~Li, H.~Qi, B.~Yi, S.~Levine, and J.~Malik.
+\newblock Learning visuotactile skills with two multifingered hands.
+\newblock \emph{arXiv preprint arXiv:2404.16823}, 2024.
+
+\bibitem[Yang et~al.(2023)Yang, Angleraud, Pieters, Pajarinen, and K{\"a}m{\"a}r{\"a}inen]{yang2023seq2seq}
+W.~Yang, A.~Angleraud, R.~S. Pieters, J.~Pajarinen, and J.-K. K{\"a}m{\"a}r{\"a}inen.
+\newblock Seq2seq imitation learning for tactile feedback-based manipulation.
+\newblock In \emph{2023 IEEE International Conference on Robotics and Automation (ICRA)}, pages 5829--5836. IEEE, 2023.
+
+\bibitem[Schulman et~al.(2017)Schulman, Wolski, Dhariwal, Radford, and Klimov]{schulman2017proximal}
+J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, and O.~Klimov.
+\newblock Proximal policy optimization algorithms.
+\newblock \emph{arXiv preprint arXiv:1707.06347}, 2017.
+
+\end{thebibliography}

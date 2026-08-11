@@ -25,16 +25,18 @@ import re
 TOKEN_RE = re.compile(
     r"\\setcounter\{figure\}\{(?P<set>\d+)\}"
     r"|\\addtocounter\{figure\}\{(?P<add>-?\d+)\}"
-    r"|\\renewcommand\*?\{\\thefigure\}\{(?P<literal>[^}]+)\}"
+    r"|\\renewcommand\*?\{\\thefigure\}\{(?P<format>[^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
     r"|\\begin\{(?P<begin_env>figure\*?|wrapfigure)\}(?:\{[^}]*\})?"
     r"|\\end\{(?P<end_env>figure\*?|wrapfigure)\}"
+    r"|\\begin\{(?P<begin_subfigure>subfigure)\}(?:\[[^]]*\])?\{[^}]*\}"
+    r"|\\end\{(?P<end_subfigure>subfigure)\}"
     r"|\\captionsetup\{type=figure\}"
     r"|\\captionof\{figure\}"
     r"|\\caption(?P<caption_star>\*)?\s*\{"
     r"|\\label\{(?P<label>[^}]+)\}"
 )
-REF_RE = re.compile(r"\\(?:auto|page)?ref\{([^}]+)\}")
-DISPLAY_NUMBER_RE = re.compile(r"(?:그림|Figure|Fig\.)\s*([A-Za-z]?\d+)", re.IGNORECASE)
+REF_RE = re.compile(r"\\(?:[Cc]|auto|page)?ref\{([^}]+)\}")
+DISPLAY_NUMBER_RE = re.compile(r"(?:그림|Figure|Fig\.)\s*((?:[A-Za-z]\.)?\d+)", re.IGNORECASE)
 
 
 def _strip_comments(source: str) -> str:
@@ -47,11 +49,17 @@ def resolve_figure_numbers(source: str) -> dict[str, int | str]:
     source = _strip_comments(source)
     counter = 0
     figure_depth = 0
+    subfigure_depth = 0
     force_next_caption = False
     synthetic_label_pending = False
     current_number: int | str | None = None
-    literal_next: str | None = None
+    number_format = "{counter}"
+    pending_subfigure_labels: list[str] = []
     labels: dict[str, int | str] = {}
+
+    def formatted_number(value: int) -> int | str:
+        rendered = number_format.replace("{counter}", str(value))
+        return value if rendered == str(value) else rendered
 
     for match in TOKEN_RE.finditer(source):
         token = match.group(0)
@@ -63,32 +71,52 @@ def resolve_figure_numbers(source: str) -> dict[str, int | str]:
             counter += int(match.group("add"))
             current_number = None
             synthetic_label_pending = False
-        elif match.group("literal") is not None:
-            literal_next = match.group("literal")
+        elif match.group("format") is not None:
+            fmt = match.group("format")
+            number_format = fmt.replace(r"\arabic{figure}", "{counter}")
             current_number = None
         elif match.group("begin_env") is not None:
             figure_depth += 1
             current_number = None
             synthetic_label_pending = False
+            if figure_depth == 1:
+                pending_subfigure_labels = []
         elif match.group("end_env") is not None:
             figure_depth = max(0, figure_depth - 1)
             current_number = None
+            if figure_depth == 0:
+                pending_subfigure_labels = []
+        elif match.group("begin_subfigure") is not None:
+            subfigure_depth += 1
+        elif match.group("end_subfigure") is not None:
+            subfigure_depth = max(0, subfigure_depth - 1)
         elif token == r"\captionsetup{type=figure}":
             force_next_caption = True
         elif token == r"\captionof{figure}":
             counter += 1
-            current_number = literal_next or counter
-            literal_next = None
+            current_number = formatted_number(counter)
             force_next_caption = False
             synthetic_label_pending = figure_depth == 0
         elif token.startswith(r"\caption"):
             is_synthetic = bool(force_next_caption and figure_depth == 0)
-            if match.group("caption_star") is None and (figure_depth or force_next_caption):
+            if (
+                match.group("caption_star") is None
+                and (figure_depth or force_next_caption)
+                and subfigure_depth == 0
+            ):
                 counter += 1
-                current_number = literal_next or counter
-                literal_next = None
+                current_number = formatted_number(counter)
                 synthetic_label_pending = is_synthetic
+                for alias in pending_subfigure_labels:
+                    labels[alias] = current_number
+                pending_subfigure_labels = []
             force_next_caption = False
+        elif (
+            match.group("label") is not None
+            and figure_depth > 0
+            and subfigure_depth > 0
+        ):
+            pending_subfigure_labels.append(match.group("label"))
         elif (
             match.group("label") is not None
             and current_number is not None
@@ -119,8 +147,16 @@ class _CrossReferenceHTMLParser(HTMLParser):
         if source_label:
             self.targets[source_label] = (attr_map.get("id"), attr_map.get("data-figure"))
 
+        source_labels = attr_map.get("data-source-labels")
+        if source_labels:
+            aliases = source_labels.split("|") if "|" in source_labels else source_labels.split()
+            for alias in aliases:
+                if alias:
+                    self.targets[alias] = (attr_map.get("id"), attr_map.get("data-figure"))
+
         source_ref = attr_map.get("data-source-ref")
-        if source_ref:
+        classes = (attr_map.get("class") or "").split()
+        if source_ref and source_ref.startswith("fig:") and tag == "a" and "xref" in classes:
             record: dict[str, object] = {
                 "tag": tag,
                 "label": source_ref,
@@ -154,7 +190,12 @@ class _CrossReferenceHTMLParser(HTMLParser):
 
 
 def _source_reference_counts(source: str, labels: dict[str, int | str]) -> Counter[str]:
-    return Counter(label for label in REF_RE.findall(_strip_comments(source)) if label in labels)
+    counts: Counter[str] = Counter()
+    for group in REF_RE.findall(_strip_comments(source)):
+        for label in (item.strip() for item in group.split(",")):
+            if label in labels:
+                counts[label] += 1
+    return counts
 
 
 def validate_cross_references(source: str, html: str) -> list[str]:
