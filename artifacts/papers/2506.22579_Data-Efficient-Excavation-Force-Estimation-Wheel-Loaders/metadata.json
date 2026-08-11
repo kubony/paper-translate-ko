@@ -1,0 +1,38 @@
+{
+  "arxiv_id": "2506.22579",
+  "title": "Data-Efficient Excavation Force Estimation for Wheel Loaders",
+  "authors": [
+    {
+      "name": "Armin Abdolmohammadi",
+      "affiliation": ""
+    },
+    {
+      "name": "Navid Mojahed",
+      "affiliation": ""
+    },
+    {
+      "name": "Shima Nazari",
+      "affiliation": ""
+    },
+    {
+      "name": "Bahram Ravani",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "Accurate prediction of excavation forces is critical for enabling autonomous operation and optimizing control strategies in earthmoving machinery. Conventional approaches often depend on extensive data collection or computationally expensive simulations across multiple soil types, which limits their scalability and adaptability. This study presents a data-efficient framework that calibrates soil parameters using force measurements from the preceding bucket-loading cycle. The proposed method is based on an analytical soil-tool interaction model formulated through the fundamental earthmoving equation, and employs a multi-stage optimization procedure during the loading phase to identify relevant soil parameters. These estimated parameters are then used to predict excavation forces in the subsequent cycle, allowing the system to adapt its control inputs without relying on large-scale datasets or machine learning model training. The framework is validated through high-fidelity simulations in the Algoryx Dynamics engine under different soil types and excavation trajectories, achieving root-mean-square prediction errors between 10% and 15%. This cycle-to-cycle adaptation demonstrates strong potential for scalable, online force estimation and efficient path planning in wheel loader operations.",
+  "comment": "",
+  "journal_ref": "IEEE Access, vol. 13, pp. 181846-181862, Oct. 16, 2025",
+  "primary_category": "eess.SY",
+  "categories": [
+    "eess.SY"
+  ],
+  "published": "2025-06-27T18:52:00Z",
+  "updated": "2025-10-29T18:29:35Z",
+  "abs_url": "https://arxiv.org/abs/2506.22579",
+  "pdf_url": "https://arxiv.org/pdf/2506.22579",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2506.22579v2",
+    "pdf": "https://arxiv.org/pdf/2506.22579v2",
+    "doi": "https://doi.org/10.1109/ACCESS.2025.3622535"
+  }
+}

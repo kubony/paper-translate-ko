@@ -1,0 +1,87 @@
+{
+  "figures": [
+    {
+      "no": "1",
+      "page": 2,
+      "desc": "제안 프레임워크 개요"
+    },
+    {
+      "no": "2",
+      "page": 3,
+      "desc": "토양 쐐기 자유물체도"
+    },
+    {
+      "no": "3",
+      "page": 4,
+      "desc": "버킷 적재 힘"
+    },
+    {
+      "no": "4",
+      "page": 6,
+      "desc": "다단계 parameter 추정"
+    },
+    {
+      "no": "5",
+      "page": 7,
+      "desc": "EVERUN ER12 디지털 트윈"
+    },
+    {
+      "no": "6",
+      "page": 7,
+      "desc": "단일/다단계 힘 예측"
+    },
+    {
+      "no": "7",
+      "page": 8,
+      "desc": "다단계 최적화 결과"
+    },
+    {
+      "no": "8",
+      "page": 9,
+      "desc": "다중 경로 비교"
+    },
+    {
+      "no": "9",
+      "page": 10,
+      "desc": "이중 사이클 굴착"
+    },
+    {
+      "no": "10",
+      "page": 11,
+      "desc": "토양 유형별 합력 비교"
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "page": 3,
+      "desc": "기호·parameter·변수"
+    },
+    {
+      "no": "2",
+      "page": 7,
+      "desc": "Algoryx 토양 특성"
+    },
+    {
+      "no": "3",
+      "page": 8,
+      "desc": "최적화 방법 비교"
+    },
+    {
+      "no": "4",
+      "page": 9,
+      "desc": "토양별 parameter"
+    },
+    {
+      "no": "A1",
+      "page": 14,
+      "desc": "문헌 토양 parameter"
+    },
+    {
+      "no": "A2",
+      "page": 15,
+      "desc": "압력–침하 parameter"
+    }
+  ],
+  "display_equations": 28
+}

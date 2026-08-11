@@ -1,0 +1,1027 @@
+Received 6 October 2025, accepted 14 October 2025, date of publication 16 October 2025, date of current version 27 October 2025.
+Digital Object Identifier 10.1109/ACCESS.2025.3622535
+
+
+
+
+Data-Efficient Excavation Force Estimation
+for Wheel Loaders
+ARMIN ABDOLMOHAMMADI , NAVID MOJAHED , SHIMA NAZARI ,
+AND BAHRAM RAVANI
+Department of Mechanical and Aerospace Engineering, University of California at Davis, Davis, CA 95616, USA
+Corresponding author: Armin Abdolmohammadi (abdolmohammadi@ucdavis.edu)
+This work was supported in part by Komatsu Ltd.
+
+
+
+
+  ABSTRACT Accurate prediction of excavation forces is critical for enabling autonomous operation and
+  optimizing control strategies in earthmoving machinery. Conventional approaches often depend on extensive
+  data collection or computationally expensive simulations across multiple soil types, which limits their
+  scalability and adaptability. This study presents a data-efficient framework that calibrates soil parameters
+  using force measurements from the preceding bucket-loading cycle. The proposed method is based on
+  an analytical soil-tool interaction model formulated through the fundamental earthmoving equation, and
+  employs a multi-stage optimization procedure during the loading phase to identify relevant soil parameters.
+  These estimated parameters are then used to predict excavation forces in the subsequent cycle, allowing
+  the system to adapt its control inputs without relying on large-scale datasets or machine learning model
+  training. The framework is validated through high-fidelity simulations in the Algoryx Dynamics engine under
+  different soil types and excavation trajectories, achieving root-mean-square prediction errors between 10%
+  and 15%. This cycle-to-cycle adaptation demonstrates strong potential for scalable, online force estimation
+  and efficient path planning in wheel loader operations.
+
+
+  INDEX TERMS Excavation force estimation, soil–tool interaction, wheel loader operation, fundamental
+  earthmoving equation, autonomous excavation.
+
+
+I. INTRODUCTION                                                                                 forces acting on the bucket during excavation. Force esti-
+The autonomous operation of earthmoving machinery is                                            mation methods generally fall into two categories: reactive
+a prominent focus in modern engineering and research                                            and predictive. Reactive methods estimate forces in real
+due to advances in robotics, automation, and control                                            time from sensor data, such as hydraulic pressure and
+alongside the growing labor shortage in the construction                                        joint motion, using inverse dynamics, observers, or data-
+industry [1]. Wheel loaders are one form of autonomous                                          driven models. These models include purely data-driven
+machinery widely used for transporting and dumping mate-                                        approaches, like a Radial Basis Function (RBF) neural
+rials in high-frequency loading operations across diverse                                       network trained on real-time sensor data [3], and hybrid
+environments. The bucket loading phase accounts for peak                                        methods that combine Gaussian Process Regression with
+energy demand and poses significant challenges due to soil                                      rigid body dynamics and a disturbance Kalman filter [4].
+variability and unpredictable tool-material interactions [2].                                   Model-based techniques using inverse dynamics and observer
+Optimizing energy use during this phase can significantly                                       design have also been proposed. However, these mod-
+improve the efficiency of wheel loader operations.                                              els offer greater stability and precision at the cost of
+   To enable frameworks that can plan and control bucket                                        increased system modeling complexity [5], [6], which is
+motion in soil, it is essential to accurately estimate the                                      effective for feedback control but not suitable for task
+                                                                                                planning.
+   The associate editor coordinating the review of this manuscript and                             Predictive models estimate resistive forces from geometry,
+approving it for publication was Mostafa M. Fouda              .                                soil, and motion, enabling path and task planning prior to
+
+                                                  2025 The Authors. This work is licensed under a Creative Commons Attribution 4.0 License.
+181846                                                   For more information, see https://creativecommons.org/licenses/by/4.0/                 VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+execution. This modeling can be performed numerically, such
+as through Finite Element Analysis (FEA) or the Discrete
+Element Method (DEM), primarily in simulations [7], [8],
+or analytically for faster estimation that is effective for
+task planning and control. Analytical models directly esti-
+mate excavation resistance forces by incorporating physical
+mechanisms, such as soil wedge theory, which assumes the
+formation of a triangular failure zone ahead of the cutting
+tool. These models relate resistive forces to soil properties
+and tool geometry (e.g., rake angle, tool depth) [9].
+   A range of analytical formulations have been developed
+to capture these resistive interactions with varying levels of
+                                                                                 FIGURE 1. Overview of the proposed framework: A predefined digging
+physical detail and computational complexity. The Swick                          path is executed, and bucket trajectory along with stockpile geometry is
+and Perumpral model [10] incorporates interface friction,                        recorded for soil parameter optimization. The estimated parameters
+                                                                                 inform planning and control for the next excavation cycle.
+rake angle effects, and variable soil depth. The Gill and
+Vanden Berg formulation [11] accounts for tool geometry,
+speed, and soil deformation. Hemami [12] extends analytical
+modeling to robotic manipulators by coupling soil resistance                        Non-learning-based methods, on the other hand, directly
+with dynamic arm control, while the Hettiaratchi and Reece                       estimate parameters using model-based optimization with
+model [13] refines soil resistance estimation by decomposing                     real-time force measurements. Tan et al. [18] applied a
+cutting forces into passive earth pressure and friction                          Newton-Raphson method to estimate soil density and internal
+components, which is particularly suited to variable-depth                       friction angle, which was later extended to include additional
+scenarios.                                                                       parameters by Althoefer et al. [27]. Zhao et al. [28] further
+   Another widely adopted force model is the Fundamen-                           refined the model through the integration of fuzzy logic with
+tal Earthmoving Equation (FEE), originally proposed by                           an enhanced FEE model for simultaneous parameter and
+Reece [14] and later simplified by McKyes [15]. The FEE is                       force prediction. However, these methods either restrict the
+widely used in force prediction models for its simplicity, ana-                  number of estimated parameters, assuming some values are
+lytical tractability, and minimal input requirements compared                    known, or attempt to estimate all parameters at once, resulting
+to other methods, making it attractive for control, parameter                    in high-dimensional optimization that is prone to convergence
+identification, and embedded implementation. The model has                       issues and computational inefficiency.
+been applied in various excavation contexts, including auto-
+mated digging control [16], real-time soil parameter estima-                      A. GAPS AND CONTRIBUTIONS
+tion [17], [18], hybrid neural-physics resistance models [19],                   Three gaps emerge in the literature. First (1), learning-based
+reinforcement learning-based controllers [20], and multibody                     approaches require extensive labeled datasets or simulations
+simulations of wheel loaders [21]. A comprehensive review                        and often rely on aggregated parameters over multiple
+of these and related models is provided in [9], and [22].                        excavation cycles [19], [26]. Second (2), non-learning-
+   All of these analytical force prediction models rely on                       based models suffer from high-dimensional optimization that
+soil parameters, such as cohesion, internal friction angle,                      hinders convergence. Third (3), FEE-based models exhibit
+adhesion, and sinkage characteristics. These parameters are                      force discontinuities due to trigonometric singularities,
+typically obtained through parameter identification methods,                     while existing fixes, such as [29], have introduced added
+such as field probe tests (e.g., Cone Penetration Test (CPT),                    computational cost and terrain sensitivity.
+Pressuremeter Test (PMT), and Dilatometer Test (DMT)                                This work presents a data-efficient, cycle-based parameter
+[23]) or controlled laboratory experiments [24]. Since such                      optimization framework that is designed to run within
+procedures are impractical in construction environments, on-                     the short interval between consecutive digging cycles,
+machine estimation methods have emerged that allow for                           thereby enabling timely adaptation of operations to changing
+inferring parameters during operation using vehicle-mounted                      soil conditions. To address gap (1), a non-learning-based
+sensors.                                                                         approach is adopted, employing a modified version of the
+   Among the on-machine parameter identification methods,                        FEE model based on [30] that accounts for sloped terrain
+learning-based approaches use prior data to train models that                    and incorporates Bekker’s load-sinkage theory [31] for soil
+classify material types or regress soil properties. Examples                     compaction. To address gap (2), a multi-stage optimization
+include proprioceptive force signal classification [25] and                      strategy is proposed that decomposes the parameter fitting
+physics-informed neural networks that infer properties from                      task into sequential sub-problems, thereby reducing param-
+kinematic and control data [26]. While effective, these meth-                    eter coupling and improving convergence and computational
+ods typically require large, labeled datasets and substantial                    efficiency. Finally, to address gap (3), continuity constraints
+offline training.                                                                derived from trigonometric relationships in failure surface
+
+
+VOLUME 13, 2025                                                                                                                                    181847
+                                                                     A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+TABLE 1. List of symbols, parameters, and variables used in this study.
+
+
+
+
+                                                                               FIGURE 2. Free body diagram of the soil wedge acting on the blade
+                                                                               segment A′ B, representing a snapshot of the blade interacting with the
+                                                                               soil at a specific time instant. All parameters that vary with time and are
+                                                                               captured at t = ti are denoted with the subscript i .
+
+
+
+
+                                                                               describes the proposed multi-stage optimization of the soil
+                                                                               parameter. Section IV showcases the results obtained from
+                                                                               the implementation of the method. Section V presents key
+                                                                               takeaways and implications for future research.
+
+                                                                               II. METHODOLOGY
+                                                                               This section presents the framework for modeling soil-tool
+                                                                               interaction during excavation. The foundation of this frame-
+                                                                               work is the modified version of the FEE [15], which
+                                                                               was chosen for its balance between physical accuracy and
+                                                                               computational efficiency [32]. The section then details the
+                                                                               incorporation of Bekker’s load-sinkage formulation [31]
+                                                                               to account for soil compaction effects as well as the
+                                                                               trigonometric derivation used to enforce continuity in the soil
+                                                                               failure surface geometry.
+
+geometry are embedded directly into the minimization                           A. FUNDAMENTAL EARTHMOVING EQUATION (FEE)
+procedure used to identify the failure surface, thereby                        FEE provides a physics-based framework for estimating soil
+eliminating force discontinuities.                                             resistive forces during cutting and excavation. Originally
+   This framework is designed to be integrated into a                          introduced by Reece in 1964 [14], the model applies
+complete excavation planning and control system, allowing                      soil mechanic principles to describe forces acting on a
+a wheel loader to autonomously refine its perception of the                    cutting blade penetrating soil. McKyes later simplified this
+environment cycle-by-cycle. As illustrated in Fig. 1, the full                 framework using the trial wedges method, assuming a straight
+process begins by capturing the initial geometry of the soil                   failure surface and uniform surcharge pressure to estimate
+pile using the loader’s assumed onboard perception system.                     forces on tillage equipment [15]. The FEE has since been
+A preliminary digging cycle is then executed, during which                     extended to sloped terrain and applied to structural design and
+the bucket’s trajectory is tracked via a kinematic model and                   load analysis of excavators [33] and wheel loaders [30]. More
+excavation forces are measured using load cells embedded in                    recently, Yao used the modified FEE in a model predictive
+the loader’s hinge joints. The collected trajectory, force data,               framework to optimize bucket-loading trajectories [32]. This
+and soil pile geometry are used to optimize soil parameters in                 model captures the full set of resistive forces acting on a soil
+an analytical FEE model. These parameters are then used to                     wedge as the blade penetrates the terrain.
+predict resistive forces and inform the excavation strategy for                   Assuming the blade penetrates the soil, the excavation
+the next cycle. By repeating this process after each digging                   path is discretized into N points at times t = ti , where
+cycle, the system continuously refines its understanding of                    i ∈ {1, . . . , N }. The free body diagram of the soil wedge
+the soil. This paper focuses on excavation force estimation of                 at each point is shown in Fig. 2. The stockpile surface is
+this full cycle.                                                               represented by the line OC, inclined at angle α, and the
+   Section II of this paper presents the methodology used                      blade is modeled as segment AB, with length Lt,i and angle
+in this research, including the analytical soil model and                      ρi relative to the stockpile. The tip of the blade is point B,
+bucket-soil interaction and force formulation. Section III                     and the failure surface, represented by line BC, is assumed to
+
+181848                                                                                                                                     VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+be straight, consistent with McKyes’ wedge theory [15]. The                      during the minimization stage of Nγ to ensure a stable and
+forces acting on the soil wedge include the net frictional and                   physically valid solution for β.
+normal force Fi between the blade and the wedge, acting at                         To begin this process, the expression for Nγ is considered,
+the external friction angle δ, the force Ri from the undisturbed                 which can be written as:
+soil at the internal friction angle φ, the cohesion force CwLf ,i                                                     sin(α + βi + φ)
+along the failure surface, and the adhesion force Ca wLt,i                              cos α + sin α cot(βi + φ) =                   ,    (6)
+                                                                                                                         sin(βi + φ)
+along the blade. Both Lt,i and Lf ,i vary over time as the blade
+                                                                                        cos(ρi + δ) + sin(ρi + δ) cot(βi + φ)
+advances. All soil, environment, and loader parameters are
+                                                                                            sin(ρi + δ + βi + φ)
+listed in Table 1.                                                                       =                        .                        (7)
+   Ca wLt,i and CwLf ,i can be derived from the geometry of                                      sin(βi + φ)
+the blade and the soil. Wload,i is estimated during operation                    By crossing out sin(βi + ϕ) and recognizing that it must
+using the methods described in [3], and [5]. The forces Fi                       remain nonzero, Nγ can be rewritten as:
+and Ri are unknown. To compute Fi , equilibrium conditions
+                                                                                                         (cot βi − tan α) sin(α + βi + φ)
+are assumed, and Newton’s force-balance equations in the                                          Nγ =                                    .         (8)
+x and z directions are applied. Using these equations, Fi                                                     2 sin(ρi + δ + βi + φ)
+can be expressed in terms of Wload,i , Ca wLt,i , and CwLf ,i ,                  Additionally, using
+thereby eliminating the unknown force Ri . This results in the                                                           cos(α + βi )
+following expression for Fi :                                                                        cot βi − tan α =                 ,             (9)
+                                                                                                                         cos α cos βi
+                  Fi = di2 wγ gNγ ,i + Cwdi Nc,i                                 Nγ will become:
+                      + Ca wdi Na,i + Wload,i Nq,i ,                                                        cos(α + βi ) sin(α + βi + φ)
+                                                                                              Nγ ,i =                                        .    (10)
+                                                                       (1)                               2 cos α sin βi sin(ρi + δ + βi + φ)
+
+where di is the penetration depth and is found by the distance                   Similarly, Nc , Na , and Nq can be rewritten as:
+of point B from stockpile like OC. Nγ ,i , Nc,i , Na,i , and Nq,i ,                                         cos φ
+                                                                                         Nc,i =                             ,                     (11)
+are the four bearing capacity factors given as:                                                 sin βi sin(ρ + δ + βi + φ)
+                                                                                                        cos(ρ + βi + φ) sin(βi + φ)
+           (cot βi − tan α)(cos α + sin α cot(βi + φ))                                   Na,i = −                                         ,       (12)
+    Nγ ,i =                                            ,               (2)                        sin ρi sin(βi + φ) sin(ρi + δ + βi + φ)
+            2[cos(ρi + δ) + sin(ρi + δ) cot(βi + φ)]
+                                                                                                   sin(α + βi + φ)
+                   1 + cot βi cot(βi + φ)                                                Nq,i =                        .                          (13)
+    Nc,i =                                        ,                    (3)                      sin(ρi + δ + βi + φ)
+           cos(ρi + δ) + sin(ρi + δ) cot(βi + φ)
+                   1 − cot ρi cot(βi + φ)                                        To ensure continuous force outputs in the FEE-based
+    Na,i =                                        ,                    (4)       model, certain trigonometric terms in the denominators of
+           cos(ρi + δ) + sin(ρi + δ) cot(βi + φ)
+                 cos α + sin α cot(βi + φ)                                       equations (10)–(13) must remain nonzero. Therefore, the
+    Nq,i =                                        .                    (5)       following condition must hold: sin(βi ) ̸ = 0, sin(ρi ) ̸ = 0,
+           cos(ρi + δ) + sin(ρi + δ) cot(βi + φ)
+                                                                                 cos(α) ̸ = 0, sin(βi + φ) ̸ = 0, and sin(ρi + δ + βi + φ) ̸ = 0.
+These dimensionless coefficients account for the influence of                    However, these conditions alone are insufficient in practice.
+different soil properties on the cutting forces. Nγ ,i , known                   Due to temporal discretization, a zero-crossing may occur
+as the unit weight factor, represents the contribution of the                    between time steps without being explicitly captured, which
+soil’s weight to the total force. The cohesion factor, Nc,i ,                    can lead to discontinuities or numerical instabilities in the
+accounts for the influence of soil cohesion, and the adhesion                    computed forces. To mitigate this possibility, each of these
+factor, Na,i quantifies the contribution of the adhesive forces                  trigonometric terms is enforced to satisfy | · | > ε, where ε is
+between the soil and the bucket. Lastly, the surcharge factor,                   a positive threshold.
+Nq,i , represents the impact of overburden pressure or external                     Some of the above conditions are inherently satisfied by
+loads applied to the soil during excavation. The angle βi is                     environmental constraints. The stockpile angle α is limited by
+determined by minimizing Nγ ,i .                                                 the material’s angle of repose, typically below 45◦ , ensuring
+   The FEE in its current form suffers from discontinuities                      cos α > 0.7. The blade penetration angle ρ must also stay
+under certain geometric configurations. The denominators                         above a minimum threshold as near-zero values make the
+of the bearing capacity factors in equations (2)–(5) contain                     blade nearly parallel to the surface, invalidating the soil
+cotangent terms, which can become unbounded and introduce                        wedge assumption in the FEE model (see Fig. 2). In these
+numerical instabilities. To overcome this limitation, a set                      simulations, ρ is constrained to remain above 10◦ .
+of trigonometric manipulations is introduced to reformulate                         The remaining conditions involve the terms sin(βi ),
+the bearing capacity factors into a canonical sine-cosine                        sin(βi + φ), and sin(ρi + δ + βi + φ). As mentioned, bounded
+form. This reformulation enables explicit identification of the                  constraints are imposed on βi during the minimization of
+conditions under which discontinuities occur and provides                        Nγ . A valid soil wedge requires βi to be strictly positive.
+a means to avoid them. Bounded constraints are imposed                           Given typical internal friction angles φ between 22◦ and 40◦
+
+VOLUME 13, 2025                                                                                                                                  181849
+                                                                  A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+                                                                            on the bucket blade can be written in normal tangential
+                                                                            coordinates, FiT and FiN as follows:
+
+
+                                                                                             FiT = wbPi + Fi sin δ + Ca wLt,i ,                   (16)
+                                                                                             FiN = Fi cos δ.                                      (17)
+                                                                            These forces are related to the forces FH1 and FH2 measured
+                                                                            through the load cells on the hinges as shown in Fig. 3. The
+                                                                            weight of the bucket Wb is known since the weight of the soil
+                                                                            loaded into the bucket is estimated using its positioning and
+                                                                            the geometry of the stockpile.
+
+                                                                            III. PARAMETER OPTIMIZATION METHOD
+                                                                            Following the establishment of the FEE model for bucket-soil
+FIGURE 3. The bucket and all the forces acting on it during the             interaction in Section II, the optimization of soil parameter
+bucket-loading phase.                                                       values is performed. As listed in Table 1, there are eight soil
+                                                                            parameters, θ, that need to be optimized to model excavation
+                                                                            forces:
+(see Table A1), the term sin(βi + φ) remains well behaved.                                                             T
+However, sin(ρi + δ + βi + φ) can approach zero near π,                                     θ = γ C Ca φ δ kc kφ n .
+                                                                                                 
+                                                                                                                                      (18)
+leading to numerical instability. The set of constraints to
+implement in the minimization of Nγ will become:                               The overall parameter optimization framework operates
+                                                                            by fitting the analytical model described in Section II to
+            βi > ε1 ,     |ρi + δ + βi + φ − π| > ε2 ,            (14)      force data measured on the bucket. The first required input
+                                                                            is the bucket’s position and orientation obtained either from
+where ε1 and ε2 are small positive margins, both set as
+                                                                            onboard sensors (e.g., an inertial measurement unit (IMU)
+constant values of 5◦ . The choice of these ε values is based
+                                                                            mounted on the bucket) or inferred through cylinder strokes
+on the frequency of data collection and changes in the angles
+                                                                            using a kinematic model of the front-end mechanism [34].
+in (14).
+                                                                            This geometric information defines the soil wedge configu-
+   Note that there are additional assumptions associated with
+                                                                            ration at each time step. The second input consists of the hinge
+using the FEE model. As with most quasi-static soil models,
+                                                                            forces, FH1 and FH2 , shown in Fig. 3. These measurements are
+the FEE-based force resistance model assumes a slow and
+                                                                            resolved into the normal and tangential components denoted
+steady bucket motion. Although this assumption simplifies                         N and F T and serve as the observed forces. The
+                                                                            as Fobs          obs
+real-time implementation, it does not account for dynamic
+                                                                            framework then applies an optimization-based approach to
+soil displacement effects. Incorporating dynamic geometry
+                                                                            estimate the soil parameters θ by minimizing the discrepancy
+updates during excavation remains an important direction for
+                                                                            between observed and analytically predicted bucket forces.
+future enhancement of the model.
+                                                                            Unlike linear systems, where least squares methods are
+B. FORCES ON THE BUCKET DURING BUCKET LOADING
+                                                                            sufficient, the nonlinear soil-tool interaction model requires
+                                                                            nonlinear optimization. This optimization arises from nested
+The next step is to model the bucket blade as the cutting
+                                                                            trigonometric expressions, force-angle dependencies, and
+blade shown in Fig. 2 with a soil wedge forming along
+                                                                            geometry-driven terms as well as implicit and constrained
+and inside the bucket. The forces acting on the bucket are
+                                                                            relationships between soil parameters and output forces.
+analyzed, including the resultant force derived from the FEE
+                                                                               The parameter optimization problem is formulated by
+and the normal compaction force modeled using Bekker’s
+                                                                            treating the eight soil-related quantities as independent
+load–sinkage formulation [31].
+                                                                            variables. However, the high dimensionality and nonlinearity
+    Inspired by [29] and [30], all forces acting on the bucket
+                                                                            of the force model make simultaneous optimization prone
+blade during the bucket-loading process are illustrated in
+                                                                            to poor convergence and inefficiency. To overcome this
+Fig. 3. The total force includes the reaction force Fi , referred
+                                                                            limitation, a multi-stage optimization approach is introduced.
+to in this work as the FEE force, the adhesion force between
+                                                                            Mathematical analysis of the model equations reveals a
+the soil and the blade Ca wLt,i , and the penetration pressure
+                                                                            natural separation of terms, allowing the parameters to be
+Pi . The penetration pressure Pi is given by:
+                                                                            grouped into distinct subsets and optimized sequentially.
+                            kc                                                 To evaluate the effectiveness of the proposed method,
+                         Pi = (+ kφ )din ,               (15)
+                            b                                               and given the lack of comparable data-efficient approaches,
+where b is the thickness of the cutting edge, and kc , kφ are               a baseline strategy is introduced. This baseline consists of a
+the cohesive and frictional modulus of deformation and n is                 single-stage optimization in which all eight soil parameters
+the exponent of the soil deformation. The resulting forces                  are estimated simultaneously, serving as a reference for
+
+181850                                                                                                                                  VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+assessing the multi-stage formulation. The problem is posed                      the literature and summarized in Table A1 and Table A2. For
+as a constrained, nonlinear least squares optimization and                       density γ , the range was set to 1297–2345 kg/m3 . Cohesion
+solved using the gradient-based algorithm L-BFGS-B [35],                         C and adhesion Ca were both constrained to 0–50000 N/m2 ,
+which accommodates bounded constraints. Since the model is                       which encompasses soft to firm and non-cohesive to cohesive
+non-convex, the optimization is sensitive to initial parameter                   soil types. The internal and external friction angles were
+values and may converge to local minima. To mitigate this                        bounded between 0◦ and 45◦ , corresponding to 0.0 to
+issue, several strategies were tested, including warm-starting,                  0.785 rad. For Bekker’s pressure–sinkage parameters, the
+randomized initializations, and multiple starting points.                        allowed ranges were kc = 0.00 to 10.0 kN/mn+1 , kφ = 0 to
+Warm-starting was examined in two forms: initialization                          5000 kN/mn+2 , and exponent n = 0.11 to 1.53. These limits
+from values within the soil parameter ranges and reuse                           are consistent among all the parameter estimation approaches
+of estimated parameters from the previous cycle. These                           done in this paper.
+approaches improved convergence. Future work will focus
+on a systematic sensitivity analysis of soil parameters and                       B. MULTI-STAGE OPTIMIZATION
+initialization choices.                                                          When optimizing a large number of parameters in a complex
+                                                                                 non-linear model, solving for all parameters simultaneously
+A. SINGLE-STAGE FULL MODEL OPTIMIZATION                                          can result in poor convergence and high computational
+For the baseline single-stage optimization, the optimization                     cost. To overcome this possibility, a sequential optimization
+problem is formulated as follows:                                                approach is adopted that decomposes the parameter esti-
+                                                                                 mation problem into multiple stages. This decomposition is
+                 N
+                 X                                                               enabled by analyzing the form of the force balance equations
+      min Jθ = λ     T
+                   (Fobs,i − FiT )2
+        θ                                                                        in (15), (16), and (17), which reveal separable dependencies
+                        i=1
+                                                                                 among parameter groups. The process begins with the normal
+                              N                                                                                     N , obtained directly from
+                              X                                                  component of the bucket force, Fobs
+                  + (1 − λ)       N
+                                (Fobs,i − FiN )2                    (19a)
+                                                                                 measurements, and uses it to reconstruct the FEE force F
+                              i=1
+                                                                                 using equation (17):
+       s.t. FiT = wbPi + Fi sin δ + Ca wLt,i ,                      (19b)
+                                                                                                                                     N
+            FiN = Fi cos δ,                                         (19c)                                                          Fobs
+                                                                                            N
+                                                                                           Fobs = F cos δ,                Fobs =         .     (20)
+                                                                                                                                   cos δ
+                                
+                       kc
+              Pi =        + kφ din ,                                (19d)
+                       b                                                         Here, Fobs represents the FEE-equivalent total force recon-
+              Fi = di2 wγ gNγ ,i + Cwdi Nc,i                                     structed from the observed normal force. Substituting equa-
+                    + Ca wdi Na,i + Wload Nq,i ,                    (19e)        tions (20) and (15) into the tangential force expression (16)
+                                                                                 yields:
+            Nγ ,i = fγ (α, βi , φ, ρi , δ),                          (19f)
+                                                                                                         
+            Nc,i = fc (βi , φ, ρi , δ),                             (19g)               T
+                                                                                      F = wb
+                                                                                                  kc
+                                                                                                     + kφ d n + Fobs
+                                                                                                                   N
+                                                                                                                      tan δ + Ca wLt .    (21)
+            Na,i = fa (βi , φ, ρi , δ),                             (19h)                         b
+            Nq,i = fq (α, βi , φ, ρi , δ), i = 1, . . . , N          (19i)         From this formulation, a subset of parameters θ1 is
+            θmin ≤ θ ≤ θmax .                                        (19j)       identified:
+                                                                                                                   T
+                                                                                                 θ1 = Ca δ kc kφ n .
+                                                                                                      
+   Here, FiT and FiN represent the predicted tangential and                                                                       (22)
+normal forces from the model, while Fobs,iT         N
+                                              and Fobs,i denote
+the corresponding observed (measured) values obtained from                         The force F T in equation (21), constructed from the
+                                                                                 observed normal force Fobs  N , forms the basis of Stage 1
+sensor data. The objective function Jθ is defined as a weighted
+sum of two mean squared error terms, corresponding to                            optimization. This stage aims to minimize the difference
+the discrepancies in these horizontal and normal force                           between the predicted tangential force from (21) and the
+predictions. The weighting parameter λ is introduced to                          observed value. The cost function Jθ11 and its associated
+control the relative contribution of each term. A λ = 0.5 is                     constraints are defined as:
+assumed to keep the contribution of terms balanced.
+   The constraint (19b) defines the horizontal force based on                                      N
+                                                                                                   X
+equation (16), while constraint (19c) specifies the normal                               min Jθ1 =     T
+                                                                                                     (Fobs,i − FiT )2                         (23a)
+                                                                                          θ1
+force following equation (17). The total resistive force from                                            i=1
+FEE is incorporated through constraint (19e) as defined
+                                                                                                                     
+                                                                                                             kc
+in equation (1). The bearing capacity factors, derived in                                 s.t. FiT = wb         + kφ din + Fobs,i
+                                                                                                                                N
+                                                                                                                                      tan δ
+                                                                                                             b
+equations (2)–(5), appear explicitly in (19f)–(19i). To ensure
+                                                                                                        + Ca wLt,i , i = 1, . . . , N ,       (23b)
+physically meaningful results, the soil parameters are
+bounded using hard constraints based on ranges reported in                                     θ1,min ≤ θ1 ≤ θ1,max .                         (23c)
+
+VOLUME 13, 2025                                                                                                                               181851
+                                                                         A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+         FIGURE 4. Overview of the proposed multi-stage parameter estimation framework. Force data (Fobs       T , F N ) from a real bucket-loading cycle
+                                                                                                                    obs
+                                                                                     N
+         is used to estimate parameters in three sequential stages. In Stage 1, Fobs is used to reconstruct the FEE force F , which is then used to
+         model F T and identify first subset of parameters θ1 . In Stage 2, θ1∗ is used to model the full FEE force F , enabling estimation of material
+         parameters θ2 . In Stage 3, a refinement step is introduced to re-optimize the subset θ3 that influences F T , improving tangential force
+         accuracy while keeping other parameters fixed.
+
+
+
+
+  By solving this optimization, the first set of optimized
+parameters θ1∗ is obtained:
+                                          T
+                  θ1∗ = Ca∗ δ ∗ kc∗ kφ∗ n∗ .
+                        
+                                                      (24)
+   Stage 2 builds on the previously obtained solution θ1∗ by
+fixing its values and incorporating them into a second stage
+formulation. Using the optimal parameter δ ∗ and (20), the
+reconstructed FEE force Fobs can be computed based on the
+                N :
+normal force Fobs
+                                 N
+                               Fobs                                                 FIGURE 5. Digital twin model of the EVERUN ER12 wheel loader’s
+                              Fobs =  .                   (25)                      front-end assembly developed in Algoryx Dynamics [36].
+                              cos δ ∗
+  Eq. (25) and (1) form the foundation for the second stage
+of parameter optimization. This stage involves optimizing
+the difference between the FEE force estimated through the                             In this optimization formulation, the cost function min-
+empirical approach in (1) and the observed data, using the                          imizes the difference between observed force (25) and Fi ,
+subset of parameters determined in the first stage as in (25).                      which is defined in (27b). Unlike the baseline optimization,
+The cost function is formulated as a non-linear least squares                       (27b) is defined with the fixed parameter Ca∗ . The four
+objective minimizing the difference between observed and                            bearing capacity factors, given in (27c)–(27f), are computed
+predicted FEE forces. The second subset of parameters is:                           following the same methodology as in (2)–(5). Similarly,
+                                   T                                               the external friction angle δ ∗ is treated as a fixed parameter
+                      θ2 = γ C φ .
+                           
+                                                          (26)
+                                                                                    derived from the optimization results in the preceding stage.
+  The full set of cost function and constraints is given below:                        The multi-stage optimization results revealed that the root
+                                                                                    mean square error (RMSE) for the normal force F N was
+                     N
+                     X                                                              consistently lower than that for the tangential force F T . This
+    min Jθ2 =          (Fobs,i − Fi )2                                 (27a)        discrepancy aligns with the initial assumption whereby the
+     θ2
+                    i=1                                                             total force F was reconstructed from the observed normal
+                                                                                             N , inherently biasing the estimation process toward
+         s.t. Fi = di2 wγ gNγ ,i + Cwdi Nc,i                                        force Fobs
+                                                                                    improved accuracy in the normal direction. To address this
+                    + Ca∗ wdi Na,i + Wload Nq,i ,                      (27b)
+                                                                                    imbalance and further reduce error in the tangential force,
+            Nγ ,i = fγ (α, βi , φ, ρi , δ ∗ ),                         (27c)        a third refinement step is introduced. In this stage, a reduced-
+             Nc,i = fc (βi , φ, ρi , δ ∗ ),                            (27d)        order modeling approach is used to re-optimize the subset
+            Na,i = fa (βi , φ, ρi , δ ∗ ),                             (27e)        of parameters that predominantly influence the tangential
+                                                                                    component, while the remaining parameters are fixed at the
+            Nq,i = fq (α, βi , φ, ρi , δ ∗ ), i = 1, . . . , N ,        (27f)
+                                                                                    values obtained in the earlier stages. The subset of parameters
+          θ2,min ≤ θ2 ≤ θ2,max .                                       (27g)        was identified by analyzing the governing equations and
+
+181852                                                                                                                                           VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+TABLE 2. Bulk and particle properties for gravel, sand, dirt extracted from Algoryx Terrain and modified sand. The modified sand is manually changed to
+magnify the change in density and friction angle to test the proposed methods sensitivity to different values.
+
+
+
+
+FIGURE 6. Comparison of force prediction accuracy between the single-stage and multi-stage parameter optimization methods.(Left) The bucket path in
+the x–z plane during a fixed excavation cycle, with the stockpile line shown for reference.(Right) The resultant force FR over time is compared against the
+ground truth from Algoryx Dynamics.
+
+
+
+
+isolating those that influence the tangential force F T but                      environment in Algoryx Dynamics is shown in Fig. 5, illus-
+not the normal force F N . From equations (16) and (17), the                     trating the wheel loader interacting with the soil pile. Algoryx
+compaction pressure term P, modeled using Bekker’s load-                         is tailored to multibody systems with contact and friction
+sinkage formulation, is shown to exclusively affect F T . The                    dynamics and is suited for simulating articulated machinery
+relevant parameters are kc , kφ , and n. Optimization in this                    in deformable environments. It incorporates non-smooth,
+stage follows the baseline formulation with λ = 1, while all                     multibody dynamics [38], DEM [39], and Hertz-Mindlin
+remaining parameters are held constant at their values from                      contact theory [40] to capture soil–tool interactions.
+earlier stages. The final subset of parameters re-optimized in                      Soil is simulated using the Algoryx terrain module, which
+this refinement step is:                                                         represents soil as collections of spherical particles with six
+                                      T                                         degrees of freedom. These particles interact via Hertzian
+                       θ3 = kc kφ n .
+                             
+                                                          (28)
+                                                                                 elasticity, Coulomb friction, and rolling resistance. Material
+This refinement rebalances the force predictions and                             properties are assigned by category, grouped according
+improves consistency between the estimated and observed                          to their influence on bulk behavior, compaction, particle
+tangential and normal forces.                                                    interactions, and terrain contact. The material properties
+                                                                                 in the Algoryx terrain are grouped into four categories:
+C. SIMULATION FRAMEWORK                                                          bulk properties, which govern general behavior such as
+This study models excavation scenarios using high-fidelity                       soil density, failure zone shape, and excavation forces;
+simulations in Algoryx Dynamics, a physics engine devel-                         compaction properties, which define the soil’s response
+oped by Algoryx [37]. A snapshot of the simulation                               to compression; particle properties, which regulate contact
+
+VOLUME 13, 2025                                                                                                                                    181853
+                                                                    A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+TABLE 3. Comparison of parameter optimization methods: single-stage and multi-stage L-BFGS-B. Grouped soil parameters and RMSE values are shown
+across different optimization stages.
+
+
+
+
+                                                                                 It is important to note that the Algoryx Dynamics
+                                                                              terrain model is fundamentally different from this analytical
+                                                                              framework. While Algoryx employs a numerical, particle-
+                                                                              based approach to simulate soil behavior, this model is
+                                                                              analytical and equation-based. As a result, the parameter
+                                                                              sets used in each approach differ in both form and purpose.
+                                                                              However, a few physical parameters are shared across both
+                                                                              models, specifically soil density γ , cohesion C, adhesion Ca ,
+                                                                              and internal friction angle φ.
+
+                                                                              IV. RESULTS AND DISCUSSION
+                                                                              The results of this study are structured to evaluate the
+                                                                              performance and generalizability of the proposed force
+                                                                              estimation framework. The analysis begins with a fixed
+                                                                              bucket loading cycle, defined by a consistent excavation
+                                                                              trajectory in the x − z plane, with a given bucket path,
+                                                                              orientation, and speed profile.
+                                                                                 The multi-stage optimization approach is first compared
+                                                                              with the baseline method introduced in Section III-A, with
+                                                                              both solved using the L-BFGS-B algorithm [35]. For consis-
+                                                                              tency, all optimization runs used the same hyper-parameters:
+                                                                              1000 maximum iterations, a gradient norm tolerance of 10−5 ,
+FIGURE 7. Optimization results of the multi-stage parameter estimation        bounded parameter ranges, and gradient approximations via
+method. (a) Stage 1: Comparison of observed and computed horizontal
+force F T . (b) Stage 2: Comparison of observed, filtered, and computed
+                                                                              finite differences. All methods were initialized from the
+FEE force F . Gaussian filter was applied to the observed force Fobs to       same guess and executed on the same machine (14th-gen
+reduce the effect of noise and vibration for improved convergence.            Intel Core i9). To assess generalizability, a train–test strategy
+                                                                              is employed. Parameters were optimized in one excavation
+                                                                              cycle (‘‘train’’ phase) and then used to predict forces on
+dynamics between soil particles and with the terrain; and
+                                                                              separate, unseen paths (‘‘test’’ phase). In addition, a dual-
+excavation contact properties, which manage interactions
+                                                                              cycle scenario is evaluated whereby parameters estimated
+between the shovel, terrain, and soil aggregates. Algoryx
+                                                                              from an initial excavation are applied to a subsequent
+Terrain also provides a built-in material library with preset
+                                                                              cycle. To examine sensitivity to terrain, the parameter
+parameters for three common soil types: gravel, sand, and
+                                                                              optimization process is repeated under different soil types
+dirt. The bulk and particle properties associated with these
+                                                                              while keeping the trajectory fixed. Model performance is
+presets have been extracted and are detailed in Table 2.
+                                                                              evaluated using   the RMSE of the resultant force, defined
+   Algoryx Dynamics was validated using a calibrated                                      p
+                                                                              as FR = (F T )2 + (F N )2 , compared to the ground-truth
+digital twin of an EVERUN ER12 wheel loader developed
+                                                                              resultant force FR,obs obtained from Algoryx simulation.
+at the Advanced Highway Maintenance and Construction
+Technology (AHMCT) Research Center, UC Davis. The
+physical machine was instrumented with hydraulic pressure                     A. SINGLE PATH MODEL COMPARISON
+sensors, inclinometers, and custom dual-axis load pins at the                 To evaluate the multi-stage parameter optimization method
+bucket hinge. Data from real-world operation were used to                     against the baseline approach, a single bucket loading
+calibrate and validate the simulation parameters in a prior                   scenario is simulated. This scenario captures a full excavation
+work [36].                                                                    cycle from soil entry to bucket exit and records bucket force
+
+181854                                                                                                                                    VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+FIGURE 8. Comparison of bucket tip trajectories (left) and resultant forces FR (right) for four excavation paths. The dashed black line in the left plot
+represents the stockpile slope, while each colored path shows a different digging trajectory. On the right, solid lines represent filtered (observed) forces,
+and dashed lines show the model’s predicted forces, with the corresponding RMSE values listed in the legend.
+
+
+
+
+TABLE 4. Soil parameters from Algoryx (AGX) and parameter estimation              of 18.92% using a pure FEE model and 10.54% using
+(PE) for different soil types using the Multi-stage optimization approach.
+                                                                                  a hybrid FEE–RNN model trained on 10 real excavation
+                                                                                  cycles. While their hybrid method improves accuracy, it relies
+                                                                                  on large datasets and offline training. This framework
+                                                                                  achieves similar performance using only a single excava-
+                                                                                  tion cycle and requires no learning infrastructure, making
+                                                                                  it more practical for online implementation. Similarly,
+                                                                                  Luengo et al. [17] reformulated the classical FEE model to
+                                                                                  account for slope effects and soil remolding forces, reducing
+                                                                                  force prediction error from approximately 30,000 N to
+                                                                                  13,000 N across eight excavation cycles. However, their
+                                                                                  parameter estimation relied on computationally intensive
+                                                                                  methods with exhaustive searches requiring up to 20 hours
+                                                                                  and hybrid simulated annealing–Powell optimization still
+                                                                                  taking several minutes. In contrast, the proposed framework
+                                                                                  achieves accurate force prediction from a single cycle
+data at a frequency of 60 Hz over 4.67 seconds, resulting in                      gradient-based optimization. Tan et al. [18] also explored
+281 data points. The soil is modeled as a trapezoidal stockpile                   online soil parameter estimation using a Newton–Raphson
+composed of gravel, with material properties listed in Table 2.                   algorithm applied to Mohr–Coulomb and Chen–Liu Upper
+The trajectory of the bucket tip during this cycle is shown in                    Bound (CLUB) models, achieving up to 3500 times faster
+the left panel of Fig. 6. This ‘‘single path’’ represents a typical               computation compared to the Parameter Space Intersection
+smooth bucket-loading motion.                                                     Method (PSIM). While their approach demonstrated robust
+   The results of parameter optimization using single-stage                       convergence, it required repeated excavation trials for stable
+and multi-stage optimization are summarized in Table 3. For                       estimation and relied on models with fewer parameters due
+the single-stage method, the RMSE for tangential and normal                       to simplified geometric assumptions, limiting their ability
+forces F T and F N were 9.0% and 11.4%, respectively, with                        to capture complex soil–tool interactions. By comparison,
+a resultant force FR RMSE of 8.6%. The total convergence                          the proposed multi-stage framework maintains analytical
+time was 87.21 seconds. The multi-stage method produced                           tractability, avoids repeated trials or tables lookups, and
+a slightly higher RMSE of 9.1% for F T , 11.6% for F N ,                          delivers efficient force prediction from a single excavation
+and 8.9% for FR but reduced the total optimization time                           cycle.
+by 46%, converging in 47.0 seconds across three stages.                              Scenario characteristics influence model performance.
+This trade-off favors multi-stage optimization in scenarios                       In this case, the smooth trajectory contributes to better
+requiring rapid, cycle-to-cycle adaptation, such as real-time                     accuracy of FEE model predictions. While this may account
+autonomous excavation where computation resources and                             for the lower RMSE values compared to other studies,
+response times are constrained.                                                   it aligns with the objective: favoring energy-optimal, impact-
+   Compared to existing methods, the multi-stage approach                         free bucket motions. Since sudden force transitions are
+offers competitive accuracy with greater data efficiency.                         undesirable in autonomous excavation, smoother soil pickups
+For example, Yu et al. [19] reported a vertical force RMSE                        are both a modeling preference and an operational goal.
+
+VOLUME 13, 2025                                                                                                                                       181855
+                                                                      A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+FIGURE 9. (Left) Bucket tip trajectory during a dual-cycle excavation in a trapezoidal soil pile. The blue line shows the full motion path of the bucket,
+while red and green segments indicate Cycle 1 and Cycle 2 respectively. (Right) Comparison between filtered resultant force FR from simulation and the
+model prediction. Parameters were estimated using data from Cycle 1 and reused for Cycle 2 to evaluate generalization performance.
+
+
+
+
+   The results of each stage of the multi-stage optimization                    the general force trend; although, the single-stage method
+are illustrated in Fig. 7. In Stage 1, a subset of parameters                   slightly outperforms the multi-stage method in peak force
+θ1 is optimized without utilizing the full FEE model; instead,                  alignment and overall RMSE.
+the FEE force Fi is reconstructed directly from the observed
+normal force Fobs N . As a result, the optimization is less                     B. MULTIPLE PATHS
+sensitive to measurement noise, and no filtering is required                    As the aim of this study was to enable reliable force
+since both the input and output forces are derived from                         estimation for an upcoming excavation cycle, the analysis
+simulation data. This robustness is evident in Fig. 7a where                    focuses on a single soil profile and applies the multi-stage
+close agreement is observed between predicted and reference                     optimization approach. As shown in Fig. 8, each trajectory
+forces even in the absence of pre-processing. This stage is also                represents a unique digging motion over the same stock-
+the most computationally intensive as it involves estimating                    pile, varying in bucket orientation and depth. Trajectories
+five parameters, which is more than any subsequent stage.                       were generated using a quadratic Bézier formulation, with
+   In Stage 2, the optimized parameters θ1∗ from Stage 1 are                    curvature control parameters adjusted to create (1) varying
+held fixed while the remaining parameters are identified by                     curvatures, (2) different start/end points, and (3) segmented
+fitting the full FEE model onto simulation data. To enhance                     linear paths. The left panel shows one example of each
+convergence and mitigate the effects of noise and vibrations,                   trajectory in the x–z plane, and the right compares predicted
+Gaussian filtering is applied (see Fig. 7b). The RMSE for                       and observed resultant forces FR .
+FT remains elevated in this scenario, primarily due to the                         In this evaluation, Path 1 is used for parameter estimation,
+behavior of the compaction term P, which strongly influences                    while Paths 2–4 serve as test cases using the identified param-
+tangential forces. This continued elevation reflects a known                    eters. The model achieves RMSE values between 11.2% and
+challenge when modeling force components governed by                            15.5% across all paths. Notably, Path 3, despite differing
+nonlinear sinkage mechanics and is within the limits of                         in start and end points, shares the same motion profile as
+the FEE’s quasi-static formulation. A refinement stage is,                      Path 1 and yields the best accuracy. This result suggests that
+therefore, introduced to improve this fit while keeping the                     the similarity in motion dynamics influences generalization
+model’s structure analytically tractable.                                       more than spatial position. As trajectories deviate further
+   Stage 3 re-optimizes only the compaction-related param-                      from the original, prediction error increases but remains
+eters, while keeping all other parameters fixed at their                        below 15.5%, indicating that trajectory-dependent variation
+previously identified values. This targeted refinement is                       is a key challenge. While the model captures overall force
+performed using the same optimization framework described                       trends, timing mismatches in peak forces reveal limitations
+for the baseline single-stage method, but with a weighting                      in modeling transient dynamics, such as abrupt changes
+factor of λ = 1, as the focus is solely on improving                            in penetration rate or tool–soil contact. These issues likely
+the tangential force prediction. Since only a subset of                         arise from the quasi-static FEE formulation, which lacks
+the full parameter set is optimized, this step constitutes a                    velocity or acceleration dependence. Incorporating dynamic
+reduced-order modeling approach. The refinement leads to                        terms—such as rate-sensitive contact mechanics or inertial
+a substantial improvement in accuracy, reducing the RMSE                        effects—could improve the model’s responsiveness to rapid
+to 7.6% for F T , 7.0% for F N , and 6.8% for FR , with only an                 transitions and enhance its predictive accuracy during
+additional 10.14 seconds of computation time.                                   transient excavation phases.
+   To qualitatively compare the performance of the proposed                        One aspect not captured in the current results is the effect of
+parameter optimization methods, the resulting force is shown                    changes in stockpile geometry caused by previous excavation
+in the right panel of Fig. 6. Both approaches closely follow                    passes, which may impact the predictive accuracy of the
+
+181856                                                                                                                                      VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+FIGURE 10. Comparison of resultant forces FR for a given excavation path for 3 different soil types. The different soils and parameters alongside found
+parameters are listed in Table 4.
+
+
+
+
+model for subsequent trajectories. To evaluate this effect,                      than assuming a fixed triangular wedge, the model better
+a dual-cycle excavation scenario is considered. In the first                     captures the true interaction geometry and improves force
+cycle, the bucket enters and exits the stockpile, and the                        prediction accuracy. A more robust solution would involve
+corresponding force data are used for parameter estimation.                      an adaptive soil modeling framework in which the wedge
+This scenario is visualized in Fig. 9 where the soil pile                        geometry is no longer constrained to a constant stockpile
+is shown in brown, and the trajectory of the bucket tip                          angle or a fixed triangular form. Instead, it would dynamically
+is shown in red in the first cycle and green in the                              conform to the actual shape of the evolving soil surface
+second cycle. The results of this run demonstrate that the                       throughout excavation. Designing such a geometry-aware
+parameter optimization method achieves an RMSE of 7.5%                           and adaptive soil–tool interaction model remains a promising
+for Cycle 1 using the identified parameters: soil density                        direction for future work.
+γ = 1855 kg/m3 , cohesion C = 194.25 N/m2 , adhesion
+Ca = 0 N/m2 , internal friction angle φ = 45◦ , external                          C. SINGLE PATH DIFFERENT SOIL COMPARISON
+friction angle δ = 35.37◦ , and compaction parameters kc =                       To evaluate the adaptability of the proposed force estimation
+1298 N/mn+1 , kφ = 250 N/mn+2 , and n = 1.50.                                    method across different soil types, several soil configurations
+    The identified parameters are then used to predict forces                    in Algoryx [37] are tested, including gravel, sand, and dirt
+for the second cycle as shown in the right panel of Fig. 9.                      as summarized in Table 2. Due to the similarity between
+However, after the first excavation cycle, the soil surface                      gravel and sand—both having identical density (1474 kg/m3 )
+is reshaped due to material displacement and gravitational                       and zero cohesion—a modified sand profile is introduced
+settling. In most cases, the resulting surface approximates a                    to represent clayey sand. This new profile uses an average
+linear slope defined by the material’s angle of repose. Thus,                    density of 1874.5 kg/m3 and a reduced internal friction angle
+it is common to model the stockpile surface as a sloped line in                  of 0.59 rad, which is consistent with values reported for
+subsequent excavation cycles. However, in certain cases, such                    clayey sand in Table A1.
+as in this simulation, the soil retains the shape carved during                     The resulting force trends obtained from parameter opti-
+the initial excavation rather than collapsing into a uniform                     mization for gravel, modified sand, and dirt are compared
+slope. This deviation from the linear-surface assumption can                     in Fig. 10. Table 4 compares estimated soil parameters
+introduce errors in downstream computations, particularly                        with Algoryx reference values. For density, all estimated
+when estimating the depth of penetration.                                        values (1513.4 for gravel, 1802.3 for modified sand, and
+    To address this concern, we modify the approach for com-                     1833.2 kg/m3 for dirt) fall within the range of 1297–
+puting penetration depth. Instead of assuming a triangular                       2345 kg/m3 as reported in the literature with deviations from
+stockpile and measuring the depth as the distance BD from the                    Algoryx of 3.7%, 6.9%, and 34.3%, respectively.
+bucket tip to the idealized sloped surface (as shown in Fig. 2),                    For cohesion and adhesion, although the literature permits
+we measure the distance directly to the actual excavated                         values up to 50000 N/m2 for soft to firm cohesive soils,
+surface from Cycle 1. In the dual-cycle scenario illustrated                     the Algoryx library uses a range of 0–2500 N/m2 for the
+in Fig. 9 this corresponds to measuring the depth relative to                    range of parameters presented. To maintain consistency with
+the red trajectory of the first cycle. This adjustment allows the                Algoryx, we adopt the 0–2500 N/m2 bound when evaluating
+model to better reflect the true geometry of the soil pile and                   estimated results. The estimated cohesion values for gravel
+improves force prediction accuracy in subsequent cycles.                         (143.8 N/m2 ) and modified sand (216 N/m2 ) are within this
+    In Cycle 2, the model achieves an RMSE of 17.3% by                           Algoryx-consistent range, while dirt returns C = 0 compared
+incorporating adaptive excavation depth estimation. By esti-                     to the Algoryx value of 2100 N/m2 . This difference is
+mating depth relative to the actual excavated surface rather                     compensated by higher adhesion (3039.5 N/m2 ), which
+
+VOLUME 13, 2025                                                                                                                                  181857
+                                                            A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+exceeds the 2500 N/m2 Algoryx limit by 21.6% but remains              simulation. These efforts aim to address the current limi-
+in the range reported in the literature. Adhesion values for          tations of the quasi-static formulation, simplified stockpile
+gravel (184 N/m2 ) and modified sand (72.4 N/m2 ) are well            assumptions, dependence on initialization, and reliance on
+within range with a 7.36% and 2.9% error, respectively.               simulation-based validation. In addition, future research will
+   Internal friction angle estimates (0.78 rad for gravel and         explore perception-based techniques, such as vision and
+modified sand, 0.37 rad for dirt) fall within the literature          depth sensing, to infer soil type and surface characteristics,
+range of 0.37–0.69 rad. The gravel and modified sand values           thereby providing complementary information that can
+slightly exceed Algoryx references (0.76 rad and 0.59 rad),           improve soil parameter accuracy.
+while the dirt value matches the lower bound and remains
+physically consistent. Since ground truth values for the              ACKNOWLEDGMENT
+remaining parameters are not available from Algoryx, direct           The authors acknowledge Algoryx Simulation, Sweden, for
+comparison is not possible.                                           providing access to their simulation software. Additionally,
+   It is important to note that the current optimization              they acknowledge the use of AI-based tools to help refine the
+framework is designed to prioritize accurate force prediction         clarity of the manuscript text. This work was funded in part
+by minimizing the discrepancy between observed and                    by Komatsu Ltd. The authors gratefully acknowledge their
+modeled forces using a streamlined cost function. This                financial support.
+approach enables robust and data-efficient parameter fitting
+tailored for excavation force estimation. While the identified        APPENDIX A
+parameters are not constrained to match the physically                SOIL PARAMETER VALUES AND RANGES REPORTED IN
+measured soil values perfectly, they remain within realistic          LITERATURE
+bounds and are effective for predictive modeling. Future              To establish realistic parameter bounds, values were compiled
+extensions of this work may incorporate additional physical           from multiple literature sources and engineering databases.
+constraints or regularization techniques into the model to            StructX [41], an online platform for engineering data,
+enhance parameter interpretability and further strengthen the         provided soil phase relationships, densities, elastic modulus,
+connection between force modeling and soil characterization.          Poisson’s ratio, angles of repose, and properties of cohesive
+                                                                      and non-cohesive soils. Soil density ranges were drawn
+V. CONCLUSION                                                         from historical and contemporary references, including [42],
+This study presented a data-efficient framework for exca-             while cohesive and frictional properties were compiled from
+vation force estimation in wheel loaders using hlreal-time            handbooks such as [43]. Additional cohesion and internal
+soil parameter optimization and a modified analytical force           friction angle values were obtained from EcorisQ [44], which
+model. The proposed method achieved an RMSE as low                    reports soil parameters following the Unified Soil Classi-
+as 8.6% in force prediction and reduced computation time              fication System (USCS) [45]. Adhesion coefficient ranges
+by over 45% through a multi-stage constrained optimization            were cross-referenced against GEO5 geotechnical software
+strategy.                                                             resources [46], a widely applied toolset in geotechnical
+   By leveraging force data from a prior bucket loading cycle,        practice.
+the framework calibrated soil parameters, such as density,                The sources described above provide parameters such as
+cohesion, adhesion, internal and external friction angles, and        soil density γ , cohesion C, adhesion Ca , and internal friction
+compaction, which were then used to predict resistive forces          angle φ as functions of soil type or soil state, summarized
+for the next cycle. This process enables adaptive, cycle-to-          in Table A1. The external friction angle δ, which governs
+cycle excavation planning without requiring large datasets            soil–structure interaction, depends on both the internal
+or offline training. The methodology integrates a modified            friction angle φ and the material properties of the contacting
+Fundamental Earthmoving Equation with continuity con-                 surface (e.g., steel, concrete, or timber). The Delft Sand, Clay,
+straints and Bekker’s load–sinkage formulation, improving             and Rock Cutting Model [47] reports typical relationships
+both numerical stability and physical relevance.                      between δ and φ, often expressing δ as a fraction of φ. Rep-
+   Validated through high-fidelity Algoryx Dynamics simu-             resentative values of external friction are included at the end
+lations, the approach can be effectively generalized across           of Table A1. For consistency with typical construction equip-
+different trajectories and soil types. Its low data requirements      ment, the wheel loader bucket is assumed to be made of steel.
+and computational efficiency make it suitable for execution               In addition to the parameters summarized above, Bekker’s
+within the interval between digging cycles, supporting timely         load–sinkage formulation introduces three additional quan-
+adaptation in autonomous excavation systems.                          tities: kc (cohesive modulus of deformation), kφ (fric-
+   Future work will focus on extending the framework with             tional modulus of deformation), and n (exponent of
+dynamic force modeling to capture velocity, acceleration, and         deformation). These parameters characterize the non-linear
+inertial effects as well as enhancing soil displacement and           pressure–sinkage relationship of soil under loading and are
+geometry representation during excavation, incorporating              particularly relevant for modeling cutting and penetration
+more systematic strategies for initialization sensitivity, and        resistance in excavation processes. Widely applied in ter-
+validating performance on experimental platforms beyond               ramechanics, Bekker’s formulation enables the prediction
+
+181858                                                                                                                            VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+TABLE A1. Summary of soil parameters collected from multiple sources. Parameters are categorized based on either soil type (using the USCS
+classification), soil state or the material in contact with. Density γ , cohesion C , adhesion Ca , and internal friction angle φ are reported where available.
+External friction angle δ values are based on the material in contact with the soil, following relationships compiled from [47]. A dash (–) indicates that the
+value is not reported or not applicable for the given soil classification.
+
+
+
+
+VOLUME 13, 2025                                                                                                                                        181859
+                                                                            A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+TABLE A2. Pressure-Sinkage Parameters for Different Soil Types. Values have been gathered as reported in different literature. Table has been sectioned
+into values taken from different literature that has been cited.
+
+
+
+
+of soil sinkage for wheels and tracks operating on soft,                               [9] S. Blouin, A. Hemami, and M. Lipsett, ‘‘Review of resistive force models
+deformable terrains such as planetary surfaces, agricultural                               for earthmoving processes,’’ J. Aerosp. Eng., vol. 14, no. 3, pp. 102–111,
+                                                                                           Jul. 2001.
+fields, and unpaved construction sites. Reported values for                           [10] W. C. Swick and J. V. Perumpral, ‘‘A model for predicting soil-tool
+these parameters from multiple sources are compiled in                                     interaction,’’ J. Terramechanics, vol. 25, no. 1, pp. 43–56, Jan. 1988.
+Table A2.                                                                             [11] W. R. Gill and G. E. Vanden Berg, Soil Dynamics in Tillage and Traction,
+                                                                                           no. 316. Washington, DC, USA: Agricultural Research Service, U.S.
+                                                                                           Department of Agriculture, 1967.
+REFERENCES                                                                            [12] A. Hemami, ‘‘Motion trajectory study in the scooping operation
+                                                                                           of an LHD-loader,’’ IEEE Trans. Ind. Appl., vol. 30, no. 5,
+ [1] Associated General Contractors of America and Arcoro. (2024). 2024
+                                                                                           pp. 1333–1338, Jun. 1994.
+     Workforce Survey Analysis. [Online]. Available: https: www.agc.org
+                                                                                      [13] D. R. P. Hettiaratchi, B. D. Witney, and A. R. Reece, ‘‘The calculation of
+     sitesdefaultfiles/FilesCommunications2024WorkforceSurveyAnalysis.pdf
+                                                                                           passive pressure in two-dimensional soil failure,’’ J. Agricult. Eng. Res.,
+ [2] M. Gottschalk, G. Jacobs, and A. Kramer, ‘‘Test method for evaluating the             vol. 11, no. 2, pp. 89–107, Jun. 1966.
+     energy efficiency of wheel loaders,’’ ATZoffhighway Worldwide, vol. 11,          [14] A. R. Reece, ‘‘Paper 2: The fundamental equation of Earth-moving
+     no. 1, pp. 44–49, Mar. 2018, doi: 10.1007/s41321-018-0008-0.                          mechanics,’’ in Proc. Inst. Mech. Eng., Conf., Jun. 1964, vol. 179, no. 6,
+ [3] D. Huo, J. Chen, H. Zhang, Y. Shi, and T. Wang, ‘‘Intelligent prediction              pp. 16–22, doi: 10.1243/pime_conf_1964_179_134_02.
+     for digging load of hydraulic excavators based on RBF neural network,’’          [15] E. McKyes, Soil Cutting and Tillage. Amsterdam, The Netherlands:
+     Measurement, vol. 206, Jan. 2023, Art. no. 112210.                                    Elsevier, 1985.
+ [4] Y. Shen, J. Wang, C. Feng, Q. Wang, and J. Fan, ‘‘Data-physics hybrid-           [16] H. Cannon, ‘‘Extended earthmoving with an autonomous excavator,’’
+     driven external forces estimation method on excavators,’’ Mech. Syst.                 Robot. Inst., Carnegie Mellon Univ., Pittsburgh, PA, USA, Tech. Rep.
+     Signal Process., vol. 223, Jan. 2025, Art. no. 111902.                                CMU-RI-TR-99-10, May 1999. [Online]. Available: https://www.ri.cmu.
+ [5] R. Madau, D. Colombara, A. Alexander, A. Vacca, and L. Mazza, ‘‘An                    edu/publications/extended-earthmoving-with-an-autonomousexcavator/
+     online estimation algorithm to predict external forces acting on a front-end     [17] O. Luengo, S. Singh, and H. Cannon, ‘‘Modeling and identification of
+     loader,’’ Proc. Inst. Mech. Eng., I, J. Syst. Control Eng., vol. 235, no. 9,          soil-tool interaction in automated excavation,’’ in Proc. IEEE/RSJ Int.
+     pp. 1678–1697, Oct. 2021, doi: 10.1177/09596518211005583.                             Conf. Intell. Robots Systems. Innov. Theory, Pract. Appl., vol. 3, Mar. 1998,
+ [6] I. Palomba, D. Richiedei, A. Trevisani, E. Sanjurjo, A. Luaces, and                   pp. 1900–1906.
+     J. Cuadrado, ‘‘Estimation of the digging and payload forces in excavators        [18] C. P. Tan, Y. H. Zweiri, K. Althoefer, and L. D. Seneviratne, ‘‘Online
+     by means of state observers,’’ Mech. Syst. Signal Process., vol. 134,                 soil parameter estimation scheme based on Newton–Raphson method for
+     Dec. 2019, Art. no. 106356.                                                           autonomous excavation,’’ IEEE/ASME Trans. Mechatronics, vol. 10, no. 2,
+ [7] C. J. Coetzee and D. N. J. Els, ‘‘The numerical modelling of excavator                pp. 221–229, Apr. 2005.
+     bucket filling using DEM,’’ J. Terramechanics, vol. 46, no. 5, pp. 217–227,      [19] S. Yu, X. Song, and Z. Sun, ‘‘On-line prediction of resistant force during
+     Oct. 2009.                                                                            soil–tool interaction,’’ J. Dyn. Syst., Meas., Control, vol. 145, no. 8,
+ [8] E. G. Nezami, Y. M. A. Hashash, D. Zhao, and J. Ghaboussi, ‘‘Simulation               Aug. 2023, Art. no. 081004, doi: 10.1115/1.4062513.
+     of front end loader bucket–soil interaction using discrete element               [20] P. Egli, D. Gaschen, S. Kerscher, D. Jud, and M. Hutter, ‘‘Soil-adaptive
+     method,’’ Int. J. for Numer. Anal. Methods Geomechanics, vol. 31, no. 9,              excavation using reinforcement learning,’’ IEEE Robot. Autom. Lett.,
+     pp. 1147–1162, Aug. 2007.                                                             vol. 7, no. 4, pp. 9778–9785, Oct. 2022.
+
+181860                                                                                                                                                 VOLUME 13, 2025
+A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+[21] N. Bennett, A. Walawalkar, M. Heck, and C. Schindler, ‘‘Integration of         [41] StructX. (2025). Soil Properties. [Online]. Available: https://structx.com/
+     digging forces in a multi-body-system model of an excavator,’’ Proc. Inst.          SoilProperties.html
+     Mech. Eng., K, J. Multi-body Dyn., vol. 230, no. 2, pp. 159–177, Jun. 2016,    [42] I. Langmuir, ‘‘The constitution and fundamental properties of solids and
+     doi: 10.1177/1464419315592081.                                                      liquids. Part I. Solids,’’ J. Amer. Chem. Soc., vol. 38, no. 11, pp. 2221–2295,
+[22] M. Lipsett and R. Y. Moghaddam, ‘‘Modeling excavator-soil interaction,’’            Nov. 1916, doi: 10.1021/ja02268a002.
+     in Bifurcations, Instabilities and Degradations in Geomaterials, 2011,         [43] B. G. Look, Handbook of Geotechnical Investigation and Design Tables.
+     pp. 347–366.                                                                        New York, NY, USA: Taylor & Francis, 2007.
+[23] F. Schnaid, Situ Testing in Geomechanics: The Main Tests. Boca Raton,          [44] (2024). Cohesion and Friction Angle Values for USCS Soil Classes.
+     FL, USA: CRC Press, 2008.                                                           [Online]. Available: https: www.ecorisq.orgdocsUSCSsoilclasses.pdf
+[24] R. Yousefi Moghaddam, A. Kotchon, and M. G. Lipsett, ‘‘Method                  [45] A. Casagrande, ‘‘Classification and identification of soils,’’ Trans. Amer.
+     and apparatus for on-line estimation of soil parameters during                      Soc. Civil Engineers, vol. 113, no. 1, pp. 901–930, 1948. [Online].
+     excavation,’’ J. Terramechanics, vol. 49, nos. 3–4, pp. 173–181, Jun. 2012.         Available: https://ascelibrary.org/doi/abs/10.1061/TACEAT.0006109
+     [Online]. Available: https://www.sciencedirect.com/science/article/pii/        [46] Fine Software. (2024). GEO5 Geotechnical Software–Adhesion of Soil.
+     S0022489812000262                                                                   Accessed: Mar. 16, 2025. [Online]. Available: https://www.finesoftware.
+[25] H. Fernando and J. Marshall, ‘‘What lies beneath: Material classification           eu/help/geo5/en/adhesion-of-soil-01/
+     for autonomous excavators using proprioceptive force sensing and machine       [47] S. A. Miedema, The Delft Sand, Clay and Rock Cutting Model. Amsterdam,
+     learning,’’ Autom. Construction, vol. 119, Nov. 2020, Art. no. 103374.              The Netherlands: IOS Press, 2014.
+     [Online]. Available: https://www.sciencedirect.com/science/article/pii/        [48] G. Prezioso, ‘‘Simulation of the behaviour of tracked vehicles on
+     S0926580520309547                                                                   soft soils using multibody software,’’ Ph.D. dissertation, Dept. Mech.
+[26] W. J. Wagner, A. Soylemezoglu, D. Nottage, and K. Driggs-Campbell,                  Eng., Univ. Politecnico di Torino, Turin, Italy, 2023. [Online]. Avail-
+     ‘‘In situ soil property estimation for autonomous earthmoving using                 able: https://webthesis.biblio.polito.it/28757/
+     physics- infused neural networks,’’ in Proc. 16th Eur.-Afr. Regional           [49] G. Meirion-Griffith and M. Spenko, ‘‘An empirical study of the terrame-
+     Conf., 2023, pp. 84–93, doi: 10.56884/jdxp2382. [Online]. Avail-                    chanics of small unmanned ground vehicles,’’ in Proc. IEEE Aerosp. Conf.,
+     able: https://www.proceedings.com/content/072/072716webtoc.pdf                      Mar. 2010, pp. 1–6.
+[27] K. Althoefer, C. P. Tan, Y. H. Zweiri, and L. D. Seneviratne, ‘‘Hybrid         [50] W. D. Carrier, Lunar Soil Simulation and Trafficability Parameters.
+     soil parameter measurement and estimation scheme for excavation                     Lunar Geotechnical Institute, 2006. [Online]. Available: https://www.lpi.
+     automation,’’ IEEE Trans. Instrum. Meas., vol. 58, no. 10, pp. 3633–3641,           usra.edu/lunar/surface/
+     Oct. 2009.                                                                     [51] G. Scott, G. Meirion-Griffith, C. Saaj, and E. Moxey, ‘‘A comparative study
+[28] Y. Zhao, J. Wang, Y. Zhang, and C. Luo, ‘‘A novel method of soil                    of the deformation of planetary soils under tracked and legged rovers,’’ in
+     parameter identification and force prediction for automatic excavation,’’           Proc. AIAA Space Conf. Expo., Sep. 2008, p. 7897, doi: 10.2514/6.2008-
+     IEEE Access, vol. 8, pp. 11197–11207, 2020.                                         7897.
+[29] H. Lee, M. Kim, and W. Yoo, ‘‘Force-balancing algorithm to remove the
+     discontinuity in soil force during wheel loader excavation,’’ J. Mech. Sci.
+     Technol., vol. 32, no. 10, pp. 4951–4957, Oct. 2018, doi: 10.1007/s12206-
+     018-0943-9.
+[30] M. D. Worley and V. La Saponara, ‘‘A simplified dynamic model
+     for front-end loader design,’’ Proc. Inst. Mech. Eng., C, J. Mech.
+     Eng. Sci., vol. 222, no. 11, pp. 2231–2249, Nov. 2008, doi:
+     10.1243/09544062jmes688.
+[31] M. G. Bekker, ‘‘Mechanics of locomotion and lunar surface vehicle
+     concepts,’’ SAE Trans., vol. 72, pp. 549–569, Mar. 1964. [Online].
+     Available: http://www.jstor.org/stable/44562978                                                          ARMIN ABDOLMOHAMMADI received the
+[32] J. Yao, C. P. Edson, S. Yu, G. Zhao, Z. Sun, X. Song, and K. A. Stelson,                                 B.Sc. degree in mechanical engineering from the
+     ‘‘Bucket loading trajectory optimization for the automated wheel loader,’’                               Sharif University of Technology, Tehran, Iran,
+     IEEE Trans. Veh. Technol., vol. 72, no. 6, pp. 6948–6958, Jun. 2023.                                     in 2019, and the M.Sc. degree from the University
+[33] H. Cannon and S. Singh, ‘‘Models for automated earthmoving,’’ in
+                                                                                                              of California at Davis, in 2025, where he is
+     Experimental Robotics VI. London, U.K.: Springer, 2000, pp. 163–172,
+                                                                                                              currently pursuing the Ph.D. degree with the Con-
+     doi: 10.1007/BFb0119395.
+[34] G. Liang, L. Liu, Y. Meng, and G. Bai, ‘‘Shoveling trajectory tracking
+                                                                                                              trol, Optimization, Robotics, and Electrification
+     control of loader working mechanism,’’ in Proc. 5th World Conf. Mech.                                    (CORE) Laboratory. His research interests include
+     Eng. Intell. Manuf. (WCMEIM), Nov. 2022, pp. 668–673.                                                    system dynamics, control theory, and robotics,
+[35] C. Zhu, R. H. Byrd, P. Lu, and J. Nocedal, ‘‘Algorithm 778: L-BFGS-                                      with a particular emphasis on optimal control and
+     B: Fortran subroutines for large-scale bound-constrained optimization,’’       its applications in automotive and off-road machinery systems.
+     ACM Trans. Math. Softw., vol. 23, no. 4, pp. 550–560, Dec. 1997, doi:
+     10.1145/279232.279236.
+[36] D. Karanfil, ‘‘Developing scalable digital twins of construction vehicles,’’
+     Ph.D. dissertation, Dept. Mech. Aerosp. Eng., Univ. California, Berkeley,
+     CA, USA, 2025. [Online]. Available: https://www.proquest.com/
+     docview/3201332906?pqorigsite=gscholar&fromopenview=true&source
+     type=Dissertations%20&%20Theses
+[37] (Sep. 2024). AGX Dynamics. [Online]. Available: https://www.algoryx.se/
+     products/agx-dynamics/                                                                                    NAVID MOJAHED received the B.Sc. degree
+[38] M. Servin, T. Berglund, and S. Nystedt, ‘‘A multiscale model of terrain                                   in mechanical engineering from the Isfahan Uni-
+     dynamics for real-time earthmoving simulation,’’ Adv. Model. Simul. Eng.
+                                                                                                               versity of Technology, Iran, the M.Sc. degree in
+     Sci., vol. 8, no. 1, Dec. 2021, doi: 10.1186/s40323-021-00196-3.
+                                                                                                               applied mathematics from the Amirkabir Univer-
+[39] L. Jing and O. Stephansson, ‘‘Discrete element methods for granular
+     materials,’’ in Fundamentals of Discrete Element Methods for Rock Engi-
+                                                                                                               sity of Technology, Iran, and the Ph.D. degree
+     neering (Developments in Geotechnical Engineering), vol. 85. Amsterdam,                                   in applied mathematics from the University of
+     The Netherlands: Elsevier, 2007, ch. 11, pp. 399–444. [Online]. Available:                                Mazandaran, Iran. He was a Researcher at the
+     https://www.sciencedirect.com/science/article/pii/S0165125007850115                                       University of Santiago de Compostela, Spain.
+[40] C. Santos, V. Urdaneta, X. García, and E. Medina, ‘‘Compression and                                       He is currently a Postdoctoral Scholar at the
+     shear-wave velocities in discrete particle simulations of quartz granular                                 University of California at Davis. His research
+     packings: Improved hertz-mindlin contact model,’’ Geophysics, vol. 76,         interests include fractional differential equations, numerical methods, game
+     no. 5, pp. E165–E174, Sep. 2011, doi: 10.1190/geo2010-0376.1.                  theory, optimal control, and autonomous vehicle systems.
+
+VOLUME 13, 2025                                                                                                                                                181861
+                                                                           A. Abdolmohammadi et al.: Data-Efficient Excavation Force Estimation for Wheel Loaders
+
+
+
+
+                           SHIMA NAZARI received the B.S. and M.S.                                            BAHRAM RAVANI received the B.S. degree
+                           degrees from the Sharif University of Technology,                                  (magna cum laude) in mechanical engineering
+                           Tehran, Iran, in 2009 and 2012, respectively,                                      from Louisiana State University, in 1976, the M.S.
+                           and the Ph.D. degree in mechanical engineering                                     degree in mechanical engineering from Columbia
+                           from the University of Michigan, in 2019. She                                      University, in 1978, and the Ph.D. degree in
+                           is currently an Assistant Professor of mechanical                                  mechanical engineering from Stanford University,
+                           engineering with the University of California at                                   in 1982.
+                           Davis. Prior to this position, she was a Postdoctoral                                 He was a tenured Faculty Member at the
+                           Researcher at the Model Predictive Control Labo-                                   University of Wisconsin–Madison. He has been a
+                           ratory, UC Berkeley. Her research interests include                                Faculty Member at UC Davis, since 1987, where
+the areas of optimal and data-driven control with applications for automation,       he was the Chair of the Mechanical Engineering Department and the
+electric vehicles, and transportation systems.                                       Electrical and Computer Engineering Department. He also served as the
+                                                                                     Campus Director of the Center for Information Technology Research in the
+                                                                                     Interest of Society. He was also the Founding Director of the Advanced
+                                                                                     Highway Maintenance and Construction Technology (AHMCT) Research
+                                                                                     Center, a collaboration between California Department of Transportation
+                                                                                     and UC Davis. He co-directed AHMCT, until July 2025. He is currently
+                                                                                     a Distinguished Professor of mechanical and aerospace engineering with
+                                                                                     UC Davis. His current research interests include the digital transformation
+                                                                                     of construction and maintenance, intelligent transportation systems and
+                                                                                     highway safety, kinematics, dynamics and biomechanics, robotics and
+                                                                                     mechatronics, mechanical design, and manufacturing.
+
+
+
+
+181862                                                                                                                                           VOLUME 13, 2025
+
