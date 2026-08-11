@@ -14,6 +14,7 @@
 - [`manifest.json`](manifest.json) — 그림·표·수식 inventory
 - [`validation.txt`](validation.txt) — 최종 자동 검증 로그
 - [`build_translation.py`](build_translation.py) — 번역 fragment를 최종 HTML로 조립하는 재현 스크립트
+- [`render_equations.py`](render_equations.py) — 식 (1)–(28)을 LaTeX에서 벡터 SVG로 재현하는 스크립트
 - [`extract_clean_figures.py`](extract_clean_figures.py) — 원문 PDF에서 그림 1–10을 정밀 crop하는 재현 스크립트
 
 ## 번역 범위
@@ -22,19 +23,20 @@
 
 ## 조판 및 검수
 
-- 원문 전체 17쪽과 대응하는 최종본 **16쪽**
+- 원문 전체 17쪽과 대응하는 최종본 **18쪽**
 - 그림 **10개**, HTML 표 **6개**, 표시 수식 블록 **28개**
-- 원문 페이지 통 캡처를 사용하지 않고 그림 영역만 정밀 crop하여 삽입
+- 식 (1)–(28)은 첨자·분수·합·벡터·제약조건 정렬을 보존한 벡터 수식으로 조판
+- 원문 페이지 통 캡처를 사용하지 않고 그림 영역만 정밀 crop하여 삽입; 축·범례·패널 전체를 보존하고 원문 영문 캡션은 제외
 - 넓은 그림과 6열 이상 표는 2단 전체 폭으로 배치
 - `check_multicol_layout.py` 정적 검사 통과
 - `validate_output.py --final` 결과: **PASS — 모든 검사 통과**
-- 전체 16쪽 contact-sheet 시각 QA 완료: 빈 페이지, 잘림, 겹침, 표 overflow, 중복 영문 본문 없음
+- 전체 18쪽 contact-sheet 및 수식/그림 문제 페이지 확대 시각 QA 완료: 빈 페이지, 잘림, 겹침, 표 overflow, 중복 영문 캡션 없음
 
 ## 체크섬
 
 ```text
-8ce79285de774fa16a120cd15b26d7072b0514d499ebe9e8d7f65b87241f3ccd  2506.22579_ko_translation_layout.pdf
-db9b5cefd0654309e37080eaf7a1dc55f13b5d5e02a6b8bc49b730740fb88958  translation.html
+79402b8345249bea9dd2fe96360f7a3fefd3f15503651b8d67b4f535ba13e513  2506.22579_ko_translation_layout.pdf
+b166c871038df931670d22d65aa0b8a6809581d3b4b44f689547a639e42ffc8c  translation.html
 3173e1bb584ba52693f9330925610a5100432ef0e986637ea40f5d852abf3fdf  original.pdf
 ```
 
@@ -42,6 +44,7 @@ db9b5cefd0654309e37080eaf7a1dc55f13b5d5e02a6b8bc49b730740fb88958  translation.ht
 
 ```bash
 uv run --with pymupdf python3 extract_clean_figures.py
+python3 render_equations.py
 python3 build_translation.py
 python3 ../../../scripts/render_pdf.py translation.html 2506.22579_ko_translation_layout.pdf
 uv run --with pymupdf python3 ../../../scripts/validate_output.py . \

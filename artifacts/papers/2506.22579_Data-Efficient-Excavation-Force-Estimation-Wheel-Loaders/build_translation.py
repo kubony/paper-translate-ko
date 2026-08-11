@@ -124,9 +124,22 @@ for p in list(soup.find_all('p')):
 missing=sorted(set(FIGS)-seen)
 if missing: raise SystemExit(f'missing figure captions: {missing}')
 
-# Give equation blocks an explicit class for exact structural assertions.
-for pre in soup.find_all('pre'):
-    pre['class']=list(set(pre.get('class',[])+['equation']))
+# Replace the lossy ASCII previews with publication-quality vector equations.
+# Keep the plain transcription hidden for machine-readable completeness/validation.
+pre_blocks=list(soup.find_all('pre'))
+if len(pre_blocks) != 28:
+    raise SystemExit(f'expected 28 equation blocks, found {len(pre_blocks)}')
+wide_equations={19,23,27}
+for n,pre in enumerate(pre_blocks,1):
+    wrap=soup.new_tag('div')
+    wrap['class']=['equation-display'] + (['equation-wide'] if n in wide_equations else [])
+    wrap['data-equation']=str(n)
+    img=soup.new_tag('img',src=f'equations/eq-{n:02d}.svg',alt=f'식 ({n})')
+    wrap.append(img)
+    if n not in wide_equations:
+        num=soup.new_tag('span'); num['class']=['equation-number']; num.string=f'({n})'; wrap.append(num)
+    pre['class']=['equation-source']; pre['aria-hidden']='true'
+    pre.wrap(wrap)
 # Remove any accidental empty paragraphs.
 for p in list(soup.find_all('p')):
     if not p.get_text(strip=True) and not p.find('img'): p.decompose()
@@ -141,6 +154,18 @@ style += '''
   table.wide th, table.wide td { padding: 2px 3px; }
   .source-note { column-span: all; background:#f2f6fa; border-left:3px solid #315f86; padding:8px 10px; margin:8px 0 12px; }
   a { color:#1a4d8f; text-decoration:none; }
+  .equation-display {
+    position: relative; margin: 8px 0 10px; padding: 7px 30px 7px 8px;
+    background: #fff; border-top: 0.6pt solid #ddd; border-bottom: 0.6pt solid #ddd;
+    text-align: center; break-inside: avoid;
+  }
+  .equation-display img { display:block; max-width:100%; height:auto; margin:0 auto; }
+  .equation-number { position:absolute; right:6px; top:50%; transform:translateY(-50%); font-family:serif; font-size:9pt; }
+  .equation-source { display:none !important; }
+  .equation-wide { column-span:all; padding:8px 12px; }
+  figure.fig-wide { break-before:page; }
+  figure[data-figure="6"] img, figure[data-figure="8"] img,
+  figure[data-figure="9"] img, figure[data-figure="10"] img { width:100%; max-height:150mm; }
 '''
 
 meta='''
