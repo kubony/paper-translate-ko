@@ -1,0 +1,281 @@
+{
+  "figures": [
+    {
+      "no": "1",
+      "label": "framework",
+      "asset": "source/Figs/framework.png",
+      "environment": "figure*",
+      "width": "1\\linewidth",
+      "page": 2,
+      "caption_summary": "Comparison of regression, diffusion, and A2A robotic policy paradigms."
+    },
+    {
+      "no": "2",
+      "label": "pipeline",
+      "asset": "source/Figs/pipeline.png",
+      "environment": "wrapfigure",
+      "float_width": "0.5\\textwidth",
+      "width": "0.9\\linewidth",
+      "page": 4,
+      "caption_summary": "A2A architecture with visual conditioning, historical-action encoding, latent flow generation, and action decoding."
+    },
+    {
+      "no": "3",
+      "label": "experiments",
+      "asset": "source/Figs/experiments.png",
+      "environment": "figure*",
+      "width": "1\\linewidth",
+      "page": 6,
+      "caption_summary": "Five simulation tasks from ManiSkill, RLBench, and LIBERO in Roboverse."
+    },
+    {
+      "no": "4",
+      "label": "training_efficiency",
+      "asset": "source/Figs/training_efficiency.png",
+      "environment": "wrapfigure",
+      "float_width": "0.55\\textwidth",
+      "width": "1\\linewidth",
+      "page": 6,
+      "caption_summary": "Training efficiency versus epoch count and demonstration count."
+    },
+    {
+      "no": "5",
+      "label": "real_test",
+      "asset": "source/Figs/real_test.png",
+      "environment": "figure*",
+      "width": "1\\linewidth",
+      "page": 7,
+      "caption_summary": "Real-world Pick Cube results, glowing-block generalization, and adaptation to new pickup locations."
+    },
+    {
+      "no": "6",
+      "label": "real_test_close",
+      "asset": "source/Figs/real_test_close.png",
+      "environment": "wrapfigure",
+      "float_width": "0.55\\textwidth",
+      "width": "1\\linewidth",
+      "page": 7,
+      "caption_summary": "Real-world Open Drawer success rate and task-completion time."
+    },
+    {
+      "no": "7",
+      "label": "inference_cost",
+      "asset": "source/Figs/inference_cost.png",
+      "environment": "figure*",
+      "width": "0.9\\linewidth",
+      "page": 8,
+      "caption_summary": "Success rate versus inference steps and epochs, plus per-step inference latency."
+    },
+    {
+      "no": "8",
+      "label": "latent_space",
+      "asset": "source/Figs/latent_space.png",
+      "environment": "figure*",
+      "width": "0.9\\linewidth",
+      "page": 8,
+      "caption_summary": "t-SNE visualization of converging history and future action latents during A2A training."
+    },
+    {
+      "no": "9",
+      "label": "FIGinitial",
+      "asset": "source/Figs/Merge_initial.png",
+      "environment": "wrapfigure",
+      "float_width": "0.55\\textwidth",
+      "width": "1\\linewidth",
+      "page": 9,
+      "caption_summary": "Generalization under initial-state uncertainty and varying injected action noise."
+    },
+    {
+      "no": "10",
+      "label": "structure_ablation",
+      "asset": "source/Figs/structure_ablation.png",
+      "environment": "wrapfigure",
+      "float_width": "0.6\\textwidth",
+      "width": "1\\linewidth",
+      "page": 10,
+      "caption_summary": "Ablation of flow versus regression and latent versus raw action spaces, including robustness."
+    },
+    {
+      "no": "11",
+      "label": "video_generation",
+      "asset": "source/Figs/video_generation.png",
+      "environment": "figure",
+      "width": "0.5\\linewidth",
+      "page": 11,
+      "caption_summary": "Predicted third video frames in four unseen scenarios."
+    },
+    {
+      "no": "S1",
+      "label": "camera_view",
+      "asset": "source/Figs/camera_view.png",
+      "environment": "figure",
+      "width": "0.45\\linewidth",
+      "page": 17,
+      "caption_summary": "Camera views used in real-world tests."
+    },
+    {
+      "no": "S2",
+      "label": "pipeline_f2f",
+      "asset": "source/Figs/pipeline_f2f.png",
+      "environment": "figure",
+      "width": "0.5\\linewidth",
+      "page": 17,
+      "caption_summary": "F2F video-prediction architecture with ResNet-VAE encoding, Transformer flow matching, and convolutional decoding."
+    },
+    {
+      "no": "S3",
+      "label": "iterations_ddpm_fm",
+      "asset": "source/Figs/iterations_ddpm_fm.png",
+      "environment": "figure*",
+      "width": "0.35\\linewidth",
+      "page": 17,
+      "caption_summary": "Additional training-efficiency test for DDPM-UNet and FM-UNet."
+    },
+    {
+      "no": "S4",
+      "label": "level0",
+      "asset": "source/Figs/level0.png",
+      "environment": "figure*",
+      "width": "0.7\\linewidth",
+      "page": 18,
+      "caption_summary": "Randomization Level 0 with randomized initial object positions."
+    },
+    {
+      "no": "S5",
+      "label": "level1",
+      "asset": "source/Figs/level1.png",
+      "environment": "figure*",
+      "width": "0.7\\linewidth",
+      "page": 18,
+      "caption_summary": "Randomization Level 1 with environmental background randomization."
+    },
+    {
+      "no": "S6",
+      "label": "latent_space_appen",
+      "asset": "source/Figs/latent_space_appen.png",
+      "environment": "figure*",
+      "width": "0.9\\linewidth",
+      "page": 19,
+      "caption_summary": "Latent-space convergence for Pick Cube and Stack Cube tasks."
+    },
+    {
+      "no": "S7",
+      "label": "initial_state",
+      "asset": "source/Figs/initial_state.png",
+      "environment": "figure*",
+      "width": "0.8\\linewidth",
+      "page": 19,
+      "caption_summary": "Randomized robot initial poses for action-level uncertainty evaluation."
+    },
+    {
+      "no": "S8",
+      "label": "multi_modal",
+      "asset": "source/Figs/multi_modal.png",
+      "environment": "figure*",
+      "width": "0.5\\linewidth",
+      "page": 20,
+      "caption_summary": "Multimodal 2D navigation behavior enabled by subtle Gaussian noise on historical actions."
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "label": "tab-30epochs",
+      "asset": null,
+      "environment": "table*",
+      "width": null,
+      "page": 6,
+      "caption_summary": "Success rates for nine algorithms on five simulation tasks after 30 epochs."
+    },
+    {
+      "no": "2",
+      "label": "tab-generalization",
+      "asset": null,
+      "environment": "table",
+      "width": null,
+      "page": 9,
+      "caption_summary": "Success rates across four scene-randomization levels."
+    },
+    {
+      "no": "S1",
+      "label": "tab-parameters",
+      "asset": null,
+      "environment": "table",
+      "width": null,
+      "page": 16,
+      "caption_summary": "Training hyperparameters shared across experiments."
+    }
+  ],
+  "display_equations": 6,
+  "equations": [
+    {
+      "no": "1",
+      "label": null,
+      "page": 4,
+      "environment": "equation",
+      "summary": "ODE defining the flow trajectory from the source distribution."
+    },
+    {
+      "no": "2",
+      "label": "general_loss",
+      "page": 4,
+      "environment": "equation",
+      "summary": "General conditional flow-matching loss."
+    },
+    {
+      "no": "3",
+      "label": "action_flow_loss",
+      "page": 5,
+      "environment": "equation",
+      "summary": "A2A latent-space flow-matching loss."
+    },
+    {
+      "no": "4",
+      "label": null,
+      "page": 5,
+      "environment": "equation",
+      "summary": "Action-autoencoder L1 reconstruction loss."
+    },
+    {
+      "no": "5",
+      "label": "loss_IC",
+      "page": 5,
+      "environment": "equation",
+      "summary": "Inference-consistency loss in latent and action spaces."
+    },
+    {
+      "no": "6",
+      "label": null,
+      "page": 5,
+      "environment": "equation",
+      "summary": "Weighted total objective combining flow matching, reconstruction, and inference consistency."
+    }
+  ],
+  "sections": [
+    {"no": "1", "title": "Introduction", "label": null, "page": 1, "source": "source/sec/intro.tex"},
+    {"no": "2", "title": "Related work", "label": null, "page": 3, "source": "source/sec/related.tex"},
+    {"no": "2.1", "title": "Visuomotor policy", "label": null, "page": 3, "source": "source/sec/related.tex"},
+    {"no": "2.2", "title": "Noise optimization of diffusion", "label": null, "page": 3, "source": "source/sec/related.tex"},
+    {"no": "3", "title": "Action-to-action flow matching", "label": null, "page": 4, "source": "source/paper.tex"},
+    {"no": "3.1", "title": "Flow matching", "label": null, "page": 4, "source": "source/paper.tex"},
+    {"no": "3.2", "title": "Action to action flow", "label": null, "page": 4, "source": "source/paper.tex"},
+    {"no": "3.3", "title": "Learning objectives", "label": null, "page": 5, "source": "source/paper.tex"},
+    {"no": "4", "title": "Evaluation", "label": null, "page": 5, "source": "source/paper.tex"},
+    {"no": "4.1", "title": "Training efficiency", "label": null, "page": 6, "source": "source/paper.tex"},
+    {"no": "4.2", "title": "Inference cost", "label": null, "page": 8, "source": "source/paper.tex"},
+    {"no": "4.3", "title": "Generalization performance", "label": null, "page": 9, "source": "source/paper.tex"},
+    {"no": "4.3.1", "title": "Visual uncertainty", "label": null, "page": 9, "source": "source/paper.tex"},
+    {"no": "4.3.2", "title": "Initial state uncertainty", "label": "sec-initial_state", "page": 10, "source": "source/paper.tex"},
+    {"no": "5", "title": "Ablation study", "label": null, "page": 10, "source": "source/paper.tex"},
+    {"no": "5.1", "title": "Regression or generation", "label": null, "page": 10, "source": "source/paper.tex"},
+    {"no": "5.2", "title": "Action space or latent space", "label": null, "page": 10, "source": "source/paper.tex"},
+    {"no": "6", "title": "Application to video generation", "label": null, "page": 11, "source": "source/paper.tex"},
+    {"no": "7", "title": "Conclusion", "label": null, "page": 11, "source": "source/sec/conclusion.tex"},
+    {"no": "8", "title": "Limitation", "label": null, "page": 11, "source": "source/sec/conclusion.tex"},
+    {"no": "A", "title": "Appendix", "label": null, "page": 16, "source": "source/paper.tex"},
+    {"no": "A.1", "title": "Randomization level setting", "label": "appen_dr", "page": 16, "source": "source/paper.tex"},
+    {"no": "A.2", "title": "Hyperparameters", "label": "appen_param", "page": 16, "source": "source/paper.tex"},
+    {"no": "A.3", "title": "Experimental setup", "label": null, "page": 16, "source": "source/paper.tex"},
+    {"no": "A.4", "title": "Video generation", "label": "appen_video", "page": 16, "source": "source/paper.tex"}
+  ]
+}

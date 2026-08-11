@@ -81,3 +81,32 @@ def test_validate_accepts_exact_label_number_href_target_and_counts():
     <p><a class="xref" data-source-ref="fig:arch" href="#fig-2">그림 2</a></p>
     """
     assert mod.validate_cross_references(SOURCE, html) == []
+
+
+def test_resolve_wrapfigure_increments_shared_figure_counter():
+    mod = load_module()
+    source = r"""
+    \begin{figure}\caption{First}\label{fig:first}\end{figure}
+    \begin{wrapfigure}{r}{0.5\textwidth}
+    \caption{Wrapped}\label{fig:wrapped}
+    \end{wrapfigure}
+    """
+    assert mod.resolve_figure_numbers(source) == {
+        "fig:first": 1,
+        "fig:wrapped": 2,
+    }
+
+
+def test_validate_accepts_literal_supplement_figure_numbers():
+    mod = load_module()
+    source = r"""
+    \renewcommand*{\thefigure}{S1}
+    \begin{figure}\caption{Supplement}\label{fig:supp}\end{figure}
+    See Fig.~\ref{fig:supp}.
+    """
+    html = """
+    <figure id="fig-S1" data-source-label="fig:supp" data-figure="S1"></figure>
+    <p><a class="xref" data-source-ref="fig:supp" href="#fig-S1">그림 S1</a></p>
+    """
+    assert mod.resolve_figure_numbers(source) == {"fig:supp": "S1"}
+    assert mod.validate_cross_references(source, html) == []

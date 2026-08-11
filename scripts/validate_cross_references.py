@@ -25,15 +25,16 @@ import re
 TOKEN_RE = re.compile(
     r"\\setcounter\{figure\}\{(?P<set>\d+)\}"
     r"|\\addtocounter\{figure\}\{(?P<add>-?\d+)\}"
-    r"|\\begin\{figure(?P<begin_star>\*)?\}"
-    r"|\\end\{figure(?P<end_star>\*)?\}"
+    r"|\\renewcommand\*?\{\\thefigure\}\{(?P<literal>[^}]+)\}"
+    r"|\\begin\{(?P<begin_env>figure\*?|wrapfigure)\}(?:\{[^}]*\})?"
+    r"|\\end\{(?P<end_env>figure\*?|wrapfigure)\}"
     r"|\\captionsetup\{type=figure\}"
     r"|\\captionof\{figure\}"
     r"|\\caption(?P<caption_star>\*)?\s*\{"
     r"|\\label\{(?P<label>[^}]+)\}"
 )
 REF_RE = re.compile(r"\\(?:auto|page)?ref\{([^}]+)\}")
-DISPLAY_NUMBER_RE = re.compile(r"(?:그림|Figure|Fig\.)\s*(\d+)", re.IGNORECASE)
+DISPLAY_NUMBER_RE = re.compile(r"(?:그림|Figure|Fig\.)\s*([A-Za-z]?\d+)", re.IGNORECASE)
 
 
 def _strip_comments(source: str) -> str:
@@ -41,15 +42,16 @@ def _strip_comments(source: str) -> str:
     return re.sub(r"(?<!\\)%[^\n]*", "", source)
 
 
-def resolve_figure_numbers(source: str) -> dict[str, int]:
+def resolve_figure_numbers(source: str) -> dict[str, int | str]:
     """Resolve figure labels using LaTeX counter mutations and caption order."""
     source = _strip_comments(source)
     counter = 0
     figure_depth = 0
     force_next_caption = False
     synthetic_label_pending = False
-    current_number: int | None = None
-    labels: dict[str, int] = {}
+    current_number: int | str | None = None
+    literal_next: str | None = None
+    labels: dict[str, int | str] = {}
 
     for match in TOKEN_RE.finditer(source):
         token = match.group(0)
@@ -61,25 +63,30 @@ def resolve_figure_numbers(source: str) -> dict[str, int]:
             counter += int(match.group("add"))
             current_number = None
             synthetic_label_pending = False
-        elif token.startswith(r"\begin{figure"):
+        elif match.group("literal") is not None:
+            literal_next = match.group("literal")
+            current_number = None
+        elif match.group("begin_env") is not None:
             figure_depth += 1
             current_number = None
             synthetic_label_pending = False
-        elif token.startswith(r"\end{figure"):
+        elif match.group("end_env") is not None:
             figure_depth = max(0, figure_depth - 1)
             current_number = None
         elif token == r"\captionsetup{type=figure}":
             force_next_caption = True
         elif token == r"\captionof{figure}":
             counter += 1
-            current_number = counter
+            current_number = literal_next or counter
+            literal_next = None
             force_next_caption = False
             synthetic_label_pending = figure_depth == 0
         elif token.startswith(r"\caption"):
             is_synthetic = bool(force_next_caption and figure_depth == 0)
             if match.group("caption_star") is None and (figure_depth or force_next_caption):
                 counter += 1
-                current_number = counter
+                current_number = literal_next or counter
+                literal_next = None
                 synthetic_label_pending = is_synthetic
             force_next_caption = False
         elif (
@@ -146,7 +153,7 @@ class _CrossReferenceHTMLParser(HTMLParser):
             break
 
 
-def _source_reference_counts(source: str, labels: dict[str, int]) -> Counter[str]:
+def _source_reference_counts(source: str, labels: dict[str, int | str]) -> Counter[str]:
     return Counter(label for label in REF_RE.findall(_strip_comments(source)) if label in labels)
 
 
@@ -178,8 +185,8 @@ def validate_cross_references(source: str, html: str) -> list[str]:
         expected_number = labels[label]
         text = ref["text"] or ""
         number_match = DISPLAY_NUMBER_RE.search(text)
-        displayed_number = int(number_match.group(1)) if number_match else None
-        if displayed_number != expected_number:
+        displayed_number = number_match.group(1) if number_match else None
+        if displayed_number != str(expected_number):
             errors.append(
                 f"display number drift for {label}: got {displayed_number!r}, expected {expected_number}"
             )
