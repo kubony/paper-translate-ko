@@ -1,0 +1,307 @@
+\def\cprime{$'$}
+\begin{thebibliography}{10}
+
+\bibitem{AGX20}
+{AGX Dynamics}.
+\newblock \url{https://www.algoryx.se/products/agx-dynamics}.
+\newblock Accessed: 2023-09-01.
+
+\bibitem{allevato2020}
+A.~D. Allevato, E.~Schaertl~Short, M.~Pryor, and A.~L. Thomaz.
+\newblock Iterative residual tuning for system identification and sim-to-real
+  robot learning.
+\newblock {\em Autonomous Robots}, 44:1167--1182, 2020.
+
+\bibitem{aoshima:2023:pmh}
+K.~Aoshima, A.~Fälldin, E.~Wadbro, and M.~Servin.
+\newblock Predictor models for high-performance wheel loading.
+\newblock {\em arXiv preprint arXiv:2309.12016}, 2023.
+
+\bibitem{aoshima2021}
+K.~Aoshima, M.~Servin, and E.~Wadbro.
+\newblock Simulation-based optimization of high-performance wheel loading.
+\newblock In C.~Feng and {et al}, editors, {\em Proceedings of the 38th
+  International Symposium on Automation and Robotics in Construction (ISARC)},
+  pages 688--695, Dubai, UAE, November 2021. International Association for
+  Automation and Robotics in Construction (IAARC).
+
+\bibitem{atkeson1997}
+C.~G. Atkeson and S.~Schaal.
+\newblock Robot learning from demonstration.
+\newblock In {\em ICML}, volume~97, pages 12--20, 1997.
+
+\bibitem{Azulay2021}
+O.~{Azulay} and A.~{Shapiro}.
+\newblock Wheel loader scooping controller using deep reinforcement learning.
+\newblock {\em IEEE Access}, 9:24145--24154, 2021.
+
+\bibitem{backman2021}
+S.~Backman, D.~Lindmark, K.~Bodin, M.~Servin, J.~Mörk, and H.~Löfgren.
+\newblock Continuous control of an underground loader using deep reinforcement
+  learning.
+\newblock {\em Machines}, 9(10), 2021.
+
+\bibitem{Berndt1994}
+D.~J. Berndt and J.~Clifford.
+\newblock Using dynamic time warping to find patterns in time series.
+\newblock In {\em Proceedings of the 3rd International Conference on Knowledge
+  Discovery and Data Mining}, AAAIWS'94, page 359–370. AAAI Press, 1994.
+
+\bibitem{choi2021use}
+H.~Choi, C.~Crump, C.~Duriez, A.~Elmquist, G.~Hager, D.~Han, F.~Hearl,
+  J.~Hodgins, A.~Jain, F.~Leve, et~al.
+\newblock On the use of simulation in robotics: Opportunities, challenges, and
+  suggestions for moving forward.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  118(1):e1907856118, 2021.
+
+\bibitem{collins2019}
+J.~Collins, J.~McVicar, D.~Wedlock, R.~Brown, D.~Howard, and J.~Leitner.
+\newblock Benchmarking simulated robotic manipulation through a real world
+  dataset.
+\newblock {\em IEEE Robotics and Automation Letters}, 5(1):250--257, 2019.
+
+\bibitem{Dadhich2016}
+S.~Dadhich, U.~Bodin, and U.~Andersson.
+\newblock Key challenges in automation of earth-moving machines.
+\newblock {\em Automation in Construction}, 68:212--222, 2016.
+
+\bibitem{Dobson2017}
+A.~Dobson, J.~Marshall, and J.~Larsson.
+\newblock Admittance control for robotic loading: Design and experiments with a
+  1-tonne loader and a 14-tonne load-haul-dump machine.
+\newblock {\em Journal of Field Robotics}, 34(1):123--150, 2017.
+
+\bibitem{Egli2022b}
+P.~Egli and M.~Hutter.
+\newblock A general approach for the automation of hydraulic excavator arms
+  using reinforcement learning.
+\newblock {\em IEEE Robotics and Automation Letters}, 7(2):5679--5686, 2022.
+
+\bibitem{erez2015}
+T.~Erez, Y.~Tassa, and E.~Todorov.
+\newblock Simulation tools for model-based robotics: Comparison of {Bullet},
+  {Havok}, {MuJoCo}, {ODE} and {PhysX}.
+\newblock In {\em 2015 IEEE International Conference on Robotics and Automation
+  (ICRA)}, pages 4397--4404, 2015.
+
+\bibitem{Eriksson2023}
+D.~Eriksson and R.~Ghabcheloo.
+\newblock Comparison of machine learning methods for automatic bucket filling:
+  An imitation learning approach.
+\newblock {\em Automation in Construction}, 150:104843, 2023.
+
+\bibitem{Filla2017}
+R.~Filla and B.~Frank.
+\newblock Towards finding the optimal bucket filling strategy through
+  simulation.
+\newblock In {\em Proceedings of 15:th Scandinavian International Conference on
+  Fluid Power, June 7-9, 2017, Linköping, Sweden}, 06 2017.
+
+\bibitem{Frank2018}
+B.~Frank, J.~Kleinert, and R.~Filla.
+\newblock Optimal control of wheel loader actuators in gravel applications.
+\newblock {\em Automation in Construction}, 91:1--14, 2018.
+
+\bibitem{hairer:1996:sod}
+E.~Hairer and G.~Wanner.
+\newblock {\em Solving Ordinary Differential Equations {II}: Stiff and
+  Differential Algebraic Problems}, volume~14 of {\em Springer Series in
+  Computational Mathematics}.
+\newblock Springer-Verlag, Berlin, Heidelberg, New York, London, Paris, Tokyo,
+  Hong Kong, second revised edition edition, 1996.
+
+\bibitem{Holz2009}
+D.~Holz, T.~Beer, and T.~Kuhlen.
+\newblock Soil deformation models for real-time simulation: A hybrid approach.
+\newblock In H.~Prautzsch, A.~Schmitt, J.~Bender, and M.~Teschner, editors,
+  {\em Workshop in Virtual Reality Interactions and Physical Simulation
+  "VRIPHYS" (2009)}, 2009.
+
+\bibitem{Horak2019}
+P.~C. Horak and J.~C. Trinkle.
+\newblock On the similarities and differences among contact models in robot
+  simulation.
+\newblock {\em IEEE Robotics and Automation Letters}, 4(2):493--499, 2019.
+
+\bibitem{ibarz2021}
+J.~Ibarz, J.~Tan, C.~Finn, M.~Kalakrishnan, P.~Pastor, and S.~Levine.
+\newblock How to train your robot with deep reinforcement learning: lessons we
+  have learned.
+\newblock {\em The International Journal of Robotics Research},
+  40(4-5):698--721, 2021.
+
+\bibitem{Jaiswal2019}
+S.~{Jaiswal}, P.~{Korkealaakso}, R.~{Åman}, J.~{Sopanen}, and A.~{Mikkola}.
+\newblock Deformable terrain model for the real-time multibody simulation of a
+  tractor with a hydraulically driven front-loader.
+\newblock {\em IEEE Access}, 7:172694--172708, 2019.
+
+\bibitem{Jekel2019}
+C.~F. Jekel, G.~Venter, M.~P. Venter, N.~Stander, and R.~T. Haftka.
+\newblock {Similarity measures for identifying material parameters from
+  hysteresis loops using inverse analysis}.
+\newblock {\em International Journal of Material Forming}, may 2019.
+
+\bibitem{Kadian2020}
+A.~Kadian, J.~Truong, A.~Gokaslan, A.~Clegg, E.~Wijmans, S.~Lee, M.~Savva,
+  S.~Chernova, and D.~Batra.
+\newblock Sim2real predictivity: Does evaluation in simulation predict
+  real-world performance?
+\newblock {\em IEEE Robotics and Automation Letters}, 5(4):6670--6677, 2020.
+
+\bibitem{Kim2016}
+H.~Kim, K.~Oh, K.~Ko, P.~Kim, and K.~Yi.
+\newblock Modeling, validation and energy flow analysis of a wheel loader.
+\newblock {\em Journal of Mechanical Science and Technology}, 30(2):603--610,
+  Feb. 2016.
+
+\bibitem{koos2010}
+S.~Koos, J.-B. Mouret, and S.~Doncieux.
+\newblock Crossing the reality gap in evolutionary robotics by promoting
+  transferable controllers.
+\newblock In {\em Proceedings of the 12th annual conference on Genetic and
+  evolutionary computation}, pages 119--126, 2010.
+
+\bibitem{Kurinov2020}
+I.~{Kurinov}, G.~{Orzechowski}, P.~{Hämäläinen}, and A.~{Mikkola}.
+\newblock Automated excavator based on reinforcement learning and multibody
+  system dynamics.
+\newblock {\em IEEE Access}, 8:213998--214006, 2020.
+
+\bibitem{Lacoursiere2007}
+{\sc Lacoursière, C.}
+\newblock {\em Ghosts and machines: regularized variational methods for
+  interactive simulations of multibodies with dry frictional contacts}.
+\newblock PhD thesis, Umeå University, SE-901 87 Umeå, June 2007.
+
+\bibitem{lacoursiere2010}
+C.~Lacoursi\'{e}re, M.~Linde, O.~Sabelstr{\"o}m,
+\newblock Direct sparse factorization of blocked saddle point matrices,
+\newblock Para 2010: State of the Art in Scientific and Parallel Computing, Reykjavik, June 6-9.2010).
+
+\bibitem{Lindmark2018}
+D.~Lindmark and M.~Servin.
+\newblock Computational exploration of robotic rock loading.
+\newblock {\em Robotics and Autonomous Systems}, 106:117--129, 2018.
+
+\bibitem{Matsumoto2020}
+K.~Matsumoto, A.~Yamaguchi, T.~Oka, M.~Yasumoto, S.~Hara, M.~Iida, and
+  M.~Teichmann.
+\newblock Simulation-based reinforcement learning approach towards construction
+  machine automation.
+\newblock In H.~Osumi, H.~Furuya, and K.~Tateyama, editors, {\em Proceedings of
+  the 37th International Symposium on Automation and Robotics in Construction
+  (ISARC)}, pages 457--464. International Association for Automation and
+  Robotics in Construction (IAARC).
+
+\bibitem{mckyes:1985:sct}
+E.~McKyes.
+\newblock {\em Soil cutting and tillage}.
+\newblock Developments in agricultural engineering. Elsevier, Amsterdam, 1985.
+
+\bibitem{meng2019}
+Y.~Meng, H.~Fang, G.~Liang, Q.~Gu, and L.~Liu.
+\newblock Bucket trajectory optimization under the automatic scooping of {LHD}.
+\newblock {\em Energies}, 12(20):3919, 2019.
+
+\bibitem{muratore2022}
+F.~Muratore, F.~Ramos, G.~Turk, W.~Yu, M.~Gienger, and J.~Peters.
+\newblock Robot learning from randomized simulations: A review.
+\newblock {\em Frontiers in Robotics and AI}, page~31, 2022.
+
+\bibitem{Oh2015}
+K.~Oh, H.~Kim, K.~Ko, P.~Kim, and K.~Yi.
+\newblock Integrated wheel loader simulation model for improving performance
+  and energy flow.
+\newblock {\em Automation in Construction}, 58:129--143, 2015.
+
+\bibitem{Peng2018}
+X.~B. Peng, M.~Andrychowicz, W.~Zaremba, and P.~Abbeel.
+\newblock Sim-to-real transfer of robotic control with dynamics randomization.
+\newblock In {\em 2018 IEEE International Conference on Robotics and Automation
+  (ICRA)}, pages 1--8. IEEE Press, 2018.
+
+\bibitem{Servin2021}
+M.~Servin, T.~Berglund, and S.~Nystedt.
+\newblock A multiscale model of terrain dynamics for real-time earthmoving
+  simulation.
+\newblock {\em Advanced Modeling and Simulation in Engineering Sciences},
+  8(1):11, May 2021.
+
+\bibitem{Servin2018}
+M.~Servin and M.~Brandl.
+\newblock Physics-based virtual environments for autonomous earthmoving and
+  mining machinery.
+\newblock In {\em Commercial Vehicle Technology Symposium – CVT 2018}, 2018.
+
+\bibitem{servin:2014:esn}
+M.~Servin, D.~Wang, C.~Lacoursi{\`e}re, and K.~Bodin.
+\newblock Examining the smooth and nonsmooth discrete element approach to
+  granular matter.
+\newblock {\em Int. J. Numer. Meth. Engng.}, 97:878--902, 2014.
+
+\bibitem{soderstrom1989system}
+T.~S{\"o}derstr{\"o}m and P.~Stoica.
+\newblock {\em System Identification}.
+\newblock Prentice-Hall international series in systems and control
+  engineering. Prentice Hall, 1989.
+
+\bibitem{song2022}
+R.~Song, Z.~Ye, L.~Wang, T.~He, and L.~Zhang.
+\newblock Autonomous wheel loader trajectory tracking control using
+  {LPV}-{MPC}.
+\newblock In {\em 2022 American Control Conference (ACC)}, pages 2063--2069,
+  2022.
+
+\bibitem{tan2016}
+J.~Tan, Z.~Xie, B.~Boots, and C.~K. Liu.
+\newblock Simulation-based design of dynamic controllers for humanoid
+  balancing.
+\newblock In {\em 2016 IEEE/RSJ International Conference on Intelligent Robots
+  and Systems (IROS)}, pages 2729--2736, 2016.
+
+\bibitem{Tobin2017}
+J.~{Tobin}, R.~{Fong}, A.~{Ray}, J.~{Schneider}, W.~{Zaremba}, and P.~{Abbeel}.
+\newblock Domain randomization for transferring deep neural networks from
+  simulation to the real world.
+\newblock In {\em 2017 IEEE/RSJ International Conference on Intelligent Robots
+  and Systems (IROS)}, pages 23--30, 2017.
+
+\bibitem{Wang2022a}
+S.~Wang, Y.~Yin, Y.~Wu, and L.~Hou.
+\newblock Modeling and verification of an acquisition strategy for wheel
+  loader's working trajectories and resistance.
+\newblock {\em Sensors}, 22(16), 2022.
+
+\bibitem{wang:2016:wsp}
+D.~Wang, and M.~Servin
+\newblock Warm starting the projected gauss-seidel algorithm for granular matter simulation.,
+\newblock Computational Particle Mechanics. 3:43--52, 2016.
+
+\bibitem{wiberg:2021:dem}
+V.~Wiberg, M.~Servin, and T.~Nordfjell.
+\newblock Discrete element modelling of large soil deformations under heavy
+  vehicles.
+\newblock {\em Journal of Terramechanics}, 93:11 -- 21, 2021.
+
+\bibitem{wiberg2023}
+V.~Wiberg, E.~Wallin, A.~Fälldin, T.~Semberg, M.~Rossander, E.~Wadbro, and
+  M.~Servin.
+\newblock Sim-to-real transfer of active suspension control using deep
+  reinforcement learning.
+\newblock {\em arXiv preprint arXiv:2306.11171}, 2023.
+
+\bibitem{wiberg:2021:crt}
+V.~Wiberg, E.~Wallin, T.~Nordfjell, and M.~Servin.
+\newblock Control of rough terrain vehicles using deep reinforcement learning.
+\newblock {\em IEEE Robotics and Automation Letters}, 7(1):390--397, 2022.
+
+\bibitem{zhao2020sim2real}
+W.~Zhao, J.~P. Queralta, and T.~Westerlund.
+\newblock Sim-to-real transfer in deep reinforcement learning for robotics: a
+  survey.
+\newblock In {\em 2020 IEEE symposium series on computational intelligence
+  (SSCI)}, pages 737--744. IEEE, 2020.
+
+\end{thebibliography}

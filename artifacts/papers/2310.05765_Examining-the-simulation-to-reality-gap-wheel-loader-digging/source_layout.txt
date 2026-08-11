@@ -1,0 +1,2162 @@
+                                          Examining the simulation-to-reality gap of a wheel loader digging in
+                                                                 deformable terrain
+                                                                             Koji Aoshima1,2 and Martin Servin2,3
+                                                                                               1
+                                                                                             Komatsu Ltd.
+                                                                                           2
+                                                                                            Umeå University
+                                                                                         3
+                                                                                           Algoryx Simulation
+
+                                                                                               April 30, 2024
+arXiv:2310.05765v3 [cs.CE] 27 Apr 2024
+
+
+
+
+                                                                                                   Abstract
+                                                   We investigate how well a physics-based simulator can replicate a real wheel loader performing bucket
+                                              filling in a pile of soil. The comparison is made using field test time series of the vehicle motion and
+                                              actuation forces, loaded mass, and total work. The vehicle was modeled as a rigid multibody system with
+                                              frictional contacts, driveline, and linear actuators. For the soil, we tested discrete element models of different
+                                              resolutions, with and without multiscale acceleration. The spatio-temporal resolution ranged between 50-
+                                              400 mm and 2-500 ms, and the computational speed was between 1/10,000 to 5 times faster than real-time.
+                                              The simulation-to-reality gap was found to be around 10% and exhibited a weak dependence on the level
+                                              of fidelity, e.g., compatible with real-time simulation. Furthermore, the sensitivity of an optimized force
+                                              feedback controller under transfer between different simulation domains was investigated. The domain bias
+                                              was observed to cause a performance reduction of 5% despite the domain gap being about 15%.
+
+
+                                         1    Introduction
+                                         Simulators are essential for developing autonomous control of heavy equipment and rough-terrain vehicles. They
+                                         offer a safe and efficient way to conduct controlled and repeatable experiments for testing and optimizing the
+                                         performance in the early development stages. This makes it possible to generate large amounts of annotated
+                                         synthetic training data needed for leveraging deep learning methods [31, 27, 7, 48, 13].
+                                             Limiting factors are the computational speed and how accurately the simulator reflects the real system [9].
+                                         Having a reality gap is unavoidable, but when the discrepancy between the simulated and real system is too
+                                         large, a solution optimized in the simulated domain transfers poorly to the real domain [26, 47]. On the other
+                                         hand, a finely resolved simulator easily becomes too slow to run the simulations needed to distinguish between
+                                         near-optimal, low-performing, or hazardous solutions.
+                                             For earthmoving equipment, there is little knowledge about how the reality gap should be measured, how it
+                                         depends on the simulator’s level of resolution, or what effect it has on the transferability of the results. To this
+                                         end, we construct wheel loader simulators of different levels of fidelity and examine how they differ from each
+                                         other and from a real wheel loader performing bucket-filling operations. The comparison is made through the
+                                         lens of synthetic and real sensor data that may be used for automatic bucket filling with force feedback control.
+                                             Two types of simulators are used. In both cases, the vehicle is modeled as a 3D rigid multibody system with
+                                         frictional contacts and nonsmooth dynamics. The difference lies in that the terrain is resolved using either a
+                                         discrete element model (DEM) or modeled using a reduced multiscale model. The latter can be understood as
+                                         a multibody dynamics generalization of the fundamental earth moving equation (FEE) that is conventionally
+                                         used in vehicle-soil mechanics analysis but is limited to stationary conditions. The general idea is to predict
+                                         a zone of active soil deformations and represent this as a dynamic body and additional multibody constraint
+                                         added to the vehicle system. The mass flow in the active zone is approximated with a co-simulated DEM model.
+                                         There exist several realizations of the general idea in several physics engines [19, 22, 37].
+                                             The simulators’ spatio-temporal resolution ranges between 50-400 mm and 2-500 ms, with computational
+                                         speed between 10−4 and 5 times faster than real-time. The simulators are equipped with the same sensing
+                                         capabilities used in the field tests, which include kinematics and force sensors in selected joints and actuators,
+                                         weight estimation of the loaded material, and the shape of the pile surface before loading. The simulators and
+                                         field tests are compared using the measured time series, loaded mass, and mechanical work. The operator’s
+                                         control of the vehicle is replicated using feedforward control. Finally, we investigate the domain sensitivity of a
+                                         force feedback controller optimized in a real-time simulator under transfer to a simulator of much higher fidelity.
+
+
+                                                                                                      1
+2    Related work
+In the scientific literature, there are few examples of full system simulators that represent the full dynamics
+of both a wheel loader and its environment. Exceptions include studies for predicting [4] and optimizing [30]
+the outcome of a dig plan given a soil pile of a certain shape, and loader automation using deep reinforcement
+learning-based control [7] or nonlinear model predictive control [41]. Only in [4] were the simulators directly
+compared to field tests with a real wheel loader. The present study is a direct extension of this work.
+    In [6], a controller for a wheeled scooping robot was developed using deep reinforcement learning in a
+simulated environment and then transferred to a physical robot without any domain adaptation. Unsurprisingly,
+notable differences were observed between the simulated and real bucket trajectories, scooped mass, and loading
+time. No conclusion was made about what kind of discrepancy between the simulated and real systems caused
+the difference in outcome. A high sensitivity to changing contact forces was reported. A possible explanation
+is that the simulator used too coarse particles. The bucket could occupy roughly 15 particles, while the real
+material was much more fine-grained.
+    There are several simulation studies of the relationship between bucket trajectory, fill factor, and mechanical
+work using the discrete element method (DEM) for the soil and a kinematically controlled bucket geometry
+[16, 17, 33, 44]. However, as pointed out in the review article [11], it is generally impossible to track precisely
+a prescribed dig trajectory because of the unpredictive nature of the soil-vehicle interaction, e.g., soil flow and
+wheel slip. Worse yet, a kinematically feasible trajectory might not be realizable with the soil dynamics and
+physical limitations of driveline and hydraulic actuation at hand.
+    In [17], DEM simulations in quasi-2D were carried out with a kinematically controlled bucket loading gravel
+along numerous pre-planned trajectories. The bucket velocity and force were input to a mapping function that
+outputs the corresponding velocities and forces in the lift and tilt cylinders. The optimal trajectory and control
+were found through dynamic programming using a wheel loader model that included the engine, driveline, and
+hydraulics. The optimal solution had 14% higher fuel consumption than the most fuel-efficient loading cycle
+among the field tests carried out with skilled operators. The optimization assumes no simulation-to-reality gap
+while devising a scheme that avoids additional system simulations, at the time, requiring 23 CPU hours for each
+loading cycle.
+    In [44], time series measurements from field tests were fed into a kinematically controlled loader mechanism
+and co-simulated with a DEM representation of the soil. The simulated and real working resistance agreed with
+an average deviation of 7%, however, with no explanation of how the pile shape and DEM model parameters
+were set.
+    There is extensive literature on models for the wheel loader dynamics alone or coupled with simplified models
+for the force on the bucket from the soil. One elaborate model, including the dynamics of the articulated
+multibody system, hydromechanical powertrain, and tires, was developed and validated in [35, 25], for the
+purpose of analysis and optimization of working patterns and energy flow for various working cycles. The
+empirical material model predicts forces on the bucket but does not explicitly model the soil dynamics and was
+not evaluated on this.
+
+
+3    The simulation-to-reality gap
+A simulator is an idealized replica of a real system, and it is unavoidable that it behaves somewhat differently,
+although fed with identical control signals. The potential causes for the mismatch can broadly be categorized
+into model errors, numerical errors, and implementation errors. Model errors include unmodeled or oversim-
+plified geometry and physics, inaccurate model parameters and initial conditions. When the system involves
+feedback control, actuator latency and noise are reportedly major sources of model errors [21]. Common sources
+for numerical errors are using a spatial and temporal resolution that is too coarse. Multiphysics and multiscale
+simulations are prone to solver and co-simulation coupling errors. When simulations run over a long time,
+compared to the integration timestep, it is important to use numerically stable algorithms that prevent locally
+small errors from accumulating into large global errors. Low-order variational integrators, preserving the fun-
+damental symmetries, are then advantageous over the standard Runge-Kutta or multistep methods with high
+local accuracy but without global error bounds [18]. Machine learning algorithms that rely on system state
+exploration, e.g., reinforcement learning, are particularly sensitive to simulator imperfections. RL agents are
+prone to exploit simulation errors if there is an advantage to it. An illustrative example is the use of unphysical
+collision dynamics in [24], triggered by sliding along walls into the corners to find shortcuts through otherwise
+non-navigable space.
+    In the field of robotics and deep learning, the discrepancy between a simulated and real system is usually
+referred to as the reality gap, simulation-to-reality gap, or sim-to-real gap in short [49]. If the gap is significant,
+a solution developed in simulation will exhibit a simulation bias and cause it to perform differently, and usually
+poorly, when transferred to the real system [5]. The gap is severe if the effort to adapt the solution to the real
+
+
+                                                          2
+domain is greater than its conception in the simulated environment. The reality gap may be considered small
+when it is less than the natural variations in different instances of the real system. Hence, there is no objective
+measure for the sim-to-real gap. It depends on the task the system intends to perform and is relative to the
+naturally occurring variations.
+   System identification is the process of optimizing the model parameters, θ, given a measure of the discrepancy
+between the simulated and real behavior. The classical techniques of frequency and impulse response methods
+focus on linear systems such that the best parameter fit results in a linear least square problem [40]. In [42], the
+system identification is stated in terms of the average trajectory deviation using an Euclidean weighted norm
+                                                          k   Z T
+                                                   1X
+                                       θ = arg min                  ∥yi (t; θ) − ŷi (t)∥2W dt,                                (1)
+                                                   k i=1       0
+
+
+    where yi (t; θ) and ŷi (t) are the simulated and real trajectories, respectively. The average is over a sequence of
+k reference trajectories. The system state vector y may be represented in either reduced or maximal coordinates
+and a weight matrix W for controlling the relative importance of each degree of freedom. The gradient-free
+Covariance Matrix Adaptation1 (CMA) was used as optimizer due to the presence of intermittent contacts and
+the complex interplay between the simulation results and the simulation parameters.
+    The need for metrics and benchmark data for the sim-to-real gap was recognized in [10]. Benchmark data
+was collected for ten different robotic manipulation tasks using a motion capture system for the pose and
+robotic force/torque sensors. The metrics included the Euclidean distance error of real and simulated end
+effector position, rotation, and pose as the distance on the Euclidean group SE(3) that combines translation
+and rotation, velocity, acceleration, motor torque, and contact-induced force and moment. When the task
+involves manipulating a (rigid) object, velocity and acceleration error measures for this were included as well.
+    The sim-to-real gap in the context of robotic manipulation is often attributed to frictional contact modeling
+and solvers [34, 20]. Direct solvers usually rely on linearization of the friction law using a box or polyhedral
+discretization of the Coulomb cone. This may induce an artificial directional dependency. Iterative solvers leave
+a truncation error that often appears as numerical elasticity and damping, and excessive sliding. One way to
+evaluate numerical errors is the self-consistency error [14], i.e., comparing a numerical solution with a reference
+solution computed with the same model and simulator but with finest possible setting for spatial and temporal
+resolution and solver settings. The error should be interpreted carefully. A small self-consistency error does not
+guarantee the numerical errors will be small when the correctness of the reference solution is unknown. A large
+self-consistency error is an indicator of numerical errors, but it might be that small numerical errors initiated
+the solution to follow a different but still physically correct trajectory (to a good approximation). Therefore,
+attention should be at the rate of initial deviation rather than the magnitude of the error over time.
+    In [24], it is argued that simulators need not be a perfect replica of reality to be useful and are better
+judged by their sim-to-real predictivity: if one method outperforms another in simulation, how likely is the
+trend to hold in reality? For this purpose, they introduce a sim-to-real correlation coefficient (SRCC), which
+is the Pearson correlation coefficient over a set of performance pairs of reinforcement learning agents that are
+evaluated in simulation and reality. The sim-to-real gap vanishes as SRCC approaches 1. Alternatively, the
+distance between predicted and real state-action transitions are measured [2].
+    In the field of machine learning, it is common to use either domain adaptation or domain randomization
+to reduce the effects of having a reality gap. In domain adaptation, a model learns about features invariant to
+the shift between training (simulation) and test (reality) distributions and uses this to generalize better under
+a domain shift. Domain randomization means that various attributes of the training domain are randomized
+to make the model more robust and adaptable to unseen and changing environmental conditions [34]. With
+the wrong type or amount of randomization, the model becomes overly conservative, or the problem becomes
+too hard. In [43], the reality gap from simulators with low-fidelity rendering was bridged by randomizing scene
+properties such as lighting, textures, and camera placement. With the same approach, significant calibration
+errors in the dynamics model were mitigated in [36]. It has been suggested that domain randomization can
+effectively reduce simulation bias from numerical errors or unmodeled physics when using a simulator of low
+fidelity.
+
+3.1     Measures
+In the present paper we consider scalar signals f (t) : [0, T ] → R, position trajectories x(t) : [0, T ] → R3 , and
+discrete or time-integrated scalar quantities, q, such as loaded mass or total work. In time discrete form we
+represent the signals as f0:T = [f0 , f1 , ..., fN ] and x0:T = [x0 , x1 , ..., xN ], with the number of discrete timesteps
+N = T /∆t. For each scalar signal fn , with real reference fˆn , the instantaneous error at discrete time indexed
+  1 CMA is a stochastic sampling-based optimization algorithm, which has been successfully applied to search for control parameters
+
+when the problem domain is highly discontinuous.
+
+
+
+                                                                   3
+n is denoted εfn = fn − fˆn , and we compute the normalized mean absolute error (MAE) by
+                                                             N
+                                                       1 X εfn
+                                                Ef =               ,                                            (2)
+                                                       N n=0 fnorm
+
+where fnorm is a normalizing reference value, which we take to be the maximum absolute value if nothing else
+is mentioned. For trajectories, a natural choice is the normalized mean Euclidean error (MEE)
+                                                                  N
+                                                        1 X ∥εx n ∥2
+                                             ExM EE =                ,                                          (3)
+                                                        N n=0 Lnorm
+
+with Euclidean norm of the momentaneous trajectory error εx       n = xn − x̂n and a normalizing length Lnorm .
+However, if two trajectories trace approximately the same path with a slight delay or speed difference, this is
+picked up by the momentaneous error and accumulated along the reminding part of the trajectory.
+    The dynamic time warping (DTW) distance [8] is a similarity measure useful for comparing trajectory time
+series. The cumulative error of a time shift or speed difference is much less than for the standard Euclidian
+norm, giving a more nuanced similarity measure. Assume two time discrete trajectories x = [x0 , x1 , ..., xN ]
+and y = [y0 , y1 , ..., yN ], and a warping curve ϕ(n) = (ϕx (n), ϕy (n)) with warping functions ϕx and ϕy that
+monotonically remaps the time series, i.e., ϕx (n + 1) ≥ ϕx (n). The optimal warping curve picks the deformation
+of the time axis, which brings the two time series as close as possible to each other, measured by
+                                                      N
+                                                      X
+                                        dϕ (x, y) =         ∥ϕx (n) − ϕy (n)∥2 .
+                                                      n=0
+
+We compute the normalized DTW distance error as
+
+                                                                 dϕ (x, x̂)
+                                                ExDT W =                                                        (4)
+                                                                 N Lnorm
+
+using the Python implementation similaritymeasures from [23].
+
+
+4     Experiments
+The experimental data in this study comes from a field test conducted by Komatsu Ltd
+   using a manually operated wheel loader equipped with additional sensing capabilities. The vehicle, test
+environment, and the procedure for data collection and obtained measurements are described in this section.
+
+4.1    Wheel loader
+The vehicle was a Komatsu WA320-7, which is a medium-sized wheel loader commonly used in quarry mines
+and construction sites. It has an operating weight of 15.175 tonnes and is powered by a diesel engine with an
+output power capacity of 127 kW. A hydrostatic transmission driveline provides four-wheel drive via a fixed
+ratio gearbox and a differential system. The wheels, 1.39 m in diameter, are spaced at a track width of 2.05
+m and a wheelbase of 3.03 m. A hydraulic-powered articulated steering joint separates the rear and front unit.
+The flat-bottomed bucket has a loading capacity of 3.0 m3 and is 2.685 m wide,
+     and was equipped with a bolt-on cutting edge. The bucket is mounted on the front unit’s parallel Z-bar
+linkage mechanism, which is hydraulically actuated with two (parallel) boom cylinders and one bucket cylinder
+for lifting and tilting. The test vehicle was equipped with several sensing capabilities, including pressures in the
+lift and tilt hydraulic cylinders and the geometric configuration of the bucket linkage. The vehicle position and
+velocity relative to the ground and walls confining the gravel pile were also tracked. The vehicle control system
+for engine, transmission, and hydraulics balances the torque and fuel usage in the different work phases. The
+operator mainly controls the accel and brake pedals, shift range, and lift and tilt lever.
+
+4.2    Test environment
+The wheel loader was manually operated on the test site, which included a flat, rigid ground and piles of gravel
+confined with vertical walls at the sides and the rear. The gravel consisted of sedimentary rock crushed and
+sifted to particle size around 30-40 mm mixed with a small amount of fine particles and moisture. The bulk
+density was measured to 1727 kg/m3 . An image of the wheel loader digging into the pile is shown in Fig. 1 and
+in Supplementary Video 1.
+
+
+                                                             4
+                                          Figure 1: Photo from the field test.
+
+
+4.3    Measurements
+Different loading operations were performed manually while collecting
+    measurement data with a sampling frequency of 100 Hz. This study focuses on the quantities listed in Table 1
+and illustrated in Fig. 2. Discrete measurements were also made. The shape of the pile surface was captured with
+a 2D laser scanner before each recorded loading. The loaded mass in the bucket was estimated after each loading
+using the verified built-in functionality. The momentaneous power consumption is computed as the sum of the
+tractive power plus the rate of work exerted by the lift and tilt cylinders, P ≡ Ptr + Pl + Pt = ftr v + fl d˙l + ft d˙t .
+The reported net mechanical work is the time integral of this. Note that the exerted work does not include the
+mechanical losses in the engine, transmission, or hydraulics.
+
+                                                                       ft
+                                                                  dt
+                                     θp       v          θl
+
+                                                                   dl fl         θt
+                                                                                              [x,z]
+
+
+
+                                                  fftr
+
+
+
+
+Figure 2: Illustration of the wheel loader from the side and the top with the quantities measured during the field test
+marked in red, joints in blue, and actuators in green.
+
+    Three loading operations were selected for comparison with simulations. These are listed in Table 2. In the
+test named FB35, the bucket was lowered horizontally to the ground and filled by driving it deep into the pile.
+After tilting the bucket 20◦ , the wheel loader was reversed. After breakout, the bucket was finally tilted to the
+end. During the penetration phase, a slight increase in the boom lift was applied (starting at t = 3.5 s) to avoid
+wheel slip when maximum traction is required. After loading was completed, the weight of the soil in the bucket
+was estimated to 3.46 tonnes and the exerted mechanical work was 209 kJ. In the HD27 test, the boom was
+raised during the middle of the penetration phase (between t = 1.5 and t = 2.5 s) and tilted to the end during
+breakout. The loaded mass was 2.70 tonnes, and the net work was 127 kJ. The RD21 test is characterized by
+a shallow bucket penetration at low speed with the bucket tip raised 0.25 m above the ground. A step-wise
+
+
+                                                              5
+                                         Table 1: Time series measurements.
+
+       Variable           Symbol        Unit     Comment
+       lift force           fl         arb.u.    calculated from cylinder pressures
+       tilt force           ft         arb.u.    calculated from cylinder pressures
+       tractive force       ftr        arb.u.    calculated from hydraulic motor pressure and capacity
+       drive speed           v         km/h      calculated from wheel revolution
+       lift extension       dl         arb.u.    calculated from the piston position
+       tilt extension       dt         arb.u.    calculated from the piston position
+       boom angle           θl        degrees    angular potentiometer relative to chassis pitch
+       bucket angle         θt        degrees    angular potentiometer relative to chassis pitch
+       chassis pitch        θp        degrees    calculated from the tire strains relative to ground
+       vehicle position                  m       laser scanned distance to the vertical wall behind the pile
+       bucket position      [x, z]       m       calculated from vehicle, boom, and bucket pose
+
+
+tilting of the bucket was applied during bucket filling. The operation resulted in 2.10 tonnes of loaded mass and
+a mechanical work of 112 kJ. The measurements from the three loadings are presented in Fig. 6 and 7 together
+with simulated measurements. Note that these operations were the result of trying different trajectories with
+no ambition of achieving the rated load.
+
+                      Table 2: Loaded mass and estimated work in the three field experiments.
+
+                                         Test     Mass [tonne]      Work [kJ]
+                                         FB35        3.46             209
+                                         HD27        2.70             127
+                                         RD21        2.10             112
+
+
+
+5    Simulator
+Simulators were created for the loading scenarios in Sec. 4. The simulators include a wheel loader, a rigid flat
+ground, and a pile of soil. The vehicle is modeled as a 3D rigid multibody system with frictional contacts and
+driveline dynamics. For the soil, two different types of models are used, type D and G, each with four different
+spatio-temporal resolutions. The key settings for the eight different levels of simulator fidelity are listed in
+Table 3, with characteristic particle diameter D, timestep ∆t, the number of particles Np , and the number of
+solver iterations Nit (explained in Sec. 5.3). Screen captures from the eight simulators are shown in Fig. 3, and
+Supplementary Video 2 shows the evolution. In the type-D simulators, the entire pile is modeled in terms of
+particles using DEM with time implicit integration for strong coupling with the vehicle dynamics through the
+particle-bucket contact forces. These simulations are computationally intense, especially when the soil is finely
+resolved into many small particles. In the type-G simulators, a reduced multiscale method is used where only a
+small fraction of the soil, the active zone inside and in front of the bucket, is resolved in terms of particles. The
+macroscopic dynamics of the particle system is approximated by a rigid aggregate body that is coupled back
+to the vehicle dynamics. The type-G simulators are computationally much more efficient, running in real-time
+or faster when the grid size is set large enough but presumably associated with a larger model error. The
+simulations were performed using the physics engine AGX Dynamics [1] with the methods described in [39] and
+[37]. Details are described in the following subsections.
+
+               Table 3: Key settings for the eight different levels of simulator fidelity shown in Fig. 3.
+
+                               Fidelity level   D [mm]      ∆t [ms]        Np        Nit
+                               D50                   50           2     450, 000     200
+                               D100                 100           5       55, 000    100
+                               D200                 200          10        6, 100    500
+                               D400                 400          20           800     15
+                               G50                   50           5     ≲ 28, 000     50
+                               G100                 100          10      ≲ 3, 500     25
+                               G200                 200          20        ≲ 480      15
+                               G400                 400          50          ≲ 55     10
+
+
+
+
+                                                           6
+                                                     D50                                                    G50
+
+
+
+
+                                                    D100                                                   G100
+
+
+
+
+                                                    D200                                                   G200
+
+
+
+
+                                                    D400                                                   G400
+
+
+
+
+Figure 3: Images from the eight simulators of different levels of fidelity. In the type D-simulators (left column), the
+gravel pile is fully resolved in particles with characteristic diameters of 50, 100, 200, and 400 mm (top to bottom). In
+the type G-simulators (right column), a multiscale technique is applied with different grid sizes 50, 100, 200, and 400
+mm (top to bottom).
+
+
+5.1    Multibody dynamics framework
+We use non-smooth contacting multibody dynamics in descriptor form for modeling the vehicle and the soil,
+introduced in [28] and supported by AGX Dynamics [1]. Specifically, we use a maximal coordinate representation
+in terms of rigid bodies and various types of kinematic constraints for joints, motors, and frictional contacts
+and impacts. The governing equations are
+
+                                             M v̇ = f + GTj λj + GTc λc ,                                           (5)
+                                               εj λj + ηj gj + τj Gj v = uj ,                                       (6)
+                                                      λmin ≤ λj ≤ λmax ,                                            (7)
+                                                 contact law(gc , vc , λc ),                                        (8)
+
+with system mass matrix M ∈ R6Nb ×6Nb , external force f ∈ R6Nb , and velocity v ∈ R6Nb that is the time
+derivative of the world frame maximal coordinates x ∈ R7Nb (using quaternions for the orientation). The
+constraint forces in the Newton-Euler equation of motion (5), with Lagrange multiplier λ and Jacobian G are
+divided joints and motors, labeled with j, and contacts, labeled with c. Eq. (6) is a generic constraint equation.
+An ideal joint can be represented with εj = τj = uj = 0, in which case Eq. (6) express a holonomic constraint,
+gj (x) = 0. A non-ideal joint is modeled using finite compliance εj and viscous damping rate τj . A linear or
+angular motor may be represented by a velocity constraint Gj v = uj (t) with target speed uj (t), which follows
+by εj = ηj = 0 and τj = 1. Range limits on the motor constraint forces may be imposed by Eq. (7). With Nj
+constrained and actuated degrees of freedom we have λj ∈ RNj and Gj ∈ RNj ×6Nb .
+    Contact laws are imposed as inequality and complementarity conditions on the contact multiplier λc ∈ R3Nc
+
+
+                                                            7
+and relative contact velocity. Each contact multiplier is split λc = [λn ; λt ] in the normal and tangential
+components that must obey the Coulomb law, |λt | ≤ µt λn , and complementarity conditions for non-penetration
+0 ≤ ε−1c gn + γc Gn v ⊥ λn ≥ 0 and no-slip ∥Gt v∥(µt λn − ∥λt ∥), and maximumum dissipation ∥Gt v∥∥λt ∥ =
+−(Gt v)T λt . Here, gn is a contact gap function, with normal Jacobian Gn = ∂g      ∂x , contact compliance εn and
+                                                                                     n
+
+
+damping γn , and the tangential Jacobian Gt is such that the contacting bodies relative velocity in the contact
+tangent space is given by Gt v. The set of active contacts in Eq. (8), with normal gaps overlaps stored in gc
+and contact velocities vc ≡ Gc v = [GTn , GTt ]T v, are re-computed at every simulation timestep using a collision
+detection algorithm. High-velocity impacts are modeled using the Newton impact law while preserving all other
+kinematic constraints. For the DEM bodies (soil particles), the contact model is mapped to Hertz model and a
+rolling resistance constraint is included to capture the effect of the real particles having a non-spherical shape
+while the simulated particles are spherical. The details about the mapping and parametrization of the contact
+model and the Jacobians are found in [39, 46, 37].
+    The dynamics system is time-integrated using the SPOOK stepper [28], which is a first-order accurate discrete
+variational integrator developed particularly for fixed timestep real-time simulation of multibody systems with
+non-ideal constraints and non-smooth dynamics. The time-discrete equations, forming a mixed complementarity
+problem (MCP), are solved using the direct-iterative split solver in AGX [1]. A block-sparse LDLT solver with
+pivoting [29] is used as direct solver for the vehicle system and its external contacts, with linearization of the
+Coulomb friction model. The DEM equations are solved using a projected Gauss-Seidel (PGS) algorithm, which
+is accelerated using domain decomposition for parallel processing and warm-starting [45]. The latter solves the
+contact problem without linearization of the Coulomb law.
+
+5.2    Wheel loader model
+The vehicle simulation model matches the key geometric dimensions and mass distribution of the Komatsu
+WA320-7 wheel loader introduced in Sec. 4.1, and shown in Fig. 2. It is composed of ten rigid bodies, ten
+hinge joints, and three prismatic joints. The mass and geometry properties were determined from a 3D model
+and geometric information provided by the manufacturer. The lift and tilt hydraulic cylinders are modeled
+as independent linear motors, introduced as velocity constraints through Eq. (6). The cylinders are controlled
+by assigning a momentaneous target speed and a maximum force that is derived from the manufacturer’s
+specifications. The resulting actuator speed and applied force depend on the dynamic state and are computed
+by the multibody dynamics solver. The vehicle model is equipped with a minimalistic driveline model. The
+engine is modeled as a hinge motor constraint with a torque limit that depends on the rotational speed. A set
+target drive speed is translated into a target motor speed. The rotational motion is transmitted to the wheels
+via a main drive shaft and differentials. For the tire-ground contacts, the linear elastic modulus was set to 1.0
+MPa and the surface friction coefficient to 2.0. The elasticity value was found to best match the experimentally
+observed tire deflection during bucket filling. The friction coefficient was the lowest value found that did not
+cause tire slippage during bucket filling in the calibration experiments. Having a friction coefficient larger than
+unity is not uncommon for tires on rough surfaces. Internal friction in joints and hydraulic cylinders is assumed
+to be negligible compared to the dig forces and was not modeled.
+
+5.3    Particle terrain model
+In the type-D simulators, the entire pile is resolved into particles that are simulated using the nonsmooth DEM
+as described in section 5.1 and more detailed in [39] and [46]. The piles are created by emitting particles into a
+6 m wide container with a front surface shaped as in the field tests. The particles are given a spherical shape,
+a specific mass density 2590
+    kg/m3 , friction coefficient 0.3, rolling resistance coefficient 0.02, and zero restitution coefficient. This matches
+the field test bulk mass density 1727 kg/m3 and the 32◦ angle of repose, the best among the pre-calibrated
+soils in [39]. For each field test, three piles were created with different particle size, D = 50, 100, 200, and
+400 mm. To avoid the formation of regular packings, the particle diameters are slightly perturbed into a
+uniform size distribution in a small size span of D ± 0.1D. With nonsmooth DEM, the computational time is
+proportional to Np Nit /∆t ∝ D3.5 .pThe strong dependency on the spatial resolution follows from the empirical
+rules Nit ≳ 0.1(L/D)/ϵ and ∆t ≲ 2ϵD/g for obtaining an error tolerance ϵ when simulating granular systems
+with characteristic size L and gravity acceleration g, using the SPOOK stepper and the projected Gauss-Seidel
+(PGS) solver [39].
+
+5.4    Multiscale terrain model
+The type-G simulators use the multiscale model for deformable terrain described in [37] and illustrated in Fig. 4.
+This model can be understood as a heavily reduced approximation of the full DEM model. From the perspective
+of the vehicle, the region of active soil is substituted with a single rigid body that has contact support with
+
+
+                                                           8
+                                rigid multibody system
+
+
+
+
+                 B         aggregate body          A
+
+
+
+
+                       C
+
+                                                         D
+                                                                                              moving soil
+                             multiscale coupling
+                                                             model reduction   resting soil
+
+                       particle
+                       system
+                                                                                              high-resolution DEM-rigid multibody model
+
+
+           failure plane
+
+
+                           resting solid
+
+
+
+Figure 4: Illustration of the multiscale terrain model (left) adapted from [37]. It can be regarded as a heavily reduced
+version of the full DEM model (right). The region of active soil movement is predicted and substituted with a rigid
+aggregate body that couples with the vehicle dynamics (upper left). The mass flow inside the active region is co-simulated
+using a DEM model (lower left).
+
+
+the surrounding terrain of resting soil. The coupled dynamics of the vehicle and the soil aggregate body are
+modeled using Eqs. (5)-(8) and solved with high accuracy using the direct solver.
+    The terrain deformations inside the active zone are treated by co-simulated soil dynamics models with the
+vehicle represented as kinematic bodies. The procedure is as follows. The surface of the terrain is represented
+by a heightmap. Its initial shape is reconstructed from the scanned piles in the field test. In solid phase, the
+soil is represented using a regular grid of voxels with variable states of mass occupancy and compaction. It is
+assigned a set of bulk mechanical parameters for its physical behavior in a nominal bank state. When a bucket
+comes in contact with the terrain surface, the zone of active soil movement is predicted. It is comprised of a
+shear failure plane stretching from the bucket’s cutting edge to the soil surface, enclosing a soil wedge. The
+failure angle depends on the soil’s internal friction and on the orientation of the bucket’s cutting plane. Inside
+the active zone, the soil is represented primarily by particles that may grow and shrink in size and numbers as
+the active zone progresses into or out of the terrain along with the moving bucket.
+    The particle dynamics is modelled using DEM with specific mass density and contact parameters that ensure
+a bulk mechanical behavior consistent with the set bulk parameters. The particles evolve in a co-simulation
+where the bucket exists as a kinematic moving body, controlled by the vehicle multibody simulation. The
+reaction force on the bucket from the soil is mediated through an aggregate body
+    that inherits the momentaneous shape, inertia, and momentum of the particles in the active zone.
+    The soil’s internal friction is applied at the aggregate-terrain contact interface (B in Fig. 4) while distinct
+parameters may be set for the aggregate-bucket interface (A in Fig. 4).
+    The role of the aggregate body can be viewed as a multibody dynamics generalization of the soil separation
+force described by the fundamental earthmoving equation [32]. Besides capturing inertial effects, the aggregate
+body has a numeric filtering effect that provides a stable reaction force and rate of soil displacement despite
+the large stresses and coarse spatial and temporal resolution. For this reason, it is possible to simulate with a
+larger timestep and less PGS solver iterations than predicted by the relations in Sec. 5.3 for DEM.
+    The additional resistance for the bucket teeth or edge to penetrate dense soil under stress is modeled by
+a penetration constraint (C in Fig. 4) that hinders the motion of the bucket in its cutting direction unless
+the penetration resistance force exceeds a critical value which is a function of the bucket geometry and the
+soil-bucket surface friction coefficient.
+    The terrain model was assigned the bulk parameters that best match the observed properties of the gravel
+at the field test site: mass density 1727 kg/m3 , internal friction angle 32◦ , dilatancy angle 8◦ , and Young’s
+modulus 4.6 MPa. Dilatancy is the volume expansion in a granular media that is induced by shear deformation.
+It makes the material more resistant to shear failure by adding directly to the internal friction, i.e., summing to
+an effective internal friction of 40◦ in the present case. The bucket cutting edge was assigned a maximum and
+minimum radius of 10 mm and 2.5 mm, respectively, and an equivalent tooth length of 10 mm. Two parameters
+were calibrated for the best match between the simulated and measured dig forces. The friction coefficient
+between the bucket and soil was set to 0.2. The so-called aggregate stiffness multiplier was set to 0.01. This
+increases the contact elasticity at the aggregate-terrain interface by a factor of five relative to the set Young’s
+modulus of the soil.
+
+
+                                                                   9
+                   t=0.37 s                           t=1.37 s                           t=2.37 s           t=3.37 s
+
+
+
+
+                   t=4.37 s                           t=5.37 s                           t=6.37 s           t=7.37 s
+
+
+
+
+                   t=8.37 s                           t=9.37 s                          t=10.37 s         t=11.37 s
+
+
+Figure 5: Simulation of the HD27 test with overlaid images from the D50 and G200 simulators at one-second intervals
+starting from time 0.37 s. The D50 particles are color-coded by speed, with blue for 0 and red for 1 m/s, while the G200
+particles are gray. The shape of the active zone and the distributions of mass in the bucket are in good agreement.
+
+                                           Table 4: Errors of the type-D simulators.
+
+                              simulation     Ex     Ev     Etr    El     Et     EM        EW     mean
+
+                              FB35-D50       0.10   0.12   0.09   0.09   0.09   −0.20    −0.22   0.13
+                              FB35-D100      0.04   0.12   0.09   0.09   0.10   −0.15    −0.20   0.11
+                              FB35-D200      0.03   0.12   0.08   0.11   0.10   −0.15    −0.12   0.10
+                              FB35-D400      0.10   0.13   0.08   0.10   0.13   −0.22    −0.16   0.13
+                              HD27-D50       0.02   0.06   0.13   0.08   0.08   −0.05     0.14   0.08
+                              HD27-D100      0.02   0.06   0.16   0.07   0.09    0.01     0.17   0.08
+                              HD27-D200      0.03   0.07   0.14   0.12   0.16   −0.07     0.04   0.09
+                              HD27-D400      0.05   0.06   0.13   0.11   0.18    0.01    −0.16   0.10
+                              RD21-D50       0.01   0.04   0.08   0.08   0.09   −0.26    −0.25   0.12
+                              RD21-D100      0.02   0.05   0.09   0.10   0.13   −0.31    −0.25   0.14
+                              RD21-D200      0.02   0.04   0.07   0.10   0.15   −0.27    −0.31   0.14
+                              RD21-D400      0.08   0.06   0.12   0.16   0.20   −0.30    −0.61   0.22
+
+
+
+
+    In Fig. 5 and Supplementary Video 3, the evolution of the HD27 test using the G200 simulator is compared
+with using a D50 simulator, the one with finest resolution. The simulators differ in number of particles by a
+factor 103 and in computational speed by 104 . Despite this, there is good agreement in the evolution of the
+G200 active zone and the mobilized D50 particles, and in the distributions of soil in the bucket after breakout.
+The differences in soil model and spatio-temporal resolution produce a small offset in the vehicle poses. This
+appears as a slight double vision in the images.
+
+
+6     Comparison
+6.1    Feedforward control
+To assess the reality gap of the simulators with different levels of fidelity, we repeated the loading cycles from the
+field test using feedforward control of the forward drive, boom lift, and bucket tilt actuators using target speed
+time series as input. The target speed control signals that best replicated the motion of the operator-controlled
+vehicle were identified using the G200 simulator (as it runs in real-time). This stage
+    also involved calibration of the wheel-ground friction coefficient, the bucket-terrain friction coefficient, and
+the aggregate stiffness multiplier to the values listed in the previous section. Next, the identified feedforward
+control signals (actuator target speed) were used as input when running each simulator.
+
+6.2    Processing of time series
+The comparison between the time series measurement from simulations and field tests was made with the
+observation variables listed in Table 1. Force measurements are rescaled by dividing them by a force constant
+characteristic for the vehicle. We exclude the phases of initializing the vehicle to target speed before reaching
+the pile and the phase after the bucket reaches the end. These phases are indicated in gray in Fig.7.
+    For the scalar signals, the MAE error was computed, while the DTW error was used for the bucket tip
+trajectories. The errors for each variable and D and G simulator are found in Table 4 and 5, respectively. These
+tables also include the relative errors in loaded mass EM = (M − M̂ )/M̂ , work, EW = (W − Ŵ )/Ŵ , and the
+mean error for each simulator.
+
+
+
+                                                                  10
+                                            Table 5: Errors of the type-G simulators.
+
+                               simulation      Ex          Ev       Etr        El       Et     EM              EW       mean
+
+                               FB35-G50       0.11         0.16     0.08       0.09     0.13   −0.05        0.00        0.09
+                               FB35-G100      0.04         0.14     0.07       0.09     0.14    0.00        0.01        0.07
+                               FB35-G200      0.06         0.12     0.09       0.09     0.15    0.00       −0.07        0.08
+                               FB35-G400      0.19         0.24     0.09       0.12     0.15   −0.12       −0.12        0.15
+                               HD27-G50       0.07         0.08     0.19       0.16     0.12    0.19        0.33        0.16
+                               HD27-G100      0.05         0.07     0.13       0.11     0.10    0.14        0.13        0.11
+                               HD27-G200      0.03         0.07     0.12       0.09     0.10    0.13        0.00        0.08
+                               HD27-G400      0.11         0.07     0.10       0.09     0.11    0.04       −0.15        0.10
+                               RD21-G50       0.05         0.05     0.16       0.07     0.07    0.10        0.16        0.09
+                               RD21-G100      0.06         0.05     0.14       0.05     0.08    0.11       −0.03        0.07
+                               RD21-G200      0.10         0.04     0.10       0.06     0.07    0.20       −0.20        0.11
+                               RD21-G400      0.21         0.04     0.16       0.10     0.08    0.31       −0.31        0.17
+
+
+
+
+6.3     Bucket tip trajectories
+Most of the simulated bucket tip trajectories in Fig. 6 match the experimental ones fairly well. The DTW error
+(Ex in Table 4 and 5) is, on average, 0.04 for the D-simulators and 0.09 for the G simulators. The general trend
+is that the bucket penetrates too deeply with the coarsest resolution (D400 and G400), presumably because of
+large contact overlaps due to the large
+    timestep. The exception is the RD21-D400 case, where the bucket is severely obstructed from penetrating
+the pile surface because of the oversized particles interlocking. The reason why this is not a problem in FB35-
+D400 and HD27-D400 is that the bucket penetrates along the ground plane on which the particles rest. If
+the bucket had been raised half a particle diameter, the bucket would have been obstructed similarly to the
+RD21-D400.
+    There are no clear signs of excessive penetration resistance for the finer particle piles, D50-D200. By design,
+the type-G simulators do not have this sensitivity to spatial discretization. The bucket’s cutting edge induces
+a failure plane (Fig. 4) wherever it occurs and the penetration resistance does not depend on the location and
+resolution of the voxel grid.
+
+              2.0           FB35              G502.0                           HD27               G502.0                           RD21        G50
+              1.5                             D501.5                                              D501.5                                       D50
+                                              exp                                                 exp                                          exp
+      z [m]
+
+
+
+
+                                             z [m]
+
+
+
+
+                                                                                                 z [m]
+
+
+
+
+              1.0                               1.0                                                 1.0
+              0.5                                    0.5                                                 0.5
+              0.0                                0.0                                                 0.0
+                    0   1           2         3                 0          1             2        3                 0          1           2    3
+              2.0           x [m]
+                            FB35             G1002.0                           x [m]
+                                                                               HD27              G1002.0                           x [m]
+                                                                                                                                   RD21        G100
+              1.5                            D1001.5                                             D1001.5                                       D100
+                                             exp                                                 exp                                           exp
+      z [m]
+
+
+
+
+                                             z [m]
+
+
+
+
+                                                                                                 z [m]
+
+
+
+
+              1.0                                1.0                                                 1.0
+              0.5                                    0.5                                                 0.5
+              0.0                                0.0                                                 0.0
+                    0   1           2         3                 0          1             2        3                 0          1           2    3
+              2.0           x [m]
+                            FB35             G2002.0                           x [m]
+                                                                               HD27              G2002.0                           x [m]
+                                                                                                                                   RD21        G200
+              1.5                            D2001.5                                             D2001.5                                       D200
+                                             exp                                                 exp                                           exp
+      z [m]
+
+
+
+
+                                             z [m]
+
+
+
+
+                                                                                                 z [m]
+
+
+
+
+              1.0                                1.0                                                 1.0
+              0.5                                    0.5                                                 0.5
+              0.0                                0.0                                                 0.0
+                    0   1           2         3                 0          1             2        3                 0          1           2   3
+              2.0           x [m]
+                            FB35             G4002.0                           x [m]
+                                                                               HD27              G4002.0                           x [m]
+                                                                                                                                   RD21
+              1.5                            D4001.5                                             D4001.5
+                                             exp                                                 exp
+      z [m]
+
+
+
+
+                                             z [m]
+
+
+
+
+                                                                                                 z [m]
+
+
+
+
+              1.0                                1.0                                                 1.0
+                                                                                                                                               G400
+              0.5                                    0.5                                                 0.5                                   D400
+                                                                                                                                               exp
+              0.0                                    0.0                                                 0.0
+                    0   1           2         3                 0          1             2        3                 0          1           2    3
+                            x [m]                                               x [m]                                              x [m]
+
+Figure 6: Bucket tip trajectories and initial pile shape (gray) from the field test (dashed black), and the simulators of
+type G (blue) and D (red).
+
+
+
+
+                                                                               11
+6.4    Scalar time series
+Studying the scalar time series measurements, shown in Fig. 7, we observe that the drive velocity and the rotation
+of the bucket and boom show a fair agreement between simulation and experiment. The G400 simulator stands
+out with the largest deviations. The traction force MAE (Etr in Table 4 and 5) ranges between 8% and 19%
+with the largest errors when the drive, boom, and bucket are actuated simultaneously (HD27 and RD21). The
+trend of the simulated boom lift and bucket tilt forces match the experimentally measured one, but there are
+occasionally significant deviations. The lift and tilt forces deviate the most during breakout in the test FB35
+around 7 s and RD21 around 14 s but not in the HD27 test where breakout occurs around the 8 s. After the
+breakout, the simulated and real lift forces are in good agreement, indicating a good agreement in bucket filling
+until the time when the bucket reaches its mechanical end-point and forces are redistributed. This happens
+around the 10 s for FB35 and 14.5 for RD21.
+    On average, the error in lift and tilt forces (El and Et in Table 4 and 5) are on average 11% and slightly
+smaller for the D simulators than for the G simulators, apart from the case of D400 and D200. The chassis
+angle relative error is large (largest for the coarsest simulators) but small in absolute numbers. The possible
+causes would be the model error of the tire pressures or not an entirely flat ground which we assume flat in
+simulation.
+
+6.5    Loaded mass and work
+The relative errors in loaded mass and work are listed in Table 4 and 5. The loaded mass is underestimated
+in the type D simulators, with a 15% mean error, and mostly overestimated in the G simulators, with a 12%
+mean error. For the accumulated work, the respective mean errors are 17% and 21%. Again, the D simulators
+mostly underestimate the work, while G simulators mostly overestimate it. Sample time series of the power
+consumption is shown in Fig. 8 with the respective contributions of the drive, lift, and tilt actuation. Most
+power is consumed by driving and secondly by tilting. Both types of simulators show similar trends in power
+consumption as the field test.
+
+6.6    Sim-to-real error and simulation speed
+The mean error for each test and simulator fidelity was computed. These are listed in the right-most column
+in Table 4 and 5 and plotted in Fig. 9 (a). We refer to this as the sim-to-real error as it is intended to capture
+the reality gap of the simulators. Overall, the sim-to-real error is about 10% with a standard deviation of 3%,
+On average, the sim-to-real error increases with the resolution (grid and particle size). The error is somewhat
+smaller for the type-G simulators than for the type-D simulators, except for the case of G50.
+    If we compare each simulator not with the field test but with the simulator of highest fidelity, D50, we obtain
+the mean sim-to-sim error in Fig.9 (b). The sim-to-sim error of the D simulators increases with particle size,
+as can be anticipated since this is a self-consistency error. The G50-G400 simulators, on the other hand, are
+offset to D50 by a 15% error on average.
+    The simulators are very different in computational intensity and speed, as indicated by the different timestep,
+number of particles, and solver iterations listed in Table 3. The real-time factor (computational time over
+simulated time) was measured using a workstation with a single Intel i7-8700K 3.70 GHz processor. The result
+is shown in Fig.9 (c). The type-G simulators are roughly 100 times faster than the type-D simulators of the
+same resolution and run in real-time for G200 and five times faster for G400. The G200 simulator may be
+considered a sweet spot in the trade-off in sim-to-real error versus speed.
+
+
+7     Domain sensitivity and predictivity with force-based control
+In this section, we investigate the domain sensitivity of a controller for automatic bucket-filling. Imagine a
+controller with some free parameters, a ∈ A, that may be tuned for near-optimal performance by exploring the
+control parameter space A using simulations. It is then of interest how sensitive the choice of control parameters
+is under transfer to the target domain. In other words, is a control parameter that is found to be near-optimal in
+simulation also near-optimal in reality? We did not have the possibility of running additional field experiments.
+Instead, we examined the domain sensitivity of a controller optimized with the fast G200 simulator under
+transfer to the D50 simulator, which is much more finely resolved and slower than four orders in magnitude.
+From Fig. 9, we know that the gap between G200 and D50 is similar in size to the simulation-to-reality gap,
+albeit the nature of deviations is different.
+
+
+
+
+                                                        12
+                        G400           G200         G100                   G50          D400       D200                   D100           D50        exp
+
+                            10                                        10                                         10
+                                         FB35                                          HD27                                      RD21
+
+              v [km/h]
+
+
+
+
+                                                        v [km/h]
+
+
+
+
+                                                                                                   v [km/h]
+                            5                                         5                                          5
+
+                          0      2.0                                0                RD21                      0
+                        1.0                                       1.0                                        1.0
+             ftr [arb.u.]
+
+
+
+
+                                                       ftr [arb.u.]
+
+
+
+
+                                                                                                  ftr [arb.u.]
+                        0.5      1.5                              0.5                                        0.5
+                     z [m]
+
+
+                        0.0                                       0.0                                        0.0
+                                 1.0
+                            4                                         4                                          4
+                 fl [arb.u.]
+
+
+
+
+                                                           fl [arb.u.]
+
+
+
+
+                                                                                                      fl [arb.u.]
+                            2
+                                 0.5                                  2                                          2
+
+                            0                                         0                                          0
+
+                                 0.0
+                            2
+                                              0                       2
+                                                                                 1                      22                           3
+                 ft [arb.u.]
+
+
+
+
+                                                           ft [arb.u.]
+
+
+
+
+                                                                                                      ft [arb.u.]
+                                                                                     x [m]
+                            0                                         0                                          0
+
+
+
+                            50                                        50                                         50
+              []
+
+
+
+
+                                                        []
+
+
+
+
+                                                                                                   []
+                  bkt
+
+
+
+
+                                                            bkt
+
+
+
+
+                                                                                                       bkt
+
+
+
+
+                            0                                         0                                          0
+                            0                                         0                                          0
+            []
+
+
+
+
+                                                      []
+
+
+
+
+                                                                                                  []
+
+
+
+
+                            20                                        20                                         20
+               bm
+
+
+
+
+                                                         bm
+
+
+
+
+                                                                                                    bm
+
+
+
+
+                            40                                        40                                         40
+                             2                                         2                                          2
+             []
+
+
+
+
+                                                       []
+
+
+
+
+                                                                                                  []
+
+
+
+
+                            0                                         0                                          0
+                 p
+
+
+
+
+                                                           p
+
+
+
+
+                                                                                                      p
+
+
+
+
+                             2                                         2                                          2
+                                 0        5             10                 0               5          10              0      5        10       15
+                                         time [s]                                      time [s]                                  time [s]
+Figure 7: Speed, force, rotation measurements for time series from the FB35, HD27, and RD21 experiments (dashed
+black) and type G (blue) and D (red) simulators. The comparison is made in the non-shaded regions, excluding the
+phases of initialization and reversal after breakout. Individual plots are found in Appendix 9.
+
+
+7.1    Test setup
+We used the same force feedback controller for automatic bucket filling as studied in [3] and run it on the FB35
+test pile. The wheel loader starts 5 m from the pile, heading straight with the target speed of 8 km/h and with
+the bucket lowered horizontally to the ground. Once the bucket reaches the pile, the force feedback control law
+is engaged on the lift and bucket cylinders to fill the bucket until the bucket tip breaks out from the pile. After
+breakout, the machine is held still for 0.5 s, for the soil to settle and then starts reversing with a target speed of
+8 km/h while lifting and tilting to reach the final boom and bucket angles of −20◦ and 50◦ , respectively. The
+loading cycle ends when the machine reaches the starting point.
+    The force feedback controller is an adaptation of the admittance controller in [12]. It determines the target
+speed of the linear motors for the boom and bucket cylinders. Recall that the linear motors are modeled
+as velocity constraints with force range limits on the constraint force, hence the set target speed will not be
+realized if the required force is not within the motor limits. The controller is defined by the following target
+           target                 max         target                   max
+speeds: vbm       = ubm (fbm , a)vbm   and vbk       = ubk (fbm , a)vbk    , where fbm is the measured force in the
+
+
+
+                                                                                      13
+                              FB35                                                                               HD27                                                      RD21
+         100                                                                   Pl100            Pl                                             100         Pl
+          75                                                                   Pt 75            Pt                                              75         Pt
+                                                                               Ptr              Ptr                                                        Ptr
+P [kW]
+
+
+
+
+                                                                           P [kW]
+
+
+
+
+                                                                                                                                      P [kW]
+          50                                                                   Ptot50           Ptot                                            50         Ptot
+                                                                                                                                                                                                    exp
+
+
+          25                                                                        25                                                          25
+           0                                                                         0                                                           0
+                    FB35-D50, W = 163.068 kJ                                                            HD27-D50, W = 145.2 kJ                                    RD21-D50, W = 84.803 kJ
+                2        4          6        8                                              1           2     3        4   5         6               2     4        6      8     10     12   14
+          100                 t [s]                                            Pl100                             t [s]                   Pl100             Pl              t [s]
+           75                                                                  Pt 75                                                     Pt 75             Pt
+                                                                               Ptr                                                       Ptr               Ptr
+P [kW]
+
+
+
+
+                                                                           P [kW]
+
+
+
+
+                                                                                                                                      P [kW]
+           50                                                                  Ptot50                                                    Ptot 50           Ptot
+                                                                                                                                                                                                    D50
+
+
+           25                                                                       25                                                 25
+            0                                                                        0                                                  0
+                    FB35-G200, W = 195.421 kJ                                                          HD27-G200, W = 126.657 kJ                                  RD21-G200, W = 89.922 kJ
+                2         4         6        8                                              1           2     3        4   5     6      72                 4         6     8      10    12   14
+          100                 t [s]                                            Pl100                             t [s]             Pl100                                    t [s]            Pl
+           75                                                                  Pt 75                                               Pt 75                                                     Pt
+                                                                               Ptr                                                 Ptr                                                       Ptr
+ P [kW]
+
+
+
+
+                                                                           P [kW]
+
+
+
+
+                                                                                                                                      P [kW]
+           50                                                                  Ptot50                                              Ptot50                                                    Ptot   G200
+
+           25                                                                       25                                                 25
+            0                                                                        0                                                  0
+                2         4           6                               8                     1           2     3        4   5     6        2                4         6     8     10    12    14
+                              t [s]                                                                              t [s]                                                     t [s]
+
+Figure 8: Time series of the power consumption in the three tests with sample results from the D50 and G200 simulators.
+The contributions to the total work of the drive, lift, and tilt actuators are shown.
+
+
+
+                                                                     0.2
+                                                sim-to-real error
+
+
+
+
+                                                                     0.1
+
+
+                                                                     0.0
+                                                                     1.0
+                                                                     0.2
+                                                                     0.2
+                                                                     0.8
+                                                             error
+                                                 sim-to-realerror
+
+
+
+
+                                                                     0.6
+                                                sim-to-sim
+
+
+
+
+                                                                     0.1
+                                                                     0.1
+                                                                     0.4
+                                                              0.2
+                                                              0.0
+                                                              0.0
+                                                              0.0
+                                                              1.0 0.05                   0.10                 0.20            0.30                       0.40
+                                                             100
+                                                            100.81
+                                          realtime factor
+
+
+
+
+                                                            100.62
+                                                            100.43
+                                                            100.24                                                                                        D
+                                                                                                                                                          G
+                                                                     0.0 0.05            0.10                 0.20            0.30                       0.40
+                                                                         0.05            0.10                 0.20
+                                                                                                         spatial resolution (m)0.30                      0.40
+
+Figure 9: Sim-to-real, sim-to-sim error, and the real-time factor for the different levels of simulator fidelity. The solid
+line is the average over the three tests, and the shaded region shows the standard deviation. The spatial resolution refers
+to particle size and grid cell size.
+
+
+boom cylinder, suitably normalized. The response functions are ubm = clip (kbm [fbm − δbm ] , 0, 1) and ubk =
+clip (kbk [fbm − δbk ] , 0, 1), where clip(value, min, max) limits value to the maximum and minimum values. The
+digging resistance increases with the depth of bucket penetration into the pile. If the dig resistance, observed
+through the boom cylinder force fbm , exceeds the threshold parameters δbm or δbk , then the lift or tilt actuation
+is engaged, respectively. Larger values of the threshold parameters will typically render bucket trajectories
+with deeper penetration. The gain parameters, kbm and kbk , regulate how rapid the respective reactions are.
+
+
+                                                                                                               14
+These are collected in a control parameter vector a = [δbm , kbm , δbk , kbk ]. It should be noted that unlike the
+feedforward controller in Sec. 6, the time for completing the loading cycle is entirely unknown and highly
+dependent on the control parameter and pile shape.
+    For simplicity, we do not cover the full four-dimensional control parameter space here. Instead, we sweep
+along a search line a(s) = a0 + (a1 − a0 )s, with a0 = [0.7, 0.3, 0.2, 0.2], a1 = [0.0, 2.2, 0.15, 4.8], and search
+parameter s ∈ [0, 1]. Typically, s ≈ 0 produces a deep bucket penetration before breaking out while s ≈ 1
+will render a shallower trajectory following the surface. Simulations were run with distinct control parameters
+by sweeping s from 0.0 to 1.0 in 50 equally spaced intervals for G200 and 30 intervals for D50. To see the
+dependency on the simulator level-of-fidelity, simulations with G100 and D100 were also run. Samples are
+shown in Supplementary Video 4.
+
+7.2    Resulting domain sensitivity
+The measured load mass M , cycle time T , and work W for the control parameters and simulators are shown
+in Fig. 10. The simulators show the same general dependency but with some differences. The mass, time, and
+work are monotonically decreasing with s, with some fluctuations that are larger for G than for D. The load
+time agrees well, capturing how time increases rapidly with deep bucket penetration. For the work, there is a
+nearly constant gap of 50 kJ, G200 yielding roughly 15% higher values than D50. For the mass, the gap is 25%
+in the region of maximal bucket filling, occurring for s ≈ 0, and decreases steadily with increasing s. These gaps
+are consistent with the results in Sec. 6, where feedforward control was used. The dependency on resolution is
+hardly notable here.
+
+                  5 55                                                           25 2525                              600600
+                                                                                                                          600
+
+
+                                                                                 20 2020                              500500
+                                                                                                                          500
+            mass [tonne]
+            mass [tonne]
+                 [tonne]
+
+
+
+
+                  4 44                                                                                          work [kJ]
+                                                                                                                work [kJ]
+                                                                                                                     [kJ]
+                                                                           time [s]
+                                                                           time [s]
+                                                                                [s]
+
+
+
+
+                                                                                 15 1515                              400400
+                                                                                                                          400
+                                                                           time
+
+
+
+
+                                                                                                                work
+            mass
+
+
+
+
+                  3 33         D50
+                                 D50
+                                  D50
+                               D100
+                                 D100
+                                  D100                                           10 1010                              300300
+                                                                                                                          300
+                               G100
+                                 G100
+                                  G100
+                               G200
+                                 G200
+                                  G200
+                  2 22                                                            5 55                                200200
+                    0.0 0.0
+                         0.0         0.50.5
+                                         0.5                           1.01.0
+                                                                           1.0      0.00.0
+                                                                                        0.0    0.50.5
+                                                                                                   0.5             1.0 200
+                                                                                                               1.01.0     0.00.0
+                                                                                                                              0.0                    0.50.5
+                                                                                                                                                         0.5   1.01.0
+                                                                                                                                                                   1.0
+                                     s ss                                                      s ss                                                   s ss
+                                   (a)                                                        (b)                                                    (c)
+
+Figure 10: The dependency of loaded mass (a), time (b), and work (c) on the force feedback control parameter s in
+the domains G200 and D50. To see the sensitivity on resolution, G100 and D100 are also shown.
+
+     The productivity and efficiency of each simulated loading are computed as M/T and M/W , respectively.
+Their dependency on the control parameter and on the type of simulator is shown in Fig. 11. The absolute
+value in productivity differs because of the mentioned gap, but the trends are similar. Productivity drops in
+a similar fashion when the load time increases sharply as s approaches zero. The D simulators predict that
+efficiency is monotonically increasing with s while it is more or less constant for G.
+
+                                                                     500                                                    30
+
+                                                                     400
+                                                                                                      productivity          25
+                                               productivity [kg/s]
+
+
+
+
+                                                                                                                                efficiency [kg/kJ]
+
+
+
+
+                                                                                                                            20
+                                                                     300
+                                                                                                                            15
+                                                                     200                                 efficiency
+                                                                                                                            10
+                                                                     100                                                    5
+                                                                                                     D50           G100
+                                                                                                     D100          G200
+                                                                       0 0.0                                                0
+                                                                                              0.5                     1.0
+                                                                                               s
+Figure 11: Domain sensitivity from force feedback control with parameter a(s) in the simulation domains G100, G200,
+D50, and D100.
+
+   If the task was to select an optimal control parameter using the G200 simulator and transfer it to the D50
+domain, we would have experienced a domain gap as well as a shift in the value of the optimal parameter in
+
+
+                                                                                              15
+the different domains. In the current example, the maximal productivity in G200 is about 416 kg/s at s = 0.42,
+while D50 simulations observed the maximal productivity of 366 kg/s at s = 0.36. This translates into a domain
+gap of 49 kg/s (13%) and a domain shift of 0.06. If the control parameter s = 0.42, which is optimal for G200,
+were directly transferred to the D50 domain, the performance drop from the found optimal value would only
+be 2%. Since this might be the special case of the selected action space, we also tested the domain sensitivity
+in an additional 10 spaces. To avoid the simulation cost of D50, the additional tests were conducted between
+G200 and D100, assuming the gap between D50 and D100 was marginal, as shown in Fig. 11. In consequence,
+the average of the domain gap, the domain shift, and the performance drop resulted in 55 kg/s (16%), 0.22,
+and 5%, respectively.
+
+
+8    Discussion
+A limitation of the present study is the specificity of loading homogeneous gravel. It is likely that the sim-to-real
+gap will be larger when considering more complex and heterogeneous soil, such as coarse fragmented rocks and
+cohesive dirt. On the other hand, the results in [15] suggest that the adaptation to other materials is not an
+insurmountable problem.
+    The wheel loader model in this paper is highly simplified, in particular the engine and power transmission
+through the driveline and hydraulics for the boom lift and bucket tilt. In reality, they share and compete for
+the same power source. A simple model extension that would not affect simulation timestep or speed would be
+to adopt the model in [38]. The number of parameters to calibrate would, however, increase.
+
+
+9    Conclusion
+We found that it is possible to create a full-system wheel loading simulator with a sim-to-real gap of 10%.
+If the domain sensitivity between D and G simulators is representative of the true reality gap, this level of
+sim-to-real gap is clearly sufficient to transfer the studied force feedback controller without a significant drop
+in optimality. The observed gap depends weakly on the simulated terrain’s level of fidelity. Unexpectedly, the
+reduced multiscale terrain model can deliver as good or better realism as a DEM model despite several orders
+of magnitude differences in degrees of freedom and computational speed. The fact that it has more free model
+parameters is compensated by high computational speed, allowing for many more evaluations during calibration.
+The findings suggest that the observed simulation-to-reality gap is due more to model errors than numerical
+errors. To further reduce the gap, we advise a more refined model of the engine, the hydraulic actuation of the
+boom and bucket and power distribution between it and the driveline.
+
+
+Supplementary material
+Supplementary data to this article can be found online at http://umit.cs.umu.se/wl-sim-to-real/.
+
+      Supplementary video 1
+      The field experiment and corresponding simulations for the three bucket-filling tests FB35, HD27, and
+      RD21. The particle and the multiscale terrain models are D50 (top right), G200 (bottom left), and G400
+      (bottom right).
+      Supplementary video 2
+      The simulations of the eight different levels of fidelity for the bucket-filling tests FB35, HD27, and RD21.
+      D50/G50 (top left), D100/G100 (top right), D200/G200 (bottom left), and D400/G400 (bottom right).
+      Supplementary video 3
+      The simulations of the bucket-filling tests FB35, HD27, and RD21 with overlaid images from the D50 and
+      G200 simulators. Particles are color-coded by velocity.
+
+      Supplementary video 4
+      The optimized bucket-filling controller in each simulator: D50 (top left), D100 (top right), G100 (bottom
+      left), and G200 (bottom right). Particles are color-coded by velocity.
+
+
+Appendix - Supplementary figures
+Figure 7 collects measurements from all simulators in a single figure for ease of comparison but at the cost of
+many overlapping lines. In Fig. 12-15, we present the measurements for each spatial resolution.
+
+
+
+                                                         16
+                           10                   G50 10                             G50 10                                G50
+                                    FB35        D50                    HD27        D50                        RD21       D50
+
+
+
+             v [km/h]
+
+
+
+
+                                                v [km/h]
+
+
+
+
+                                                                                   v [km/h]
+                                                exp                                exp                                   exp
+                           5                                  5                                  5
+
+                         0                                   0                                 0
+                       1.0                                 1.0                               1.0
+            ftr [arb.u.]
+
+
+
+
+                                               ftr [arb.u.]
+
+
+
+
+                                                                                  ftr [arb.u.]
+                       0.5                                 0.5                               0.5
+
+
+                       0.0                                 0.0                               0.0
+
+                           4                                  4                                  4
+                fl [arb.u.]
+
+
+
+
+                                                    fl [arb.u.]
+
+
+
+
+                                                                                      fl [arb.u.]
+                           2                                  2                                  2
+
+                           0                                  0                                  0
+
+
+                           2                                  2                                  2
+                ft [arb.u.]
+
+
+
+
+                                                    ft [arb.u.]
+
+
+
+
+                                                                                      ft [arb.u.]
+                           0                                  0                                  0
+
+
+
+                           50                                 50                                 50
+             []
+
+
+
+
+                                                []
+
+
+
+
+                                                                                   []
+                 bkt
+
+
+
+
+                                                     bkt
+
+
+
+
+                                                                                       bkt
+
+
+                           0                                  0                                  0
+                           0                                  0                                  0
+           []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+
+
+
+
+                           20                                 20                                 20
+              bm
+
+
+
+
+                                                 bm
+
+
+
+
+                                                                                    bm
+
+
+
+
+                           40                                 40                                 40
+                            2                                  2                                  2
+            []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+
+
+
+
+                           0                                  0                                  0
+                p
+
+
+
+
+                                                    p
+
+
+
+
+                                                                                      p
+
+
+
+
+                            2                                  2                                  2
+                                0    5         10                  0        5      10                 0   5        10    15
+                                    time [s]                           time [s]                               time [s]
+Figure 12: Speed, force, rotation measurements for time series from the FB35, HD27, RD21 experiments and type G50
+and D50 simulator results.
+
+
+Acknowledgement
+The research was supported in part by Komatsu Ltd, Algoryx Simulation AB, and the Swedish National
+Infrastructure for Computing at High-Performance Computing Center North (HPC2N).
+
+
+References
+ [1] AGX Dynamics. https://www.algoryx.se/products/agx-dynamics. Accessed: 2023-09-01.
+ [2] A. D. Allevato, E. Schaertl Short, M. Pryor, and A. L. Thomaz. Iterative residual tuning for system
+     identification and sim-to-real robot learning. Autonomous Robots, 44:1167–1182, 2020.
+ [3] K. Aoshima, A. Fälldin, E. Wadbro, and M. Servin. Predictor models for high-performance wheel loading.
+     arXiv preprint arXiv:2309.12016, 2023.
+ [4] K. Aoshima, M. Servin, and E. Wadbro. Simulation-based optimization of high-performance wheel loading.
+     In C. Feng and et al, editors, Proceedings of the 38th International Symposium on Automation and Robotics
+
+
+                                                                       17
+                          10                  G100 10                            G100 10                                G100
+                                   FB35       D100                    HD27       D100                        RD21       D100
+
+
+
+            v [km/h]
+
+
+
+
+                                               v [km/h]
+
+
+
+
+                                                                                  v [km/h]
+                                              exp                                exp                                    exp
+                          5                                  5                                  5
+
+                        0                                   0                                 0
+                      1.0                                 1.0                               1.0
+           ftr [arb.u.]
+
+
+
+
+                                              ftr [arb.u.]
+
+
+
+
+                                                                                 ftr [arb.u.]
+                      0.5                                 0.5                               0.5
+
+
+                      0.0                                 0.0                               0.0
+
+                          4                                  4                                  4
+               fl [arb.u.]
+
+
+
+
+                                                   fl [arb.u.]
+
+
+
+
+                                                                                     fl [arb.u.]
+                          2                                  2                                  2
+
+                          0                                  0                                  0
+
+
+                          2                                  2                                  2
+               ft [arb.u.]
+
+
+
+
+                                                   ft [arb.u.]
+
+
+
+
+                                                                                     ft [arb.u.]
+                          0                                  0                                  0
+
+
+
+                          50                                 50                                 50
+            []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+                bkt
+
+
+
+
+                                                    bkt
+
+
+
+
+                                                                                      bkt
+
+
+                          0                                  0                                  0
+                          0                                  0                                  0
+           []
+
+
+
+
+                                              []
+
+
+
+
+                                                                                 []
+
+
+
+
+                          20                                 20                                 20
+             bm
+
+
+
+
+                                                bm
+
+
+
+
+                                                                                   bm
+
+
+
+
+                          40                                 40                                 40
+                           2                                  2                                  2
+           []
+
+
+
+
+                                              []
+
+
+
+
+                                                                                 []
+
+
+
+
+                          0                                  0                                  0
+               p
+
+
+
+
+                                                   p
+
+
+
+
+                                                                                     p
+
+
+
+
+                           2                                  2                                  2
+                               0    5         10                  0        5      10                 0   5        10    15
+                                   time [s]                           time [s]                               time [s]
+Figure 13: Speed, force, rotation measurements for time series from the FB35, HD27, RD21 experiments and type
+G100 and D100 simulator results.
+
+
+    in Construction (ISARC), pages 688–695, Dubai, UAE, November 2021. International Association for
+    Automation and Robotics in Construction (IAARC).
+
+ [5] C. G. Atkeson and S. Schaal. Robot learning from demonstration. In ICML, volume 97, pages 12–20, 1997.
+ [6] O. Azulay and A. Shapiro. Wheel loader scooping controller using deep reinforcement learning. IEEE
+     Access, 9:24145–24154, 2021.
+ [7] S. Backman, D. Lindmark, K. Bodin, M. Servin, J. Mörk, and H. Löfgren. Continuous control of an
+     underground loader using deep reinforcement learning. Machines, 9(10), 2021.
+ [8] D. J. Berndt and J. Clifford. Using dynamic time warping to find patterns in time series. In Proceedings of
+     the 3rd International Conference on Knowledge Discovery and Data Mining, AAAIWS’94, page 359–370.
+     AAAI Press, 1994.
+
+ [9] H. Choi, C. Crump, C. Duriez, A. Elmquist, G. Hager, D. Han, F. Hearl, J. Hodgins, A. Jain, F. Leve,
+     et al. On the use of simulation in robotics: Opportunities, challenges, and suggestions for moving forward.
+     Proceedings of the National Academy of Sciences, 118(1):e1907856118, 2021.
+
+
+                                                                      18
+                          10                  G200 10                            G200 10                                G200
+                                   FB35       D200                    HD27       D200                        RD21       D200
+
+
+
+            v [km/h]
+
+
+
+
+                                               v [km/h]
+
+
+
+
+                                                                                  v [km/h]
+                                              exp                                exp                                    exp
+                          5                                  5                                  5
+
+                        0                                   0                                 0
+                      1.0                                 1.0                               1.0
+           ftr [arb.u.]
+
+
+
+
+                                              ftr [arb.u.]
+
+
+
+
+                                                                                 ftr [arb.u.]
+                      0.5                                 0.5                               0.5
+
+
+                      0.0                                 0.0                               0.0
+
+                          4                                  4                                  4
+               fl [arb.u.]
+
+
+
+
+                                                   fl [arb.u.]
+
+
+
+
+                                                                                     fl [arb.u.]
+                          2                                  2                                  2
+
+                          0                                  0                                  0
+
+
+                          2                                  2                                  2
+               ft [arb.u.]
+
+
+
+
+                                                   ft [arb.u.]
+
+
+
+
+                                                                                     ft [arb.u.]
+                          0                                  0                                  0
+
+
+
+                          50                                 50                                 50
+            []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+                bkt
+
+
+
+
+                                                    bkt
+
+
+
+
+                                                                                      bkt
+
+
+                          0                                  0                                  0
+                          0                                  0                                  0
+           []
+
+
+
+
+                                              []
+
+
+
+
+                                                                                 []
+
+
+
+
+                          20                                 20                                 20
+             bm
+
+
+
+
+                                                bm
+
+
+
+
+                                                                                   bm
+
+
+
+
+                          40                                 40                                 40
+                           2                                  2                                  2
+           []
+
+
+
+
+                                              []
+
+
+
+
+                                                                                 []
+
+
+
+
+                          0                                  0                                  0
+               p
+
+
+
+
+                                                   p
+
+
+
+
+                                                                                     p
+
+
+
+
+                           2                                  2                                  2
+                               0    5         10                  0        5      10                 0   5        10    15
+                                   time [s]                           time [s]                               time [s]
+Figure 14: Speed, force, rotation measurements for time series from the FB35, HD27, RD21 experiments and type
+G200 and D200 simulator results.
+
+
+[10] J. Collins, J. McVicar, D. Wedlock, R. Brown, D. Howard, and J. Leitner. Benchmarking simulated robotic
+     manipulation through a real world dataset. IEEE Robotics and Automation Letters, 5(1):250–257, 2019.
+
+[11] S. Dadhich, U. Bodin, and U. Andersson. Key challenges in automation of earth-moving machines. Au-
+     tomation in Construction, 68:212–222, 2016.
+[12] A. Dobson, J. Marshall, and J. Larsson. Admittance control for robotic loading: Design and experiments
+     with a 1-tonne loader and a 14-tonne load-haul-dump machine. Journal of Field Robotics, 34(1):123–150,
+     2017.
+[13] P. Egli and M. Hutter. A general approach for the automation of hydraulic excavator arms using reinforce-
+     ment learning. IEEE Robotics and Automation Letters, 7(2):5679–5686, 2022.
+[14] T. Erez, Y. Tassa, and E. Todorov. Simulation tools for model-based robotics: Comparison of Bullet,
+     Havok, MuJoCo, ODE and PhysX. In 2015 IEEE International Conference on Robotics and Automation
+     (ICRA), pages 4397–4404, 2015.
+
+
+
+
+                                                                      19
+                           10                  G400 10                            G400 10                                G400
+                                    FB35       D400                    HD27       D400                        RD21       D400
+
+
+
+             v [km/h]
+
+
+
+
+                                                v [km/h]
+
+
+
+
+                                                                                   v [km/h]
+                                               exp                                exp                                    exp
+                           5                                  5                                  5
+
+                         0                                   0                                 0
+                       1.0                                 1.0                               1.0
+            ftr [arb.u.]
+
+
+
+
+                                               ftr [arb.u.]
+
+
+
+
+                                                                                  ftr [arb.u.]
+                       0.5                                 0.5                               0.5
+
+
+                       0.0                                 0.0                               0.0
+
+                           4                                  4                                  4
+                fl [arb.u.]
+
+
+
+
+                                                    fl [arb.u.]
+
+
+
+
+                                                                                      fl [arb.u.]
+                           2                                  2                                  2
+
+                           0                                  0                                  0
+
+
+                           2                                  2                                  2
+                ft [arb.u.]
+
+
+
+
+                                                    ft [arb.u.]
+
+
+
+
+                                                                                      ft [arb.u.]
+                           0                                  0                                  0
+
+
+
+                           50                                 50                                 50
+             []
+
+
+
+
+                                                []
+
+
+
+
+                                                                                   []
+                 bkt
+
+
+
+
+                                                     bkt
+
+
+
+
+                                                                                       bkt
+
+
+                           0                                  0                                  0
+                           0                                  0                                  0
+           []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+
+
+
+
+                           20                                 20                                 20
+              bm
+
+
+
+
+                                                 bm
+
+
+
+
+                                                                                    bm
+
+
+
+
+                           40                                 40                                 40
+                            2                                  2                                  2
+            []
+
+
+
+
+                                               []
+
+
+
+
+                                                                                  []
+
+
+
+
+                           0                                  0                                  0
+                p
+
+
+
+
+                                                    p
+
+
+
+
+                                                                                      p
+
+
+
+
+                            2                                  2                                  2
+                                0    5         10                  0        5      10                 0   5        10    15
+                                    time [s]                           time [s]                               time [s]
+Figure 15: Speed, force, rotation measurements for time series from the FB35, HD27, RD21 experiments and type
+G400 and D400 simulator results.
+
+
+[15] D. Eriksson and R. Ghabcheloo. Comparison of machine learning methods for automatic bucket filling: An
+     imitation learning approach. Automation in Construction, 150:104843, 2023.
+
+[16] R. Filla and B. Frank. Towards finding the optimal bucket filling strategy through simulation. In Proceedings
+     of 15:th Scandinavian International Conference on Fluid Power, June 7-9, 2017, Linköping, Sweden, 06
+     2017.
+[17] B. Frank, J. Kleinert, and R. Filla. Optimal control of wheel loader actuators in gravel applications.
+     Automation in Construction, 91:1–14, 2018.
+[18] E. Hairer and G. Wanner. Solving Ordinary Differential Equations II: Stiff and Differential Algebraic
+     Problems, volume 14 of Springer Series in Computational Mathematics. Springer-Verlag, Berlin, Heidelberg,
+     New York, London, Paris, Tokyo, Hong Kong, second revised edition edition, 1996.
+[19] D. Holz, T. Beer, and T. Kuhlen. Soil deformation models for real-time simulation: A hybrid approach. In
+     H. Prautzsch, A. Schmitt, J. Bender, and M. Teschner, editors, Workshop in Virtual Reality Interactions
+     and Physical Simulation ”VRIPHYS” (2009), 2009.
+
+
+                                                                       20
+[20] P. C. Horak and J. C. Trinkle. On the similarities and differences among contact models in robot simulation.
+     IEEE Robotics and Automation Letters, 4(2):493–499, 2019.
+[21] J. Ibarz, J. Tan, C. Finn, M. Kalakrishnan, P. Pastor, and S. Levine. How to train your robot with
+     deep reinforcement learning: lessons we have learned. The International Journal of Robotics Research,
+     40(4-5):698–721, 2021.
+[22] S. Jaiswal, P. Korkealaakso, R. Åman, J. Sopanen, and A. Mikkola. Deformable terrain model for the real-
+     time multibody simulation of a tractor with a hydraulically driven front-loader. IEEE Access, 7:172694–
+     172708, 2019.
+[23] C. F. Jekel, G. Venter, M. P. Venter, N. Stander, and R. T. Haftka. Similarity measures for identifying
+     material parameters from hysteresis loops using inverse analysis. International Journal of Material Forming,
+     may 2019.
+[24] A. Kadian, J. Truong, A. Gokaslan, A. Clegg, E. Wijmans, S. Lee, M. Savva, S. Chernova, and D. Batra.
+     Sim2real predictivity: Does evaluation in simulation predict real-world performance? IEEE Robotics and
+     Automation Letters, 5(4):6670–6677, 2020.
+
+[25] H. Kim, K. Oh, K. Ko, P. Kim, and K. Yi. Modeling, validation and energy flow analysis of a wheel loader.
+     Journal of Mechanical Science and Technology, 30(2):603–610, Feb. 2016.
+[26] S. Koos, J.-B. Mouret, and S. Doncieux. Crossing the reality gap in evolutionary robotics by promot-
+     ing transferable controllers. In Proceedings of the 12th annual conference on Genetic and evolutionary
+     computation, pages 119–126, 2010.
+[27] I. Kurinov, G. Orzechowski, P. Hämäläinen, and A. Mikkola. Automated excavator based on reinforcement
+     learning and multibody system dynamics. IEEE Access, 8:213998–214006, 2020.
+[28] Lacoursière, C. Ghosts and machines: regularized variational methods for interactive simulations of
+     multibodies with dry frictional contacts. PhD thesis, Umeå University, SE-901 87 Umeå, June 2007.
+
+[29] C. Lacoursiére, M. Linde, O. Sabelström, Direct sparse factorization of blocked saddle point matrices, Para
+     2010: State of the Art in Scientific and Parallel Computing, Reykjavik, June 6-9.2010).
+[30] D. Lindmark and M. Servin. Computational exploration of robotic rock loading. Robotics and Autonomous
+     Systems, 106:117–129, 2018.
+
+[31] K. Matsumoto, A. Yamaguchi, T. Oka, M. Yasumoto, S. Hara, M. Iida, and M. Teichmann. Simulation-
+     based reinforcement learning approach towards construction machine automation. In H. Osumi, H. Furuya,
+     and K. Tateyama, editors, Proceedings of the 37th International Symposium on Automation and Robotics
+     in Construction (ISARC), pages 457–464. International Association for Automation and Robotics in Con-
+     struction (IAARC).
+
+[32] E. McKyes. Soil cutting and tillage. Developments in agricultural engineering. Elsevier, Amsterdam, 1985.
+[33] Y. Meng, H. Fang, G. Liang, Q. Gu, and L. Liu. Bucket trajectory optimization under the automatic
+     scooping of LHD. Energies, 12(20):3919, 2019.
+[34] F. Muratore, F. Ramos, G. Turk, W. Yu, M. Gienger, and J. Peters. Robot learning from randomized
+     simulations: A review. Frontiers in Robotics and AI, page 31, 2022.
+[35] K. Oh, H. Kim, K. Ko, P. Kim, and K. Yi. Integrated wheel loader simulation model for improving
+     performance and energy flow. Automation in Construction, 58:129–143, 2015.
+[36] X. B. Peng, M. Andrychowicz, W. Zaremba, and P. Abbeel. Sim-to-real transfer of robotic control with
+     dynamics randomization. In 2018 IEEE International Conference on Robotics and Automation (ICRA),
+     pages 1–8. IEEE Press, 2018.
+[37] M. Servin, T. Berglund, and S. Nystedt. A multiscale model of terrain dynamics for real-time earthmoving
+     simulation. Advanced Modeling and Simulation in Engineering Sciences, 8(1):11, May 2021.
+[38] M. Servin and M. Brandl. Physics-based virtual environments for autonomous earthmoving and mining
+     machinery. In Commercial Vehicle Technology Symposium – CVT 2018, 2018.
+[39] M. Servin, D. Wang, C. Lacoursière, and K. Bodin. Examining the smooth and nonsmooth discrete element
+     approach to granular matter. Int. J. Numer. Meth. Engng., 97:878–902, 2014.
+
+
+                                                       21
+[40] T. Söderström and P. Stoica. System Identification. Prentice-Hall international series in systems and
+     control engineering. Prentice Hall, 1989.
+[41] R. Song, Z. Ye, L. Wang, T. He, and L. Zhang. Autonomous wheel loader trajectory tracking control using
+     LPV-MPC. In 2022 American Control Conference (ACC), pages 2063–2069, 2022.
+
+[42] J. Tan, Z. Xie, B. Boots, and C. K. Liu. Simulation-based design of dynamic controllers for humanoid
+     balancing. In 2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pages
+     2729–2736, 2016.
+[43] J. Tobin, R. Fong, A. Ray, J. Schneider, W. Zaremba, and P. Abbeel. Domain randomization for transferring
+     deep neural networks from simulation to the real world. In 2017 IEEE/RSJ International Conference on
+     Intelligent Robots and Systems (IROS), pages 23–30, 2017.
+[44] S. Wang, Y. Yin, Y. Wu, and L. Hou. Modeling and verification of an acquisition strategy for wheel loader’s
+     working trajectories and resistance. Sensors, 22(16), 2022.
+[45] D. Wang, and M. Servin Warm starting the projected gauss-seidel algorithm for granular matter simulation.,
+     Computational Particle Mechanics. 3:43–52, 2016.
+[46] V. Wiberg, M. Servin, and T. Nordfjell. Discrete element modelling of large soil deformations under heavy
+     vehicles. Journal of Terramechanics, 93:11 – 21, 2021.
+[47] V. Wiberg, E. Wallin, A. Fälldin, T. Semberg, M. Rossander, E. Wadbro, and M. Servin. Sim-to-real
+     transfer of active suspension control using deep reinforcement learning. arXiv preprint arXiv:2306.11171,
+     2023.
+[48] V. Wiberg, E. Wallin, T. Nordfjell, and M. Servin. Control of rough terrain vehicles using deep reinforce-
+     ment learning. IEEE Robotics and Automation Letters, 7(1):390–397, 2022.
+[49] W. Zhao, J. P. Queralta, and T. Westerlund. Sim-to-real transfer in deep reinforcement learning for
+     robotics: a survey. In 2020 IEEE symposium series on computational intelligence (SSCI), pages 737–744.
+     IEEE, 2020.
+
+
+
+
+                                                      22
+

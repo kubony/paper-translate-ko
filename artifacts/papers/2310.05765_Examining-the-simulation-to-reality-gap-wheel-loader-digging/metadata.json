@@ -1,0 +1,30 @@
+{
+  "arxiv_id": "2310.05765",
+  "title": "Examining the simulation-to-reality gap of a wheel loader digging in deformable terrain",
+  "authors": [
+    {
+      "name": "Koji Aoshima",
+      "affiliation": ""
+    },
+    {
+      "name": "Martin Servin",
+      "affiliation": ""
+    }
+  ],
+  "abstract": "We investigate how well a physics-based simulator can replicate a real wheel loader performing bucket filling in a pile of soil. The comparison is made using field test time series of the vehicle motion and actuation forces, loaded mass, and total work. The vehicle was modeled as a rigid multibody system with frictional contacts, driveline, and linear actuators. For the soil, we tested discrete element models of different resolutions, with and without multiscale acceleration. The spatio-temporal resolution ranged between 50-400 mm and 2-500 ms, and the computational speed was between 1/10,000 to 5 times faster than real-time. The simulation-to-reality gap was found to be around 10% and exhibited a weak dependence on the level of fidelity, e.g., compatible with real-time simulation. Furthermore, the sensitivity of an optimized force feedback controller under transfer between different simulation domains was investigated. The domain bias was observed to cause a performance reduction of 5% despite the domain gap being about 15%.",
+  "comment": "22 pages, 15 figures",
+  "journal_ref": "",
+  "primary_category": "cs.CE",
+  "categories": [
+    "cs.CE",
+    "cs.RO"
+  ],
+  "published": "2023-10-09T14:46:21Z",
+  "updated": "2024-04-27T14:42:00Z",
+  "abs_url": "https://arxiv.org/abs/2310.05765",
+  "pdf_url": "https://arxiv.org/pdf/2310.05765",
+  "links": {
+    "alternate": "https://arxiv.org/abs/2310.05765v3",
+    "pdf": "https://arxiv.org/pdf/2310.05765v3"
+  }
+}
