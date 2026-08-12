@@ -1,0 +1,69 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+{
+  "pages": 6,
+  "stats": [
+    {
+      "page": 1,
+      "text_chars": 490,
+      "ink_sample": 4752,
+      "links": 2,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 2,
+      "text_chars": 2343,
+      "ink_sample": 5404,
+      "links": 2,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 3,
+      "text_chars": 2087,
+      "ink_sample": 6230,
+      "links": 1,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 4,
+      "text_chars": 2255,
+      "ink_sample": 6067,
+      "links": 0,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 5,
+      "text_chars": 1164,
+      "ink_sample": 2741,
+      "links": 13,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 6,
+      "text_chars": 1943,
+      "ink_sample": 4006,
+      "links": 5,
+      "size": [
+        595.0,
+        841.9
+      ]
+    }
+  ],
+  "text_len": 10300,
+  "toc": 0,
+  "sha256": "da0eaac3e645a4da30ae266de4b578111bd3314736e2bf8bb8b0d91f901b7af3"
+}

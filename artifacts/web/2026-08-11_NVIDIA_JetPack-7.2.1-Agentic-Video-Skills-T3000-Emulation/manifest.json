@@ -1,0 +1,43 @@
+{
+  "source_type": "web_article",
+  "source_url": "https://developer.nvidia.com/blog/nvidia-jetpack-7-2-1-adds-agentic-video-skills-and-t3000-emulation/",
+  "captured_at": "2026-08-13T01:08:17+09:00",
+  "title": "NVIDIA JetPack 7.2.1 Adds Agentic Video Skills and T3000 Emulation",
+  "authors": [
+    "Shashank Maheshwari",
+    "Raghavendra K M",
+    "Keyur Sheth",
+    "Praveen Reddy",
+    "Vinit Bansal"
+  ],
+  "published": "2026-08-11",
+  "figures": [
+    {
+      "no": "1",
+      "page": 0,
+      "desc": "Jetson video skills와 PyNvVideoCodec 기반 AI video pipeline workflow"
+    }
+  ],
+  "tables": [
+    {
+      "no": "1",
+      "page": 0,
+      "desc": "pipeline stage별 Jetson video interface 선택"
+    }
+  ],
+  "display_equations": 0,
+  "article_images": [
+    {
+      "local": "assets/images/hero.webp",
+      "sha256": "a50990af5dce23433c72028ffa0d46f48f67850803a662a7be617ca1d2dddd1b",
+      "role": "hero"
+    },
+    {
+      "local": "assets/images/figure-1.webp",
+      "sha256": "381f007dd3bcac4aa9105b1c387cf82bce3cc7950f402b050531788513b4bdd5",
+      "role": "figure-1"
+    }
+  ],
+  "article_videos": [],
+  "note": "자산 수집기의 2024 Metropolis GIF 1건은 본문 외 추천 콘텐츠의 false positive여서 제외했다."
+}

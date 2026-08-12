@@ -1,0 +1,71 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+/tmp/make_jetpack_qa.py:9: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  gray=im.convert('L'); nonwhite=sum(1 for v in gray.resize((100,142)).getdata() if v<245)
+{
+  "pages": 6,
+  "stats": [
+    {
+      "page": 1,
+      "text_chars": 490,
+      "ink_sample": 4825,
+      "links": 2,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 2,
+      "text_chars": 2301,
+      "ink_sample": 5418,
+      "links": 2,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 3,
+      "text_chars": 1731,
+      "ink_sample": 5872,
+      "links": 1,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 4,
+      "text_chars": 2168,
+      "ink_sample": 5709,
+      "links": 0,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 5,
+      "text_chars": 1693,
+      "ink_sample": 3788,
+      "links": 13,
+      "size": [
+        595.0,
+        841.9
+      ]
+    },
+    {
+      "page": 6,
+      "text_chars": 1942,
+      "ink_sample": 4035,
+      "links": 5,
+      "size": [
+        595.0,
+        841.9
+      ]
+    }
+  ],
+  "text_len": 10362,
+  "toc": 0,
+  "sha256": "2b00ed6989d3d882fe02280b0084ad05e5795aa557ba782fc857cf22fa416d90"
+}

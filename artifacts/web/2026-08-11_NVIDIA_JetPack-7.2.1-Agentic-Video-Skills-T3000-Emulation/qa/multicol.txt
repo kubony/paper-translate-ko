@@ -1,0 +1,9 @@
+Inventory:
+  h2.section: 10
+  h3.section: 0
+  table.wide: 1
+  figure.fig-wide: 0
+Spanning selectors: .authors, .critical, .diagram, .footer, .front, .section, .wide, figure.wide, table.wide
+Active column rules: (none)
+Fixed cover separators: (none)
+PASS: multi-column wide-element and separator static preflight

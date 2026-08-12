@@ -1,0 +1,9 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+{
+  "status": "PASS",
+  "pages": 6,
+  "sentinels": 15,
+  "missing": [],
+  "annotations": 23,
+  "bad_local_links": []
+}
