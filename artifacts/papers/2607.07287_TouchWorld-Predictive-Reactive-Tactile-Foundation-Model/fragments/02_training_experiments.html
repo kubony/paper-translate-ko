@@ -1,0 +1,126 @@
+<section data-section="training">
+  <h2>4 학습</h2>
+  <p>TouchWorld는 네 단계로 학습한다. 전체 hierarchy를 end-to-end로 back-propagation하지 않고, 먼저 각 module을 해당 time scale에 맞는 supervision signal로 학습한 뒤 최종 refinement 단계에서 학습된 nominal VLA policy와 reactive tactile layer를 결합한다. 이러한 단계별 방식은 optimization 중 high-level reasoning, predictive goal generation, nominal action learning, high-frequency tactile correction을 서로 분리된 상태로 유지한다.</p>
+
+  <h3>4.1 단계 1: Subtask Planner 학습</h3>
+  <p>Subtask Planner는 Qwen3-VL-4B-Instruct~\cite{yang2025qwen3technicalreport}를 기반으로 구현하고 annotated teleoperation trace로부터 적응시킨다. 각 supervision example은 global task instruction, 현재 camera observation, 최근 Subtask Planner state의 compact memory, 현재 phase의 executable subtask label로 구성된다. Subtask Planner data는 deployment에 사용하는 semantic update rate로 sampling하며, 이전 subtask, 오래된 history, phase transition을 model에 노출하는 memory variant를 포함한다. Subtask Planner dataset은 128,866개의 supervision record를 포함한다. Training target은 low-level robot command가 아니라 현재 executable subtask이므로, fine-tuned planner는 downstream control을 위한 policy-compatible semantic interface를 학습한다.</p>
+
+  <h3>4.2 단계 2: Tactile World Model 학습</h3>
+  <p>Tactile World Model은 Wan2.2-TI2V-5B~\cite{wan2025wanopenadvancedlargescale}를 기반으로 구현하고 predictive subgoal generator로 별도 학습한다. 먼저 synchronized egocentric 및 wrist-mounted video, bimanual hand pose, dense bilateral palm pressure map을 제공하는 대규모 EgoTouch human interaction video data~\cite{zhou2026touchanythingdatasetframeworkbimanual}로 pretraining한다. 이 pretraining 단계는 model을 다양한 human-object contact pattern에 노출하고, robot-specific policy training에 앞서 general visual-to-tactile dynamics prior를 학습시킨다. Human tactile layout은 robot tactile glove와 다르므로 image-form tactile representation을 공통 prediction interface로 사용한다. 즉, EgoTouch pressure map과 robot tactile observation을 모두 visual-tactile goal grid로 변환한다.</p>
+  <p>Human tactile pretraining 후에는 10시간의 robot demonstration으로 Tactile World Model을 fine-tuning하며, 이는 30 FPS 기준 약 108만 robot frame에 해당한다. 현재 observation grid와 선택된 executable subtask가 주어지면, model은 예상 contact outcome을 기술하는 짧은 future visual-tactile clip 또는 terminal subgoal state를 예측한다. Robot training sample은 subtask-aligned demonstration segment로 구성한다. 각 sample은 source observation과 해상도 $384\times224$의 미래 17-frame visual-tactile target을 짝지은 것이다. 이 2단계 training 방식은 model이 human bimanual touch에서 폭넓은 contact prior를 물려받는 동시에 최종 tactile subgoal을 robot embodiment와 task interface에 적응하도록 한다.</p>
+
+  <h3>4.3 단계 3: Visuo-Tactile Goal-Conditioned Policy 학습</h3>
+  <p>이어서 Visuo-Tactile Goal-Conditioned Policy를 독립적인 nominal action policy로 학습한다. 각 sample은 global task instruction, 현재 executable subtask, RGB observation, image-form tactile observation, proprioceptive state, demonstration의 future action chunk로 구성된다. [[REF:sec:goal_conditioned_policy]]에서 설명한 것처럼 policy prompt에는 항상 task-level context와 현재 subtask를 모두 포함한다. Action decoder는 imitation learning과 flow matching으로 학습하므로, policy는 visual, tactile-image, language, proprioceptive conditioning 아래 현재 subtask를 진전시키는 nominal action chunk를 생성하는 법을 학습한다. 예측된 visual-tactile subgoal을 사용할 수 있으면 이를 추가 goal context로 사용하며, 그렇지 않으면 현재 observation과 subtask prompt만으로 policy를 학습하고 평가한다.</p>
+
+  <h3>4.4 단계 4: 통합 VLA-Refinement 학습</h3>
+  <p>마지막으로 reactive tactile refinement layer로 구현한 Tactile-Conditioned Refinement Policy를 학습된 VLA policy에 부착하고, 결합된 VLA-refinement stack을 high-frequency residual target으로 학습한다. 각 demonstration window에서 VLA policy는 nominal action chunk $\hat{\mathbf{A}}_{t:t+H-1}$와 그 action-generation context token $\mathbf{c}_t$를 제공한다. 해당 chunk 내부의 각 refinement step $\tau$에서 TRT는 sliding nominal-action lookahead window, 최근 tactile history, 현재 proprioception, VLA context를 입력받아 residual action window $\Delta\mathbf{A}_{\tau:\tau+W-1}$를 예측한다. Target residual은 demonstration의 high-frequency action window와 이에 대응하는 nominal VLA lookahead window의 차이이다.</p>
+
+  <pre class="equation" data-equation="9"><code>    \mathcal{L}_{\mathrm{fb}} =
+    \left\|
+    f_{\phi}(\hat{\mathbf{A}}_{\tau:\tau+W-1}, \mathbf{s}_{\tau-k:\tau}, \mathcal{X}_{\tau-k:\tau}, \mathbf{c}_t)
+    -
+    (\mathbf{A}^{*}_{\tau:\tau+W-1} - \hat{\mathbf{A}}_{\tau:\tau+W-1})
+    \right\|_2^2.</code><span class="equation-number">(9)</span></pre>
+
+  <p>여기서 $\mathcal{L}_{\mathrm{fb}}$는 feedback-refinement loss이고, $\mathbf{A}^{*}_{\tau:\tau+W-1}$는 demonstration의 high-frequency action window이다. Loss는 tactile-sensitive residual action subspace에 적용하며, 이 subspace 밖의 action dimension은 nominal VLA output을 따른다. 이 최종 단계는 nominal policy가 semantic 및 geometric progress를 담당하도록 유지하면서 deployment와 동일한 action context에서 refinement layer를 학습한다.</p>
+
+  <figure data-figure="3" data-label="fig:hardware">
+    <div class="figure-placeholder">[그림 3 자리표시자: TouchWorld hardware platform]</div>
+    <figcaption>그림 3. TouchWorld의 hardware platform. Human operator는 Meta Quest headset, Meta Quest Touch Plus controller, Wuji Glove를 통해 visual input과 hand-motion input을 제공한다. Robot platform은 tactile feedback을 사용하는 contact-rich manipulation을 위해 Wuji dexterous hand와 JQ-Industries tactile glove를 사용한다.</figcaption>
+  </figure>
+</section>
+
+<section data-section="experiments">
+  <h2>5 실험</h2>
+  <p>TouchWorld를 long-horizon reasoning, contact-aware action generation, local contact disturbance로부터의 recovery가 필요한 real-robot manipulation task에서 평가한다. 실험은 네 가지 질문에 답한다. (1) TouchWorld가 강력한 generalist baseline 및 tactile-policy baseline보다 task success를 향상시키는가, (2) 어떤 predictive 및 reactive component가 robustness에 가장 크게 기여하는가, (3) Tactile World Model이 실제 contact outcome과 일치하는 tactile subgoal을 예측하는가, (4) Subtask Planner가 downstream policy로 실행할 수 있는 subtask를 생성하는가이다.</p>
+
+  <h3>5.1 실험 설정</h3>
+  <p>Hardware setup은 [[REF:fig:hardware]]에 제시한다. Teleoperation 측에서 demonstrator는 immersive visual feedback을 위해 Meta Quest headset을 착용하고, Meta Quest Touch Plus controller와 Wuji Glove를 함께 사용해 hand-motion command를 제공한다. Robot 측에서는 Wuji dexterous hand를 장착한 humanoid platform이 manipulation policy를 실행하며, hand에 장착된 JQ-Industries tactile glove가 tactile-conditioned action generation과 refinement를 위한 contact observation을 제공한다. 이 setup은 동일한 visual, proprioceptive, tactile sensing interface 아래 teleoperated data collection과 policy evaluation을 지원한다.</p>
+  <p><strong>Policy scheduling.</strong> 본 구현에서 nominal VLA policy는 $H=32$인 action chunk를 예측한다. Refinement layer는 $W=16$인 sliding nominal-action lookahead window를 사용하며, residual prediction을 갱신하기 전에 correction된 action 중 첫 $C=4$개를 commit한다. 예를 들어 nominal chunk를 기준으로 step 0 실행 전에는 TRT가 nominal action $[0,15]$를 condition으로 사용하고 corrected action $[0,3]$을 commit하며, step 4 전에는 nominal action $[4,19]$를 condition으로 사용하고 corrected action $[4,7]$을 commit한다. 이 값들은 architectural constraint가 아니라 implementation hyperparameter이며, 결과적인 feedback rate는 robot control frequency와 sensing pipeline에 따라 달라진다.</p>
+  <p>서로 다른 tactile manipulation failure mode를 포괄하는 6개 task의 real-robot suite에서 평가한다. [[REF:fig:task_suite]]에 제시한 여섯 task에는 <em>Water Flower</em>와 <em>Tabletop Clearing</em> 같은 long-horizon semantic manipulation, <em>Cup Insertion</em>과 <em>Power Plug Insertion</em> 같은 precision contact task, <em>Pot Wiping</em>의 continuous contact regulation, <em>Tissue Pulling</em>의 soft-object handling이 포함된다. 각 task는 clean setting과 human perturbation setting에서 평가한다. Perturbation setting에서는 실행 중 operator가 target displacement, unstable contact, grasp interference 같은 disturbance를 가한다. 이 setup은 TouchWorld의 의도된 역할, 즉 Subtask Planner의 semantic decomposition, Tactile World Model의 predictive contact goal, Visuo-Tactile Goal-Conditioned Policy의 nominal action generation, Tactile-Conditioned Refinement Policy의 high-frequency correction을 시험한다. 각 task마다 teleoperated training trajectory 200개를 수집하고 real-robot evaluation rollout 100회를 수행한다.</p>
+
+  <figure data-figure="4" data-label="fig:task_suite">
+    <div class="figure-placeholder">[그림 4 자리표시자: real-robot task suite]</div>
+    <figcaption>그림 4. TouchWorld 평가를 위한 real-robot task suite. 여섯 task는 long-horizon planning, precision insertion, continuous contact regulation, soft-object handling, human perturbation으로부터의 recovery를 포괄한다.</figcaption>
+  </figure>
+
+  <p>Real-robot experiment에서는 두 setting 모두에서 반복 rollout의 success rate를 보고한다. Wuji data pipeline은 평가 task의 teleoperated trajectory를 export한다. 각 trajectory는 global task instruction, 수동으로 annotation한 subtask segment, head 및 wrist camera stream, proprioceptive state, action, left/right tactile pressure observation과 함께 export된다. 이 annotation은 subtask-conditioned policy training, Tactile World Model supervision, residual refinement training, Subtask Planner evaluation을 지원한다.</p>
+
+  <h3>5.2 Baseline</h3>
+  <p>Main real-robot comparison에서는 TouchWorld를 다음 세 policy baseline과 비교한다.</p>
+  <ul>
+    <li><strong>Pi-0.5:</strong> 동일한 task instruction과 visual observation으로 평가하는 vision-language-action policy baseline이다.</li>
+    <li><strong>FTP-1:</strong> 제안한 predictive-and-reactive hierarchy를 사용하지 않는 이전 monolithic tactile policy baseline이다.</li>
+    <li><strong>GR00T N1.7:</strong> 동일한 real-robot task suite에서 평가하는 generalist robot policy baseline이다.</li>
+  </ul>
+  <p>Component ablation은 [[REF:fig:ablations]]에서 별도로 보고한다.</p>
+
+  <h3>5.3 주요 결과</h3>
+  <table data-table="1" data-label="tab:main_results">
+    <caption>표 1. Real-robot TouchWorld benchmark의 task별 manipulation success rate(\%). 각 task는 clean setting과 human perturbation setting에서 모두 평가한다. 각 setting의 최고 및 차상위 결과는 각각 <strong>굵게</strong>와 <u>밑줄</u>로 표시한다.</caption>
+    <thead>
+      <tr><th scope="col">Method</th><th scope="col">Water Flower</th><th scope="col">Tabletop Clearing</th><th scope="col">Cup Insertion</th><th scope="col">Power Plug Insertion</th><th scope="col">Pot Wiping</th><th scope="col">Tissue Pulling</th><th scope="col">Avg.</th></tr>
+    </thead>
+    <tbody>
+      <tr><th colspan="8" scope="colgroup"><em>Clean Setting</em></th></tr>
+      <tr><th scope="row">Pi-0.5</th><td>52</td><td><u>66</u></td><td>36</td><td>12</td><td>39</td><td>39</td><td>40.7</td></tr>
+      <tr><th scope="row">FTP-1</th><td><u>56</u></td><td>60</td><td><u>48</u></td><td><u>32</u></td><td><u>57</u></td><td><u>43</u></td><td><u>49.3</u></td></tr>
+      <tr><th scope="row">GR00T N1.7</th><td>50</td><td>58</td><td>33</td><td>18</td><td>36</td><td>41</td><td>39.3</td></tr>
+      <tr><th scope="row"><strong>TouchWorld</strong></th><td><strong>72</strong></td><td><strong>76</strong></td><td><strong>66</strong></td><td><strong>45</strong></td><td><strong>70</strong></td><td><strong>61</strong></td><td><strong>65.0</strong></td></tr>
+      <tr><th colspan="8" scope="colgroup"><em>Human Perturbation Setting</em></th></tr>
+      <tr><th scope="row">Pi-0.5</th><td>34</td><td><u>44</u></td><td>24</td><td>6</td><td>28</td><td>30</td><td>27.7</td></tr>
+      <tr><th scope="row">FTP-1</th><td><u>39</u></td><td>42</td><td><u>34</u></td><td><u>20</u></td><td><u>42</u></td><td><u>34</u></td><td><u>35.2</u></td></tr>
+      <tr><th scope="row">GR00T N1.7</th><td>32</td><td>36</td><td>21</td><td>9</td><td>26</td><td>32</td><td>26.0</td></tr>
+      <tr><th scope="row"><strong>TouchWorld</strong></th><td><strong>60</strong></td><td><strong>62</strong></td><td><strong>52</strong></td><td><strong>35</strong></td><td><strong>57</strong></td><td><strong>56</strong></td><td><strong>53.7</strong></td></tr>
+    </tbody>
+  </table>
+  <p>[[REF:tab:main_results]]의 결과에서 TouchWorld는 clean rollout과 human-perturbed rollout 모두에서 baseline을 일관되게 능가한다. Clean setting에서 TouchWorld는 평균 success 65.0\%를 달성해 가장 강한 baseline보다 15.7 percentage point 향상된다. Human perturbation 아래에서는 평균 success 53.7\%를 달성해 가장 강한 baseline보다 18.5 percentage point 향상된다. 이러한 이득은 tactile prediction과 빠른 local correction이 가장 중요한 power plug insertion, pot wiping, tissue pulling에서 특히 뚜렷하다. TouchWorld는 water flower와 tabletop clearing에서도 성능을 향상시키며, 이는 hierarchy가 high-level task execution을 보존하면서 contact-aware manipulation을 강화함을 보여준다.</p>
+
+  <h3>5.4 Ablation 연구</h3>
+  <figure data-figure="5" data-label="fig:ablations">
+    <div class="figure-placeholder">[그림 5 자리표시자: stacked ablation results]</div>
+    <figcaption>그림 5. TouchWorld의 stacked ablation 결과. 각 bar는 여섯 task의 평균 success rate를 나타내며, 색이 있는 segment는 각 task가 평균에 기여한 정도를 보여준다. Solid bar는 clean rollout을, hatched bar는 corrective behavior가 필요한 human-perturbed rollout을 나타낸다.</figcaption>
+  </figure>
+  <p>[[REF:fig:ablations]]은 주요 interface 및 feedback 선택이 여섯 task suite의 평균 성능에 미치는 영향을 요약한다. Stacked visualization은 전체 success rate와 각 평균을 구성하는 task composition을 함께 보여주므로, 특정 component가 주로 long-horizon task, precision-contact task, soft-object task 중 무엇에 영향을 주는지 더 쉽게 살펴볼 수 있다. 다음 design choice를 ablation한다.</p>
+  <ul>
+    <li><strong>Subtask Planner:</strong> subtask decomposition을 제거하고 original task prompt를 policy에 직접 condition으로 제공한다.</li>
+    <li><strong>Tactile World Model:</strong> future visual-tactile goal prediction을 제거하고 현재 observation과 현재 subtask만 policy에 condition으로 제공한다.</li>
+    <li><strong>Tactile-Conditioned Refinement Policy:</strong> residual feedback layer를 제거하고 nominal action chunk를 직접 실행한다.</li>
+    <li><strong>Tactile input:</strong> touch sensing의 기여도를 측정하기 위해 policy input에서 tactile observation을 제거한다.</li>
+  </ul>
+  <p>Tactile input을 제거할 때 성능이 가장 크게 하락하며, 이는 contact observation이 이 benchmark에 필수임을 확인한다. Tactile-Conditioned Refinement Policy를 제거하면 system이 local execution error를 online으로 correction해야 하는 human perturbation setting에서 특히 큰 손실이 발생한다. Subtask Planner 제거는 주로 long-horizon consistency를 낮추는 반면, Tactile World Model 제거는 contact-aware goal conditioning을 약화한다.</p>
+
+  <h3>5.5 Tactile World Model 예측 분석</h3>
+  <p>Tactile World Model이 robot이 도달한 contact state와 일치하는 tactile subgoal을 예측하는지 추가로 평가한다. 각 held-out trajectory에서 source observation과 executable subtask를 sampling하고, 17-frame visual-tactile goal clip을 생성한 뒤 동일 rollout의 실제 future segment와 align한다. Ground-truth tactile goal은 robot이 해당 subtask에 annotation된 subgoal state에 도달했을 때 포착한 tactile pressure observation이다. 17-frame window에 걸친 temporal contact accuracy로 예측된 tactile sequence를 평가하고, pressure map을 $\tau$에서 thresholding한 뒤 contact IoU와 volumetric IoU로 terminal tactile goal을 평가한다. 현재 tactile observation을 future goal로 복사하는 persistence baseline 및 task와 subtask label을 사용해 training set에서 subgoal을 retrieve하는 nearest-neighbor baseline과 비교한다.</p>
+  <table data-table="2" data-label="tab:twm_prediction">
+    <caption>표 2. Held-out subgoal segment에서 Tactile World Model의 prediction accuracy. Ground truth는 robot이 해당 annotated subgoal state에 도달했을 때 수집한 tactile pressure observation이다. 모든 수치는 percentage이며, 모든 metric은 높을수록 좋다.</caption>
+    <thead><tr><th scope="col">Method</th><th scope="col">Temporal<br>Contact Acc.</th><th scope="col">Contact<br>IoU</th><th scope="col">Volumetric<br>IoU</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Current tactile copy</th><td>70.4</td><td>31.8</td><td>24.6</td></tr>
+      <tr><th scope="row">Nearest-neighbor subgoal</th><td><u>77.5</u></td><td><u>39.2</u></td><td><u>31.0</u></td></tr>
+      <tr><th scope="row"><strong>Tactile World Model</strong></th><td><strong>86.3</strong></td><td><strong>52.7</strong></td><td><strong>43.8</strong></td></tr>
+    </tbody>
+  </table>
+  <p>[[REF:tab:twm_prediction]]은 Tactile World Model이 단순한 persistence baseline 또는 retrieval baseline보다 훨씬 정확한 contact timing과 terminal tactile geometry를 예측함을 보여준다. 이는 downstream goal-conditioned policy를 위한 predictive contact reference라는 Tactile World Model의 역할을 뒷받침한다.</p>
+
+  <h3>5.6 Vision-Language Subtask Planner 분석</h3>
+  <p>Vision-Language Subtask Planner가 semantically correct하면서 downstream policy로 실행할 수 있는 subtask를 생성하는지 분석한다. Subtask Planner output은 두 가지 방식으로 실패할 수 있다. (1) scene에 잘못된 subtask를 선택하거나, (2) 올바르지만 policy의 학습된 behavior distribution 밖에 있는 subtask를 선택할 수 있다. 따라서 task phase에 걸친 subtask correctness, downstream execution success, transition F1을 보고한다.</p>
+  <table data-table="3" data-label="tab:planner_metrics">
+    <caption>표 3. Vision-Language Subtask Planner variant 평가. Zero-shot planner, memory 없는 supervised fine-tuning, TouchWorld가 사용하는 memory-augmented planner를 비교한다. Metric은 percentage로 보고한다.</caption>
+    <thead><tr><th scope="col">Planner</th><th scope="col">Subtask<br>Acc.</th><th scope="col">Execution<br>Success</th><th scope="col">Transition<br>F1</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Zero-shot Qwen3-VL-4B~\cite{yang2025qwen3technicalreport}</th><td>43</td><td>34</td><td>62</td></tr>
+      <tr><th scope="row">Zero-shot Qwen3-VL-32B~\cite{yang2025qwen3technicalreport}</th><td>69</td><td>54</td><td>71</td></tr>
+      <tr><th scope="row">SFT Qwen3-VL-4B w/o Memory</th><td><u>73</u></td><td><u>60</u></td><td><u>76</u></td></tr>
+      <tr><th scope="row"><strong>Memory-Augmented SFT Qwen3-VL-4B (Ours)</strong></th><td><strong>88</strong></td><td><strong>65</strong></td><td><strong>82</strong></td></tr>
+    </tbody>
+  </table>
+  <p>[[REF:tab:planner_metrics]]은 supervised subtask tuning이 zero-shot planning보다 성능을 높이고, Subtask Planner memory가 phase-transition consistency를 더욱 향상시킴을 보여준다. Memory-augmented 4B Subtask Planner는 zero-shot 32B planner보다 우수하며, 이는 이 interface에서는 model scale만 키우는 것보다 task-phase supervision과 execution history가 더 중요함을 시사한다.</p>
+
+  <h3>5.7 정성적 inference 분석</h3>
+  <p>대표적인 long-horizon manipulation task에서 inference process를 추가로 시각화한다. [[REF:fig:inference_demo]]에 제시한 것처럼 TouchWorld는 각 instruction을 실행 가능한 intermediate subtask로 분해하고, downstream action generation에 contact-aware reference를 제공하는 tactile subgoal을 예측한다.</p>
+  <figure data-figure="6" data-label="fig:inference_demo">
+    <div class="figure-placeholder">[그림 6 자리표시자: qualitative inference demonstration]</div>
+    <figcaption>그림 6. TouchWorld의 qualitative inference demonstration. 각 task에서 model은 initial scene으로부터 실행 가능한 subtask sequence를 거쳐 진행하며, contact-aware manipulation을 지원하는 tactile subgoal을 예측한다.</figcaption>
+  </figure>
+</section>

@@ -1,0 +1,16 @@
+{
+  "figures": [
+    {"no": "1", "page": 2, "desc": "TouchWorld 개념적 개요"},
+    {"no": "2", "page": 4, "desc": "TouchWorld 다중 시간척도 architecture"},
+    {"no": "3", "page": 7, "desc": "Teleoperation 및 robot hardware platform"},
+    {"no": "4", "page": 9, "desc": "6개 real-robot task suite"},
+    {"no": "5", "page": 11, "desc": "Component ablation 결과"},
+    {"no": "6", "page": 12, "desc": "정성적 inference 과정"}
+  ],
+  "tables": [
+    {"no": "1", "page": 10, "desc": "Task별 clean 및 human-perturbation success rate"},
+    {"no": "2", "page": 10, "desc": "Tactile World Model prediction accuracy"},
+    {"no": "3", "page": 11, "desc": "Vision-Language Subtask Planner variant 평가"}
+  ],
+  "display_equations": 9
+}

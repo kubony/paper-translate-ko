@@ -1,0 +1,12 @@
+<section data-section="discussion-and-limitations">
+  <h2>6 논의 및 한계</h2>
+  <p>TouchWorld는 tactile prediction과 tactile feedback refinement를 실용적인 manipulation policy에 결합할 수 있음을 보여주지만, 여전히 몇 가지 한계가 남아 있다. 첫째, real-robot 평가는 접촉이 많은 대표 task 여섯 가지에 초점을 맞춘다. 이 task들은 planning, insertion, wiping, soft-object handling을 포괄하지만, household manipulation이나 deformable-object interaction의 다양성을 아직 모두 망라하지는 않는다. Benchmark를 더 많은 object, workspace, task composition으로 확장하는 것이 중요한 다음 단계이다.</p>
+  <p>둘째, Tactile World Model은 현재 short-horizon visual-tactile subgoal을 예측한다. 이는 contact-aware subtask execution에는 충분하지만, object motion, hand occlusion, human perturbation으로 인해 타당한 미래가 여러 가지로 갈릴 때는 longer-horizon prediction이 여전히 어렵다. 향후에는 uncertainty-aware subgoal prediction을 도입하거나 downstream selection을 위해 여러 candidate tactile subgoal을 생성함으로써 이 component를 개선할 수 있다.</p>
+  <p>셋째, TouchWorld는 robot platform에서 사용한 sensing layout에 종속된다. Policy는 nominal VLA branch에서 image-form tactile observation을 사용하고 refinement branch에서 high-frequency tactile history를 사용한다. 이 설계는 modular하지만, 다른 tactile sensor나 hand morphology로 전이하려면 여전히 calibration, normalization, 그리고 소량의 adaptation data가 필요할 가능성이 크다.</p>
+  <p>마지막으로 이 hierarchy에는 High-Level Planning Layer의 update rate, Tactile World Model의 refresh rule, nominal action chunk length, residual commit interval을 비롯한 scheduling hyperparameter가 도입된다. 본 연구에서는 task에 잘 작동한 고정 scheduling profile을 사용한다. 더 adaptive한 scheduling은 contact dynamics가 빠르게 변할 때 computation을 더 줄이고 responsiveness를 향상할 수 있다.</p>
+</section>
+
+<section data-section="conclusion">
+  <h2>7 결론</h2>
+  <p>본 연구에서는 dexterous manipulation을 위한 predictive-and-reactive tactile foundation model인 <strong>TouchWorld</strong>를 제시한다. TouchWorld는 vision-language subtask planning과 Tactile World Model prediction을 포함하는 High-Level Planning Layer를 visuo-tactile goal-conditioned action generation 및 high-frequency tactile residual refinement와 결합한 hierarchical manipulation policy로 구현한다. 이 설계는 touch를 contact-aware goal generation을 위한 predictive cue인 동시에 online correction을 위한 빠른 feedback signal로 다룬다. 여섯 가지 real-robot task 전반에서 TouchWorld는 clean setting과 human-perturbed setting 모두의 평균 success를 향상하며, semantic planning, predictive tactile subgoal, nominal action generation, reactive tactile feedback을 명시적으로 분리할 때의 이점을 보여준다. 향후에는 task suite를 확장하고 uncertainty-aware tactile goal prediction을 개선하며, tactile sensor와 robot hand 전반에 걸친 더 폭넓은 transfer를 연구할 것이다.</p>
+</section>

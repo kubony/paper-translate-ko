@@ -1,0 +1,79 @@
+\section{Related Work}
+\noindent\textbf{Vision-language-action robot foundation policies.}
+Recent robot foundation policies have rapidly scaled vision-language-action models for general manipulation through large-scale robot data, vision-language pretraining, diffusion or flow-matching action decoders, and cross-embodiment training~\cite{intelligence2025pi05visionlanguageactionmodelopenworld,nvidia2025gr00tn1openfoundation,liu2025rdt1bdiffusionfoundationmodel,wang2026qwenvlaunifyingvisionlanguageactionmodeling}.
+While these models improve semantic grounding and language-conditioned action generation, they remain primarily driven by visual observations and action-level supervision.
+In contact-rich dexterous manipulation, key physical states such as slip, grasp stability, contact force, and insertion progress are difficult to infer from vision alone.
+TouchWorld extends this line of work by introducing tactile-conditioned action generation and high-frequency tactile refinement into a hierarchical VLA framework.
+
+\noindent\textbf{Tactile representation learning and tactile manipulation policies.}
+Tactile sensing provides direct measurements of local contact states, including pressure, deformation, slip, and hand-object interaction, which are difficult to infer reliably from RGB observations alone.
+High-resolution tactile sensors such as GelSight~\cite{yuan2017gelsight} and DIGIT~\cite{lambeta2020digit} have enabled dense contact perception, while prior work has studied visuo-tactile prediction~\cite{li2019visgel}, visual pressure estimation~\cite{yang2022pressurevision,grady2024pressurevision++}, and tactile estimation from egocentric human interaction~\cite{zhou2026touchanythingdatasetframeworkbimanual}.
+Building on these tactile representations, recent tactile manipulation policies incorporate touch into robot action models for contact-rich manipulation.
+FTP-1 scales tactile policy learning across heterogeneous tactile sensors and contact-rich tasks~\cite{yuan2026ftp1generalistfoundationtactile}, while T-Rex studies tactile-reactive dexterous manipulation by exploiting high-frequency tactile signals for reactive control~\cite{niu2026trextactilereactivedexterousmanipulation}.
+These works demonstrate that tactile observations are valuable not only for perception but also for contact-aware action generation.
+However, tactile observations are often fused into a monolithic policy as an additional modality, or used primarily as reactive cues within the action-generation loop.
+TouchWorld instead assigns touch two complementary roles: a predictive signal for visual-tactile goal generation and a fast feedback signal for high-frequency residual refinement.
+This separation allows the visuo-tactile policy to preserve semantic and geometric progress while the tactile refinement layer performs online contact adaptation.
+
+\noindent\textbf{Hierarchical, predictive, and reactive manipulation policies.}
+Long-horizon manipulation often benefits from separating high-level task structure from low-level control.
+Prior work has explored action chunking and diffusion-based visuomotor policies to generate temporally coherent short-horizon action sequences rather than single-step commands~\cite{zhao2023learningfinegrainedbimanualmanipulation,chi2025diffusion,black2025realtimeexecutionactionchunking}.
+Hierarchical robot policies further use intermediate representations such as subtasks, paths, or visual goals to bridge language-level reasoning and local execution~\cite{li2025hamsterhierarchicalactionmodels}.
+Predictive policies and robot world models extend this idea by forecasting future visual states, goal trajectories, or latent dynamics to guide goal-conditioned action generation~\cite{zhou2025act2goalworldmodelgeneral,zang2026tacforesightforceguidedtactileworld}.
+In parallel, reactive tactile policies and residual controllers use recent tactile or force feedback to correct local execution errors during contact-rich manipulation~\cite{xue2025reactivediffusionpolicyslowfast,zhao2025touchbeginsvisionends}.
+However, these directions are often studied separately: hierarchical and predictive policies mainly rely on language or visual goals, while reactive tactile policies focus on local contact adaptation without explicit long-horizon semantic structure.
+TouchWorld combines these ideas in a unified tactile VLA framework by coupling executable subtask planning, predictive visual-tactile goals, nominal action-chunk generation, and online tactile residual refinement.
+
+
+\section{Implementation Details}
+
+\noindent\textbf{High-Level Planning Layer.}
+The High-Level Planning Layer contains the Subtask Planner and the Tactile World Model.
+We instantiate the Subtask Planner from Qwen3-VL-4B-Instruct and adapt it with supervised LoRA fine-tuning.
+The Subtask Planner takes the task instruction, the current camera observation, and a compact memory of recent subtasks and execution states, and predicts the executable subtask used by the downstream policy.
+The High-Level Planning Layer is updated at a fixed slow semantic rate in our experiments.
+To make the Subtask Planner robust to stale or repeated histories, the SFT set includes teacher labels, oversampled rare phases, and noisy-memory variants.
+The resulting Subtask Planner dataset contains 128,866 records sampled at this semantic update rate.
+We use LoRA rank 16, alpha 32, dropout 0.05, a learning rate of $10^{-4}$, cosine decay with 0.1 warmup ratio, bfloat16 training, and 20 epochs.
+At inference time, only the selected subtask is passed to the manipulation policy; intermediate reasoning is used only for logging and analysis.
+
+\noindent\textbf{Visuo-Tactile Goal-Conditioned Policy.}
+The nominal manipulation policy is implemented as a visuo-tactile diffusion Transformer.
+It receives multi-view RGB observations, the current tactile observation rendered as an image, the predicted goal grid from the Tactile World Model when available, proprioceptive state, and a language prompt that concatenates the original task and the current subtask.
+In this VLA branch, tactile input is represented uniformly as image-form context rather than by separate tactile encoders for different sensor types.
+The model encodes visual, tactile-image, and language inputs as context tokens and denoises action tokens with a Transformer action expert.
+On the Wuji platform, the policy predicts a 120-dimensional action vector over a 32-step action horizon.
+The action vector consists of two 48-dimensional arm-hand action representations, a 9-dimensional head action, and 15 reserved dimensions.
+Training uses the teleoperation action targets and the normalization statistics computed from the zarr training set.
+We train the nominal policy for 30,000 optimization steps with global batch size 32, bfloat16 precision, AdamW, gradient clipping at 1.0, and a cosine learning-rate schedule with 1,000 warmup steps, peak learning rate $2.5\times10^{-5}$, and final learning rate $2.5\times10^{-6}$.
+
+\noindent\textbf{Tactile World Model.}
+The Tactile World Model is fine-tuned from Wan2.2-TI2V-5B and predicts short-horizon visual-tactile subgoal observations conditioned on the current multimodal context and selected subtask.
+Each training sample is formatted as a 2-by-2 observation grid containing external RGB views and tactile-image observations, together with the task and subtask text.
+The Tactile World Model uses large-scale human interaction video data and 10 hours of robot demonstration data.
+At 30 FPS, the robot demonstrations correspond to approximately 1.08 million robot frames.
+Robot training samples use 17-frame clips at $384 \times 224$ resolution.
+The world model is adapted with LoRA on the DiT attention and feed-forward projections, using target modules $\{q,k,v,o,\mathrm{ffn}.0,\mathrm{ffn}.2\}$, rank 64, learning rate $10^{-4}$, and 50 epochs.
+During deployment, the High-Level Planning Layer is still updated at the slow semantic rate, but the Tactile World Model is refreshed only when the high-level memory indicates a meaningful subtask or task-state change.
+If the current phase is unchanged, the system reuses the previous predicted goal, which avoids repeatedly invoking the world model during stable execution phases.
+
+\noindent\textbf{Tactile-Conditioned Refinement Policy.}
+The refinement layer is implemented as TRT, a compact Tactile Residual Transformer over recent tactile history, proprioceptive state, sliding nominal-action lookahead windows, and VLA context tokens.
+Unlike the VLA branch, this layer uses structured tactile histories and modality-specific tactile tokenization for different tactile signal types.
+The implementation uses a short causal tactile window that captures recent contact changes.
+TRT takes a sliding nominal-action lookahead window with $W=16$ and predicts a residual window over the same horizon.
+The nominal VLA still produces the full 120-dimensional action, but the residual layer is trained only on a 58-dimensional tactile-sensitive action subspace covering the two wrist pose blocks and selected hand joints.
+The predicted residual is scattered back into the 120-dimensional action vector, while the remaining action dimensions are kept from the nominal VLA output.
+The residual Transformer uses $d_{\mathrm{model}}=512$, eight layers, eight attention heads, a $W$-step residual query set, and a small residual regularization weight of $10^{-4}$.
+In residual training, the trained nominal VLA is attached to the refinement layer and kept frozen; the residual actor and tactile feedback encoder are optimized with masked MSE between the corrected action window and the demonstration action window.
+We use AdamW with learning rate $10^{-4}$, weight decay $10^{-4}$, and the same action normalization as the nominal policy.
+
+\noindent\textbf{Deployment schedule.}
+The full system uses a multi-rate execution schedule.
+The High-Level Planning Layer runs at a slow semantic rate.
+The Tactile World Model is called only when the Subtask Planner changes the subtask or contact-relevant phase.
+The visuo-tactile policy generates nominal action chunks with horizon $H=32$.
+Within each chunk, TRT refines sliding nominal-action lookahead windows with $W=16$ at stride $C=4$ (e.g., offsets $\{0,4,8,12\}$) and commits the first $C$ corrected actions before refreshing the residual prediction.
+For example, TRT conditions on nominal actions $[0,15]$ and commits corrected actions $[0,3]$, then conditions on $[4,19]$ and commits $[4,7]$.
+The realized feedback rate depends on the robot control frequency, sensing pipeline, and commit interval $C$.
+If the Subtask Planner or Tactile World Model is unavailable, the system falls back to the original task prompt and disables predicted-goal conditioning, while the visuo-tactile policy and tactile refinement layer remain executable.

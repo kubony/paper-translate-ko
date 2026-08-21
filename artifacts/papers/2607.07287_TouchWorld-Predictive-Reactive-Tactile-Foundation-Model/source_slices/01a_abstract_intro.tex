@@ -1,0 +1,66 @@
+112|Dexterous manipulation in everyday environments requires both anticipation and reaction: a robot must predict how contact should evolve while rapidly correcting local errors caused by slip, misalignment, unstable grasping, or force mismatch. Vision and language provide semantic and geometric guidance, but they cannot reliably reveal hidden contact states such as force, slip, and contact stability. Although tactile sensing exposes these physical cues, most existing policies treat touch as a low-frequency observation stream within a monolithic action model, coupling slow task reasoning, action generation, and fast contact feedback in a single loop.
+113|We introduce \textbf{TouchWorld}, a predictive-and-reactive tactile foundation model for dexterous manipulation. TouchWorld uses a hierarchical policy that separates vision-language subtask planning, tactile world-model prediction, visuo-tactile goal-conditioned action generation, and high-frequency tactile residual refinement. A \textbf{High-Level Planning Layer} produces executable subtasks and predicts tactile subgoals; a \textbf{Visuo-Tactile Goal-Conditioned Policy} generates nominal action chunks; and a \textbf{Tactile-Conditioned Refinement Policy} performs online residual correction using recent tactile and proprioceptive feedback. By using touch as both a predictive contact reference and a fast feedback signal, TouchWorld preserves the semantic generalization of vision-language-action policies while improving local contact adaptation. Across six long-horizon and contact-rich dexterous manipulation tasks, TouchWorld achieves 65.0\% success in the clean setting and 53.7\% success under human perturbations, outperforming the strongest baseline by 15.7 and 18.5 percentage points, respectively.
+114|
+115|}
+116|\date{\today}
+117|\correspondence{\email{shuoyang@hit.edu.cn}}
+118|
+119|\checkdata[Project Page]{https://phanes-lab.github.io/TouchWorld-website/}
+120|
+121|% You can add additional info fields as follows 
+122|
+123|\begin{document}
+124|\begin{CJK*}{UTF8}{gbsn}
+125|
+126|\maketitle
+127|
+128|\section{Introduction}
+129|Robots operating in everyday environments must perform manipulation tasks that go beyond reaching and moving objects.
+130|Many daily skills, such as watering, power-plug insertion, cup insertion and tissue pulling, require the robot to anticipate how contact should evolve and to react when the actual contact deviates from expectation.
+131|While vision and language provide semantic and geometric guidance, they often cannot reveal whether a grasp is stable, an object is slipping, an insertion is aligned, or the applied force is appropriate.
+132|Tactile feedback provides direct access to these local contact states~\cite{zhao2025touchbeginsvisionends,huang2026spatiallyanchoredtactileawareness,zhang2025tavlaelucidatingdesignspace,yuan2026vtamvideotactileactionmodelscomplex,huang2025tactilevlaunlockingvisionlanguageactionmodels,zheng2026omnivtavisuotactileworldmodeling}, making it essential for robust contact-rich manipulation.
+133|This naturally introduces a multi-timescale control problem.
+134|Semantic task reasoning evolves slowly, visuo-tactile action generation operates at an intermediate action-chunk rate, and tactile feedback must support fast local correction when contact changes.
+135|
+136|Despite recent progress in vision-language-action policies~\cite{black2026pi0visionlanguageactionflowmodel,intelligence2025pi05visionlanguageactionmodelopenworld,nvidia2025gr00tn1openfoundation,zheng2026egoscalescalingdexterousmanipulation,liu2025rdt1bdiffusionfoundationmodel,wang2026qwenvlaunifyingvisionlanguageactionmodeling,intelligence2026pi07steerablegeneralistrobotic,kim2024openvla,kim2025finetuningvisionlanguageactionmodelsoptimizing,dai2026conlacontrastivelatentaction,intelligence2025pi06vlalearnsexperience}, most existing systems still generate actions through a single monolithic model.
+137|Tactile observations, when available, are often appended as additional input tokens and processed at the same rate as visual-language context~\cite{yuan2026ftp1generalistfoundationtactile}.
+138|This design is poorly matched to contact-rich manipulation~\cite{xue2025reactivediffusionpolicyslowfast,xue2026tube}.
+139|Slow semantic reasoning, intermediate action-chunk generation, and fast contact correction are forced to share the same model capacity and control loop~\cite{zhao2023learningfinegrainedbimanualmanipulation,chi2025diffusion}.
+140|As a result, a policy may understand the task and produce plausible motions, yet still fail when stable grasping, force regulation, slip recovery, or precise insertion requires rapid tactile feedback.
+141|
+142|We propose \textbf{TouchWorld}, a predictive-and-reactive tactile foundation model for dexterous manipulation.
+143|TouchWorld is implemented as a hierarchical manipulation policy that uses touch in two complementary ways: a predictive pathway anticipates future contact-aware goals, and a reactive pathway corrects local execution errors online.
+144|The system contains a multi-timescale hierarchy.
+145|The \textbf{High-Level Planning Layer} runs at a slow semantic rate and contains the \textbf{Subtask Planner}, which produces executable subtasks, and the \textbf{Tactile World Model}, which predicts tactile subgoals for the current subtask.
+146|A \textbf{Visuo-Tactile Goal-Conditioned Policy} runs at an intermediate action-chunk rate and generates nominal action chunks from the subtask, predicted tactile subgoals, visual observations, proprioception, and tactile observations.
+147|A \textbf{Tactile-Conditioned Refinement Policy} refreshes local residual corrections inside the robot control loop using recent tactile and proprioceptive histories.
+148|
+149|This design keeps semantic reasoning, predictive goal generation, and tactile feedback correction on separate time scales.
+150|Within the High-Level Planning Layer, the Subtask Planner provides long-horizon structure and the Tactile World Model supplies future visual-tactile subgoals for contact-aware execution, while the refinement policy provides a fast feedback path when real contact deviates from the prediction.
+151|Together, these components preserve the semantic generalization of vision-language-action policies while strengthening robustness in contact-rich dexterous manipulation.
+152|
+153|\begin{figure}[t]
+154|\centering
+155|\includegraphics[width=\linewidth]{figures/teasor.pdf}
+156|\caption{Conceptual overview of TouchWorld. The High-Level Planning Layer contains a Subtask Planner that produces executable subtasks and a Tactile World Model that predicts visual-tactile subgoals. A visuo-tactile goal-conditioned policy generates nominal action chunks, and a tactile-conditioned refinement policy refines the final action online using high-frequency tactile feedback.}
+157|\label{fig:teaser}
+158|\end{figure}
+159|
+160|The central question of this work is whether a tactile foundation policy can become more robust in contact-rich, long-horizon manipulation by explicitly separating semantic planning, tactile world-model prediction, visuo-tactile action generation, and tactile-conditioned feedback refinement.
+161|To answer this question, we design TouchWorld around three capabilities:
+162|semantic decomposition for long-horizon tasks, predictive tactile-goal conditioning for action generation, and reactive tactile correction under local contact perturbations.
+163|We evaluate TouchWorld on six real-robot tasks and their human-perturbation variants: Water Flower, Tabletop Clearing, Cup Insertion, Power Plug Insertion, Pot Wiping, and Tissue Pulling.
+164|TouchWorld achieves 65.0\% average success in the clean setting and 53.7\% under human perturbations, outperforming the strongest baseline by 15.7 and 18.5 percentage points, respectively.
+165|
+166|This work makes three main contributions:
+167|
+168|\begin{itemize}
+169|    \item We introduce \textbf{TouchWorld}, the first predictive-and-reactive tactile foundation model for dexterous manipulation, implemented as a hierarchical manipulation policy that jointly supports tactile-goal prediction and online tactile feedback correction.
+170|    
+171|    \item We develop a \textbf{multi-timescale tactile policy architecture} that couples a slow High-Level Planning Layer, which contains the Subtask Planner and Tactile World Model, with visuo-tactile goal-conditioned action generation and high-frequency tactile residual refinement.
+172|    
+173|    \item We establish a six-task real-robot benchmark with clean and human-perturbation settings, where TouchWorld achieves 65.0\% average success in the clean setting and 53.7\% under human perturbations, outperforming the strongest baseline by 15.7 and 18.5 percentage points.
+174|\end{itemize}
+175|
+176|
+177|

@@ -1,0 +1,53 @@
+28|\section{Implementation Details}
+29|
+30|\noindent\textbf{High-Level Planning Layer.}
+31|The High-Level Planning Layer contains the Subtask Planner and the Tactile World Model.
+32|We instantiate the Subtask Planner from Qwen3-VL-4B-Instruct and adapt it with supervised LoRA fine-tuning.
+33|The Subtask Planner takes the task instruction, the current camera observation, and a compact memory of recent subtasks and execution states, and predicts the executable subtask used by the downstream policy.
+34|The High-Level Planning Layer is updated at a fixed slow semantic rate in our experiments.
+35|To make the Subtask Planner robust to stale or repeated histories, the SFT set includes teacher labels, oversampled rare phases, and noisy-memory variants.
+36|The resulting Subtask Planner dataset contains 128,866 records sampled at this semantic update rate.
+37|We use LoRA rank 16, alpha 32, dropout 0.05, a learning rate of $10^{-4}$, cosine decay with 0.1 warmup ratio, bfloat16 training, and 20 epochs.
+38|At inference time, only the selected subtask is passed to the manipulation policy; intermediate reasoning is used only for logging and analysis.
+39|
+40|\noindent\textbf{Visuo-Tactile Goal-Conditioned Policy.}
+41|The nominal manipulation policy is implemented as a visuo-tactile diffusion Transformer.
+42|It receives multi-view RGB observations, the current tactile observation rendered as an image, the predicted goal grid from the Tactile World Model when available, proprioceptive state, and a language prompt that concatenates the original task and the current subtask.
+43|In this VLA branch, tactile input is represented uniformly as image-form context rather than by separate tactile encoders for different sensor types.
+44|The model encodes visual, tactile-image, and language inputs as context tokens and denoises action tokens with a Transformer action expert.
+45|On the Wuji platform, the policy predicts a 120-dimensional action vector over a 32-step action horizon.
+46|The action vector consists of two 48-dimensional arm-hand action representations, a 9-dimensional head action, and 15 reserved dimensions.
+47|Training uses the teleoperation action targets and the normalization statistics computed from the zarr training set.
+48|We train the nominal policy for 30,000 optimization steps with global batch size 32, bfloat16 precision, AdamW, gradient clipping at 1.0, and a cosine learning-rate schedule with 1,000 warmup steps, peak learning rate $2.5\times10^{-5}$, and final learning rate $2.5\times10^{-6}$.
+49|
+50|\noindent\textbf{Tactile World Model.}
+51|The Tactile World Model is fine-tuned from Wan2.2-TI2V-5B and predicts short-horizon visual-tactile subgoal observations conditioned on the current multimodal context and selected subtask.
+52|Each training sample is formatted as a 2-by-2 observation grid containing external RGB views and tactile-image observations, together with the task and subtask text.
+53|The Tactile World Model uses large-scale human interaction video data and 10 hours of robot demonstration data.
+54|At 30 FPS, the robot demonstrations correspond to approximately 1.08 million robot frames.
+55|Robot training samples use 17-frame clips at $384 \times 224$ resolution.
+56|The world model is adapted with LoRA on the DiT attention and feed-forward projections, using target modules $\{q,k,v,o,\mathrm{ffn}.0,\mathrm{ffn}.2\}$, rank 64, learning rate $10^{-4}$, and 50 epochs.
+57|During deployment, the High-Level Planning Layer is still updated at the slow semantic rate, but the Tactile World Model is refreshed only when the high-level memory indicates a meaningful subtask or task-state change.
+58|If the current phase is unchanged, the system reuses the previous predicted goal, which avoids repeatedly invoking the world model during stable execution phases.
+59|
+60|\noindent\textbf{Tactile-Conditioned Refinement Policy.}
+61|The refinement layer is implemented as TRT, a compact Tactile Residual Transformer over recent tactile history, proprioceptive state, sliding nominal-action lookahead windows, and VLA context tokens.
+62|Unlike the VLA branch, this layer uses structured tactile histories and modality-specific tactile tokenization for different tactile signal types.
+63|The implementation uses a short causal tactile window that captures recent contact changes.
+64|TRT takes a sliding nominal-action lookahead window with $W=16$ and predicts a residual window over the same horizon.
+65|The nominal VLA still produces the full 120-dimensional action, but the residual layer is trained only on a 58-dimensional tactile-sensitive action subspace covering the two wrist pose blocks and selected hand joints.
+66|The predicted residual is scattered back into the 120-dimensional action vector, while the remaining action dimensions are kept from the nominal VLA output.
+67|The residual Transformer uses $d_{\mathrm{model}}=512$, eight layers, eight attention heads, a $W$-step residual query set, and a small residual regularization weight of $10^{-4}$.
+68|In residual training, the trained nominal VLA is attached to the refinement layer and kept frozen; the residual actor and tactile feedback encoder are optimized with masked MSE between the corrected action window and the demonstration action window.
+69|We use AdamW with learning rate $10^{-4}$, weight decay $10^{-4}$, and the same action normalization as the nominal policy.
+70|
+71|\noindent\textbf{Deployment schedule.}
+72|The full system uses a multi-rate execution schedule.
+73|The High-Level Planning Layer runs at a slow semantic rate.
+74|The Tactile World Model is called only when the Subtask Planner changes the subtask or contact-relevant phase.
+75|The visuo-tactile policy generates nominal action chunks with horizon $H=32$.
+76|Within each chunk, TRT refines sliding nominal-action lookahead windows with $W=16$ at stride $C=4$ (e.g., offsets $\{0,4,8,12\}$) and commits the first $C$ corrected actions before refreshing the residual prediction.
+77|For example, TRT conditions on nominal actions $[0,15]$ and commits corrected actions $[0,3]$, then conditions on $[4,19]$ and commits $[4,7]$.
+78|The realized feedback rate depends on the robot control frequency, sensing pipeline, and commit interval $C$.
+79|If the Subtask Planner or Tactile World Model is unavailable, the system falls back to the original task prompt and disables predicted-goal conditioning, while the visuo-tactile policy and tactile refinement layer remain executable.
+80|

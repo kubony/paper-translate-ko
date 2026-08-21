@@ -1,0 +1,75 @@
+<section data-section="method" data-label="sec:method">
+  <h2>3 방법</h2>
+  <p>Task instruction $\ell$, 현재 multi-view image $\mathcal{I}_t$, proprioceptive state $\mathbf{s}_t$, tactile observation $\mathcal{X}_t$, high-level memory $m_t$가 주어지면 TouchWorld는 High-Level Planning Layer와 두 action policy를 통해 실행할 action $\mathbf{a}_t$를 예측한다. High-Level Planning Layer는 Subtask Planner와 Tactile World Model로 구성된다.</p>
+
+  <div class="equation" data-equation="1"><pre><code>    \ell_t^{\mathrm{sub}} = \pi_{\mathrm{subtask}}(\ell, \mathcal{I}_t, m_t),</code></pre><span class="equation-number">(1)</span></div>
+
+  <div class="equation" data-equation="2"><pre><code>    g_t = \pi_{\mathrm{world}}(\ell, \ell_t^{\mathrm{sub}}, \mathcal{I}_t, \mathcal{X}_t),</code></pre><span class="equation-number">(2)</span></div>
+
+  <div class="equation" data-equation="3"><pre><code>    \left(\hat{\mathbf{A}}_{t:t+H-1}, \mathbf{c}_t\right) =
+    \pi_{\mathrm{goal}}(\ell, \ell_t^{\mathrm{sub}}, g_t, \mathcal{I}_t, \mathbf{s}_t, \mathcal{X}_t),</code></pre><span class="equation-number">(3)</span></div>
+
+  <div class="equation" data-equation="4"><pre><code>    \tilde{\mathbf{A}}_{\tau:\tau+W-1} =
+    \pi_{\mathrm{tactile}}(\hat{\mathbf{A}}_{\tau:\tau+W-1}, \mathbf{s}_{\tau-k:\tau}, \mathcal{X}_{\tau-k:\tau}, \mathbf{c}_t),</code></pre><span class="equation-number">(4)</span></div>
+
+  <p>여기서 $\pi_{\mathrm{subtask}}$, $\pi_{\mathrm{world}}$, $\pi_{\mathrm{goal}}$, $\pi_{\mathrm{tactile}}$는 각각 Subtask Planner, Tactile World Model, Visuo-Tactile Goal-Conditioned Policy, Tactile-Conditioned Refinement Policy를 나타낸다. 변수 $\ell_t^{\mathrm{sub}}$는 시점 $t$의 실행 가능한 subtask이고, $g_t$는 해당 subtask에 대해 예측된 visual-tactile subgoal이다. Memory $m_t$는 이전 subtask, 예측된 tactile subgoal, 실행 상태를 저장한다. Nominal policy는 nominal action chunk $\hat{\mathbf{A}}_{t:t+H-1}$와 context token $\mathbf{c}_t$를 출력하며, 여기서 $H$는 nominal action horizon이다. 현재 chunk 내부의 refinement step $\tau$에서 refinement policy는 길이 $W$의 sliding nominal-action lookahead window를 최근 proprioceptive history $\mathbf{s}_{\tau-k:\tau}$ 및 tactile history $\mathcal{X}_{\tau-k:\tau}$와 함께 사용하며, 여기서 $k$는 feedback-history length이다. Controller는 high-rate control 동안 correction된 이 window에서 현재 action $\mathbf{a}_\tau$를 실행한다.</p>
+
+  <figure data-figure="2" data-label="fig:architecture">
+    <div class="figure-placeholder">[그림 2 자리표시자: TouchWorld architecture]</div>
+    <figcaption>그림 2. TouchWorld architecture. High-Level Planning Layer는 느린 semantic rate로 작동하며, 실행 가능한 subtask를 생성하는 Subtask Planner와 visual-tactile subgoal을 예측하는 Tactile World Model로 구성된다. Visuo-Tactile Goal-Conditioned Policy는 중간 rate로 nominal action chunk를 생성하고, Tactile-Conditioned Refinement Policy는 tactile feedback과 proprioceptive feedback을 사용하여 고주파 robot control loop 내부에서 실행을 refinement한다.</figcaption>
+  </figure>
+
+  <h3>3.1 High-Level Planning Layer</h3>
+  <p>High-Level Planning Layer는 느린 semantic reasoning과 predictive goal generation을 수행한다. 이 layer는 Subtask Planner와 Tactile World Model로 구성되며, 둘 다 high-level memory $m_t$를 바탕으로 작동한다.</p>
+
+  <p><strong>Subtask Planner.</strong> Subtask Planner는 task instruction, 현재 visual observation, high-level memory를 입력받은 다음 downstream control을 위한 compact task state를 유지한다. Low-level command를 생성하는 대신 느린 rate로 task의 semantic phase를 갱신하고, downstream policy conditioning을 위한 실행 가능한 subtask를 내보낸다. Memory $m_t$는 이전 subtask, 예측된 subgoal, 실행 상태를 전달하므로 Subtask Planner는 각 update에서 현재 observation만 사용하면서도 task progress를 추론할 수 있다.</p>
+
+  <p>Structured Subtask Planner output은 다음과 같이 표현한다.</p>
+
+  <div class="equation" data-equation="5"><pre><code>    o_t^{\mathrm{sub}} = \{\ell, \ell_t^{\mathrm{sub}}, r_t\},</code></pre><span class="equation-number">(5)</span></div>
+
+  <p>여기서 $o_t^{\mathrm{sub}}$는 structured planner output이고, $\ell$은 원래 task instruction이며, $\ell_t^{\mathrm{sub}}$는 실행 가능한 subtask이고, $r_t$는 선택적인 free-form reasoning이다. 원래 task instruction과 실행 가능한 subtask는 모두 lower-level VLA policy에 제공하지만, free-form reasoning은 action interface 외부에 둔다.</p>
+
+  <p><strong>Tactile World Model.</strong> Tactile World Model은 High-Level Planning Layer의 predictive component를 제공한다. 현재 observation과 high-level state를 condition으로 삼아 현재 subtask의 예상 contact outcome을 기술하는 미래 visual-tactile subgoal을 예측한다. 이러한 prediction은 Subtask Planner가 새로운 subtask 또는 유의미한 task-state change를 감지할 때만 갱신되므로, 안정적인 task phase에서는 미래 prediction을 반복해서 다시 생성하는 대신 이전 tactile subgoal을 재사용한다. 예측된 subgoal은 Visuo-Tactile Goal-Conditioned Policy를 위한 contact-aware reference 역할을 한다.</p>
+
+  <h3>3.2 Visuo-Tactile Goal-Conditioned Policy</h3>
+  <p>Visuo-Tactile Goal-Conditioned Policy는 tactile diffusion Transformer policy이다. 이 policy는 현재 subtask, visual observation, proprioception, tactile observation을 입력받아 nominal action chunk를 예측한다. Nominal VLA policy에서는 tactile observation을 unified image representation으로 변환하고 vision-language branch에서 visual observation과 함께 처리한다. 이어서 diffusion Transformer action expert가 visual, tactile-image, language, proprioceptive context를 condition으로 삼아 flow-matching action generation을 수행한다. Tactile World Model prediction을 사용할 수 있으면 예측된 subgoal image 또는 tactile subgoal latent를 추가 goal context로 덧붙일 수 있고, 그렇지 않으면 policy는 현재 observation과 현재 subtask만을 condition으로 삼는다.</p>
+
+  <p>$\ell_{\mathrm{policy}}$가 visuo-tactile policy에 전달되는 prompt를 나타낸다고 하자. 이 prompt는 원래 task instruction과 현재 실행 가능한 subtask를 모두 사용하여 다음과 같이 구성한다.</p>
+
+  <div class="equation" data-equation="6"><pre><code>    \ell_{\mathrm{policy}} =
+    \texttt{Task: } \ell
+    \oplus
+    \texttt{ Current subtask: } \ell_t^{\mathrm{sub}}.</code></pre><span class="equation-number">(6)</span></div>
+
+  <p>여기서 $\oplus$는 string concatenation을 나타낸다. 이 prompt는 long-horizon task context를 보존하면서 현재 control target을 명시적으로 유지한다.</p>
+
+  <p><strong>Tactile image representation.</strong> Nominal policy는 단일 image-form tactile interface를 사용한다. Raw tactile reading을 tactile image로 rendering하거나 normalization하므로 VLA backbone은 tactile input을 visual observation과 동일한 representation 형식으로 입력받는다. 이 설계는 nominal action policy가 image-language pretraining과 호환되도록 유지하며 VLA branch에 modality-specific tactile encoder를 도입하지 않도록 한다.</p>
+
+  <p><strong>Action generation.</strong> Policy는 flow matching을 사용하여 action chunk $\hat{\mathbf{A}}_{t:t+H-1}$를 예측한다. Training 중에는 data action과 Gaussian noise 사이의 interpolation에서 noisy action을 sampling한다. Inference 중에는 model이 Gaussian noise에서 시작하여 예측한 velocity field를 적분함으로써 nominal action sequence를 생성한다.</p>
+
+  <h3>3.3 Tactile-Conditioned Refinement Policy</h3>
+  <p>Tactile-Conditioned Refinement Policy는 nominal action chunk를 국소적으로 correction된 action window로 변환한다. 이 policy는 Visuo-Tactile Goal-Conditioned Policy보다 빠른 feedback rate로 작동하므로 다음 nominal chunk를 기다리지 않고 contact change를 control에 반영할 수 있다. 이 policy는 <strong>Tactile Residual Transformer(TRT)</strong>로 구현한다. Refinement step $\tau$에서 TRT는 sliding nominal-action lookahead window, 최근 proprioceptive history 및 tactile history, policy context token을 입력받아 residual action window를 예측한다.</p>
+
+  <div class="equation" data-equation="7"><pre><code>    \Delta \mathbf{A}_{\tau:\tau+W-1} =
+    f_{\phi}(\hat{\mathbf{A}}_{\tau:\tau+W-1}, \mathbf{s}_{\tau-k:\tau}, \mathcal{X}_{\tau-k:\tau}, \mathbf{c}_t),</code></pre><span class="equation-number">(7)</span></div>
+
+  <div class="equation" data-equation="8"><pre><code>    \tilde{\mathbf{A}}_{\tau:\tau+W-1}
+    =
+    \hat{\mathbf{A}}_{\tau:\tau+W-1}
+    +
+    \Delta \mathbf{A}_{\tau:\tau+W-1}.</code></pre><span class="equation-number">(8)</span></div>
+
+  <p>여기서 $f_{\phi}$는 parameter $\phi$를 갖는 residual Transformer이고, $\Delta \mathbf{A}_{\tau:\tau+W-1}$는 nominal lookahead window에 더하는 residual action window이다. Nominal VLA policy와 달리 TRT는 high-frequency tactile history를 직접 처리한다. 서로 다른 tactile signal type은 residual Transformer에서 fusion하기 전에 modality-specific lightweight encoder로 encoding한다. Image-like tactile map은 tactile image로 처리하고, matrix tactile reading은 convolutional layer로 encoding하며, low-dimensional tactile state는 Fourier feature와 MLP로 embedding한다. Deployment 시 controller는 correction된 window에서 처음 $C$개의 action을 실행한 뒤 새로 관측한 tactile feedback으로 residual prediction을 갱신한다. 그 결과로 얻는 feedback rate는 robot control frequency, sensing pipeline, commit interval $C$에 따라 달라진다. 이 policy는 residual controller로 학습한다. 즉, nominal action은 Visuo-Tactile Goal-Conditioned Policy가 생성하고, target residual은 residual action subspace에서 demonstration의 high-frequency action과 nominal action의 차이이다.</p>
+
+  <p><strong>Residual correction을 사용하는 이유.</strong> Residual correction은 refinement policy의 역할을 국소적이고 집중된 범위로 제한한다. Visuo-tactile goal-conditioned policy는 semantic 및 geometric progress를 계속 담당하고, tactile-conditioned refinement policy는 local contact error를 correction하기 위해 nominal action만 조정한다. Tactile history는 short-range이고 local하며 slip, impact, insertion misalignment 같은 contact transition 부근에서 가장 많은 정보를 제공하므로, 이와 같은 분리는 fast control에 중요하다.</p>
+
+  <p><strong>Scheduling design.</strong> 다음과 같은 slow-to-fast hierarchy를 목표로 한다.</p>
+  <ul>
+    <li><strong>High-Level Planning Layer:</strong> 느린 semantic update와 tactile subgoal refresh.</li>
+    <li><strong>Visuo-Tactile Goal-Conditioned Policy:</strong> 중간 속도의 nominal action-chunk generation.</li>
+    <li><strong>Tactile-Conditioned Refinement Policy:</strong> robot control loop 내부에서 반복하는 residual refresh.</li>
+  </ul>
+
+  <p>이러한 schedule은 architectural constraint가 아니라 implementation choice이다. Data loader와 deployment wrapper는 실제 hardware control rate에 따라 visual, tactile, proprioceptive history를 align한다.</p>
+</section>

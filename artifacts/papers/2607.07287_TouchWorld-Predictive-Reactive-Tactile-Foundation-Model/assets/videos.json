@@ -1,0 +1,66 @@
+{
+  "fetched_on": "2026-08-21",
+  "pages": [
+    {
+      "url": "https://phanes-lab.github.io/TouchWorld-website/",
+      "rendered_with_chrome": true,
+      "videos_found": 4,
+      "images_found": 0
+    }
+  ],
+  "assets": [
+    {
+      "kind": "video",
+      "url": "https://phanes-lab.github.io/TouchWorld-website/touchworld/demos/spray_water/overview.mp4",
+      "page": "https://phanes-lab.github.io/TouchWorld-website/",
+      "context": "",
+      "title": "Spray Water Overview",
+      "bytes": 2426161,
+      "local": "assets/videos/overview-d35e1b.mp4",
+      "sha256": "4106c48970263a72a8875c13c46e2cccc79c1a1344585a848cca63d05d775291",
+      "duration_s": 39.57,
+      "width": 1280,
+      "height": 720,
+      "thumbnail": "assets/videos/thumbs/overview-d35e1b.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://phanes-lab.github.io/TouchWorld-website/touchworld/cases/spray_water/episode_00.mp4",
+      "page": "https://phanes-lab.github.io/TouchWorld-website/",
+      "context": "",
+      "bytes": 1881778,
+      "local": "assets/videos/episode_00-6cc40c.mp4",
+      "sha256": "95d1906d8b09739c5bea05962ad8541c0ad10ee88333e515a0fd5a08e9863551",
+      "duration_s": 39.57,
+      "width": 640,
+      "height": 360,
+      "thumbnail": "assets/videos/thumbs/episode_00-6cc40c.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://phanes-lab.github.io/TouchWorld-website/touchworld/twm_demos/spray_water_ep064/subtask_00/ground_truth.mp4",
+      "page": "https://phanes-lab.github.io/TouchWorld-website/",
+      "context": "",
+      "bytes": 69455,
+      "local": "assets/videos/ground_truth-e60221.mp4",
+      "sha256": "603c8eb1357972a0e936f6e231df5a010a1a82d1e1d4c38a4e88b9d698f76b71",
+      "duration_s": 1.13,
+      "width": 640,
+      "height": 352,
+      "thumbnail": "assets/videos/thumbs/ground_truth-e60221.jpg"
+    },
+    {
+      "kind": "video",
+      "url": "https://phanes-lab.github.io/TouchWorld-website/touchworld/twm_demos/spray_water_ep064/subtask_00/predicted.mp4",
+      "page": "https://phanes-lab.github.io/TouchWorld-website/",
+      "context": "",
+      "bytes": 241890,
+      "local": "assets/videos/predicted-af45f8.mp4",
+      "sha256": "af681091522b846428b1fb51872a2a14689d13ad3659b3a34eb19c9de7fc757f",
+      "duration_s": 1.13,
+      "width": 640,
+      "height": 352,
+      "thumbnail": "assets/videos/thumbs/predicted-af45f8.jpg"
+    }
+  ]
+}

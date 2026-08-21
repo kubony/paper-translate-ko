@@ -1,0 +1,27 @@
+1|\section{Related Work}
+2|\noindent\textbf{Vision-language-action robot foundation policies.}
+3|Recent robot foundation policies have rapidly scaled vision-language-action models for general manipulation through large-scale robot data, vision-language pretraining, diffusion or flow-matching action decoders, and cross-embodiment training~\cite{intelligence2025pi05visionlanguageactionmodelopenworld,nvidia2025gr00tn1openfoundation,liu2025rdt1bdiffusionfoundationmodel,wang2026qwenvlaunifyingvisionlanguageactionmodeling}.
+4|While these models improve semantic grounding and language-conditioned action generation, they remain primarily driven by visual observations and action-level supervision.
+5|In contact-rich dexterous manipulation, key physical states such as slip, grasp stability, contact force, and insertion progress are difficult to infer from vision alone.
+6|TouchWorld extends this line of work by introducing tactile-conditioned action generation and high-frequency tactile refinement into a hierarchical VLA framework.
+7|
+8|\noindent\textbf{Tactile representation learning and tactile manipulation policies.}
+9|Tactile sensing provides direct measurements of local contact states, including pressure, deformation, slip, and hand-object interaction, which are difficult to infer reliably from RGB observations alone.
+10|High-resolution tactile sensors such as GelSight~\cite{yuan2017gelsight} and DIGIT~\cite{lambeta2020digit} have enabled dense contact perception, while prior work has studied visuo-tactile prediction~\cite{li2019visgel}, visual pressure estimation~\cite{yang2022pressurevision,grady2024pressurevision++}, and tactile estimation from egocentric human interaction~\cite{zhou2026touchanythingdatasetframeworkbimanual}.
+11|Building on these tactile representations, recent tactile manipulation policies incorporate touch into robot action models for contact-rich manipulation.
+12|FTP-1 scales tactile policy learning across heterogeneous tactile sensors and contact-rich tasks~\cite{yuan2026ftp1generalistfoundationtactile}, while T-Rex studies tactile-reactive dexterous manipulation by exploiting high-frequency tactile signals for reactive control~\cite{niu2026trextactilereactivedexterousmanipulation}.
+13|These works demonstrate that tactile observations are valuable not only for perception but also for contact-aware action generation.
+14|However, tactile observations are often fused into a monolithic policy as an additional modality, or used primarily as reactive cues within the action-generation loop.
+15|TouchWorld instead assigns touch two complementary roles: a predictive signal for visual-tactile goal generation and a fast feedback signal for high-frequency residual refinement.
+16|This separation allows the visuo-tactile policy to preserve semantic and geometric progress while the tactile refinement layer performs online contact adaptation.
+17|
+18|\noindent\textbf{Hierarchical, predictive, and reactive manipulation policies.}
+19|Long-horizon manipulation often benefits from separating high-level task structure from low-level control.
+20|Prior work has explored action chunking and diffusion-based visuomotor policies to generate temporally coherent short-horizon action sequences rather than single-step commands~\cite{zhao2023learningfinegrainedbimanualmanipulation,chi2025diffusion,black2025realtimeexecutionactionchunking}.
+21|Hierarchical robot policies further use intermediate representations such as subtasks, paths, or visual goals to bridge language-level reasoning and local execution~\cite{li2025hamsterhierarchicalactionmodels}.
+22|Predictive policies and robot world models extend this idea by forecasting future visual states, goal trajectories, or latent dynamics to guide goal-conditioned action generation~\cite{zhou2025act2goalworldmodelgeneral,zang2026tacforesightforceguidedtactileworld}.
+23|In parallel, reactive tactile policies and residual controllers use recent tactile or force feedback to correct local execution errors during contact-rich manipulation~\cite{xue2025reactivediffusionpolicyslowfast,zhao2025touchbeginsvisionends}.
+24|However, these directions are often studied separately: hierarchical and predictive policies mainly rely on language or visual goals, while reactive tactile policies focus on local contact adaptation without explicit long-horizon semantic structure.
+25|TouchWorld combines these ideas in a unified tactile VLA framework by coupling executable subtask planning, predictive visual-tactile goals, nominal action-chunk generation, and online tactile residual refinement.
+26|
+27|

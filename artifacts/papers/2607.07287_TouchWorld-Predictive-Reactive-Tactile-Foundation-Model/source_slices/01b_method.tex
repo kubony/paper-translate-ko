@@ -1,0 +1,141 @@
+178|\section{Method}
+179|\label{sec:method}
+180|
+181|Given a task instruction $\ell$, current multi-view images $\mathcal{I}_t$, proprioceptive state $\mathbf{s}_t$, tactile observations $\mathcal{X}_t$, and high-level memory $m_t$, TouchWorld predicts the executed action $\mathbf{a}_t$ through the High-Level Planning Layer and two action policies.
+182|The High-Level Planning Layer contains the Subtask Planner and Tactile World Model:
+183|
+184|\begin{equation}
+185|    \ell_t^{\mathrm{sub}} = \pi_{\mathrm{subtask}}(\ell, \mathcal{I}_t, m_t),
+186|\end{equation}
+187|
+188|\begin{equation}
+189|    g_t = \pi_{\mathrm{world}}(\ell, \ell_t^{\mathrm{sub}}, \mathcal{I}_t, \mathcal{X}_t),
+190|\end{equation}
+191|
+192|\begin{equation}
+193|    \left(\hat{\mathbf{A}}_{t:t+H-1}, \mathbf{c}_t\right) =
+194|    \pi_{\mathrm{goal}}(\ell, \ell_t^{\mathrm{sub}}, g_t, \mathcal{I}_t, \mathbf{s}_t, \mathcal{X}_t),
+195|\end{equation}
+196|
+197|\begin{equation}
+198|    \tilde{\mathbf{A}}_{\tau:\tau+W-1} =
+199|    \pi_{\mathrm{tactile}}(\hat{\mathbf{A}}_{\tau:\tau+W-1}, \mathbf{s}_{\tau-k:\tau}, \mathcal{X}_{\tau-k:\tau}, \mathbf{c}_t),
+200|\end{equation}
+201|
+202|Here $\pi_{\mathrm{subtask}}$, $\pi_{\mathrm{world}}$, $\pi_{\mathrm{goal}}$, and $\pi_{\mathrm{tactile}}$ denote the Subtask Planner, Tactile World Model, Visuo-Tactile Goal-Conditioned Policy, and Tactile-Conditioned Refinement Policy, respectively.
+203|The variable $\ell_t^{\mathrm{sub}}$ is the executable subtask at time $t$, and $g_t$ is the predicted visual-tactile subgoal for that subtask.
+204|The memory $m_t$ stores previous subtasks, predicted tactile subgoals, and execution status.
+205|The nominal policy outputs a nominal action chunk $\hat{\mathbf{A}}_{t:t+H-1}$ and context token $\mathbf{c}_t$, where $H$ is the nominal action horizon.
+206|At refinement step $\tau$ inside the current chunk, the refinement policy uses a sliding nominal-action lookahead window of length $W$ together with recent proprioceptive and tactile histories, $\mathbf{s}_{\tau-k:\tau}$ and $\mathcal{X}_{\tau-k:\tau}$, where $k$ is the feedback-history length.
+207|The controller executes the current action $\mathbf{a}_\tau$ from this corrected window during high-rate control.
+208|
+209|\begin{figure}[t]
+210|\centering
+211|\includegraphics[width=\linewidth]{figures/3-layer.pdf}
+212|\caption{TouchWorld architecture. The High-Level Planning Layer runs at a slow semantic rate and contains the Subtask Planner, which produces executable subtasks, and the Tactile World Model, which predicts visual-tactile subgoals. The Visuo-Tactile Goal-Conditioned Policy generates nominal action chunks at an intermediate rate, and the Tactile-Conditioned Refinement Policy refines execution inside the high-frequency robot control loop using tactile and proprioceptive feedback.}
+213|\label{fig:architecture}
+214|\end{figure}
+215|
+216|\subsection{High-Level Planning Layer}
+217|\label{sec:high_level_planning}
+218|
+219|The High-Level Planning Layer performs slow semantic reasoning and predictive goal generation.
+220|It contains the Subtask Planner and the Tactile World Model, both operating on the high-level memory $m_t$.
+221|
+222|\noindent\textbf{Subtask Planner.}
+223|The Subtask Planner receives the task instruction, current visual observations, and high-level memory, then maintains a compact task state for downstream control.
+224|Rather than producing low-level commands, it updates the semantic phase of the task at a slow rate and emits an executable subtask for downstream policy conditioning.
+225|The memory $m_t$ carries previous subtasks, predicted subgoals, and execution status, allowing the Subtask Planner to reason over task progress while using only the current observation at each update.
+226|
+227|We represent the structured Subtask Planner output as:
+228|
+229|\begin{equation}
+230|    o_t^{\mathrm{sub}} = \{\ell, \ell_t^{\mathrm{sub}}, r_t\},
+231|\end{equation}
+232|
+233|where $o_t^{\mathrm{sub}}$ is the structured planner output, $\ell$ is the original task instruction, $\ell_t^{\mathrm{sub}}$ is the executable subtask, and $r_t$ is optional free-form reasoning.
+234|The original task instruction and executable subtask are both exposed to the lower-level VLA policy, while free-form reasoning is kept outside the action interface.
+235|
+236|\noindent\textbf{Tactile World Model.}
+237|The Tactile World Model provides the predictive component of the High-Level Planning Layer.
+238|Conditioned on the current observation and high-level state, it predicts future visual-tactile subgoals that describe the expected contact outcome of the current subtask.
+239|These predictions are updated only when the Subtask Planner detects a new subtask or a meaningful task-state change, so stable task phases reuse the previous tactile subgoal instead of repeatedly regenerating future predictions.
+240|The predicted subgoals serve as contact-aware references for the Visuo-Tactile Goal-Conditioned Policy.
+241|
+242|\subsection{Visuo-Tactile Goal-Conditioned Policy}
+243|\label{sec:goal_conditioned_policy}
+244|
+245|The Visuo-Tactile Goal-Conditioned Policy is a tactile diffusion Transformer policy.
+246|It receives the current subtask, visual observations, proprioception, and tactile observations, and predicts a nominal action chunk.
+247|For the nominal VLA policy, tactile observations are converted into a unified image representation and processed together with visual observations by the vision-language branch.
+248|A diffusion Transformer action expert then performs flow-matching action generation conditioned on the visual, tactile-image, language, and proprioceptive context.
+249|When Tactile World Model predictions are available, predicted subgoal images or tactile subgoal latents can be appended as additional goal context; otherwise the policy conditions on the current observation and current subtask alone.
+250|
+251|Let $\ell_{\mathrm{policy}}$ denote the prompt passed into the visuo-tactile policy.
+252|We compose it from both the original task instruction and the current executable subtask:
+253|
+254|\begin{equation}
+255|    \ell_{\mathrm{policy}} =
+256|    \texttt{Task: } \ell
+257|    \oplus
+258|    \texttt{ Current subtask: } \ell_t^{\mathrm{sub}}.
+259|\end{equation}
+260|
+261|Here $\oplus$ denotes string concatenation.
+262|This prompt preserves the long-horizon task context while keeping the current control target explicit.
+263|
+264|\noindent\textbf{Tactile image representation.}
+265|The nominal policy uses a single image-form tactile interface.
+266|Raw tactile readings are rendered or normalized into tactile images, so the VLA backbone receives touch in the same representational form as visual observations.
+267|This design keeps the nominal action policy compatible with image-language pretraining and avoids introducing modality-specific tactile encoders into the VLA branch.
+268|
+269|\noindent\textbf{Action generation.}
+270|The policy predicts an action chunk $\hat{\mathbf{A}}_{t:t+H-1}$ using flow matching.
+271|During training, noisy actions are sampled from the interpolation between data actions and Gaussian noise.
+272|During inference, the model starts from Gaussian noise and integrates the predicted velocity field to produce a nominal action sequence.
+273|
+274|\subsection{Tactile-Conditioned Refinement Policy}
+275|\label{sec:tactile_refinement_policy}
+276|
+277|The Tactile-Conditioned Refinement Policy converts the nominal action chunk into a locally corrected action window.
+278|It operates at a faster feedback rate than the Visuo-Tactile Goal-Conditioned Policy so that contact changes can influence control without waiting for the next nominal chunk.
+279|We implement this policy with a \textbf{Tactile Residual Transformer (TRT)}.
+280|At refinement step $\tau$, TRT takes a sliding nominal-action lookahead window, recent proprioceptive and tactile histories, and the policy context token, and predicts a residual action window:
+281|
+282|\begin{equation}
+283|    \Delta \mathbf{A}_{\tau:\tau+W-1} =
+284|    f_{\phi}(\hat{\mathbf{A}}_{\tau:\tau+W-1}, \mathbf{s}_{\tau-k:\tau}, \mathcal{X}_{\tau-k:\tau}, \mathbf{c}_t),
+285|\end{equation}
+286|
+287|\begin{equation}
+288|    \tilde{\mathbf{A}}_{\tau:\tau+W-1}
+289|    =
+290|    \hat{\mathbf{A}}_{\tau:\tau+W-1}
+291|    +
+292|    \Delta \mathbf{A}_{\tau:\tau+W-1}.
+293|\end{equation}
+294|
+295|Here $f_{\phi}$ is the residual Transformer with parameters $\phi$, and $\Delta \mathbf{A}_{\tau:\tau+W-1}$ is the residual action window added to the nominal lookahead window.
+296|Unlike the nominal VLA policy, TRT operates directly on high-frequency tactile histories.
+297|Different tactile signal types are encoded with modality-specific lightweight encoders before being fused by the residual Transformer: image-like tactile maps are processed as tactile images, matrix tactile readings are encoded with convolutional layers, and low-dimensional tactile states are embedded with Fourier features and MLPs.
+298|At deployment, the controller executes the first $C$ actions from the corrected window and then refreshes the residual prediction with newly observed tactile feedback.
+299|The resulting feedback rate depends on the robot control frequency, sensing pipeline, and commit interval $C$.
+300|The policy is trained as a residual controller: the nominal action is produced by the Visuo-Tactile Goal-Conditioned Policy, and the target residual is the difference between demonstrated high-frequency actions and nominal actions in the residual action subspace.
+301|
+302|\noindent\textbf{Why residual correction.}
+303|Residual correction constrains the refinement policy to a focused local role.
+304|The visuo-tactile goal-conditioned policy remains responsible for semantic and geometric progress, while the tactile-conditioned refinement policy only adjusts the nominal action to correct local contact errors.
+305|This separation is important for fast control because tactile histories are short-range, local, and most informative near contact transitions such as slip, impact, or insertion misalignment.
+306|
+307|\noindent\textbf{Scheduling design.}
+308|We target a slow-to-fast hierarchy:
+309|
+310|\begin{itemize}
+311|    \item High-Level Planning Layer: slow semantic updates and tactile subgoal refreshes.
+312|    \item Visuo-Tactile Goal-Conditioned Policy: intermediate nominal action-chunk generation.
+313|    \item Tactile-Conditioned Refinement Policy: repeated residual refreshes inside the robot control loop.
+314|\end{itemize}
+315|
+316|These schedules are implementation choices rather than architectural constraints.
+317|The data loader and deployment wrapper align visual, tactile, and proprioceptive histories according to the actual hardware control rate.
+318|

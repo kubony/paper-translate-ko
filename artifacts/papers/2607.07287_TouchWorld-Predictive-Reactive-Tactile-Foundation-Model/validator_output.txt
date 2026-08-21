@@ -1,0 +1,30 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+# 출력 계약 검증 (모드 A) — 작업폴더: .
+
+
+[PASS] manifest.json 로드: figures 6개, tables 3개, display_equations 9.
+[PASS] 폴더명: '2607.07287_TouchWorld-Predictive-Reactive-Tactile-Foundation-Model' — 식별자 외 제목 slug 포함.
+[PASS] HTML: 'pages/page-*' 참조 없음.
+[PASS] HTML: 금지 문자열 없음.
+[PASS] HTML: 템플릿 placeholder 잔존 없음.
+[PASS] HTML: screen-reader/LaTeXML 수식 변환 잔재 없음.
+[PASS] HTML: 표시 텍스트에 LaTeX 잔재 없음.
+[PASS] HTML: 고신뢰 기계번역 잔재 없음.
+[PASS] HTML img 10개: 상대경로 파일 모두 존재하고 비어있지 않다.
+[PASS] 그림 개수: HTML img 10개 ≥ manifest figures 6개.
+[PASS] 표 개수: HTML <table> 3개 ≥ manifest tables 3개.
+[PASS] 수식 개수: HTML <pre> 9개 ≥ manifest display_equations 9개.
+[PASS] 문체: '습니다' 0회(≤ 15) — 경어체 신호 없음.
+[PASS] 미디어 자산: 4개 보관(4.4MB), 파일/원격 미러 확인.
+[PASS] 미디어 자산: 보관한 4개 모두 본문/부록에서 링크됨.
+[PASS] 페이지 수: 최종 16p / 원본 17p
+[PASS] 페이지 비율 0.94배 — 정상 범위(±30%).
+[PASS] 페이지 통 캡처 없음 — 이미지가 본문을 지배하는 페이지가 없다.
+[PASS] 최종 PDF 텍스트: 금지 문자열 없음.
+[PASS] 최종 PDF: 고신뢰 기계번역 잔재 없음.
+[PASS] 최종 PDF: screen-reader/LaTeXML 수식 변환 잔재 없음.
+[PASS] LaTeX 잔재 없음 — 수식이 변환된 상태다.
+[PASS] 숫자형 인라인 인용 검출: 페이지 [2, 3, 7, 8, 11, 13, 15] — 참고문헌과 대응하는 압축 숫자형 표기([n], [n–m])는 허용한다.
+[PASS] 문체: 본문 '습니다' 0회(≤ 15) — 경어체 신호 없음.
+------------------------------------------------------------------------
+종합 판정: PASS — 모든 검사 통과.

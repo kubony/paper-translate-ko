@@ -1,0 +1,26 @@
+641|\section{Discussion and Limitations}
+642|
+643|TouchWorld demonstrates that tactile prediction and tactile feedback refinement can be combined in a practical manipulation policy, but several limitations remain.
+644|First, our real-robot evaluation focuses on six representative contact-rich tasks.
+645|These tasks cover planning, insertion, wiping, and soft-object handling, but they do not yet exhaust the diversity of household manipulation or deformable-object interactions.
+646|Scaling the benchmark to more objects, workspaces, and task compositions is an important next step.
+647|
+648|Second, the Tactile World Model currently predicts short-horizon visual-tactile subgoals.
+649|This is sufficient for contact-aware subtask execution, but longer-horizon prediction remains challenging when object motion, hand occlusion, or human perturbations produce multiple plausible futures.
+650|Future work can improve this component with uncertainty-aware subgoal prediction or by generating multiple candidate tactile subgoals for downstream selection.
+651|
+652|Third, TouchWorld is tied to the sensing layout used in our robot platform.
+653|The policy uses image-form tactile observations in the nominal VLA branch and high-frequency tactile histories in the refinement branch.
+654|Although this design is modular, transferring to a different tactile sensor or hand morphology still requires calibration, normalization, and likely a small amount of adaptation data.
+655|
+656|Finally, the hierarchy introduces scheduling hyperparameters, including the High-Level Planning Layer update rate, the Tactile World Model refresh rule, the nominal action chunk length, and the residual commit interval.
+657|We use a fixed scheduling profile in this work, which worked well for our tasks.
+658|More adaptive scheduling could further reduce computation and improve responsiveness when contact dynamics change rapidly.
+659|
+660|\section{Conclusion}
+661|
+662|We presented \textbf{TouchWorld}, a predictive-and-reactive tactile foundation model for dexterous manipulation.
+663|TouchWorld is implemented as a hierarchical manipulation policy that combines a High-Level Planning Layer, which contains vision-language subtask planning and Tactile World Model prediction, with visuo-tactile goal-conditioned action generation and high-frequency tactile residual refinement.
+664|This design treats touch as both a predictive cue for contact-aware goal generation and a fast feedback signal for online correction.
+665|Across six real-robot tasks, TouchWorld improves average success in both clean and human-perturbed settings, showing the benefit of explicitly separating semantic planning, predictive tactile subgoals, nominal action generation, and reactive tactile feedback.
+666|Future work will scale the task suite, improve uncertainty-aware tactile goal prediction, and study broader transfer across tactile sensors and robot hands.
