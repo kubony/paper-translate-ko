@@ -1,0 +1,19 @@
+{
+  "figures": [
+    {"no": "1", "page": 3, "desc": "advantage 부호별 clipped surrogate objective"},
+    {"no": "2", "page": 4, "desc": "policy update 보간에 따른 surrogate objective와 KL"},
+    {"no": "3", "page": 7, "desc": "MuJoCo 환경에서 알고리즘 성능 비교"},
+    {"no": "4", "page": 7, "desc": "Roboschool humanoid task의 PPO 학습 곡선"},
+    {"no": "5", "page": 8, "desc": "RoboschoolHumanoidFlagrun policy의 연속 정지 frame"},
+    {"no": "6", "page": 11, "desc": "49개 Atari game의 PPO·A2C·ACER 학습 곡선"}
+  ],
+  "tables": [
+    {"no": "1", "page": 6, "desc": "continuous control surrogate objective 비교"},
+    {"no": "2", "page": 8, "desc": "Atari에서 알고리즘별 승리 game 수"},
+    {"no": "3", "page": 10, "desc": "MuJoCo benchmark PPO hyperparameter"},
+    {"no": "4", "page": 10, "desc": "Roboschool PPO hyperparameter"},
+    {"no": "5", "page": 10, "desc": "Atari PPO hyperparameter"},
+    {"no": "6", "page": 12, "desc": "49개 Atari game의 최종 평균 score"}
+  ],
+  "display_equations": 12
+}
